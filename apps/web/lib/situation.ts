@@ -25,7 +25,8 @@ const d = (iso?: string | null) =>
 const estimate = (s: string) => (/^(ca\.|bis|etwa|voraussichtlich)/i.test(s) ? s : `voraussichtlich bis ${s}`);
 
 export function episodeWhen(e: Episode) {
-  if (!e.start && !e.end && !e.end_estimate_de) return e.status === "suggested" ? "Zeitraum noch offen" : "aktuell";
+  if (!e.start && !e.end && !e.end_estimate_de)
+    return e.status === "suggested" ? "Zeitraum noch offen" : e.status === "planned" ? "geplant, Termin noch offen" : "aktuell";
   const end = e.end ? d(e.end) : e.end_estimate_de ? estimate(e.end_estimate_de) : "";
   if (e.status === "ended" || (e.end && new Date(e.end) < new Date() && e.status !== "planned")) {
     return e.start ? `${d(e.start)} – ${end || "beendet"}` : `bis ${end || "?"}`;

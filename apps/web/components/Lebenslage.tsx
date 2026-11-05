@@ -248,8 +248,11 @@ function EpisodeGroup({
                   {episodeWhen(e)}
                   {e.institution && ` · ${e.institution}`}
                 </span>
+                {/* source under the text, not beside it: beside it squeezed the title to one word per line */}
+                <span className="mt-1 block">
+                  <SourceChip source={e.source} />
+                </span>
               </span>
-              <SourceChip source={e.source} />
               {!ended && (
                 <span className="flex gap-1 text-sm">
                   {e.status === "active" && (

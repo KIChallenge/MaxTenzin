@@ -21,7 +21,9 @@ export function Header({ me, represented }: { me: Session; represented: Person[]
             </span>
             SV-Lotsi
           </Link>
-          <div className="order-last w-full @5xl:order-none @5xl:w-auto">
+          {/* narrow (e.g. chat panel open): nav gets its own, visibly separated row (no overflow: the
+              "Nachschlagen" dropdown must not be clipped) */}
+          <div className="order-last w-full border-t border-line/70 pt-1 @5xl:order-none @5xl:w-auto @5xl:border-0 @5xl:pt-0">
             <NavBar />
           </div>
           <div className="ml-auto flex items-center gap-1.5 text-[0.9375rem]">
