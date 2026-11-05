@@ -14,10 +14,12 @@ SV KI-Lotse „Lotsi“ · Use Case 1 · Team MaxTenzin. Dazu ein Satz: Ein gute
 > Sprechtext (15 s): „Gesucht ist kein Chatbot, sondern ein Lotse. Unsere These: Ein KI-Assistent ist nur so gut wie die Infrastruktur darunter. Deshalb haben wir zuerst die Prozesse als Dienste gebaut, jeder mit Quelle, und Lotsi als oberste Schicht daraufgesetzt.“
 
 ## Folie 2 – Das ist Lotsi (0:15–0:35)
-**Der persönliche Lotse für Angehörige. Kein Chatbot.**
+**Der persönliche Lotse durch die Sozialversicherung. Kein Chatbot.**
+Unterzeile: Für alle Versicherten – und für alle, die für jemanden handeln. Von der ersten Frage bis zum unterschriftsreifen Antrag, mit genau den Rechten der Person.
+Dazu die Lotsi-Figur (kleiner Leuchtturm, aus dem Cockpit).
 Drei Karten: **Versteht** (freie Anliegen in Deutsch, Englisch, Türkisch, Einfache Sprache, fragt nur nach, was fehlt) · **Erledigt** (Dokumente wörtlich wiedergeben mit Zitat und Seite, Leistungen mit Quelle, offizielle Formulare als Entwurf, Termine) · **Tut nie** (entscheiden, einreichen, Befunde deuten, Diagnosen stellen, Therapie- oder Medikamentenratschläge geben, mehr dürfen als die Person erlaubt hat).
 
-> Sprechtext (20 s): „Das ist Lotsi: ein persönlicher Lotse für Angehörige, von der ersten Frage bis zum unterschriftsreifen Antrag. Er versteht, er erledigt, und er tut nie etwas, was die Person nicht erlaubt hat. Das zeige ich an Maria: Ihre Mutter kommt aus dem Spital, acht Aufgaben, sechs Stellen, null Überblick.“
+> Sprechtext (20 s): „Das ist Lotsi: ein persönlicher Lotse durch die Sozialversicherung, für alle Versicherten und für alle, die für jemanden handeln, von der ersten Frage bis zum unterschriftsreifen Antrag. Er versteht, er erledigt, und er tut nie etwas, was die Person nicht erlaubt hat. Das zeige ich an Maria: Ihre Mutter kommt aus dem Spital, acht Aufgaben, sechs Stellen, null Überblick.“
 
 ## Demo (0:30–6:50) – keine Folien
 Die Botschaft wird im Cockpit gesagt, nicht gezeigt. Je ein Satz pro Moment:
