@@ -56,6 +56,8 @@ See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished it
 
 - (integrator, done — WS-W open items) Lotsi persona in prompt/templates; consent: choice the person asks for is entered, consent-confirmation checkboxes never ticked by the agent (prompt + deterministic 422 backstop) + reply asks to confirm; `FormField.when` (FieldCondition) in contract; honest prefill source labels (ID Austria = name/birth; ZMR = address; e-card = SVNR/insurer; rest "Profilangaben – bitte prüfen"); attachment "Kopie des Entlassungsbefunds"; eligibility skips unanalysed/foreign documents (rule id `benefits.document_skipped:<id>` in audit) instead of 404; live extraction cached per (prompt version, file hash) → same file = same analysis (`extraction_mode=live-cached`). PAL 080 §5: "ja" + KH bis prefilled from the letter, KH von/Spital asked (letter has no admission date / hospital name). Live evals 28/28.
 
+- (integrator, done — WS-W consent bug) After successful set_form_fields the reply starts with a deterministic block from the tool result + form definition: "Eingetragen im Antrag: <Label> = <Wert>", "Noch offen – bitte im Antrag selbst ankreuzen: <Zustimmung>", open required count; model sentences claiming a consent was set are removed; internal session UUIDs are stripped from all replies. PAL 080 "Pflegeberatung" relabelled (no "Zustimmung" in the choice label → model no longer refuses). Live 4/4, evals 28/28.
+
 ## Decisions log
 - D1 Modular monolith (FastAPI routers per service) instead of microservices — same boundaries, 1/10 ops cost.
 - D2 Raw data in `docs/` gitignored; deterministic extraction into committed `knowledge/extracted/` (`make extract`).

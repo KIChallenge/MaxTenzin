@@ -258,22 +258,16 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
             # Relay the form's own validation message verbatim instead of letting the model guess why.
             reply = ("**Nicht übernommen:** " + (rejected[-1].error_de or "Die Angabe passt nicht zum Formular.")
                      + "\n\n" + reply)
-        wrote_session = next((o.arguments.get("session_id") for o in reversed(outcomes)
-                              if o.tool == "set_form_fields" and o.ok), None)
-        if wrote_session and "zustimmung" not in reply.lower():
-            # Consent is a conscious act of the person: never ticked by Lotsi, but say so when the form now needs it.
-            r = await client.fetch(f"/api/forms/sessions/{wrote_session}/next-questions", "context:consent_check")
-            if r.status_code == 200 and any(re.search(r"zustimmung|einverst", q.get("label_de", ""), re.IGNORECASE)
-                                            for q in r.json().get("questions", [])):
-                reply += ("\n\n**Bitte bestätigen Sie die Zustimmung im Antrag selbst** – das kreuze ich bewusst "
-                          "nicht für Sie an.")
+        writes = [o for o in outcomes if o.tool == "set_form_fields" and o.ok]
+        if writes:
+            reply = await _form_write_reply(client, writes, reply)
         denied = [o for o in outcomes if o.status == 403]
         if denied and "berechtigung" not in reply.lower() and "permission" not in reply.lower():
             reply = forbidden_text(denied[0], subject_name) + "\n\n" + reply
         srcs = [s for o in outcomes if o.ok for s in o.sources]
         if srcs and not any(w in reply.lower() for w in ("quelle", "source", "kaynak")):
             reply += "\n\n**Quellen:** " + "; ".join(list(dict.fromkeys(srcs))[:6])
-        resp = ChatResponse(conversation_id=conv["id"], reply=reply, tool_trace=[_trace(o) for o in outcomes],
+        resp = ChatResponse(conversation_id=conv["id"], reply=_sanitize(reply), tool_trace=[_trace(o) for o in outcomes],
                             boundary_triggered=False, suggestions_de=_suggestions(memo, outcomes),
                             actions=_actions(outcomes))
 
@@ -309,3 +303,46 @@ _PDF_RE = re.compile(r"\b(pdf|entwurf\s+(erstellen|herunterladen|ausdrucken)|dra
 
 def _wants_pdf(message: str) -> bool:
     return bool(_PDF_RE.search(message or ""))
+
+
+_CONSENT = re.compile(r"zustimmung|einverst|einwillig", re.IGNORECASE)
+# Model text that claims a consent was set/ticked (without negation in the same sentence) is never shown.
+_CONSENT_CLAIM = re.compile(r"[^.!?\n]*(zustimmung|einverständnis|einwilligung)[^.!?\n]*\b(gesetzt|eingetragen|angekreuzt|"
+                            r"bestätigt|erteilt|vermerkt|als ja)\b[^.!?\n]*", re.IGNORECASE)
+_UUID = re.compile(r"\s*\(?\s*(Sitzung|session|Session-ID|ID)?:?\s*[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                   r"\s*\)?", re.IGNORECASE)
+
+
+def _fmt(v) -> str:
+    return "angekreuzt" if v is True else "nicht angekreuzt" if v is False else str(v)
+
+
+async def _form_write_reply(client: ToolClient, writes: list[ToolOutcome], model_reply: str) -> str:
+    """Deterministic statement of what was written (labels from the form definition) + what the person must do."""
+    sid = writes[-1].arguments.get("session_id")
+    defs = await client._field_defs(sid)
+    written: dict = {}
+    for o in writes:
+        written.update(o.arguments.get("values") or {})
+    parts = [f"{defs.get(f, {}).get('label') or f} = {_fmt(v)}" for f, v in written.items()]
+    lines = ["**Eingetragen im Antrag:** " + "; ".join(parts)]
+    r = await client.fetch(f"/api/forms/sessions/{sid}/next-questions", "context:after_write")
+    if r.status_code == 200:
+        qs = r.json().get("questions", [])
+        consent = [q for q in qs if _CONSENT.search(q.get("label_de", ""))]
+        if consent:
+            lines.append("**Noch offen – bitte im Antrag selbst ankreuzen:** " +
+                         "; ".join(f"„{q['label_de']}“" for q in consent) + " (Zustimmungen kreuze ich nie für Sie an).")
+        others = [q for q in qs if q not in consent]
+        if others:
+            lines.append(f"**Noch offene Pflichtangaben:** {len(others)} – z. B. „{others[0]['label_de']}“.")
+    rest = _CONSENT_CLAIM.sub("", model_reply).strip() if _CONSENT.search(model_reply) else model_reply.strip()
+    # Drop the model's own restatement of the entry (the deterministic line above is authoritative).
+    rest = re.sub(r"^[^\n]*\b(eingetragen|halte fest|vermerkt|gesetzt)\b[^\n]*\n?", "", rest, count=1,
+                  flags=re.IGNORECASE).strip()
+    return "\n".join(lines) + ("\n\n" + rest if rest else "")
+
+
+def _sanitize(reply: str) -> str:
+    """Never show internal ids (session UUIDs) to the person."""
+    return _UUID.sub("", reply)

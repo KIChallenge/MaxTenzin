@@ -675,7 +675,7 @@ fields:
     ask_hint_de: Welche Stelle zahlt die Pension aus (mit Aktenzeichen bzw. Versicherungsnummer)?
   # ---------------------------------------------------------------- 9 Pflegeberatung
   - id: Pflegeberatung
-    label_de: Kostenlose Pflegeberatung zu Hause (Zustimmung zur Datenweitergabe)
+    label_de: Kostenlose Pflegeberatung zu Hause (Kontaktdaten werden an die Pflegeberatung weitergegeben)
     type: choice
     section: 9 Pflegeberatung
     recommended: true

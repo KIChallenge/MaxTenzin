@@ -312,3 +312,29 @@ def test_agent_never_ticks_consent_checkbox(client):
     assert ok.ok
     v = client.get(f"/api/forms/sessions/{sid}", headers=MARIA_ANNA).json()["values"]
     assert v["Pflegeberatung"]["value"] == "Ja" and not v["Antragstellung andere Person"]["value"]
+
+
+def test_form_write_reply_is_deterministic_and_honest():
+    import asyncio
+
+    from app.agent import orchestrator as orch
+    from app.agent.tools import ToolOutcome
+
+    class FakeClient:
+        async def _field_defs(self, sid):
+            return {"Pflegeberatung": {"label": "Kostenlose Pflegeberatung zu Hause", "type": "choice"}}
+
+        async def fetch(self, path, purpose):
+            class R:
+                status_code = 200
+
+                def json(self):
+                    return {"questions": [{"field_id": "x", "label_de": "Zustimmung der pflegebedürftigen Person eingeholt"}]}
+            return R()
+
+    w = [ToolOutcome("set_form_fields", {"session_id": "s1", "values": {"Pflegeberatung": "Ja"}}, 200)]
+    out = asyncio.run(orch._form_write_reply(FakeClient(), w, "Ich habe Pflegeberatung eingetragen.\nDie Zustimmung zur "
+                                                               "Datenweitergabe ist damit als Entwurf gesetzt. Weiter?"))
+    assert out.startswith("**Eingetragen im Antrag:** Kostenlose Pflegeberatung zu Hause = Ja")
+    assert "bitte im Antrag selbst ankreuzen" in out and "als Entwurf gesetzt" not in out
+    assert orch._sanitize("Quelle: Antragsentwurf (Sitzung 23161223-9951-4b2c-8a1d-0123456789ab).") == "Quelle: Antragsentwurf."

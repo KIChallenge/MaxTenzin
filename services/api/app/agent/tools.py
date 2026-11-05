@@ -378,7 +378,7 @@ class ToolClient:
         if r.status_code != 200:
             return {}
         d = await self.fetch(f"/api/forms/definitions/{r.json()['form_id']}", "context:form_definition")
-        defs = {f["id"]: {"type": f["type"], "options": f.get("options") or [],
+        defs = {f["id"]: {"type": f["type"], "options": f.get("options") or [], "label": f.get("label_de"),
                           "consent": f["type"] == "checkbox" and bool(re.search(r"zustimmung|einverst|einwillig",
                                                                                 f.get("label_de", ""), re.IGNORECASE))}
                 for f in d.json().get("fields", [])} if d.status_code == 200 else {}
