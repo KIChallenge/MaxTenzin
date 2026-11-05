@@ -22,7 +22,7 @@ from app.contracts.situation import (
     EpisodeUpdate,
     SituationOverview,
 )
-from app.core.auth import Context, require
+from app.core.auth import Context, forbidden_detail, require
 from app.core.db import now_iso, store
 from app.services.situation import service as svc
 
@@ -169,8 +169,7 @@ def delete(episode_id: str, ctx: Context = Depends(require(SCOPE))):
              summary="Suggest episodes from an analysed document (NOT applied until confirmed)")
 def suggest(document_id: str, ctx: Context = Depends(require(SCOPE))):
     if Scope.read_documents not in ctx.scopes:
-        raise HTTPException(403, f"Fehlende Berechtigung 'read_documents' für {ctx.subject.first_name} "
-                                 f"{ctx.subject.last_name}.")
+        raise HTTPException(403, forbidden_detail(ctx, Scope.read_documents))
     a = svc.load_analysis(ctx.subject.id, document_id)
     if a is None:
         raise HTTPException(404, "Für dieses Dokument liegt noch keine Analyse vor.")

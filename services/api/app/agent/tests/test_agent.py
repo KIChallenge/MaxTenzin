@@ -454,3 +454,11 @@ def test_granted_scopes_are_announced_once():
     note = _granted_since_last_turn(ctx, memo)
     assert note and "Anträge vorbereiten" in note
     assert _granted_since_last_turn(ctx, memo) is None                      # only once
+
+
+def test_scope_parsed_from_german_403_detail():
+    from app.agent.tools import _scope_from_detail
+
+    d = "Fehlende Freigabe: „Anträge vorbereiten“ – Anna Berger kann sie unter Einstellungen → Vollmachten erteilen."
+    assert _scope_from_detail(d) == "prepare_applications"
+    assert _scope_from_detail("Fehlende Berechtigung 'read_documents' für X.") == "read_documents"

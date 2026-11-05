@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from app.contracts.benefits import Benefit, Bundle, BundleRequest, EligibilityRequest, EligibilityResult
 from app.contracts.documents import DocumentAnalysis, Recommendation
 from app.contracts.identity import Person, Scope
-from app.core.auth import Context, require
+from app.core.auth import Context, forbidden_detail, require
 from app.core.db import store
 from app.fixtures import ANNA_ANALYSIS
 from app.seed.loader import delegations_of_grantee, get_person
@@ -27,8 +27,7 @@ def _analyses(ctx: Context, document_ids: list[str]) -> list[DocumentAnalysis]:
     if not document_ids:
         return []
     if Scope.read_documents not in ctx.scopes:
-        raise HTTPException(403, f"Fehlende Berechtigung 'read_documents' für {ctx.subject.first_name} "
-                                 f"{ctx.subject.last_name}.")
+        raise HTTPException(403, forbidden_detail(ctx, Scope.read_documents))
     own = {a["document_id"]: a for a in store.list(ANALYSES, subject_id=ctx.subject.id)}
     out = []
     for did in document_ids:

@@ -82,6 +82,11 @@ def _clip(s: str | None, n: int = 300) -> str | None:
 
 
 def _scope_from_detail(detail: str) -> str | None:
+    """Scope key from a 403 detail – German label („Dokumente lesen“, core.auth.forbidden_detail) or legacy 'key'."""
+    from app.core.auth import SCOPE_LABEL_DE
+
+    if m := re.search(r"Freigabe: „([^“]+)“", detail or ""):
+        return next((k.value for k, v in SCOPE_LABEL_DE.items() if v == m.group(1)), None)
     m = re.search(r"Berechtigung '([a-z_]+)'", detail or "")
     return m.group(1) if m else None
 

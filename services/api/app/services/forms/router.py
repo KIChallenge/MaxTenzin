@@ -6,7 +6,7 @@ from fastapi.responses import Response
 from app.contracts.documents import DocumentAnalysis
 from app.contracts.forms import FieldPatch, FormDefinition, FormSession, NextQuestions
 from app.contracts.identity import Scope
-from app.core.auth import Context, require
+from app.core.auth import Context, forbidden_detail, require
 from app.core.db import store
 from app.services.forms import service
 from app.services.forms.pdf import render_pdf
@@ -38,7 +38,8 @@ def start(form_id: str, document_id: str | None = Query(None, description="Optio
     analysis = None
     if document_id:
         if Scope.read_documents not in ctx.scopes:
-            raise HTTPException(403, "Fehlende Berechtigung 'read_documents' für die Vorbefüllung aus Dokumenten.")
+            raise HTTPException(403, forbidden_detail(ctx, Scope.read_documents)
+                                + " (nötig für die Vorbefüllung aus Dokumenten)")
         data = store.get("document_analyses", document_id)
         if not data:
             raise HTTPException(404, "Dokumentanalyse nicht gefunden – bitte das Dokument zuerst analysieren.")

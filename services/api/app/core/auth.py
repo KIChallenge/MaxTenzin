@@ -17,6 +17,23 @@ from app.seed.loader import delegations_for, get_person
 TOKEN_PREFIX = "demo-"
 
 
+SCOPE_LABEL_DE = {
+    Scope.read_documents: "Dokumente lesen",
+    Scope.prepare_applications: "Anträge vorbereiten",
+    Scope.manage_appointments: "Termine verwalten",
+    Scope.view_health_prevention: "Vorsorge & Impfungen",
+    Scope.manage_case: "Fall verwalten",
+    Scope.manage_situation: "Lebenslage",
+}
+
+
+def forbidden_detail(ctx: Context, scope: Scope) -> str:
+    """User-facing 403 text: German permission name (same as the cockpit), never the internal scope key."""
+    name = f"{ctx.subject.first_name} {ctx.subject.last_name}"
+    return (f"Fehlende Freigabe: „{SCOPE_LABEL_DE.get(scope, scope.value)}“ – {name} kann sie unter "
+            f"Einstellungen → Vollmachten erteilen.")
+
+
 @dataclass
 class Context:
     actor: Person
@@ -72,10 +89,7 @@ def require(scope: Scope | None = None):
         request.state.scope_required = scope.value if scope else None
         if scope and scope not in ctx.scopes:
             request.state.allowed = False
-            raise HTTPException(
-                403,
-                f"Fehlende Berechtigung '{scope.value}' für {ctx.subject.first_name} {ctx.subject.last_name}.",
-            )
+            raise HTTPException(403, forbidden_detail(ctx, scope))
         return ctx
 
     return dep

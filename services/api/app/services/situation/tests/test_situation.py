@@ -160,7 +160,7 @@ def test_suggestions_need_read_documents(client):
                    json=["manage_situation", "manage_case"])
     assert r.status_code == 200
     r = client.post(f"/api/situation/suggestions/from-document/{DOC}", headers=MARIA_ANNA)
-    assert r.status_code == 403 and "read_documents" in r.json()["detail"]
+    assert r.status_code == 403 and "„Dokumente lesen“" in r.json()["detail"] and "read_documents" not in r.json()["detail"]
 
 
 def test_prefill_needs_manage_situation(client):

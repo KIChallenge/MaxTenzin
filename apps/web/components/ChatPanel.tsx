@@ -388,7 +388,7 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
                   ) : (
                     <FileText className="h-4 w-4" aria-hidden />
                   )}
-                  <span className="truncate">{f.status === "error" ? `${f.filename}: ${f.error}` : f.filename}</span>
+                  <span className="truncate">{f.filename}</span>
                   {f.status === "uploading" && <span className="text-muted">wird gelesen …</span>}
                   <button
                     type="button"
@@ -402,6 +402,12 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
               ))}
             </ul>
           )}
+          {/* each distinct error once, in full (four photos with the same 403 used to show four truncated chips) */}
+          {[...new Set(files.filter((f) => f.status === "error" && f.error).map((f) => f.error as string))].map((msg) => (
+            <p key={msg} role="alert" className="mb-2 text-sm text-danger">
+              {msg}
+            </p>
+          ))}
           <div className="flex gap-2">
             <button
               type="button"
