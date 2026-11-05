@@ -557,3 +557,59 @@ def test_prompt_lists_only_documents_the_api_serves(client):
         assert "doc-anna-entlassung" not in system_prompt(ctx, {}, False, documents=docs)
     finally:
         store.delete(goldens.HIDDEN, "doc-anna-entlassung")
+
+
+def test_booking_needs_slots_from_an_earlier_turn_and_an_explicit_choice(client):
+    """'Buch ihr einen Termin' must never search AND book in one turn; 'Den ersten bitte' afterwards books."""
+    import asyncio
+
+    from app.agent.orchestrator import turn_flags
+    from app.agent.tools import ToolClient
+    from app.contracts.agent import ChatRequest
+
+    h = auth("maria", "anna")
+    memo: dict = {}
+    conv = {"turns": []}
+    tc = ToolClient(h, "anna", "Anna Berger", memo=memo)
+    turn_flags(memo, conv, ChatRequest(message="Buch ihr bitte einen Kontrolltermin bei ihrer Hausärztin, am liebsten vormittags."))
+    found = asyncio.run(tc.run("search_slots", {"topic": "hausarzt_kontrolle", "daypart": "morning"}))
+    assert found.ok and found.data
+    from app.agent import state
+
+    state.update_memo(memo, found)
+    slot = found.data[0]["slot_id"]
+    out = asyncio.run(tc.run("book_appointment", {"slot_id": slot, "purpose_de": "Kontrolle"}))
+    assert out.status == 409                                                 # same turn as the search: not booked
+    conv["turns"].append({"tool_trace": [{"tool": "search_slots"}]})
+    turn_flags(memo, conv, ChatRequest(message="Buch ihr bitte einen Termin."))
+    assert asyncio.run(tc.run("book_appointment", {"slot_id": slot, "purpose_de": "Kontrolle"})).status == 409  # no pick
+    turn_flags(memo, conv, ChatRequest(message="Den ersten bitte."))
+    assert asyncio.run(tc.run("book_appointment", {"slot_id": "demo-x@2026-01-01T08:00", "purpose_de": "K"})).status == 409
+    booked = asyncio.run(tc.run("book_appointment", {"slot_id": slot, "purpose_de": "Kontrolle"}))
+    assert booked.ok, booked.error_de
+    asyncio.run(tc.run("cancel_appointment", {"appointment_id": booked.data["appointment_id"]}))
+
+
+def test_form_write_only_when_the_message_concerns_the_form():
+    """An open draft must not hijack unrelated answers (income for the Rezeptgebühr → PAL 080 'Frühere Namen')."""
+    import asyncio
+
+    from app.agent.orchestrator import turn_flags
+    from app.agent.tools import ToolClient
+    from app.contracts.agent import ChatRequest
+
+    memo = {"form_session_id": "s1", "form_id": "pva_pflegegeld_pal080"}
+    rezept = {"turns": [{"tool_trace": [{"tool": "check_benefits"}]}]}
+    turn_flags(memo, rezept, ChatRequest(message="Sie bekommt rund 1.150 Euro Pension netto im Monat und lebt allein."))
+    assert memo["_form_context"] is False
+    out = asyncio.run(ToolClient({}, "anna", "Anna Berger", memo=memo).run(
+        "set_form_fields", {"session_id": "s1", "values": {"frühere Namen": "1.150 Euro Pension"}}))
+    assert out.status == 409
+    for msg, conv, kw in [
+        ("Trag beim Pflegegeld-Antrag ein, dass wir die Pflegeberatung möchten.", rezept, {}),
+        ("Ja, gerne.", {"turns": [{"tool_trace": [{"tool": "get_next_questions"}]}]}, {}),   # answers a form question
+        ("Welche Fragen sind noch offen?", rezept, {"form_session_id": "s1"}),                # wizard open
+    ]:
+        turn_flags(memo, conv, ChatRequest(message=msg, **kw))
+        assert memo["_form_context"] is True, msg
+

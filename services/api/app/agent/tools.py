@@ -532,6 +532,20 @@ class ToolClient:
                                    summary_de="Vollmacht nicht gefunden")
             scopes = (set(d["scopes"]) | set(args.get("grant") or [])) - set(args.get("revoke") or [])
             args = {**args, "delegation_id": d["id"], "scopes": sorted(scopes)}
+        # Book only a slot shown in an EARLIER turn that the person's current message picks ("den ersten", "2",
+        # "um 9:40"). Otherwise the model must show the slots first – never book on the first request.
+        if name == "book_appointment" and "_offered_before" in self.memo and (
+                not self.memo.get("_slot_choice") or args.get("slot_id") not in self.memo["_offered_before"]):
+            return ToolOutcome(name, args, 409, error_de="Noch nicht buchen: Die Person hat noch keinen der angezeigten "
+                               "Termine gewählt. Das ist kein Fehler – erwähne keinen Buchungsversuch, zeige die "
+                               "gefundenen Termine nummeriert und frage, welcher passt.",
+                               summary_de="Nicht gebucht – Person wählt zuerst einen Termin")
+        if name == "set_form_fields" and self.memo.get("_form_context") is False:
+            # The message is not about the form (e.g. an answer to a Rezeptgebühr question): never write it into a
+            # field of the draft that happens to be open.
+            return ToolOutcome(name, args, 409, error_de="Nicht eingetragen: Diese Nachricht bezieht sich nicht auf den "
+                               "Antrag. Beantworte die Nachricht, ohne den Antrag zu ändern.",
+                               summary_de="Nicht eingetragen – Nachricht betrifft den Antrag nicht")
         if name == "confirm_situation_suggestion" and not self.memo.get("_user_consented"):
             return ToolOutcome(name, args, 422, error_de="Vorschläge übernehme ich erst nach Ihrer ausdrücklichen "
                                "Zustimmung („Ja, übernehmen“).", summary_de="Nicht übernommen – Zustimmung fehlt")
@@ -679,6 +693,8 @@ def _filename(resp: httpx.Response) -> str | None:
 def llm_payload(o: ToolOutcome) -> str:
     """What the model sees: data wrapped as untrusted DATA, never as instructions."""
     body: dict[str, Any] = {"status": o.status, "data": o.data, "sources": o.sources}
+    if o.data is None and o.error_de:
+        body["data"] = {"error": o.status, "detail": o.error_de}   # guard refusals: the model must know why
     if o.forbidden_scope or o.status == 403:
         scope_de = SCOPE_DE.get(o.forbidden_scope or "", "diese Aktion")
         body["data"] = {"error": "forbidden", "berechtigung_de": scope_de}

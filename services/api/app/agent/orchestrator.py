@@ -294,6 +294,7 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
     # Explicit consent in THIS message (deterministic): required to apply document-based situation suggestions.
     memo["_user_consented"] = bool(_CONSENT_YES.search(req.message or ""))
     memo["_permission_request"] = bool(_PERMISSION_REQ.search(req.message or ""))
+    turn_flags(memo, conv, req)
 
     hit = guard.check_boundary(req.message)
     if hit:
@@ -502,6 +503,27 @@ def _sanitize(reply: str, lang: str = "de") -> str:
     out = re.sub(r"\bTool[-‑–\s]?Ergebnis(se|sen)?\b", "Prüfergebnis", out, flags=re.IGNORECASE)
     out = re.sub(r"\b(laut|gemäß)\s+(dem\s+)?Tool\b", "laut Prüfung", out, flags=re.IGNORECASE)
     return out.strip()
+
+
+_FORM_TOOLS_ASKING = {"start_form", "get_next_questions", "set_form_fields", "preview_form"}
+# The message itself is about the application draft (fill in, enter, tick …).
+_FORM_REF = re.compile(r"antrag|anträg|formular|entwurf|eintrag|\btrag\w*\b|\bfeld|ausfüll|ankreuz|übernimm|"
+                       r"application|\bform\b|fill|başvuru", re.IGNORECASE)
+# The message picks one of the offered slots: ordinal, number, time or date.
+_SLOT_CHOICE = re.compile(r"\b(erst|zweit|dritt|viert|fünft|letzt|früheste|späteste|first|second|third|fourth|fifth|"
+                          r"last|earliest|latest)\w*|\b(eins|zwei|drei|vier|fünf|acht|neun|zehn|elf|zwölf|halb|one|two|"
+                          r"three|four|five|nummer|nr|number|option)\b|\d", re.IGNORECASE)
+
+
+def turn_flags(memo: dict, conv: dict, req: ChatRequest) -> None:
+    """Deterministic per-turn facts the tool guards rely on (ToolClient.run): which slots were offered BEFORE this
+    message and whether it picks one; whether the message concerns the open application draft."""
+    msg = req.message or ""
+    memo["_offered_before"] = [s.get("slot_id") for s in memo.get("offered_slots") or []]
+    memo["_slot_choice"] = bool(_SLOT_CHOICE.search(msg))
+    prev = {t.get("tool") for t in (conv["turns"][-1].get("tool_trace") or [])} if conv["turns"] else set()
+    memo["_form_context"] = bool(req.form_session_id) or bool(_FORM_REF.search(msg)) or \
+        bool(prev & _FORM_TOOLS_ASKING) or guard.is_copy_request(msg)
 
 
 # The person's own message asks to grant/revoke a permission (change_permissions is only executed then).
