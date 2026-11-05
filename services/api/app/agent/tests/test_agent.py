@@ -613,3 +613,15 @@ def test_form_write_only_when_the_message_concerns_the_form():
         turn_flags(memo, conv, ChatRequest(message=msg, **kw))
         assert memo["_form_context"] is True, msg
 
+
+def test_permission_texts_match_core_auth_and_cockpit():
+    """One source for permission names; the 403 text points where the cockpit really has the switch."""
+    from app.agent.scripted import forbidden_text
+    from app.agent.tools import SCOPE_DE, ToolOutcome
+    from app.core.auth import SCOPE_LABEL_DE
+
+    assert SCOPE_DE == {k.value: v for k, v in SCOPE_LABEL_DE.items()}
+    assert SCOPE_DE["view_health_prevention"] == "Vorsorge & Impfungen"
+    t = forbidden_text(ToolOutcome("start_form", {}, 403, forbidden_scope="prepare_applications"), "Anna Berger")
+    assert "„Anträge vorbereiten“" in t and "Einstellungen → Vollmachten" in t and "Vertretung“" not in t
+    assert "Bereich „Vertretung“" not in orchestrator._prompt_template()

@@ -14,14 +14,10 @@ from typing import Any
 
 import httpx
 
-SCOPE_DE = {
-    "read_documents": "Dokumente lesen",
-    "prepare_applications": "Anträge vorbereiten",
-    "manage_appointments": "Termine verwalten",
-    "view_health_prevention": "Vorsorge- und Gesundheitsdaten einsehen",
-    "manage_case": "Fall verwalten",
-    "manage_situation": "Lebenslage",
-}
+from app.core.auth import SCOPE_LABEL_DE
+
+# One source for permission names: the same German labels as core.auth (403 detail) and the cockpit.
+SCOPE_DE = {k.value: v for k, v in SCOPE_LABEL_DE.items()}
 
 STATUS_DE = {
     "likely": "kommt voraussichtlich in Frage",

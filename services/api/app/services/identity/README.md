@@ -15,7 +15,7 @@ The agent inherits exactly the scopes of the person it acts for – no special r
 
 ## Rules & sources
 Scopes: `read_documents` (Dokumente lesen), `prepare_applications` (Anträge vorbereiten), `manage_appointments`
-(Termine verwalten), `view_health_prevention` (Vorsorge- und Gesundheitsdaten), `manage_case` (Fall verwalten),
+(Termine verwalten), `view_health_prevention` (Vorsorge & Impfungen), `manage_case` (Fall verwalten),
 `manage_situation` (Lebenslage). Seed: `app/seed/personas.yaml`, `delegations.yaml`, `care_team.yaml`.
 Care-team source label is honest: "Profil (Demo) – im Echtbetrieb aus e-card-Konsultationen".
 

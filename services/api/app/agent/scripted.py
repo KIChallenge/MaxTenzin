@@ -69,7 +69,7 @@ def _sources_line(outcomes: list[ToolOutcome], n: int = 6) -> str:
 def forbidden_text(o: ToolOutcome, subject_name: str) -> str:
     scope_de = SCOPE_DE.get(o.forbidden_scope or "", "diese Aktion")
     return (f"Dafür hat {subject_name} keine Berechtigung erteilt (fehlende Freigabe: „{scope_de}“). Ich umgehe das "
-            f"nicht. {subject_name.split()[0]} kann die Berechtigung im Bereich „Vertretung“ selbst erteilen – danach "
+            f"nicht. {subject_name.split()[0]} kann die Berechtigung unter „Einstellungen → Vollmachten“ selbst erteilen – danach "
             "mache ich gerne weiter.")
 
 
