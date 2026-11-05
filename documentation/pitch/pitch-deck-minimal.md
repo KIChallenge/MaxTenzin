@@ -8,10 +8,10 @@ Gebaut als Slide-Deck: https://claude.ai/artifact/RkjTdgdGPBaSBzZGfkXUTn – Fol
 ---
 
 ## Folie 1 – Titel und These (0:00–0:15)
-**Erst die Prozesse, dann die KI.**
-SV KI-Lotse „Lotsi“ · Use Case 1 · Team MaxTenzin. Dazu ein Satz: Ein guter KI-Lotse braucht eine gute Infrastruktur.
+**Ein guter KI-Lotse braucht eine gute Infrastruktur.**
+Aufbau der alten Titelfolie: Segelboot, Eyebrow „SV-Lotsi · DVSV KI-Challenge · Use Case 1“, Cockpit-Screenshot rechts. Darunter der Merksatz **Erst die Prozesse, dann die KI.** und ein Satz: Das Sprachmodell ist austauschbar, die Dienste, Daten und Regeln darunter sind es nicht. Fußzeile: Team MaxTenzin.
 
-> Sprechtext (15 s): „Gesucht ist kein Chatbot, sondern ein Lotse. Unsere These: Ein KI-Assistent ist nur so gut wie die Infrastruktur darunter. Deshalb haben wir zuerst die Prozesse als Dienste gebaut, jeder mit Quelle, und Lotsi als oberste Schicht daraufgesetzt.“
+> Sprechtext (15 s): „Ein guter KI-Lotse braucht eine gute Infrastruktur. Gesucht ist kein Chatbot, sondern ein Lotse. Deshalb haben wir zuerst die Prozesse als Dienste gebaut, jeder mit Quelle, und Lotsi als oberste Schicht daraufgesetzt. Erst die Prozesse, dann die KI.“
 
 ## Folie 2 – Das ist Lotsi (0:15–0:35)
 **Der persönliche Lotse durch die Sozialversicherung. Kein Chatbot.**
