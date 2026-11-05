@@ -1,0 +1,4 @@
+export const API_URL = process.env.API_URL ?? "http://localhost:8000";
+export const COOKIE_TOKEN = "lotse_token";
+export const COOKIE_SUBJECT = "lotse_subject";
+export const COOKIE_PLAIN = "lotse_plain";

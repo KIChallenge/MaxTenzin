@@ -1,26 +1,72 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Calm public-service palette: warm paper, dark ink, one petrol accent. WCAG AA on all pairs. */
+@theme {
+  --color-paper: #f5f4ef;
+  --color-surface: #ffffff;
+  --color-ink: #1a1f24;
+  --color-muted: #4d5864;
+  --color-line: #d6d8d2;
+  --color-accent: #0a5866;
+  --color-accent-strong: #073f49;
+  --color-accent-soft: #e2eff0;
+  --color-ok: #1d6638;
+  --color-ok-soft: #e3f1e6;
+  --color-warn: #7d5200;
+  --color-warn-soft: #fbefd5;
+  --color-info: #1c4a8a;
+  --color-info-soft: #e5edf8;
+  --color-danger: #9e2228;
+  --color-danger-soft: #fbe6e5;
+  --color-neutral: #4d5864;
+  --color-neutral-soft: #eceee9;
+  --font-sans: var(--font-atkinson), ui-sans-serif, system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  font-size: 112.5%; /* 18px base for readability */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.5;
 }
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@utility card {
+  @apply rounded-xl border border-line bg-surface p-5;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-accent text-white hover:bg-accent-strong;
+}
+@utility btn-secondary {
+  @apply btn border border-accent bg-surface text-accent hover:bg-accent-soft;
+}
+@utility btn-ghost {
+  @apply btn text-accent hover:bg-accent-soft;
+}
+@utility input {
+  @apply w-full rounded-lg border border-muted/60 bg-surface px-3 py-2 text-ink placeholder:text-muted/70 focus:border-accent;
+}
+@utility link {
+  @apply font-bold text-accent underline decoration-2 underline-offset-2 hover:text-accent-strong;
+}
+@utility eyebrow {
+  @apply text-sm font-bold tracking-wide text-muted uppercase;
+}
+
+@keyframes flash {
+  from { background-color: var(--color-warn-soft); }
+  to { background-color: transparent; }
+}
+.flash { animation: flash 2.5s ease-out; }
