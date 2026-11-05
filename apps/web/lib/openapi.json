@@ -1938,7 +1938,7 @@
         "tags": [
           "cases"
         ],
-        "summary": "List Cases",
+        "summary": "Cases of the current subject",
         "operationId": "list_cases_api_cases_get",
         "parameters": [
           {
@@ -2025,7 +2025,7 @@
         "tags": [
           "cases"
         ],
-        "summary": "Create case (optionally seeded from document tasks + benefits)",
+        "summary": "Create case from a document's open tasks + selected benefits",
         "operationId": "create_api_cases_post",
         "parameters": [
           {
@@ -2115,12 +2115,106 @@
         }
       }
     },
+    "/api/cases/{case_id}": {
+      "get": {
+        "tags": [
+          "cases"
+        ],
+        "summary": "One case",
+        "operationId": "get_case_api_cases__case_id__get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Case"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/cases/{case_id}/steps/{step_id}": {
       "patch": {
         "tags": [
           "cases"
         ],
-        "summary": "Update Step",
+        "summary": "Update step status and/or link a form session",
         "operationId": "update_step_api_cases__case_id__steps__step_id__patch",
         "parameters": [
           {
@@ -2233,7 +2327,7 @@
         "tags": [
           "notifications"
         ],
-        "summary": "Inbox",
+        "summary": "Proactive notifications for the current subject",
         "operationId": "inbox_api_notifications_get",
         "parameters": [
           {
@@ -2322,7 +2416,7 @@
         "tags": [
           "notifications"
         ],
-        "summary": "Mark Read",
+        "summary": "Mark a notification as read",
         "operationId": "mark_read_api_notifications__notification_id__read_post",
         "parameters": [
           {
@@ -2392,17 +2486,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Notification"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ],
-                  "title": "Response Mark Read Api Notifications  Notification Id  Read Post"
-                }
+                "schema": {}
               }
             }
           },
@@ -5036,13 +5120,28 @@
       "StepUpdate": {
         "properties": {
           "status": {
-            "$ref": "#/components/schemas/StepStatus"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StepStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "form_session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Form Session Id"
           }
         },
         "type": "object",
-        "required": [
-          "status"
-        ],
         "title": "StepUpdate"
       },
       "ToolTrace": {

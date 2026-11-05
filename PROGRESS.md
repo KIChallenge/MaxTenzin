@@ -21,13 +21,13 @@ Single source of truth for all sessions. Update your row at start and at Definit
 | WS-F | forms: schemas, sessions, prefill, real PDF fill | bg agent | ws/F-forms | doing | — | — |
 | WS-W | web cockpit | human session | ws/W-web | todo | — | — |
 | WS-A | agent orchestrator + guardrails + evals | Wave 2 | ws/A-agent | todo | — | needs B/D/F merged |
-| WS-C | cases + notifications | integrator, Wave 2 | ws/C-cases | todo | — | — |
+| WS-C | cases + notifications | integrator | main | merged | H3 | — |
 
 ## Task checklists
 See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished items here as one line).
 
 ## Contract requests (agents → integrator)
-_none yet_
+- (integrator, done) `StepUpdate` gained optional `form_session_id`; `status` now optional. Shared test fixtures moved to `services/api/app/conftest.py` (`from app.conftest import auth`).
 
 ## Decisions log
 - D1 Modular monolith (FastAPI routers per service) instead of microservices — same boundaries, 1/10 ops cost.

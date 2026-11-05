@@ -353,11 +353,28 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Cases */
+        /** Cases of the current subject */
         get: operations["list_cases_api_cases_get"];
         put?: never;
-        /** Create case (optionally seeded from document tasks + benefits) */
+        /** Create case from a document's open tasks + selected benefits */
         post: operations["create_api_cases_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/cases/{case_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One case */
+        get: operations["get_case_api_cases__case_id__get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -377,7 +394,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Update Step */
+        /** Update step status and/or link a form session */
         patch: operations["update_step_api_cases__case_id__steps__step_id__patch"];
         trace?: never;
     };
@@ -388,7 +405,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Inbox */
+        /** Proactive notifications for the current subject */
         get: operations["inbox_api_notifications_get"];
         put?: never;
         post?: never;
@@ -407,7 +424,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Mark Read */
+        /** Mark a notification as read */
         post: operations["mark_read_api_notifications__notification_id__read_post"];
         delete?: never;
         options?: never;
@@ -1309,7 +1326,9 @@ export interface components {
         StepStatus: "open" | "in_progress" | "done" | "blocked";
         /** StepUpdate */
         StepUpdate: {
-            status: components["schemas"]["StepStatus"];
+            status?: components["schemas"]["StepStatus"] | null;
+            /** Form Session Id */
+            form_session_id?: string | null;
         };
         /** ToolTrace */
         ToolTrace: {
@@ -2229,6 +2248,42 @@ export interface operations {
             };
         };
     };
+    get_case_api_cases__case_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Case"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     update_step_api_cases__case_id__steps__step_id__patch: {
         parameters: {
             query?: never;
@@ -2326,7 +2381,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Notification"] | null;
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
