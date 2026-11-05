@@ -1,0 +1,31 @@
+# Scenario 1 (hero): Maria acts for her mother Anna after hospital discharge.
+id: hero_pflege
+actor: maria
+subject: anna
+turns:
+  - user: "Meine Mutter Anna wurde letzte Woche aus dem Spital entlassen. Bitte schau dir ihren Entlassungsbrief an – welche Leistungen kommen für sie in Frage?"
+    expect:
+      tools_all: [analyze_document, check_benefits]
+      tools_none: [start_form, render_form, set_form_fields]
+      reply_any: ["Pflegegeld"]
+      reply_none: ["Sie bekommen", "steht Ihnen fix zu", "eingereicht"]
+  - user: "Sie braucht ungefähr 90 Stunden Hilfe im Monat, und das sicher länger als ein halbes Jahr."
+    expect:
+      tools_all: [check_benefits]
+      tools_none: [render_form]
+      reply_any: ["Pflegegeld"]
+  - user: "Bitte bereite den Pflegegeld-Antrag als Entwurf vor."
+    expect:
+      tools_all: [start_form, get_next_questions]
+      tools_none: [render_form]
+      max_questions: 3
+  - user: "Bei den Krankheiten bitte nur eintragen: siehe beiliegender Entlassungsbrief. Den Rest der Spitalsdaten weiß ich gerade nicht."
+    expect:
+      tools_all: [set_form_fields]
+      tools_none: [render_form]
+      reply_none: ["eingereicht hab", "habe den Antrag eingereicht"]
+  - user: "Erstelle jetzt bitte den PDF-Entwurf, die Spitalsdaten ergänze ich selbst."
+    expect:
+      tools_all: [render_form]
+      reply_any: ["unterschreib", "prüfen"]
+      reply_none: ["habe den Antrag eingereicht", "wurde eingereicht"]

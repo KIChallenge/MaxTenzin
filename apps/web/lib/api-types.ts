@@ -636,6 +636,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/agent/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Conversations of the actor for the subject */
+        get: operations["list_conversations_api_agent_conversations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agent/conversations/{conversation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Conversation history incl. traces */
+        get: operations["get_conversation_api_agent_conversations__conversation_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -802,6 +836,23 @@ export interface components {
             due_date?: string | null;
             source?: components["schemas"]["SourceRef"] | null;
         };
+        /**
+         * ChatAction
+         * @description UI action produced by a tool call (e.g. download the rendered draft, open the wizard).
+         */
+        ChatAction: {
+            /** Kind */
+            kind: string;
+            /** Label De */
+            label_de: string;
+            /**
+             * Method
+             * @default GET
+             */
+            method: string;
+            /** Url */
+            url: string;
+        };
         /** ChatRequest */
         ChatRequest: {
             /** Conversation Id */
@@ -818,6 +869,11 @@ export interface components {
              * @default false
              */
             plain_language: boolean;
+            /**
+             * Document Ids
+             * @default []
+             */
+            document_ids: string[];
         };
         /** ChatResponse */
         ChatResponse: {
@@ -840,6 +896,57 @@ export interface components {
              * @default []
              */
             suggestions_de: string[];
+            /**
+             * Actions
+             * @default []
+             */
+            actions: components["schemas"]["ChatAction"][];
+        };
+        /** Conversation */
+        Conversation: {
+            /** Id */
+            id: string;
+            /** Actor Id */
+            actor_id: string;
+            /** Subject Id */
+            subject_id: string;
+            /** Created At */
+            created_at: string;
+            /** Updated At */
+            updated_at?: string | null;
+            /**
+             * Turns
+             * @default []
+             */
+            turns: components["schemas"]["ConversationTurn"][];
+        };
+        /** ConversationTurn */
+        ConversationTurn: {
+            /** Ts */
+            ts: string;
+            /** User */
+            user: string;
+            /** Reply */
+            reply: string;
+            /**
+             * Tool Trace
+             * @default []
+             */
+            tool_trace: components["schemas"]["ToolTrace"][];
+            /**
+             * Boundary Triggered
+             * @default false
+             */
+            boundary_triggered: boolean;
+            /**
+             * Suggestions De
+             * @default []
+             */
+            suggestions_de: string[];
+            /** Latency Ms */
+            latency_ms?: number | null;
+            /** Mode */
+            mode?: string | null;
         };
         /** CriterionResult */
         CriterionResult: {
@@ -2969,6 +3076,76 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChatResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_conversations_api_agent_conversations_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Conversation"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_conversation_api_agent_conversations__conversation_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                conversation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Conversation"];
                 };
             };
             /** @description Validation Error */
