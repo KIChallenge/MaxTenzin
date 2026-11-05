@@ -496,7 +496,7 @@ fields:
     required: true
     when: {field: Krankenhaus, equals: ja}
     prefill: situation.stay1.start
-    ask_hint_de: Von wann bis wann war der Aufenthalt? Die Daten stehen meist oben im Entlassungsbrief.
+    ask_hint_de: Seit wann war die Person im Krankenhaus (Aufnahmedatum)? Der Entlassungsbrief nennt oft nur das Entlassungsdatum.
   - id: KH bis
     label_de: Aufenthalt 1 – bis
     type: date
