@@ -334,6 +334,13 @@ def _actions(outcomes) -> list[ChatAction]:
                                           url=f"/api/forms/sessions/{sid}/render")
         elif o.tool in ("start_form", "set_form_fields", "get_next_questions") and sid:
             acts["form"] = ChatAction(kind="open_form", label_de="Antrag im Assistenten öffnen", url=f"/forms/{sid}")
+        elif o.tool == "search_slots" and isinstance(o.data, list):
+            # One button per offered slot, with the exact slot id (cockpit sends the choice back as a message).
+            for i, x in enumerate(o.data[:5]):
+                if not x.get("slot_id") or not x.get("start"):
+                    continue
+                acts[f"slot{i}"] = ChatAction(kind="choose_slot", method="POST", url=x["slot_id"],
+                                              label_de=f"{_slot_label(x['start'])} · {x.get('provider', '')}".strip(" ·"))
         elif o.tool == "book_appointment" and isinstance(o.data, dict) and o.data.get("ics_url"):
             acts["ics"] = ChatAction(kind="download_ics", label_de="Termin in den Kalender (.ics)", url=o.data["ics_url"])
             acts["appointments"] = ChatAction(kind="open_appointments", label_de="Meine Termine", url="/termine")
@@ -433,3 +440,16 @@ async def _copy_diagnoses(client: ToolClient, run, memo: dict, document_ids: lis
     if by_key.get("secondary_diagnoses") and len(main) + 2 + len(by_key["secondary_diagnoses"]) <= LEIDEN_MAX:
         value = f"{main}; {by_key['secondary_diagnoses']}"
     return await run("set_form_fields", {"session_id": memo["form_session_id"], "values": {"Leiden": value}})
+
+
+_WEEKDAYS_DE = ["Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa.", "So."]
+
+
+def _slot_label(start_iso: str) -> str:
+    from datetime import datetime
+
+    try:
+        dt = datetime.fromisoformat(start_iso)
+    except ValueError:
+        return start_iso
+    return f"{_WEEKDAYS_DE[dt.weekday()]} {dt.day}.{dt.month}., {dt:%H:%M}"

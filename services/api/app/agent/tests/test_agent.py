@@ -364,3 +364,15 @@ def test_prevention_programme_question_is_not_prognosis():
     assert guard.is_prevention_programme_question("In meiner Familie gab es Darmkrebs. Welche Vorsorge ist für mich sinnvoll?")
     assert not guard.is_prevention_programme_question("Wie hoch ist mein Risiko für Darmkrebs?")
     assert not guard.is_prevention_programme_question("Bekomme ich auch Krebs, wenn meine Mutter ihn hatte? Vorsorge?")
+
+
+def test_choose_slot_actions_carry_exact_slot_ids():
+    from app.agent.orchestrator import _actions
+    from app.agent.tools import ToolOutcome
+
+    o = ToolOutcome("search_slots", {}, 200, data=[
+        {"slot_id": "demo-gp-1030-muster@2026-11-06T08:40+01:00", "start": "2026-11-06T08:40+01:00",
+         "provider": "Ordination Dr. Muster (Demo)"}])
+    acts = [a for a in _actions([o]) if a.kind == "choose_slot"]
+    assert acts[0].url == "demo-gp-1030-muster@2026-11-06T08:40+01:00"
+    assert acts[0].label_de == "Fr. 6.11., 08:40 · Ordination Dr. Muster (Demo)"
