@@ -40,7 +40,7 @@ documents → recommendations → benefits → form wizard → PDF draft → Mei
 | autocomplete | Medikamente + Rechtsgrundlagen: debounced (250 ms, ≥ 3 chars) typeahead over the search APIs (each lookup is audited) |
 
 ## Design
-Palette after sozialversicherung.at (green / slate / light grey-blue), green darkened to `#007a4f` for WCAG AA (the original `#008e5c` is 4.18:1). No official logos or word marks. Atkinson Hyperlegible (legibility for older users). Persona „Lotsi“: gender-neutral ship's pilot (`components/Lotsi.tsx`), deliberately not a doctor (medical boundary).
+Palette after sozialversicherung.at (green / slate / light grey-blue), green darkened to `#007a4f` for WCAG AA (the original `#008e5c` is 4.18:1). No official logos or word marks. Atkinson Hyperlegible (legibility for older users). Persona „Lotsi“: a friendly little lighthouse (`components/Lotsi.tsx`) – orientation, deliberately not a person and not a doctor (medical boundary).
 
 ## Rules & knowledge
 Shows only what the API returns — no amounts, eligibility or medical statements computed in the frontend. Every fact rendered with its `SourceRef` chip (quote + in-force date on hover/focus). Forms end as a draft PDF; the UI says it is never sent automatically.
