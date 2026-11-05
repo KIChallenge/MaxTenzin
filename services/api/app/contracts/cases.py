@@ -39,4 +39,5 @@ class CaseCreate(BaseModel):
 
 
 class StepUpdate(BaseModel):
-    status: StepStatus
+    status: StepStatus | None = None
+    form_session_id: str | None = None    # link a started application to this step

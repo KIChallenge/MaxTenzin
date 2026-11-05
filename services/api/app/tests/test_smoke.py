@@ -1,6 +1,6 @@
 """Phase-0 smoke tests: every endpoint answers with a contract-valid payload; auth, scopes and audit work."""
 
-from app.tests.conftest import auth
+from app.conftest import auth
 
 MARIA_FOR_ANNA = auth("maria", "anna")
 
@@ -64,7 +64,8 @@ def test_stubs_answer(client):
     client.patch(f"/api/forms/sessions/{sess['id']}", headers=h, json={"values": {"Leiden": "laut Entlassungsbrief"}})
     assert not client.get(f"/api/forms/sessions/{sess['id']}/next-questions", headers=h).json()["questions"]
     assert client.post(f"/api/forms/sessions/{sess['id']}/render", headers=h).headers["content-type"] == "application/pdf"
-    assert client.get("/api/cases", headers=h).json()[0]["steps"]
+    case = client.post("/api/cases", headers=h, json={"subject_id": "anna", "title_de": "Fall", "document_id": "doc-anna-entlassung"})
+    assert case.json()["steps"] and client.get("/api/cases", headers=h).json()
     assert client.get("/api/prevention/overview", headers=auth("stefan")).json()["items"]
     assert client.get("/api/notifications", headers=auth("stefan")).json()
     assert client.get("/api/directory/offices", params={"topic": "pflegegeld"}, headers=h).json()
