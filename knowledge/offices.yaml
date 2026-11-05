@@ -6,9 +6,9 @@
 topic_sets:
   oegk_kundenservice: &oegk [oegk_kundenservice, rezeptgebuehr, rezeptgebuehrenbefreiung, rezeptgebuehrenobergrenze,
                              fahrtkostenzuschuss, krankentransport, hauskrankenpflege, unterstuetzungsfonds,
-                             reha, reha_onko, kinderbetreuungsgeld, eltern_kind_pass]
+                             reha, reha_onko, kinderbetreuungsgeld, eltern_kind_pass, heilbehelfe_hilfsmittel]
   oegk_gz: &gz [gesundheitszentrum, vorsorgeuntersuchung]
-  pva: &pva [pflegegeld, pflegeberatung, pflege, reha, reha_onko, pension]
+  pva: &pva [pflegegeld, pflegeberatung, pflege, reha, reha_onko, pension, selbstversicherung_pflege]
 
 offices:
   # ---------------------------------------------------------------- ÖGK Wien – Kundenservicestellen (S. 94–96)

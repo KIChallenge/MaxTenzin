@@ -18,8 +18,11 @@ def test_all_offices_sourced_and_topics_known():
 
 
 def test_every_benefit_has_an_office():
-    for bid in catalog.entries():
-        if bid == "familienbeihilfe":       # Finanzamt Österreich – not in our sources
+    no_office_in_sources = {"Finanzamt Österreich", "Sozialministeriumservice", "Stadt Wien – MA 40"}
+    for bid, e in catalog.entries().items():
+        if e.benefit.provider in no_office_in_sources:  # addresses not in our sources (benefit text names the contact)
+            continue
+        if e.spec.kind == "offer":                       # programmes: contact/URL is part of the offer's next steps
             continue
         assert service.search(topic=bid), bid
 

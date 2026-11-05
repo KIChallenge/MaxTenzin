@@ -391,3 +391,490 @@ benefits:
       ekp_age:
         label_de: Kind bis zum 62. Lebensmonat
         source: {law: MuKiPassV_2002, nr: "9", abs: "1"}
+
+  # ---------------------------------------------------------------------------------------------- WS-K2 additions
+  - id: heilbehelfe_hilfsmittel
+    name_de: Heilbehelfe und Hilfsmittel (z. B. Rollator, Gehhilfe, Pflegebett)
+    area: B
+    provider: ÖGK
+    summary_de: >-
+      Die ÖGK übernimmt bzw. bezuschusst notwendige Heilbehelfe (z. B. Einlagen, Kompressionsstrümpfe) und Hilfsmittel
+      (z. B. Gehhilfen, Rollator, Rollstuhl) auf ärztliche Verordnung. Versicherte tragen einen Kostenanteil;
+      manche Artikel müssen vorher genehmigt werden, manche werden leihweise zur Verfügung gestellt.
+    plain_de: Die ÖGK zahlt bei Hilfen wie Rollator oder Gehhilfe mit, wenn die Ärztin oder der Arzt sie verschreibt.
+    form_ids: []
+    required_documents_de:
+      - Ärztliche Verordnung (Rezept) für den Heilbehelf bzw. das Hilfsmittel
+      - e-card
+    legal_basis:
+      - {law: ASVG, nr: "137"}
+      - {law: ASVG, nr: "154"}
+      - {law: Satzung_OEGK_2025, nr: "28"}
+      - {law: Satzung_OEGK_2025, nr: "43"}
+    sources:
+      - {page: 45, quote: "Diese werden über ärztliche Verordnung gewährt, wenn die Kosten einen bestimmten Mindestbetrag überschreiten."}
+      - {page: 46, quote: "Manche Artikel muss die ÖGK vorher genehmigen."}
+    value_refs: []
+    criteria:
+      hh_need:
+        label_de: Bedarf an einem Heilbehelf oder Hilfsmittel (z. B. Rollator, Gehhilfe, Pflegebett)
+        source: {page: 46, quote: "Wenn Sie ein körperliches Gebrechen haben, verschreibt Ihnen Ihre Ärztin oder Ihr Arzt die notwendigen Hilfsmittel."}
+      hh_prescription:
+        label_de: Ärztliche Verordnung liegt vor
+        source: {page: 45, quote: "Diese werden über ärztliche Verordnung gewährt, wenn die Kosten einen bestimmten Mindestbetrag überschreiten."}
+      hh_insured:
+        label_de: Krankenversichert (z. B. ÖGK)
+        source: {law: ASVG, nr: "137", abs: "1"}
+
+  - id: ersatzpflege
+    name_de: Zuwendung zu den Kosten der Ersatzpflege (pflegende Angehörige)
+    area: D
+    provider: Sozialministeriumservice
+    summary_de: >-
+      Zuschuss für nahe Angehörige, die seit mindestens einem Jahr überwiegend pflegen und wegen Krankheit, Urlaub
+      oder aus anderen wichtigen Gründen verhindert sind (Ersatzpflege). Voraussetzung u. a. Pflegegeld ab Stufe 3
+      (bei nachweislicher Demenz oder minderjährigen Pflegebedürftigen ab Stufe 1). Kein Rechtsanspruch; Ansuchen beim
+      Sozialministeriumservice.
+    plain_de: Geld für eine Vertretung, wenn Sie als pflegende Angehörige einmal ausfallen oder Urlaub brauchen.
+    form_ids: []
+    required_documents_de:
+      - Ansuchen an das Sozialministeriumservice
+      - Nachweis über die Kosten der Ersatzpflege
+      - Nachweis über das Pflegegeld der gepflegten Person
+    legal_basis:
+      - {law: BPGG, nr: "21a"}
+    sources:
+      - {law: BPGG, nr: "21a", abs: "2"}
+    value_refs: []
+    criteria:
+      ep_level:
+        label_de: Pflegegeld ab Stufe 3 (bei nachweislicher Demenz oder Minderjährigen ab Stufe 1)
+        source: {law: BPGG, nr: "21a", abs: "1"}
+      ep_carer_year:
+        label_de: Überwiegende Pflege als naher Angehöriger seit mindestens einem Jahr
+        source: {law: BPGG, nr: "21a", abs: "1"}
+      ep_prevented:
+        label_de: Verhinderung wegen Krankheit, Urlaub oder aus sonstigen wichtigen Gründen
+        source: {law: BPGG, nr: "21a", abs: "1"}
+      ep_hardship:
+        label_de: Soziale Härte; Gewährung nach Maßgabe der verfügbaren Mittel
+        source: {law: BPGG, nr: "21a", abs: "1"}
+
+  - id: foerderung_24h_betreuung
+    name_de: Förderung der 24-Stunden-Betreuung
+    area: D
+    provider: Sozialministeriumservice
+    summary_de: >-
+      Zuwendung zu den Kosten einer 24-Stunden-Betreuung zu Hause nach dem Hausbetreuungsgesetz. Voraussetzungen u. a.
+      Bedarf an einer bis zu 24-Stunden-Betreuung, Pflegegeld ab Stufe 3 und eine qualifizierte Betreuungskraft.
+      Kein Rechtsanspruch; Gewährung nach Maßgabe der verfügbaren Mittel.
+    plain_de: Zuschuss, wenn eine Betreuerin oder ein Betreuer rund um die Uhr zu Hause hilft.
+    form_ids: []
+    required_documents_de:
+      - Antrag beim Sozialministeriumservice
+      - Nachweis über das Pflegegeld (mindestens Stufe 3)
+      - Nachweise über die Betreuungskraft (Vertrag, Qualifikation)
+      - Einkommensnachweis der pflegebedürftigen Person
+    legal_basis:
+      - {law: BPGG, nr: "21b"}
+    sources:
+      - {law: BPGG, nr: "21b", abs: "2"}
+    value_refs: []
+    criteria:
+      b24_need:
+        label_de: Betreuung nach dem Hausbetreuungsgesetz und Bedarf an einer bis zu 24-Stunden-Betreuung
+        source: {law: BPGG, nr: "21b", abs: "2"}
+      b24_level:
+        label_de: Anspruch auf Pflegegeld mindestens in Höhe der Stufe 3
+        source: {law: BPGG, nr: "21b", abs: "2"}
+      b24_carer:
+        label_de: Qualifikation der Betreuungskraft (Ausbildung, mindestens 6 Monate Betreuungspraxis oder Befugnis nach GuKG)
+        source: {law: BPGG, nr: "21b", abs: "2"}
+
+  - id: pflegekarenzgeld
+    name_de: Pflegekarenzgeld (Pflegekarenz / Pflegeteilzeit)
+    area: D
+    provider: Sozialministeriumservice
+    summary_de: >-
+      Geldleistung für Angehörige, die mit dem Arbeitgeber eine Pflegekarenz oder Pflegeteilzeit vereinbart haben –
+      höchstens drei Monate pro Karenz, insgesamt höchstens sechs Monate pro pflegebedürftiger Person. Auf das
+      Pflegekarenzgeld besteht ein Rechtsanspruch; die Höhe richtet sich nach dem Grundbetrag des Arbeitslosengeldes.
+    plain_de: Geld für Angehörige, die eine Zeit lang weniger oder gar nicht arbeiten, um zu pflegen.
+    form_ids: []
+    required_documents_de:
+      - Antrag beim Sozialministeriumservice
+      - Vereinbarung über die Pflegekarenz bzw. Pflegeteilzeit mit dem Arbeitgeber
+      - Erklärung, dass die Pflege für die Dauer der Karenz überwiegend erbracht wird
+    legal_basis:
+      - {law: BPGG, nr: "21c"}
+      - {law: BPGG, nr: "21d"}
+      - {law: BPGG, nr: "21e"}
+    sources:
+      - {law: BPGG, nr: "21d", abs: "2"}
+    value_refs: []
+    criteria:
+      pk_agreement:
+        label_de: Pflegekarenz oder Pflegeteilzeit mit dem Arbeitgeber vereinbart
+        source: {law: BPGG, nr: "21c", abs: "1"}
+      pk_insured:
+        label_de: Vorher mindestens drei Monate ununterbrochen vollversichert beschäftigt
+        source: {law: BPGG, nr: "21c", abs: "2"}
+      pk_pflegegeld:
+        label_de: Pflegegeld der gepflegten Person bezogen oder beantragt
+        source: {law: BPGG, nr: "21e", abs: "1"}
+
+  - id: selbstversicherung_pflege
+    name_de: Selbstversicherung in der Pensionsversicherung für pflegende Angehörige
+    area: D
+    provider: PVA
+    summary_de: >-
+      Wer einen nahen Angehörigen mit Pflegegeld ab Stufe 3 unter erheblicher Beanspruchung der eigenen Arbeitskraft zu
+      Hause pflegt, kann sich in der Pensionsversicherung selbstversichern (Wohnsitz im Inland; je Pflegefall eine
+      Person).
+    plain_de: Wer zu Hause pflegt, kann für die Pension versichert bleiben.
+    form_ids: []
+    required_documents_de:
+      - Antrag auf Selbstversicherung (Pensionsversicherung)
+      - Nachweis über das Pflegegeld der gepflegten Person (mindestens Stufe 3)
+    legal_basis:
+      - {law: ASVG, nr: "18b"}
+    sources:
+      - {law: ASVG, nr: "18b", abs: "1"}
+    value_refs: []
+    criteria:
+      sv_level:
+        label_de: Gepflegte Person hat Anspruch auf Pflegegeld mindestens der Stufe 3
+        source: {law: ASVG, nr: "18b", abs: "1"}
+      sv_carer:
+        label_de: Pflege zu Hause unter erheblicher Beanspruchung der Arbeitskraft
+        source: {law: ASVG, nr: "18b", abs: "1"}
+
+  - id: sozialhilfe_wien
+    name_de: Wiener Mindestsicherung (Sozialhilfe, außerhalb der Sozialversicherung)
+    area: E
+    provider: Stadt Wien – MA 40
+    summary_de: >-
+      Leistung der Stadt Wien (nicht der Sozialversicherung) für Menschen mit Hauptwohnsitz in Wien, deren Einkommen
+      und Vermögen nicht ausreichen. Berücksichtigt werden Einkommen und Vermögen der ganzen Bedarfsgemeinschaft.
+      Zuständig ist die MA 40 (Servicetelefon 01 4000 8040); Mietbeihilfe wird im Sozialzentrum ermittelt.
+    plain_de: Geld von der Stadt Wien, wenn das Einkommen zum Leben nicht reicht.
+    form_ids: []
+    required_documents_de:
+      - Antrag auf Mindestsicherung (Stadt Wien, online oder im Sozialzentrum)
+      - Einkommens- und Vermögensnachweise aller Personen der Bedarfsgemeinschaft
+    legal_basis: []
+    sources:
+      - &mindestsicherung {url: "https://www.wien.gv.at/sozialinfo/content/de/10/InstitutionDetail.do?it_1=2102082",
+                           label: "Sozialinfo Wien – Mindestsicherung (MA 40)", retrieved: "2026-11-05"}
+    value_refs: []
+    criteria:
+      sh_vienna:
+        label_de: Hauptwohnsitz in Wien
+        source: *mindestsicherung
+      sh_need:
+        label_de: Einkommen und Vermögen des Haushalts reichen nicht aus
+        source: *mindestsicherung
+
+  # ---------------------------------------------------------------------------------------------- Angebote (kind: offer)
+  # Open programmes from the Serviceratgeber "Gesund leben" (S. 22–33) + Bewegt im Park (external). Evaluated by the
+  # generic offer evaluator (service.eval_offer): of_open always met; of_age by min/max_age; of_fact by
+  # offer.requires_fact; of_season by season_months (info only). Programmes for Betriebe/Schulen/Vereine stay "possible".
+  # Offers are NOT part of a default eligibility run (benefit_ids omitted) — request them explicitly or via bundles.
+  - id: angebot_gesund_leben_regional
+    kind: offer
+    name_de: Gesundheitskurse, Ernährungsberatung und Workshops der ÖGK in Ihrer Region
+    area: A
+    provider: ÖGK
+    summary_de: >-
+      Regionale Angebote der ÖGK zur Gesundheitsförderung: Ernährungsberatung, Nikotin- und Tabakentwöhnung,
+      Workshops, Vorträge, Aktionstage und Webinare – für alle Versicherten von der Geburt bis ins hohe Alter.
+    plain_de: Kurse und Beratung der ÖGK in Ihrer Nähe, zum Beispiel zu Essen und Bewegung.
+    sources:
+      - &sr22_all {page: 22, quote: "Das ÖGK-Angebot ist groß und gilt für alle Versicherten – von der Geburt bis ins hohe Alter."}
+      - {page: 23, quote: "Welche Angebote und Termine es in Ihrer Umgebung gibt, erfahren Sie in Ihrer nächsten Kundenservicestelle oder auf www.oegk.at/gesundleben."}
+    criteria:
+      of_open:
+        label_de: Offen für alle Versicherten
+        source: *sr22_all
+    offer:
+      steps_de:
+        - Aktuelle Angebote und Termine in Ihrer Region auf www.oegk.at/gesundleben ansehen oder in der nächsten ÖGK-Kundenservicestelle nachfragen.
+      cost_de: Angebot der ÖGK für Versicherte
+
+  - id: angebot_bewegt_im_park
+    kind: offer
+    name_de: „Bewegt im Park“ – kostenlose Bewegungskurse im Sommer
+    area: A
+    provider: Bewegt im Park
+    summary_de: >-
+      Kostenlose Bewegungskurse im Freien von Juni bis September, laut Website ohne Anmeldung; gefördert u. a. vom
+      Dachverband der österreichischen Sozialversicherung. Bitte aktuelle Kurse und Termine auf der Website prüfen.
+    plain_de: Gratis Bewegung im Park im Sommer – einfach hingehen.
+    sources:
+      - &bip {url: "https://www.bewegt-im-park.at/", label: "Bewegt im Park – Website (gefördert u. a. vom Dachverband der Sozialversicherung)",
+              retrieved: "2026-11-05"}
+    criteria:
+      of_open:
+        label_de: Offen für alle – laut Website kostenlos und ohne Anmeldung
+        source: *bip
+      of_season:
+        label_de: Kurssaison Juni bis September
+        source: *bip
+    offer:
+      season_months: [6, 7, 8, 9]
+      steps_de:
+        - Kurse in Ihrer Nähe unter „Kurse finden“ auf www.bewegt-im-park.at suchen – bitte aktuelle Termine prüfen.
+      cost_de: laut Website kostenlos und ohne Anmeldung
+
+  - id: angebot_gesunder_ruecken
+    kind: offer
+    name_de: „Beweg' dich – Gesunder Rücken“ (Bewegungskurse und Online-Beratung)
+    area: A
+    provider: ÖGK
+    summary_de: >-
+      Kostenlose angeleitete Bewegungskurse in der Gruppe (14 Wochen, je zwei Einheiten; Anmeldung erforderlich) für
+      Menschen ab 18 mit leichten Rückenbeschwerden oder Risikofaktoren; kostenlose Online-Bewegungsberatung und
+      Webinare für alle Interessierten.
+    plain_de: Kostenlose Kurse und Online-Tipps für einen gesunden Rücken.
+    sources:
+      - {page: 33, quote: "Die Teilnahme am Kurs ist kostenlos, eine Anmeldung ist erforderlich."}
+      - {page: 34}
+    criteria:
+      of_open:
+        label_de: Online-Bewegungsberatung und Webinare für alle Interessierten
+        source: {page: 33, quote: "Zu den begleitenden Online-Angeboten (Bewegungsberatung und Webinare) sind alle Interessierten herzlich eingeladen."}
+      of_age:
+        label_de: Kursprogramm ab 18 Jahren
+        source: {page: 33, quote: "Das Kursprogramm steht allen ab 18 Jahren offen, die bereits an leichten Rückenbeschwerden leiden oder Risikofaktoren für das Entstehen von Rückenschmerzen aufweisen."}
+    offer:
+      min_age: 18
+      steps_de:
+        - Informationen und Anmeldung auf www.oegk.at/ruecken; die Online-Angebote stehen allen Interessierten offen.
+      cost_de: kostenlos (Anmeldung für den Kurs erforderlich)
+
+  - id: angebot_bewusst_leben
+    kind: offer
+    name_de: „Bewusst leben +“ – fit und gesund ab der Lebensmitte
+    area: A
+    provider: ÖGK
+    summary_de: >-
+      Kostenloses ÖGK-Programm für Menschen ab der Lebensmitte: Videoreihe, Ratgeber und Gymnastikband zu
+      Entspannung, Bewegung, Sturzvorbeugung, Ernährung und geistiger Fitness.
+    plain_de: Kostenlose Videos und Hefte der ÖGK, damit Sie lange fit bleiben.
+    sources:
+      - &sr27_bl {page: 27, quote: "Mit dem kostenlosen Angebot „Bewusst leben +” lädt die ÖGK alle Menschen ab der Lebensmitte zum Mitmachen und Gesundbleiben ein."}
+    criteria:
+      of_open:
+        label_de: Offen für alle Menschen ab der Lebensmitte
+        source: *sr27_bl
+    offer:
+      steps_de:
+        - Ratgeber, DVDs bzw. USB-Sticks und Gymnastikband kostenlos unter www.oegk.at/bewusstleben bestellen (solange der Vorrat reicht).
+        - Fragen zum Programm – ÖGK, Tel. 05 0766-158008 (Mo–Fr, 8–12 Uhr).
+      cost_de: kostenlos
+
+  - id: angebot_trittsicher
+    kind: offer
+    name_de: „Trittsicher & aktiv“ – Kurse zur Sturzvorbeugung ab 65
+    area: A
+    provider: ÖGK
+    summary_de: Kostenlose, mehrwöchige Kurse zur Sturzvorbeugung für Personen ab 65 Jahren (österreichweit).
+    plain_de: Kostenlose Kurse ab 65, damit Sie nicht so leicht stürzen.
+    sources:
+      - &sr27_ts {page: 27, quote: "Um Stürzen aktiv vorzubeugen, bietet das Programm „Trittsicher & aktiv” österreichweit auch kostenlose, mehrwöchige Kurse für Personen ab 65 Jahren sowie Multiplikatorenschulungen an."}
+    criteria:
+      of_open:
+        label_de: Offen für Versicherte
+        source: *sr27_ts
+      of_age:
+        label_de: Ab 65 Jahren
+        source: *sr27_ts
+    offer:
+      min_age: 65
+      steps_de:
+        - Kurse in Ihrer Nähe über www.oegk.at/bewusstleben oder bei der ÖGK (Tel. 05 0766-158008) erfragen.
+      cost_de: kostenlos
+
+  - id: angebot_rauchfrei
+    kind: offer
+    name_de: Rauchfrei Telefon und Entwöhnungsangebote der ÖGK
+    area: A
+    provider: ÖGK
+    summary_de: >-
+      Unterstützung beim Rauchstopp bzw. beim Loskommen von E-Zigaretten und Nikotin: Gruppenkurse, Online-Vorträge,
+      Einzeltermine sowie Beratung am Rauchfrei Telefon (0800 810 013, Mo–Fr 10–18 Uhr).
+    plain_de: Hilfe, wenn Sie mit dem Rauchen aufhören möchten.
+    sources:
+      - &sr30_rf {page: 30, quote: "Die Angebote zur Nikotin- und Tabak- Entwöhnung der ÖGK umfassen Gruppenkurse, Online-Vorträge und Einzeltermine für spezielle Personengruppen (z.B. Schwangere, chronisch Kranke)."}
+      - {page: 31}
+    criteria:
+      of_open:
+        label_de: Offen für alle, die rauchfrei bzw. nikotinfrei werden möchten
+        source: *sr30_rf
+    offer:
+      steps_de:
+        - Rauchfrei Telefon 0800 810 013 (Mo–Fr 10–18 Uhr) anrufen oder Termine auf www.oegk.at/nikotinfrei ansehen.
+      cost_de: Angebot der ÖGK; Rauchfrei Telefon kostenlos erreichbar
+
+  - id: angebot_momente_fuer_mich
+    kind: offer
+    name_de: „Momente für mich“ – psychisch gesund bleiben
+    area: A
+    provider: ÖGK
+    summary_de: >-
+      Alltagstaugliche Tipps und Übungen für die psychische Gesundheit, Vorträge in Präsenz und online sowie
+      „Erste Hilfe für die Seele“-Kurse.
+    plain_de: Tipps und Kurse der ÖGK, damit es Ihnen auch seelisch gut geht.
+    sources:
+      - &sr31_mfm {page: 31, quote: "Weiters werden von der ÖGK Vorträge in Präsenz und online angeboten."}
+    criteria:
+      of_open:
+        label_de: Offen für alle Interessierten
+        source: *sr31_mfm
+    offer:
+      steps_de:
+        - Angebote auf www.oegk.at/mentalgesund ansehen; Fragen an momentefuermich@oegk.at oder Tel. 05 0766-126206.
+      cost_de: Angebot der ÖGK
+
+  - id: angebot_richtig_essen
+    kind: offer
+    name_de: „Richtig essen von Anfang an!“ – Ernährungsworkshops für Eltern
+    area: A
+    provider: ÖGK
+    summary_de: >-
+      Kostenlose Workshops für werdende Eltern und Eltern von Babys und Kleinkindern (bis 3 Jahre) zur Ernährung in
+      Schwangerschaft und Stillzeit und zur Ernährung im ersten Lebensjahr bzw. von 1- bis 3-jährigen Kindern.
+    plain_de: Kostenlose Kurse für Eltern zum Thema Essen für Babys und kleine Kinder.
+    sources:
+      - &sr32_re {page: 32, quote: "In kostenlosen Workshops erhalten interessierte Eltern wissenschaftlich gesicherte und aktuelle Ernährungsempfehlungen sowie alltagsnahe Tipps und Anregungen."}
+    criteria:
+      of_open:
+        label_de: Offen für interessierte Eltern
+        source: *sr32_re
+      of_fact:
+        label_de: Schwangerschaft oder Kind bis 3 Jahre in der Familie
+        source: {page: 32}
+    offer:
+      requires_fact: young_child
+      steps_de:
+        - Workshop-Termine auf www.oegk.at/revan ansehen.
+      cost_de: kostenlos
+
+  - id: angebot_therapie_aktiv
+    kind: offer
+    name_de: „Therapie Aktiv – Diabetes im Griff“
+    area: A
+    provider: ÖGK
+    summary_de: >-
+      Kostenloses Langzeitbetreuungsprogramm der ÖGK für Menschen mit Diabetes mellitus Typ 2 bei teilnehmenden
+      Ärztinnen und Ärzten (regelmäßige Kontrollen, Schulung, gemeinsame Therapieziele).
+    plain_de: Ein kostenloses Programm für Menschen mit Zucker-Krankheit (Typ 2).
+    sources:
+      - &sr26_ta {page: 26, quote: "Die Teilnahme am Programm ist kostenlos."}
+    criteria:
+      of_open:
+        label_de: Teilnahme bei einer teilnehmenden Ärztin bzw. einem teilnehmenden Arzt
+        source: *sr26_ta
+      of_fact:
+        label_de: Ärztlich festgestellter Diabetes mellitus Typ 2 (laut Ihrer Angabe)
+        source: {page: 26}
+    offer:
+      requires_fact: diabetes_type2
+      steps_de:
+        - Teilnehmende Ärztinnen und Ärzte auf www.therapie-aktiv.at finden und die Teilnahme mit der behandelnden Ärztin bzw. dem behandelnden Arzt besprechen.
+      cost_de: kostenlos
+
+  - id: angebot_jugendlichenuntersuchung
+    kind: offer
+    name_de: Jugendlichenuntersuchung
+    area: A
+    provider: ÖGK
+    summary_de: >-
+      Kostenloser jährlicher Gesundheits-Check für pflichtversicherte Jugendliche (im Arbeitsleben) von 15 bis 18
+      Jahren – in der Berufsschule, im Betrieb oder in einem Gesundheitszentrum der ÖGK.
+    plain_de: Ein kostenloser Gesundheits-Check für Lehrlinge und junge Berufstätige.
+    sources:
+      - &sr24_ju {page: 24, quote: "Die ÖGK lädt laut gesetzlichem Auftrag pflichtversicherte Jugendliche (das sind alle Jugendlichen, die bereits im Arbeitsleben stehen) im Alter von 15 bis 18 Jahren einmal pro Jahr zur Jugendlichenuntersuchung ein."}
+    criteria:
+      of_open:
+        label_de: Einladung durch die ÖGK
+        source: *sr24_ju
+      of_age:
+        label_de: Alter 15 bis 18 Jahre
+        source: *sr24_ju
+      of_fact:
+        label_de: Pflichtversichert, d. h. bereits im Arbeitsleben (z. B. Lehre)
+        source: *sr24_ju
+    offer:
+      min_age: 15
+      max_age: 18
+      requires_fact: in_employment
+      steps_de:
+        - Die ÖGK lädt zur Untersuchung ein; sie findet in der Berufsschule, im Betrieb oder in einem Gesundheitszentrum der ÖGK statt.
+      cost_de: kostenlos
+
+  - id: angebot_bgf
+    kind: offer
+    name_de: Betriebliche Gesundheitsförderung (BGF)
+    area: A
+    provider: ÖGK
+    summary_de: >-
+      Die ÖGK berät und begleitet Unternehmen kostenlos bei Gesundheitsförderungsprojekten (Ernährung, Bewegung,
+      Führung, Stress). Ansprechpartner ist der Betrieb.
+    plain_de: Die ÖGK hilft Firmen, damit die Arbeit gesünder wird.
+    sources:
+      - &sr27_bgf {page: 27, quote: "Wir beraten und unterstützen Unternehmen kostenlos bei der Planung und Umsetzung von Gesundheitsförderungsprojekten."}
+      - {page: 28}
+    criteria:
+      of_open:
+        label_de: Angebot für Betriebe – die Teilnahme organisiert der Arbeitgeber
+        source: *sr27_bgf
+    offer:
+      audience: employer
+      steps_de:
+        - Im eigenen Betrieb (z. B. Betriebsrat oder Personalabteilung) nachfragen; Informationen auf www.oegk.at/bgf.
+      cost_de: für Betriebe kostenlos
+
+  - id: angebot_gesunde_schule
+    kind: offer
+    name_de: Schulische Gesundheitsförderung („Servicestelle gesunde Schule“)
+    area: A
+    provider: ÖGK
+    summary_de: >-
+      Die „Servicestellen gesunde Schule“ der ÖGK unterstützen Schulen kostenlos bei gesundheitsfördernden Projekten
+      (z. B. bewegte Pause, gesunde Jause).
+    plain_de: Die ÖGK hilft Schulen, damit Kinder gesund lernen.
+    sources:
+      - {page: 28}
+      - {page: 29}
+    criteria:
+      of_open:
+        label_de: Angebot für Schulen – Ansprechpartnerin ist die Schule
+        source: {page: 28}
+    offer:
+      audience: school
+      steps_de:
+        - Die Schule Ihres Kindes auf die „Servicestelle gesunde Schule“ hinweisen; Informationen auf www.oegk.at/schule.
+      cost_de: für Schulen kostenlos
+
+  - id: angebot_vereinscoaching
+    kind: offer
+    name_de: Vereinscoaching (Fußball- und Handballvereine)
+    area: A
+    provider: ÖGK
+    summary_de: >-
+      Kostenlose, praxisorientierte Gesundheitsangebote in Fußball- und Handballvereinen – auch für Eltern, Großeltern
+      und Erziehungsberechtigte.
+    plain_de: Gesundheits-Angebote im Sportverein, auch für Eltern.
+    sources:
+      - {page: 29}
+      - {page: 30}
+    criteria:
+      of_open:
+        label_de: Angebot über teilnehmende Sportvereine
+        source: {page: 30}
+    offer:
+      audience: club
+      steps_de:
+        - Im eigenen Fußball- oder Handballverein nachfragen; Informationen auf www.oegk.at/vereine.
+      cost_de: kostenlos

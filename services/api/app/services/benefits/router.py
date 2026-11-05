@@ -74,9 +74,12 @@ def _audit(ctx: Context, results: list[EligibilityResult]) -> None:
         ctx.cite(*{c.source.label for c in res.criteria if c.source})
 
 
-@router.get("", response_model=list[Benefit], summary="Benefit catalog")
-def list_catalog(area: str | None = None, ctx: Context = Depends(require())):
-    return [b for b in catalog.benefits() if area is None or b.area == area]
+@router.get("", response_model=list[Benefit], summary="Benefit catalog (benefits and offers)")
+def list_catalog(area: str | None = None,
+                 kind: str | None = Query(None, pattern="^(benefit|offer)$",
+                                          description="benefit = Leistung, offer = Angebot (ids 'angebot_*')"),
+                 ctx: Context = Depends(require())):
+    return [b for b in catalog.benefits(kind) if area is None or b.area == area]
 
 
 @router.get("/rezeptgebuehr/check", response_model=list[EligibilityResult],

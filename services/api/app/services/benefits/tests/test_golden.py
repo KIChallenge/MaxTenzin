@@ -138,5 +138,5 @@ def test_recommendations_as_facts(client):
 def test_audit_records_rules(client):
     _run(client, MARIA_FOR_ANNA, "anna", ids=["pflegegeld"])
     events = client.get("/api/audit", headers=auth("anna")).json()
-    ev = [e for e in events if e["path"] == "/api/benefits/eligibility"][-1]
+    ev = next(e for e in events if e["path"] == "/api/benefits/eligibility")   # /api/audit is newest first
     assert "pflegegeld.v1" in ev["rule_ids"] and any("BPGG" in s for s in ev["sources"])

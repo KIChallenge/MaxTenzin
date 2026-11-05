@@ -45,6 +45,7 @@ EKP_LATER_EXAMS = [(6, 22, 26), (7, 34, 38), (8, 46, 50), (9, 58, 62)]  # MuKiPa
 PG_LEVELS = [(1, 65), (2, 95), (3, 120), (4, 160)]                       # BPGG § 4 Abs. 2 (Stunden/Monat, "mehr als")
 
 DISCLAIMER = "Unverbindliche Information – die Entscheidung trifft {provider}."
+OFFER_DISCLAIMER = "Unverbindliche Information – Angebote und Termine können sich ändern; bitte beim Anbieter prüfen."
 
 
 # --------------------------------------------------------------------------------------------- inputs
@@ -171,7 +172,8 @@ def _result(entry: CatalogEntry, status: EligibilityStatus, criteria: list[Crite
             missing: list[str] | None = None, steps: list[str] | None = None, amounts: list[dict] | None = None,
             extra_rules: list[str] | None = None) -> EligibilityResult:
     steps = list(steps or [])
-    steps.append(DISCLAIMER.format(provider=_provider_de(entry.benefit.provider)))
+    steps.append(OFFER_DISCLAIMER if entry.spec.kind == "offer" else
+                 DISCLAIMER.format(provider=_provider_de(entry.benefit.provider)))
     return EligibilityResult(benefit=entry.benefit, status=status, criteria=criteria, missing_fields=missing or [],
                              next_steps_de=steps, amounts=amounts or [],
                              rule_ids=[f"{entry.benefit.id}.{RULE_VERSION}", *(extra_rules or [])])
@@ -179,7 +181,8 @@ def _result(entry: CatalogEntry, status: EligibilityStatus, criteria: list[Crite
 
 def _provider_de(p: str) -> str:
     return {"PVA": "die Pensionsversicherungsanstalt (PVA)", "ÖGK": "die Österreichische Gesundheitskasse (ÖGK)",
-            "FSW": "der Fonds Soziales Wien (FSW)"}.get(p, f"das {p}" if p.startswith("Finanzamt") else p)
+            "FSW": "der Fonds Soziales Wien (FSW)", "Sozialministeriumservice": "das Sozialministeriumservice",
+            "Stadt Wien – MA 40": "die Stadt Wien (MA 40)"}.get(p, f"das {p}" if p.startswith("Finanzamt") else p)
 
 
 def _household(inp: EvalInput) -> tuple[str | None, str]:
@@ -696,6 +699,271 @@ def eval_ekp(e: CatalogEntry, inp: EvalInput) -> EligibilityResult:
                              "source": catalog.brochure_ref(74).model_dump()}])
 
 
+# --------------------------------------------------------------------------------------------- WS-K2: aids, carers
+
+
+HH_COPAY_QUOTE = ("Die versicherte Person hat einen Kostenanteil von 10 Prozent der Kosten des Behelfes zu tragen, "
+                  "mindestens jedoch 46,20 Euro.")                                   # Serviceratgeber 2026, S. 45
+HH_MAX_QUOTE = "Die ÖGK übernimmt die Kosten bis zu festgelegten Höchstbeträgen, das sind 1.848,00 Euro."   # S. 46
+HH_EXEMPT_QUOTE = ("Personen, die von der Rezeptgebühr befreit sind (wegen Vorliegen einer besonderen sozialen "
+                   "Schutzbedürftigkeit)")                                            # S. 46
+HH_LOAN_QUOTE = ("Bestimmte Hilfsmittel, wie z.B. Krankenfahrstühle, werden von der ÖGK unter gewissen "
+                 "Voraussetzungen leihweise zur Verfügung gestellt.")                 # S. 46
+
+
+def _brochure_amount(label_de: str, value: float, unit: str, page: int, quote: str, **extra) -> dict:
+    """Amount stated in the Serviceratgeber 2026 (no veraendW table exists for it) — cited verbatim with page."""
+    return {"label_de": label_de, "value": value, "unit": unit,
+            "source": catalog.brochure_ref(page, quote).model_dump(), **extra}
+
+
+def _pg_level(inp: EvalInput) -> int | None:
+    """Current Pflegegeld-Stufe of the person cared for (fact pflegegeld_level, 0 = none)."""
+    lv = _num(inp.fact("pflegegeld_level"))
+    if lv is not None:
+        return int(lv)
+    if _bool(inp.fact("receives_pflegegeld")) is False:
+        return 0
+    return None
+
+
+def _level_text(level: int | None) -> str:
+    return "Pflegegeld-Stufe unbekannt." if level is None else (
+        "Laut Ihrer Angabe wird (noch) kein Pflegegeld bezogen." if level == 0 else
+        f"Laut Ihrer Angabe: Pflegegeld der Stufe {level}.")
+
+
+def _cap_possible(status: EligibilityStatus) -> EligibilityStatus:
+    return S.possible if status == S.likely else status
+
+
+def eval_heilbehelfe(e: CatalogEntry, inp: EvalInput) -> EligibilityResult:
+    recs = inp.recs_for("heilbehelfe_hilfsmittel")
+    need, rx = _bool(inp.fact("aid_needed")), _bool(inp.fact("aid_prescribed"))
+    aid = str(inp.fact("aid_type") or "").strip()
+    what = f" ({aid})" if aid else ""
+    missing: list[str] = []
+    if need is None and recs:
+        cn = _crit(e, "hh_need", True, "Im Dokument ist ein Hilfsmittel ausdrücklich erwähnt (siehe Zitat).")
+    elif need is None:
+        missing.append("aid_needed")
+        cn = _crit(e, "hh_need", None, "Bitte angeben, ob ein Hilfsmittel wie Rollator, Gehhilfe oder Pflegebett "
+                                       "gebraucht wird bzw. bereits verwendet wird.")
+    else:
+        cn = _crit(e, "hh_need", need, f"Laut Ihrer Angabe{what}." if need else
+                   "Laut Ihrer Angabe wird derzeit kein Heilbehelf oder Hilfsmittel gebraucht.")
+    if rx is None:
+        missing.append("aid_prescribed")
+        cr = _crit(e, "hh_prescription", None, "Heilbehelfe und Hilfsmittel werden über eine ärztliche Verordnung "
+                                               "gewährt – das klärt die behandelnde Ärztin bzw. der behandelnde Arzt.")
+    else:
+        cr = _crit(e, "hh_prescription", rx, "Laut Ihrer Angabe liegt eine ärztliche Verordnung vor." if rx else
+                   "Laut Ihrer Angabe liegt (noch) keine ärztliche Verordnung vor.")
+    ci = _crit(e, "hh_insured", bool(inp.subject.insurer), f"Krankenversicherung laut Stammdaten: {inp.subject.insurer}.")
+    criteria = [*_doc_crits(recs), cn, cr, ci]
+    if cn.met is False or ci.met is False:
+        status = S.not_applicable
+    elif cn.met and cr.met:
+        status = S.likely
+    elif cn.met:
+        status = S.possible            # need is known, the prescription is a doctor's decision
+    else:
+        status = S.needs_info
+    exempt = _bool(inp.fact("rgb_exempt"))
+    young = (inp.age_years or 99) < 15
+    amounts = [_brochure_amount("Höchstbetrag, den die ÖGK für Hilfsmittel übernimmt (allgemein)", 1848.0, "EUR",
+                                46, HH_MAX_QUOTE)]
+    if exempt or young:
+        why = "Rezeptgebührenbefreiung wegen sozialer Schutzbedürftigkeit" if exempt else "Kind unter 15 Jahren"
+        amounts.insert(0, _brochure_amount(f"Kostenanteil entfällt ({why})", 0.0, "EUR", 46,
+                                           HH_EXEMPT_QUOTE if exempt else "Kinder bis zum vollendeten 15. Lebensjahr"))
+    else:
+        amounts.insert(0, _brochure_amount("Kostenanteil: 10 % der Kosten, mindestens", 46.2, "EUR", 45,
+                                           HH_COPAY_QUOTE, percent=10))
+    steps = [("Mit der behandelnden Ärztin bzw. dem behandelnden Arzt klären, ob der Heilbehelf bzw. das Hilfsmittel "
+              f"{aid or '(z. B. Rollator, Gehhilfe, Pflegebett)'} verordnet wird."),
+             ("Mit der Verordnung zu einer Vertragspartnerin bzw. einem Vertragspartner der ÖGK (z. B. Sanitätshaus) "
+              "gehen – diese leiten die Unterlagen im Regelfall an die ÖGK weiter; manche Artikel muss die ÖGK vorher "
+              "genehmigen."),
+             ("Bestimmte Hilfsmittel (z. B. Krankenfahrstühle) stellt die ÖGK unter gewissen Voraussetzungen leihweise "
+             "zur Verfügung."),
+             ("Bei Rezeptgebührenbefreiung wegen sozialer Schutzbedürftigkeit entfällt der Kostenanteil (nicht bei "
+              "Befreiung nur wegen Erreichens der Rezeptgebühren-Obergrenze).")]
+    return _result(e, status, criteria, missing=missing, steps=steps, amounts=amounts)
+
+
+def eval_ersatzpflege(e: CatalogEntry, inp: EvalInput) -> EligibilityResult:
+    level, dementia = _pg_level(inp), _bool(inp.fact("dementia_documented"))
+    minor = (inp.age_years or 99) < 18
+    missing: list[str] = []
+    if level is None:
+        missing.append("pflegegeld_level")
+        cl = _crit(e, "ep_level", None, "Voraussetzung ist Pflegegeld ab Stufe 3 (bei nachweislicher Demenz oder "
+                                        "minderjährigen Pflegebedürftigen ab Stufe 1).")
+    else:
+        need = 1 if (dementia or minor) else 3
+        cl = _crit(e, "ep_level", level >= need, _level_text(level) + f" Nötig ist mindestens Stufe {need}."
+                   + ("" if level >= need or dementia is not None or minor else
+                      " Bei nachweislicher demenzieller Erkrankung genügt Stufe 1."))
+    months = _num(inp.fact("main_carer_since_months"))
+    if months is None:
+        missing.append("main_carer_since_months")
+        cy = _crit(e, "ep_carer_year", None, "Wie lange pflegen Sie die Person schon überwiegend? Nötig ist mindestens "
+                                             "ein Jahr.")
+    else:
+        cy = _crit(e, "ep_carer_year", months >= 12, f"Laut Ihrer Angabe seit {months:g} Monaten.")
+    prev = _bool(inp.fact("carer_prevented"))
+    if prev is None:
+        missing.append("carer_prevented")
+    cp = _crit(e, "ep_prevented", prev, "Die Zuwendung gibt es für Zeiten, in denen Sie wegen Krankheit, Urlaub oder "
+                                        "aus anderen wichtigen Gründen nicht pflegen können." if prev is None else
+               "Laut Ihrer Angabe.")
+    ch = _crit(e, "ep_hardship", None, "Es besteht kein Rechtsanspruch; das Sozialministeriumservice prüft die soziale "
+                                       "Härte und gewährt nach Maßgabe der verfügbaren Mittel.")
+    status = _cap_possible(_derive([cl, cy, cp]))
+    if status == S.needs_info and cl.met and cy.met:
+        status = S.possible               # only the (future) prevention is open -> plan ahead
+    steps = ["Ansuchen mit den nötigen Unterlagen beim Sozialministeriumservice einbringen.",
+             ("Rechnungen bzw. Nachweise über die Kosten der Ersatzpflege (z. B. mobile Dienste, Kurzzeitpflege) "
+             "aufbewahren.")]
+    return _result(e, status, [cl, cy, cp, ch], missing=missing, steps=steps)
+
+
+def eval_24h(e: CatalogEntry, inp: EvalInput) -> EligibilityResult:
+    level = _pg_level(inp)
+    need = _bool(inp.fact("care_24h_needed"))
+    qual = _bool(inp.fact("care_24h_carer_qualified"))
+    missing = [k for k, v in (("care_24h_needed", need),) if v is None]
+    cn = _crit(e, "b24_need", need, "Gefördert wird eine Betreuung nach dem Hausbetreuungsgesetz bei Bedarf an einer "
+                                    "bis zu 24-Stunden-Betreuung." if need is None else "Laut Ihrer Angabe.")
+    if level is None:
+        missing.append("pflegegeld_level")
+    cl = _crit(e, "b24_level", None if level is None else level >= 3,
+               _level_text(level) + " Nötig ist ein Anspruch auf Pflegegeld mindestens der Stufe 3.")
+    cq = _crit(e, "b24_carer", qual, "Die Betreuungskraft braucht eine passende Ausbildung, mindestens sechs Monate "
+                                     "Betreuungspraxis oder eine Befugnis nach dem GuKG – das prüft das "
+                                     "Sozialministeriumservice." if qual is None else "Laut Ihrer Angabe.")
+    status = _cap_possible(_derive([cn, cl, cq]))
+    if status == S.needs_info and cn.met and cl.met:
+        status = S.possible               # qualification is checked with the application
+    steps = [("Vor Beginn der 24-Stunden-Betreuung beim Sozialministeriumservice über Förderung und Unterlagen "
+             "informieren."),
+             "Nachweise zum Pflegegeld, zur Betreuungskraft und zum Einkommen der pflegebedürftigen Person sammeln."]
+    return _result(e, status, [cn, cl, cq], missing=missing, steps=steps)
+
+
+def eval_pflegekarenz(e: CatalogEntry, inp: EvalInput) -> EligibilityResult:
+    agreed, insured = _bool(inp.fact("pflegekarenz_agreed")), _bool(inp.fact("caregiver_insured_3m"))
+    pg = _bool(inp.fact("receives_pflegegeld")) or _bool(inp.fact("pflegegeld_applied")) or (_pg_level(inp) or 0) >= 1
+    missing = [k for k, v in (("pflegekarenz_agreed", agreed), ("caregiver_insured_3m", insured)) if v is None]
+    ca = _crit(e, "pk_agreement", agreed, "Pflegekarenzgeld gibt es nur, wenn mit dem Arbeitgeber eine Pflegekarenz "
+                                          "oder Pflegeteilzeit vereinbart ist (höchstens drei Monate)." if agreed is None
+               else "Laut Ihrer Angabe.")
+    ci = _crit(e, "pk_insured", insured, "Vor der Karenz müssen Sie aus diesem Arbeitsverhältnis drei Monate "
+                                         "ununterbrochen vollversichert gewesen sein." if insured is None else
+               "Laut Ihrer Angabe.")
+    cp = _crit(e, "pk_pflegegeld", True if pg else None,
+               "Pflegegeld wird laut Ihrer Angabe bezogen bzw. beantragt." if pg else
+               "Ist das Pflegegeldverfahren noch offen, soll es nach Ihrer Erklärung zur Pflegekarenz grundsätzlich "
+               "binnen zwei Wochen abgeschlossen werden. Welche Pflegegeld-Stufe nötig ist, regelt das "
+               "Arbeitsvertragsrecht – bitte beim Sozialministeriumservice nachfragen.")
+    status = _derive([ca, ci, cp])
+    steps = ["Pflegekarenz oder Pflegeteilzeit mit dem Arbeitgeber schriftlich vereinbaren.",
+             ("Antrag auf Pflegekarenzgeld beim Sozialministeriumservice einbringen (mit Vereinbarung und Erklärung, dass "
+             "Sie die Pflege überwiegend erbringen)."),
+             ("Pflegekarenzgeld gebührt höchstens drei Monate pro Karenz und insgesamt höchstens sechs Monate pro "
+             "pflegebedürftiger Person.")]
+    return _result(e, status, [ca, ci, cp], missing=missing, steps=steps)
+
+
+def eval_selbstversicherung_pflege(e: CatalogEntry, inp: EvalInput) -> EligibilityResult:
+    level = _pg_level(inp)
+    carer = _bool(inp.fact("caregiver_main_carer"))
+    missing = [k for k, v in (("pflegegeld_level", level), ("caregiver_main_carer", carer)) if v is None]
+    cl = _crit(e, "sv_level", None if level is None else level >= 3,
+               _level_text(level) + " Nötig ist Pflegegeld mindestens der Stufe 3.")
+    cc = _crit(e, "sv_carer", carer, "Die Pflege muss zu Hause und unter erheblicher Beanspruchung Ihrer Arbeitskraft "
+                                     "erfolgen; je Pflegefall kann nur eine Person selbstversichert sein."
+               if carer is None else "Laut Ihrer Angabe.")
+    status = _derive([cl, cc])
+    steps = ["Antrag auf Selbstversicherung bei der Pensionsversicherungsanstalt stellen.",
+             ("Die Selbstversicherung beginnt frühestens mit dem Monat, in dem die Pflege aufgenommen wird, spätestens "
+             "mit dem Monatsersten nach der Antragstellung – daher rechtzeitig beantragen.")]
+    return _result(e, status, [cl, cc], missing=missing, steps=steps)
+
+
+def eval_sozialhilfe_wien(e: CatalogEntry, inp: EvalInput) -> EligibilityResult:
+    cv = _crit(e, "sh_vienna", inp.in_vienna,
+               f"Wohnadresse laut Stammdaten: {inp.subject.address.zip} {inp.subject.address.city}."
+               + ("" if inp.in_vienna else " Außerhalb Wiens ist die Sozialhilfe des jeweiligen Bundeslandes zuständig."))
+    hard = _bool(inp.fact("financial_hardship"))
+    cn = _crit(e, "sh_need", hard, "Die Stadt Wien berücksichtigt Einkommen und Vermögen der ganzen "
+                                   "Bedarfsgemeinschaft (z. B. Ehe- oder Lebenspartner:in, minderjährige Kinder)."
+               if hard is None else "Laut Ihrer Angabe reichen Einkommen und Vermögen nicht aus." if hard else
+               "Laut Ihrer Angabe reichen Einkommen und Vermögen aus.")
+    status = _cap_possible(_derive([cv, cn]))
+    steps = [("Beratung und Antrag bei der MA 40 (Servicetelefon 01 4000 8040) bzw. im zuständigen Sozialzentrum; "
+             "Antrag auch online über wien.gv.at."),
+             "Einkommens- und Vermögensnachweise aller Personen im Haushalt bereithalten.",
+             ("Hinweis: Das ist eine Leistung der Stadt Wien, nicht der Sozialversicherung – Angaben laut Sozialinfo Wien, "
+             "bitte die aktuellen Voraussetzungen dort prüfen.")]
+    return _result(e, status, [cv, cn], missing=[] if hard is not None else ["financial_hardship"], steps=steps)
+
+
+# --------------------------------------------------------------------------------------------- WS-K2: offers
+
+
+def _young_child(inp: EvalInput) -> bool | None:
+    """Derived fact for parent programmes: pregnancy (fact) or a child under 4 (subject or child in Obsorge)."""
+    if _bool(inp.fact("young_child")) is not None:
+        return _bool(inp.fact("young_child"))
+    if _bool(inp.fact("pregnant")):
+        return True
+    if inp.age_years is not None and inp.age_years < 4:
+        return True
+    ages = [EvalInput(subject=c, facts={}, as_of=inp.as_of).age_years for c in inp.children]
+    if any(a is not None and a < 4 for a in ages):
+        return True
+    return False if inp.children else None
+
+
+def eval_offer(e: CatalogEntry, inp: EvalInput) -> EligibilityResult:
+    """Generic evaluator for open programmes (kind: offer)."""
+    o = e.spec.offer
+    assert o is not None
+    label_open, _ = e.criteria["of_open"]
+    criteria = [_crit(e, "of_open", True, f"{label_open}. Kosten: {o.cost_de}.")]
+    missing: list[str] = []
+    if "of_age" in e.criteria:
+        age = inp.age_years
+        rng = (f"ab {o.min_age}" if o.max_age is None else f"{o.min_age or 0}–{o.max_age}") + " Jahre"
+        criteria.append(_crit(e, "of_age", None if age is None else
+                              (o.min_age or 0) <= age <= (o.max_age if o.max_age is not None else 200),
+                              f"Angebot für {rng}; Alter laut Stammdaten: {age if age is not None else 'unbekannt'}."))
+    if o.requires_fact:
+        val = _young_child(inp) if o.requires_fact == "young_child" else _bool(inp.fact(o.requires_fact))
+        if val is None:
+            missing.append(o.requires_fact)
+        label_fact, _ = e.criteria["of_fact"]
+        criteria.append(_crit(e, "of_fact", val, f"Bitte angeben: {label_fact}." if val is None else
+                              ("Laut Ihren Angaben bzw. Stammdaten erfüllt." if val else "Laut Ihren Angaben nicht der Fall.")))
+    status = _derive(criteria)
+    if o.season_months and "of_season" in e.criteria:
+        months = o.season_months
+        in_season = inp.as_of.month in months
+        criteria.append(_crit(e, "of_season", True,
+                              "Die Kurse laufen laut Website gerade." if in_season else
+                              f"Die Kurse laufen laut Website von {_MONTHS[months[0]]} bis {_MONTHS[months[-1]]} – "
+                              "die nächste Saison bitte rechtzeitig auf der Website prüfen."))
+    if o.audience != "insured":
+        status = _cap_possible(status)
+    return _result(e, status, criteria, missing=missing, steps=list(o.steps_de))
+
+
+_MONTHS = {1: "Jänner", 2: "Februar", 3: "März", 4: "April", 5: "Mai", 6: "Juni", 7: "Juli", 8: "August",
+           9: "September", 10: "Oktober", 11: "November", 12: "Dezember"}
+
+
 EVALUATORS: dict[str, Callable[[CatalogEntry, EvalInput], EligibilityResult]] = {
     "pflegegeld": eval_pflegegeld,
     "pflegeberatung": eval_pflegeberatung,
@@ -711,13 +979,24 @@ EVALUATORS: dict[str, Callable[[CatalogEntry, EvalInput], EligibilityResult]] = 
     "familienbeihilfe": eval_familienbeihilfe,
     "kinderbetreuungsgeld": eval_kbg,
     "eltern_kind_pass": eval_ekp,
+    "heilbehelfe_hilfsmittel": eval_heilbehelfe,
+    "ersatzpflege": eval_ersatzpflege,
+    "foerderung_24h_betreuung": eval_24h,
+    "pflegekarenzgeld": eval_pflegekarenz,
+    "selbstversicherung_pflege": eval_selbstversicherung_pflege,
+    "sozialhilfe_wien": eval_sozialhilfe_wien,
 }
+# Offers (kind: offer) share one data-driven evaluator.
+EVALUATORS.update({bid: eval_offer for bid, entry in catalog.entries().items() if entry.spec.kind == "offer"})
 
 
 def evaluate(inp: EvalInput, benefit_ids: list[str] | None = None) -> list[EligibilityResult]:
-    """Evaluate benefits in catalog order (or the requested subset)."""
+    """Evaluate benefits in catalog order (or the requested subset). Without benefit_ids, offers are left out —
+    they are requested explicitly or via situation bundles."""
     out = []
     for bid, entry in catalog.entries().items():
+        if benefit_ids is None and entry.spec.kind == "offer":
+            continue
         if benefit_ids is not None and bid not in benefit_ids:
             continue
         fn = EVALUATORS.get(bid)
