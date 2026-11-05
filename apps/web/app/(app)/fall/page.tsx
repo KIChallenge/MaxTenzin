@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import Link from "next/link";
+import { ArrowRight, CalendarPlus, FilePen } from "lucide-react";
 import { createCase } from "@/app/actions";
 import { ApiError } from "@/components/ApiError";
 import { PageTitle } from "@/components/PageTitle";
@@ -7,7 +8,7 @@ import { SourceChip } from "@/components/SourceChip";
 import { api } from "@/lib/api";
 import { fmtDate, fullName } from "@/lib/labels";
 import { getMe } from "@/lib/me";
-import type { Case } from "@/lib/types";
+import type { Case, CaseStep } from "@/lib/types";
 import { StepStatusSelect } from "./StepStatusSelect";
 
 export default async function CasePage({ searchParams }: { searchParams: Promise<{ error?: string; status?: string }> }) {
@@ -39,6 +40,7 @@ export default async function CasePage({ searchParams }: { searchParams: Promise
       ) : (
         cases.data.map((c) => {
           const done = c.steps.filter((s) => s.status === "done").length;
+          const next = c.steps.find((s) => s.status === "in_progress") ?? c.steps.find((s) => s.status === "open");
           // Same source on every step (e.g. "Entlassungsbefund.pdf – offene Aufgaben") → show it once in the header.
           const sharedSource = c.steps.every((s) => s.source && s.source.label === c.steps[0].source?.label) ? c.steps[0].source : null;
           return (
@@ -55,6 +57,13 @@ export default async function CasePage({ searchParams }: { searchParams: Promise
                   )}
                 </span>
               </div>
+              {next && (
+                <div className="mb-3 flex flex-wrap items-center gap-3 rounded-xl border border-accent/25 bg-accent-soft/50 px-4 py-2.5">
+                  <span className="text-sm font-semibold text-muted">Als Nächstes</span>
+                  <span className="min-w-0 flex-1 font-semibold">{next.title_de}</span>
+                  <StepAction step={next} />
+                </div>
+              )}
               <ol className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
                 {c.steps.map((s, i) => {
                   return (
@@ -70,10 +79,10 @@ export default async function CasePage({ searchParams }: { searchParams: Promise
                         </p>
                         <div className="mt-0.5 flex flex-wrap items-center gap-3 text-sm">
                           {s.source && s.source.label !== sharedSource?.label && <SourceChip source={s.source} />}
-                          {s.benefit_id && <Link href={`/leistungen#${s.benefit_id}`} className="link">Leistung ansehen</Link>}
-                          {s.form_session_id && <Link href={`/forms/${s.form_session_id}`} className="link">Antrag öffnen</Link>}
+                          {s.benefit_id && !s.form_session_id && <Link href={`/leistungen#${s.benefit_id}`} className="link">Leistung ansehen</Link>}
                         </div>
                       </div>
+                      {s.status !== "done" && <StepAction step={s} />}
                       <StepStatusSelect caseId={c.id} stepId={s.id} status={s.status ?? "open"} label={s.title_de} />
                     </li>
                   );
@@ -85,4 +94,28 @@ export default async function CasePage({ searchParams }: { searchParams: Promise
       )}
     </>
   );
+}
+
+/** The one concrete thing to do for a step – derived from what the step links to (no guessing beyond that). */
+function StepAction({ step }: { step: CaseStep }) {
+  const cls = "btn-secondary px-2.5 py-0.5 text-sm";
+  if (step.form_session_id)
+    return (
+      <Link href={`/forms/${step.form_session_id}`} className={cls}>
+        <FilePen className="h-3.5 w-3.5" aria-hidden /> Antrag weiter ausfüllen
+      </Link>
+    );
+  if (/termin|kontrolle/i.test(step.title_de))
+    return (
+      <Link href={`/termine?${/haus/i.test(step.title_de) ? "wo=provider&topic=hausarzt_kontrolle&" : ""}suche=1`} className={cls}>
+        <CalendarPlus className="h-3.5 w-3.5" aria-hidden /> Termin suchen
+      </Link>
+    );
+  if (step.benefit_id)
+    return (
+      <Link href={`/leistungen#${step.benefit_id}`} className={cls}>
+        <ArrowRight className="h-3.5 w-3.5" aria-hidden /> Weiter bei Leistungen
+      </Link>
+    );
+  return null;
 }
