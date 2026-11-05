@@ -1,6 +1,8 @@
 import { Building2, Compass, Eye, FilePen, FileText, ListChecks, Pill, Scale, Syringe } from "lucide-react";
 import Link from "next/link";
+import { Lebenslage } from "@/components/Lebenslage";
 import { OpenChatButton } from "@/components/OpenChatButton";
+import type { SituationOverview } from "@/lib/situation";
 import { api } from "@/lib/api";
 import { cockpitRoute, fmtDate, fullName } from "@/lib/labels";
 import { getMe } from "@/lib/me";
@@ -19,7 +21,7 @@ const TILES = [
 ];
 
 export default async function Cockpit() {
-  const [me, inbox] = await Promise.all([getMe(), api<Notification[]>("/api/notifications")]);
+  const [me, inbox, situation] = await Promise.all([getMe(), api<Notification[]>("/api/notifications"), api<SituationOverview>("/api/situation")]);
   const subject = me.ok ? me.data.subject : null;
   const actor = me.ok ? me.data.actor : null;
   const forOther = subject && actor && subject.id !== actor.id;
@@ -30,6 +32,13 @@ export default async function Cockpit() {
           Guten Tag, {actor?.first_name}
           {forOther && <span className="text-muted">. Sie handeln für {fullName(subject)}.</span>}
         </h1>
+        <div className="mt-5">
+          <Lebenslage
+            {...(situation.ok ? { ok: true as const, data: situation.data } : { ok: false as const, status: situation.status, detail: situation.detail })}
+            subjectName={subject ? fullName(subject) : ""}
+            firstName={subject?.first_name ?? ""}
+          />
+        </div>
         <div className="card mt-5 flex flex-wrap items-center gap-4 border-accent/30 bg-accent-soft">
           <div className="flex-1">
             <p className="font-semibold">Was möchten Sie heute erledigen?</p>

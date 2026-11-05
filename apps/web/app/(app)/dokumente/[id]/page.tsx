@@ -8,6 +8,8 @@ import { DOC_TYPE, fmtDate, fullName, REC_CATEGORY } from "@/lib/labels";
 import { getMe } from "@/lib/me";
 import type { DocumentAnalysis } from "@/lib/types";
 import { ImportVaccinations } from "./ImportVaccinations";
+import { SituationSuggestions } from "./SituationSuggestions";
+import type { SituationOverview } from "@/lib/situation";
 
 export default async function AnalysisPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -18,6 +20,11 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
   if (!r.ok) return <ApiError status={r.status} detail={r.detail} subjectName={name} />;
   const a = r.data;
   const benefitIds = [...new Set(a.recommendations.flatMap((x) => x.related_benefit_ids ?? []))];
+  // Pending Lebenslage suggestions that came from this document (only when the situation service answers).
+  const situation = a.doc_type === "discharge_letter" ? await api<SituationOverview>("/api/situation") : null;
+  const fromThisDoc = situation?.ok
+    ? (situation.data.suggestions ?? []).filter((e) => (e.source.ref ?? "").includes(a.document_id) || e.source.label.startsWith(a.filename))
+    : [];
   const isImaging = a.doc_type === "imaging_report";
 
   return (
@@ -72,6 +79,7 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
             ))}
           </ul>
           {a.doc_type === "vaccination_record" && <ImportVaccinations documentId={a.document_id} subjectName={name} />}
+          {situation?.ok && <SituationSuggestions documentId={a.document_id} initial={fromThisDoc} firstName={me.ok ? me.data.subject.first_name : ""} />}
           {benefitIds.length > 0 && (
             <div className="card mt-6 flex flex-wrap items-center gap-4 border-accent/30 bg-accent-soft">
               <p className="flex-1 font-semibold">Passende Leistungen jetzt prüfen</p>

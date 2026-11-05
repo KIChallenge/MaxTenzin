@@ -28,5 +28,9 @@ export async function uploadAndAnalyze(file: File, onStage?: (s: "upload" | "ana
   if (!up.ok) return up;
   onStage?.("analyze");
   const an = await bff<DocumentAnalysis>(`/api/documents/${up.data.document_id}/analyze`, { method: "POST" });
+  // Discharge letters: prepare Lebenslage suggestions (never applied without the person's "Ja, übernehmen").
+  if (an.ok && an.data.doc_type === "discharge_letter") {
+    await bff(`/api/situation/suggestions/from-document/${up.data.document_id}`, { method: "POST" });
+  }
   return { ok: true, doc: up.data, analysis: an.ok ? an.data : null };
 }
