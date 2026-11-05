@@ -14,7 +14,11 @@ from app.seed.loader import reset_delegations
 
 @pytest.fixture
 def client():
+    from app.core.db import store
+
     reset_delegations()
+    for subject in ("anna", "maria", "stefan", "lena"):  # answers stored by earlier tests must not leak
+        store.delete("known_facts", subject)
     return TestClient(app)
 
 

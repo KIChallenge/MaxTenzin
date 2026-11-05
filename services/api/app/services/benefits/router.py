@@ -59,6 +59,11 @@ def build_input(ctx: Context, req: EligibilityRequest) -> EvalInput:
         recs += [DocRec(r, a.filename, a.document_id) for r in a.recommendations]
         living = living or a.person.living_situation
     # Lebenslage: facts from CONFIRMED episodes (only with the Lebenslage scope); explicit request facts win.
+    # Known facts answered earlier (cockpit or Lotsi) – request facts win.
+    known = known_facts(ctx.subject.id)["facts"]
+    if known:
+        facts = {**known, **facts}
+        ctx.rule_ids.append("benefits.facts_known:" + ",".join(sorted(known)))
     if Scope.manage_situation in ctx.scopes:
         from app.services.situation.service import situation_facts
 
@@ -183,3 +188,46 @@ def bundle_match(body: BundleRequest, ctx: Context = Depends(require())):
         raise HTTPException(422, "Bitte eine Situation (situation) oder eine Beschreibung (text) angeben.")
     bc = _bundle_context(ctx, body.facts, body.document_ids)
     return _finish(ctx, bc, bundles.build(bid, bc))
+
+
+# ---- Known facts (answers to open questions), shared by cockpit and Lotsi ---------------------------------------
+FACTS_COLL = "known_facts"
+_NOT_STORED = {"recommendations", "as_of", "document_filename"}
+
+
+def known_facts(subject_id: str) -> dict:
+    return store.get(FACTS_COLL, subject_id) or {"facts": {}, "sources": {}}
+
+
+@router.get("/facts", summary="Answers given so far for the subject (shared by cockpit and Lotsi), with provenance")
+def get_facts(ctx: Context = Depends(require())):
+    return known_facts(ctx.subject.id)
+
+
+@router.patch("/facts", summary="Store answers (merge; value null deletes). Provenance: who, when, via cockpit/Lotsi")
+def patch_facts(body: dict, ctx: Context = Depends(require())):
+    from app.core.db import now_iso
+
+    data = known_facts(ctx.subject.id)
+    via = "Lotsi" if ctx.via == "agent" else "Cockpit"
+    changed = []
+    for k, v in (body.get("facts") or {}).items():
+        if k in _NOT_STORED:
+            continue
+        if v is None:
+            data["facts"].pop(k, None)
+            data["sources"].pop(k, None)
+        else:
+            data["facts"][k] = v
+            data["sources"][k] = {"label": f"Angabe von {ctx.actor.first_name} {ctx.actor.last_name}, "
+                                           f"{now_iso()[8:10]}.{now_iso()[5:7]}.{now_iso()[:4]} ({via})"}
+        changed.append(k)
+    store.put(FACTS_COLL, ctx.subject.id, data, subject_id=ctx.subject.id)
+    ctx.rule_ids.append("benefits.facts_saved:" + ",".join(sorted(changed)))
+    return data
+
+
+# '/facts' must win over the generic '/{benefit_id}' route registered earlier.
+for _r in [r for r in router.routes if getattr(r, "path", "").endswith("/facts")]:
+    router.routes.remove(_r)
+    router.routes.insert(0, _r)

@@ -331,6 +331,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/benefits/facts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Answers given so far for the subject (shared by cockpit and Lotsi), with provenance */
+        get: operations["get_facts_api_benefits_facts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Store answers (merge; value null deletes). Provenance: who, when, via cockpit/Lotsi */
+        patch: operations["patch_facts_api_benefits_facts_patch"];
+        trace?: never;
+    };
     "/api/benefits": {
         parameters: {
             query?: never;
@@ -338,7 +356,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Benefit catalog */
+        /** Benefit catalog (benefits and offers) */
         get: operations["list_catalog_api_benefits_get"];
         put?: never;
         post?: never;
@@ -406,7 +424,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** All situation bundles (Pflege, nach dem Spital, …) */
+        /** All situation bundles (Pflege, nach dem Spital, …), evaluated for the current person */
         get: operations["bundle_catalog_api_benefits_bundles_catalog_get"];
         put?: never;
         post?: never;
@@ -425,7 +443,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Bundle for a situation (id or free text) + facts */
+        /** Bundle for a situation (id or free text) + facts; null if the text matches no situation */
         post: operations["bundle_match_api_benefits_bundles_match_post"];
         delete?: never;
         options?: never;
@@ -3343,10 +3361,86 @@ export interface operations {
             };
         };
     };
+    get_facts_api_benefits_facts_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    patch_facts_api_benefits_facts_patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_catalog_api_benefits_get: {
         parameters: {
             query?: {
                 area?: string | null;
+                /** @description benefit = Leistung, offer = Angebot (ids 'angebot_*') */
+                kind?: string | null;
             };
             header?: {
                 Authorization?: string;
@@ -3570,6 +3664,8 @@ export interface operations {
             query?: {
                 /** @description Stichtag (ISO date), default today */
                 as_of?: string | null;
+                /** @description Erkrankungen in der Familie laut eigener Angabe, z. B. darmkrebs, brustkrebs, diabetes, herz_kreislauf → passende Programme werden als besonders relevant erklärt (keine Risikoeinschätzung) */
+                family_history?: string[] | null;
             };
             header?: {
                 Authorization?: string;

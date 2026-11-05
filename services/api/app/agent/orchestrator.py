@@ -19,7 +19,7 @@ from app.agent.scripted import Scripted, forbidden_text
 from app.agent.tools import SCOPE_DE, TOOL_SPECS, ToolClient, ToolOutcome, llm_payload
 from app.contracts.agent import ChatAction, ChatRequest, ChatResponse, ToolTrace
 from app.core.auth import Context
-from app.core.db import now_iso
+from app.core.db import now_iso, store
 from app.core.llm import get_llm
 from app.seed.loader import delegations_for
 
@@ -229,6 +229,9 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
     mode = "live" if get_llm().live else "scripted"
     if req.document_ids:
         memo["last_document_id"] = req.document_ids[0]
+    kf = store.get("known_facts", ctx.subject.id)  # answers given in the cockpit: never ask them again
+    if kf and kf.get("facts"):
+        memo["facts"] = {**kf["facts"], **(memo.get("facts") or {})}
     # Explicit consent in THIS message (deterministic): required to apply document-based situation suggestions.
     memo["_user_consented"] = bool(_CONSENT_YES.search(req.message or ""))
 

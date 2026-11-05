@@ -520,6 +520,12 @@ class ToolClient:
                                    json=tool.body(args, self.ctx) if tool.body and not existing else None,
                                    params=tool.query(args, self.ctx) if tool.query and not existing else None)
         out = self._outcome(tool, args, path, resp)
+        if name == "check_benefits" and out.ok and isinstance(args.get("facts"), dict) and args["facts"]:
+            # Persist answers so the cockpit (and later turns) see them – same facts store as the UI.
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://internal",
+                                         timeout=30) as c:
+                await c.patch("/api/benefits/facts", headers={**headers, "X-Agent-Tool": "context:save_facts"},
+                              json={"facts": args["facts"]})
         if existing and out.ok:
             out.summary_de = "Bestehender Antrags-Entwurf fortgesetzt (keine Angaben verloren)"
         return out

@@ -2045,12 +2045,188 @@
         }
       }
     },
+    "/api/benefits/facts": {
+      "patch": {
+        "tags": [
+          "benefits"
+        ],
+        "summary": "Store answers (merge; value null deletes). Provenance: who, when, via cockpit/Lotsi",
+        "operationId": "patch_facts_api_benefits_facts_patch",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "benefits"
+        ],
+        "summary": "Answers given so far for the subject (shared by cockpit and Lotsi), with provenance",
+        "operationId": "get_facts_api_benefits_facts_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/benefits": {
       "get": {
         "tags": [
           "benefits"
         ],
-        "summary": "Benefit catalog",
+        "summary": "Benefit catalog (benefits and offers)",
         "operationId": "list_catalog_api_benefits_get",
         "parameters": [
           {
@@ -2068,6 +2244,25 @@
               ],
               "title": "Area"
             }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(benefit|offer)$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "benefit = Leistung, offer = Angebot (ids 'angebot_*')",
+              "title": "Kind"
+            },
+            "description": "benefit = Leistung, offer = Angebot (ids 'angebot_*')"
           },
           {
             "name": "Authorization",
@@ -2501,7 +2696,7 @@
         "tags": [
           "benefits"
         ],
-        "summary": "All situation bundles (Pflege, nach dem Spital, …)",
+        "summary": "All situation bundles (Pflege, nach dem Spital, …), evaluated for the current person",
         "operationId": "bundle_catalog_api_benefits_bundles_catalog_get",
         "parameters": [
           {
@@ -2590,7 +2785,7 @@
         "tags": [
           "benefits"
         ],
-        "summary": "Bundle for a situation (id or free text) + facts",
+        "summary": "Bundle for a situation (id or free text) + facts; null if the text matches no situation",
         "operationId": "bundle_match_api_benefits_bundles_match_post",
         "parameters": [
           {
@@ -2713,6 +2908,27 @@
               "title": "As Of"
             },
             "description": "Stichtag (ISO date), default today"
+          },
+          {
+            "name": "family_history",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Erkrankungen in der Familie laut eigener Angabe, z. B. darmkrebs, brustkrebs, diabetes, herz_kreislauf → passende Programme werden als besonders relevant erklärt (keine Risikoeinschätzung)",
+              "title": "Family History"
+            },
+            "description": "Erkrankungen in der Familie laut eigener Angabe, z. B. darmkrebs, brustkrebs, diabetes, herz_kreislauf → passende Programme werden als besonders relevant erklärt (keine Risikoeinschätzung)"
           },
           {
             "name": "Authorization",
