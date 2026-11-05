@@ -295,8 +295,8 @@ function FieldRow(props: {
   const dirty = !instant && draft !== undefined && draft !== (fv?.value ?? null);
   const id = `f-${f.id}`;
 
-  const rowBase = "grid gap-x-6 gap-y-2 px-5 py-4 @2xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]";
-  const hint = f.ask_hint_de && <p className="mt-0.5 text-sm text-muted">{f.ask_hint_de}</p>;
+  const rowBase = "grid gap-x-6 gap-y-1.5 px-4 py-2.5 @2xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] @2xl:items-start";
+  const hint = f.ask_hint_de && <p className="text-sm leading-snug text-muted">{f.ask_hint_de}</p>;
 
   if (f.readonly_reason_de) {
     return (
@@ -327,19 +327,19 @@ function FieldRow(props: {
       <div className="min-w-0">
         <Input field={f} id={id} value={value} onChange={props.onDraft} onFocus={props.onFocus} onBlur={props.onBlur} onCommit={props.onSave} />
         {(missingReq || flashAt || filled || dirty) && (
-        <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+        <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
           {missingReq && <span className="font-semibold text-warn">Fehlt noch</span>}
           {flashAt && <span className="font-semibold text-info">Gerade über den Chat aktualisiert</span>}
           {fv?.source && filled && <SourceChip source={fv.source} />}
           {filled && fv?.confirmed && !dirty && <span className="inline-flex items-center gap-1 font-semibold text-ok"><Check className="h-4 w-4" aria-hidden /> Bestätigt</span>}
           <span className="ml-auto flex gap-2">
             {dirty && (
-              <button type="button" className="btn-primary px-3 py-1 text-sm" onClick={() => props.onSave(draft ?? null)}>
+              <button type="button" className="btn-primary px-2.5 py-0.5 text-sm" onClick={() => props.onSave(draft ?? null)}>
                 Speichern
               </button>
             )}
             {!dirty && filled && !fv?.confirmed && (
-              <button type="button" className="btn-secondary px-3 py-1 text-sm" onClick={() => props.onSave(fv?.value ?? null)}>
+              <button type="button" className="btn-secondary px-2.5 py-0.5 text-sm" onClick={() => props.onSave(fv?.value ?? null)}>
                 Stimmt so
               </button>
             )}
@@ -392,7 +392,7 @@ function Input({
         {f.options.map((o) => (
           <label
             key={o}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-line px-3 py-1.5 has-[:checked]:border-accent has-[:checked]:bg-accent-soft has-[:checked]:font-semibold"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-line px-2.5 py-1 has-[:checked]:border-accent has-[:checked]:bg-accent-soft has-[:checked]:font-semibold"
           >
             <input type="radio" name={id} className="accent-accent" checked={value === o} onChange={() => {
                 onChange(o);

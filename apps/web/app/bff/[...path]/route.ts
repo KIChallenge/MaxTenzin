@@ -16,7 +16,11 @@ async function forward(req: NextRequest, { params }: { params: Promise<{ path: s
   if (ct) headers.set("Content-Type", ct);
 
   const hasBody = !["GET", "HEAD"].includes(req.method);
-  const upstream = await fetch(`${API_URL}/${path.map(encodeURIComponent).join("/")}${req.nextUrl.search}`, {
+  const query = new URLSearchParams(req.nextUrl.search);
+  const view = query.get("view") === "1";
+  query.delete("view");
+  const qs = query.toString() ? `?${query}` : "";
+  const upstream = await fetch(`${API_URL}/${path.map(encodeURIComponent).join("/")}${qs}`, {
     method: req.method,
     headers,
     body: hasBody ? await req.arrayBuffer() : undefined,
@@ -29,6 +33,8 @@ async function forward(req: NextRequest, { params }: { params: Promise<{ path: s
     const v = upstream.headers.get(h);
     if (v) out.set(h, v);
   }
+  // Source view: display the PDF in the page (iframe) instead of downloading it.
+  if (view) out.set("content-disposition", (out.get("content-disposition") ?? "inline").replace(/^attachment/, "inline"));
   return new Response(upstream.body, { status: upstream.status, headers: out });
 }
 

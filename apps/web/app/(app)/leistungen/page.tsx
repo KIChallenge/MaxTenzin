@@ -31,6 +31,7 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
     if (fromDoc) used.splice(used.findIndex((d) => d.filename === fromDoc.filename), 1, fromDoc);
   }
   const documentIds = used.map((d) => d.document_id);
+  const docMap = Object.fromEntries(used.map((d) => [d.filename, d.document_id]));
   const prefillDoc =
     (sp.doc && documentIds.includes(sp.doc) ? sp.doc : undefined) ??
     used.find((d) => d.doc_type === "discharge_letter")?.document_id ??
@@ -68,7 +69,7 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
         <p className="card text-muted">Derzeit keine passenden Leistungen gefunden. Laden Sie z. B. einen Entlassungsbrief hoch.</p>
       ) : (
         <>
-          <ul id="antraege" className="space-y-3">
+          <ul id="antraege" className="space-y-2">
             {relevant.map((r) => (
               <li key={r.benefit.id} id={r.benefit.id}>
                 <BenefitCard
@@ -78,6 +79,7 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
                   canPrepare={canPrepare}
                   prefillDoc={prefillDoc}
                   formTitle={formTitle}
+                  docMap={docMap}
                 />
               </li>
             ))}
@@ -113,6 +115,7 @@ function BenefitCard({
   canPrepare,
   prefillDoc,
   formTitle,
+  docMap,
 }: {
   r: EligibilityResult;
   plain: boolean;
@@ -120,6 +123,7 @@ function BenefitCard({
   canPrepare: boolean;
   prefillDoc: string;
   formTitle: Map<string, string>;
+  docMap: Record<string, string>;
 }) {
   const st = ELIGIBILITY[r.status];
   const b = r.benefit;
@@ -134,13 +138,15 @@ function BenefitCard({
 
   return (
     <details className={`group card border-l-4 p-0 ${toneBorder(st.tone)}`}>
-      <summary className="flex cursor-pointer list-none flex-wrap items-start gap-x-4 gap-y-2 p-5 [&::-webkit-details-marker]:hidden">
+      <summary className="flex cursor-pointer list-none flex-wrap items-start gap-x-3 gap-y-1 px-4 py-3 [&::-webkit-details-marker]:hidden">
         <ChevronRight className="mt-1 h-5 w-5 shrink-0 text-accent transition-transform group-open:rotate-90" aria-hidden />
         <span className="min-w-0 flex-1">
-          <span className="eyebrow block">{b.provider}</span>
-          <span className="block text-lg font-semibold">{b.name_de}</span>
-          <span className="mt-1 block text-muted">{plain && b.plain_de ? b.plain_de : b.summary_de}</span>
-          <span className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+          <span className="block">
+            <span className="text-lg font-semibold">{b.name_de}</span>
+            <span className="ml-2 text-sm text-muted">{b.provider}</span>
+          </span>
+          <span className="mt-0.5 block text-sm text-muted group-[:not([open])]:line-clamp-1">{plain && b.plain_de ? b.plain_de : b.summary_de}</span>
+          <span className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm">
             {docCriteria.length > 0 && <span className="inline-flex items-center gap-1 font-semibold text-accent-strong"><Paperclip className="h-4 w-4" aria-hidden /> im Dokument empfohlen</span>}
             {firstAmount && (
               <span>
@@ -155,10 +161,10 @@ function BenefitCard({
         <Badge tone={st.tone}>{st.label}</Badge>
       </summary>
 
-      <div className="border-t border-line p-5">
+      <div className="border-t border-line px-4 py-4">
         <div className="flex flex-wrap items-center gap-2 text-sm">
           <span className="text-muted">Rechtsgrundlage:</span>
-          <SourceList sources={b.legal_basis} />
+          <SourceList sources={b.legal_basis} documents={docMap} />
         </div>
 
         <div className="mt-4 grid gap-6 md:grid-cols-2">
@@ -170,7 +176,7 @@ function BenefitCard({
                 <ul className="mt-1 space-y-2">
                   {docCriteria.map((c) => (
                     <li key={c.id}>
-                      <span>{c.explanation_de}</span> {c.source && <SourceChip source={c.source} />}
+                      <span>{c.explanation_de}</span> {c.source && <SourceChip source={c.source} documents={docMap} />}
                     </li>
                   ))}
                 </ul>
@@ -186,7 +192,7 @@ function BenefitCard({
                       <span className="sr-only">{c.met === true ? " – erfüllt" : c.met === false ? " – nicht erfüllt" : " – noch offen"}</span>
                     </p>
                     <p className="text-muted">{c.explanation_de}</p>
-                    {c.source && <SourceChip source={c.source} />}
+                    {c.source && <SourceChip source={c.source} documents={docMap} />}
                   </div>
                 </li>
               ))}
