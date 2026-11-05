@@ -29,7 +29,11 @@ documents → recommendations → benefits → form wizard → PDF draft → Mei
 | `/transparenz` | `GET /api/audit` — who · for whom · UI/KI · tool · scope · result · sources; denied rows red; repeated polling collapsed (×N) |
 | `/vertretung` | delegations; toggles via `PUT /api/identity/delegations/{id}/scopes` (only grantor can edit) |
 | `/stellen`, `/medikamente`, `/recht` | directory, EKO search, legal search/paragraph (Fassung + „keine Rechtsberatung“) |
-| chat panel | `POST /api/agent/chat`; tool trace collapsible, boundary replies highlighted, refreshes server data after tool calls |
+| chat panel („Lotsi“) | `POST /api/agent/chat` with page context (`form_session_id` on `/forms/<id>`, `document_ids` on `/dokumente/<id>`) so the agent works on the open form; tool trace collapsible, boundary replies highlighted, action buttons (open form, download draft, open case), minimal safe Markdown; refreshes server data after tool calls |
+| autocomplete | Medikamente + Rechtsgrundlagen: debounced (250 ms, ≥ 3 chars) typeahead over the search APIs (each lookup is audited) |
+
+## Design
+Palette after sozialversicherung.at (green / slate / light grey-blue), green darkened to `#007a4f` for WCAG AA (the original `#008e5c` is 4.18:1). No official logos or word marks. Atkinson Hyperlegible (legibility for older users). Persona „Lotsi“: gender-neutral ship's pilot (`components/Lotsi.tsx`), deliberately not a doctor (medical boundary).
 
 ## Rules & knowledge
 Shows only what the API returns — no amounts, eligibility or medical statements computed in the frontend. Every fact rendered with its `SourceRef` chip (quote + in-force date on hover/focus). Forms end as a draft PDF; the UI says it is never sent automatically.
@@ -38,8 +42,9 @@ Shows only what the API returns — no amounts, eligibility or medical statement
 None of its own; all from the services' `SourceRef`s.
 
 ## Limitations
-- Chat depends on WS-A; on the current stub it returns 500 (LLM key, G0b) → shown as „Der Lotse ist gerade nicht erreichbar“.
-- On `main` the real cases service needs a stored document analysis; the documents stub doesn't store one, so „Fall aus Dokument anlegen“ returns 404 until WS-D is merged.
+- Conditional form fields: until `FormField.when` is in the contract, the wizard hides empty required fields the server doesn't list as missing; optional conditional fields stay visible.
+- Eligibility is called only with analysed documents (newest copy per file name) – the API rejects the whole request otherwise.
+- Screenshots in `documentation/screenshots/` predate the polish pass (refresh pending).
 - No automated UI tests in repo; hero flow verified with a Playwright script (screenshots in `documentation/screenshots/`).
 
 ## Tests
