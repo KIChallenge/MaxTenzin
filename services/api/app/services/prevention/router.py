@@ -26,9 +26,9 @@ def _stored_vaccinations(subject_id: str) -> tuple[list[VaccinationEntry], str |
     return [VaccinationEntry(**v) for v in doc["vaccinations"]], doc.get("source_document_id")
 
 
-def _overview(ctx: Context, as_of: date) -> PreventionOverview:
+def _overview(ctx: Context, as_of: date, family_history: list[str] | None = None) -> PreventionOverview:
     vaccinations, source_doc = _stored_vaccinations(ctx.subject.id)
-    items, rule_ids = evaluate(ctx.subject, vaccinations, as_of)
+    items, rule_ids = evaluate(ctx.subject, vaccinations, as_of, family_history)
     ctx.rule_ids.extend(rule_ids)
     ctx.cite(*sorted({s.label for i in items for s in i.sources}))
     if source_doc:
@@ -46,8 +46,12 @@ def _as_of(value: str | None) -> date:
 
 @router.get("/overview", response_model=PreventionOverview, summary="Vaccination history + due prevention items")
 def overview(as_of: str | None = Query(None, description="Stichtag (ISO date), default today"),
+             family_history: list[str] | None = Query(
+                 None, description="Erkrankungen in der Familie laut eigener Angabe, z. B. darmkrebs, brustkrebs, "
+                                   "diabetes, herz_kreislauf → passende Programme werden als besonders relevant "
+                                   "erklärt (keine Risikoeinschätzung)"),
              ctx: Context = Depends(require(Scope.view_health_prevention))):
-    return _overview(ctx, _as_of(as_of))
+    return _overview(ctx, _as_of(as_of), family_history)
 
 
 @router.post("/import/{document_id}", response_model=PreventionOverview, summary="Import vaccinations from an uploaded e-Impfpass PDF")
