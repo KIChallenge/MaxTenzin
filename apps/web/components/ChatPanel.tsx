@@ -53,6 +53,8 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
   const recognition = useRef<Recognition | null>(null);
   const [listening, setListening] = useState(false);
   const [voiceError, setVoiceError] = useState<string | null>(null);
+  // Question handed over from a page ("Lotsi fragen"): sent once the fresh conversation state is in place.
+  const [pendingSend, setPendingSend] = useState<string | null>(null);
 
   /** Speech → text field (de-AT). The person still presses "Senden" – nothing is sent unseen. */
   function toggleVoice() {
@@ -102,10 +104,17 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
   }, [msgs, conv, storeKey]);
   useEffect(() => {
     const onOpen = (e: Event) => {
+      const d = (e as CustomEvent<{ question?: string; send?: boolean; fresh?: boolean } | string | undefined>).detail;
+      const detail = typeof d === "string" ? { question: d } : (d ?? {});
       setOpen(true);
       setView("chat");
-      const q = (e as CustomEvent<string | undefined>).detail;
-      if (q) setInput(q);
+      if (detail.fresh) {
+        setConv(null);
+        setMsgs([]);
+        setFiles([]);
+      }
+      if (detail.question && detail.send) setPendingSend(detail.question);
+      else if (detail.question) setInput(detail.question);
     };
     window.addEventListener("lotse:open-chat", onOpen);
     return () => window.removeEventListener("lotse:open-chat", onOpen);
@@ -226,6 +235,14 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
     // The agent may have changed data (case steps, form values) — refresh server views.
     if (r.data.tool_trace?.length) router.refresh();
   }
+
+  useEffect(() => {
+    if (!pendingSend || busy || conv !== null || msgs.length) return;
+    const q = pendingSend;
+    setPendingSend(null);
+    send(q);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingSend, conv, msgs.length, busy]);
 
   if (!open) {
     return (

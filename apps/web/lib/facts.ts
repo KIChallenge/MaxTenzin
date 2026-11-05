@@ -1,31 +1,65 @@
-// German wording for the fact keys the eligibility engine reports in `missing_fields`
-// (see services/api/app/services/benefits/README.md). Unknown keys fall back to a generic line.
-export const FACT_LABELS: Record<string, string> = {
-  care_need_months: "Wie lange wird voraussichtlich Pflege gebraucht (in Monaten)?",
-  care_hours_estimate: "Geschätzter Pflegebedarf in Stunden pro Monat (die PVA stellt ihn beim Hausbesuch fest)",
-  receives_pflegegeld: "Wird bereits Pflegegeld bezogen?",
-  pflegegeld_applied: "Wurde Pflegegeld schon beantragt?",
-  care_need_at_home: "Wird Unterstützung bei Pflege oder Betreuung zu Hause gebraucht?",
-  home_nursing_ordered: "Hat die Ärztin bzw. der Arzt Hauskrankenpflege angeordnet?",
-  reha_application_with_medical_statement: "Liegt eine ärztliche Begründung für die Reha vor?",
-  gross_income_monthly: "Monatliches Bruttoeinkommen (für die Höhe der Zuzahlung)",
-  walking_unable_confirmed: "Ist die Gehunfähigkeit ärztlich bestätigt (Transportanweisung)?",
-  treatment_type: "Welche Behandlung steht an (z. B. Strahlentherapie)?",
-  distance_km: "Wie weit ist die Behandlungsstelle entfernt (km)?",
-  treatment_outside_home_town: "Liegt die Behandlungsstelle außerhalb des Wohnorts?",
-  companion_needed: "Ist eine Begleitperson nötig?",
-  rgb_exempt: "Besteht bereits eine Rezeptgebührenbefreiung?",
-  net_income_monthly: "Monatliches Nettoeinkommen",
-  household: "Allein lebend oder als Paar?",
-  lives_alone: "Allein lebend?",
-  children_count: "Anzahl der Kinder im Haushalt",
-  chronic_illness_expenses: "Gibt es nachgewiesene krankheitsbedingte Mehrausgaben?",
-  receives_ausgleichszulage: "Wird eine Ausgleichszulage bezogen?",
-  costs_eur: "Welche krankheitsbedingten Kosten fallen an (in €)?",
-  familienbeihilfe_received: "Wird Familienbeihilfe bezogen?",
-  shared_household_with_child: "Lebt das Kind im gemeinsamen Haushalt?",
+// Facts the eligibility engine asks for (missing_fields) – German question + input type.
+// Source: services/api/app/services/benefits/README.md. The person answers; the service decides.
+export type FactInput =
+  | { kind: "bool" }
+  | { kind: "number"; unit?: string; min?: number; max?: number }
+  | { kind: "choice"; options: [string, string][] }
+  | { kind: "text"; placeholder?: string };
+
+type Def = { q: string; input: FactInput; hint?: string };
+
+const B: FactInput = { kind: "bool" };
+export const FACTS: Record<string, Def> = {
+  care_need_months: { q: "Wie lange wird voraussichtlich Pflege gebraucht?", input: { kind: "number", unit: "Monate", min: 0, max: 120 } },
+  care_hours_estimate: { q: "Wie viele Stunden Hilfe pro Monat ungefähr?", input: { kind: "number", unit: "Std./Monat", min: 0, max: 744 }, hint: "Körperpflege, Essen, Haushalt, Wege – die PVA stellt den genauen Bedarf beim Hausbesuch fest." },
+  receives_pflegegeld: { q: "Wird bereits Pflegegeld bezogen?", input: B },
+  pflegegeld_applied: { q: "Wurde Pflegegeld schon beantragt?", input: B },
+  care_need_at_home: { q: "Wird Unterstützung bei Pflege oder Betreuung zu Hause gebraucht?", input: B },
+  home_nursing_ordered: { q: "Hat die Ärztin bzw. der Arzt Hauskrankenpflege angeordnet?", input: B, hint: "Steht meist auf einer eigenen Verordnung – im Zweifel in der Ordination nachfragen." },
+  reha_application_with_medical_statement: { q: "Liegt eine ärztliche Begründung für die Reha vor?", input: B },
+  gross_income_monthly: { q: "Monatliches Bruttoeinkommen", input: { kind: "number", unit: "€", min: 0 } },
+  walking_unable_confirmed: { q: "Ist die Gehunfähigkeit ärztlich bestätigt (Transportanweisung)?", input: B },
+  treatment_type: {
+    q: "Welche Behandlung steht an?",
+    input: { kind: "choice", options: [["strahlentherapie", "Strahlentherapie"], ["chemotherapie", "Chemotherapie"], ["immuntherapie", "Immuntherapie"], ["dialyse", "Dialyse"], ["andere", "Andere"]] },
+  },
+  distance_km: { q: "Wie weit ist die Behandlungsstelle entfernt?", input: { kind: "number", unit: "km", min: 0 } },
+  treatment_outside_home_town: { q: "Liegt die Behandlungsstelle außerhalb des Wohnorts?", input: B },
+  companion_needed: { q: "Ist eine Begleitperson nötig?", input: B },
+  rgb_exempt: { q: "Besteht bereits eine Rezeptgebührenbefreiung?", input: B },
+  net_income_monthly: { q: "Monatliches Nettoeinkommen", input: { kind: "number", unit: "€", min: 0 } },
+  household: { q: "Allein lebend oder als Paar?", input: { kind: "choice", options: [["alleinstehend", "allein"], ["paar", "als Paar"]] } },
+  lives_alone: { q: "Lebt die Person allein?", input: B },
+  children_count: { q: "Anzahl der Kinder im Haushalt", input: { kind: "number", min: 0, max: 20 } },
+  chronic_illness_expenses: { q: "Gibt es nachgewiesene krankheitsbedingte Mehrausgaben?", input: B },
+  receives_ausgleichszulage: { q: "Wird eine Ausgleichszulage bezogen?", input: B },
+  costs_eur: { q: "Welche krankheitsbedingten Kosten fallen an?", input: { kind: "number", unit: "€", min: 0 } },
+  familienbeihilfe_received: { q: "Wird Familienbeihilfe bezogen?", input: B },
+  shared_household_with_child: { q: "Lebt das Kind im gemeinsamen Haushalt?", input: B },
+  aid_needed: { q: "Wird ein Hilfsmittel gebraucht (z. B. Rollator, Pflegebett)?", input: B },
+  aid_type: { q: "Welches Hilfsmittel?", input: { kind: "text", placeholder: "z. B. Rollator" } },
+  aid_prescribed: { q: "Hat die Ärztin bzw. der Arzt das Hilfsmittel verordnet?", input: B },
+  pflegegeld_level: { q: "Welche Pflegegeldstufe besteht derzeit?", input: { kind: "number", min: 0, max: 7 }, hint: "0 = kein Pflegegeld" },
+  dementia_documented: { q: "Ist eine Demenz ärztlich dokumentiert?", input: B },
+  main_carer_since_months: { q: "Seit wie vielen Monaten pflegen Sie hauptsächlich?", input: { kind: "number", unit: "Monate", min: 0 } },
+  carer_prevented: { q: "Sind Sie als pflegende Person verhindert (Krankheit, Urlaub)?", input: B },
+  care_24h_needed: { q: "Wird Betreuung rund um die Uhr gebraucht?", input: B },
+  care_24h_carer_qualified: { q: "Hat die Betreuungskraft die nötige Qualifikation?", input: B },
+  pflegekarenz_agreed: { q: "Ist eine Pflegekarenz bzw. -teilzeit mit dem Arbeitgeber vereinbart?", input: B },
+  caregiver_insured_3m: { q: "Waren Sie in den letzten 3 Monaten versichert beschäftigt?", input: B },
+  caregiver_main_carer: { q: "Pflegen Sie hauptsächlich (Hauptpflegeperson)?", input: B },
+  financial_hardship: { q: "Reicht das Einkommen nicht für den Lebensunterhalt?", input: B },
 };
 
 export function factLabel(key: string) {
-  return FACT_LABELS[key] ?? (/\s/.test(key) ? key : "Weitere Angabe nötig");
+  return FACTS[key]?.q ?? (/\s/.test(key) ? key : "Weitere Angabe nötig");
+}
+
+export type FactValue = string | number | boolean;
+export function fmtFact(key: string, v: FactValue) {
+  const def = FACTS[key];
+  if (typeof v === "boolean") return v ? "Ja" : "Nein";
+  if (def?.input.kind === "choice") return def.input.options.find(([k]) => k === v)?.[1] ?? String(v);
+  if (def?.input.kind === "number" && def.input.unit) return `${v} ${def.input.unit}`;
+  return String(v);
 }
