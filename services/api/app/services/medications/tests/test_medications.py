@@ -30,3 +30,11 @@ def test_search_prefix_first():
     res = service.search("amlo", 5)
     assert res and res[0].name.lower().startswith("amlo")
     assert service.search("   ") == []
+
+
+def test_search_tokens_when_no_substring_hit():
+    # people type 'Pantoprazol 20 mg' / '20mg'; EKO names read 'Pantoprazol "Sandoz" 20 mg magensaftresistente Tabl.'
+    for q in ("Pantoprazol 20 mg", "pantoprazol 20mg"):
+        hits = service.search(q, 10)
+        assert hits and all("pantoprazol" in m.name.lower() and "20 mg" in m.name.lower() for m in hits), q
+    assert service.search("Pantoprazol 999 mg", 10) == []

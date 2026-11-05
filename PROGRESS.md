@@ -9,8 +9,8 @@ Single source of truth for all sessions. Update your row at start and at Definit
 - [x] **G0b** Azure LLM reachable (`make smoke-llm`) — live extraction of Entlassungsbrief: 12/12 quotes verified, 5.6 s
 - [x] **G1 (H8)** hero flow clickable in cockpit; ✅ WS-B/D/F real services merged (114 tests) — API end-to-end verified: letter → eligibility → PAL080 official PDF (30 fields, ENTWURF stamp)
 - [x] **G2 (H13)** hero flow on real API incl. agent — ✅ API side done (agent + evals 28/28 live); ✅ cockpit wired (WS-W): photo upload → Lebenslage → Leistungen → PAL 080 via chat in the open wizard → PDF → inbox → appointment → Mein Fall; evals now 34/34 live
-- [ ] **G3 (H19) FREEZE** evals green, Floorplan health check clean, demo script run 3×, backup video recorded — in progress: evals 34/34 live, `make test` 250 passed, `make demo-check` 16/16; ⬜ rehearsal 3×, ⬜ backup video
-- [ ] **G4 (H23)** pitch deck (DE) done, rehearsed 3×
+- [ ] **G3 (H19) FREEZE** evals green, Floorplan health check clean, demo script run 3×, backup video recorded — in progress: evals 35/35 live (full run committed in `evals/REPORT.md`), `make test` 262 passed, `make demo-check` 22/22; ⬜ rehearsal 3×, ⬜ backup video
+- [ ] **G4 (H23)** pitch deck (DE) done, rehearsed 3× — draft with speaker notes: `documentation/pitch/pitch-deck.md`; ⬜ slides built, ⬜ rehearsed
 
 ## Workstreams
 | WS | Scope | Owner (session) | Branch | Status | Last update | Blockers |
@@ -19,7 +19,7 @@ Single source of truth for all sessions. Update your row at start and at Definit
 | WS-B | benefits catalog + eligibility, directory, legal FTS5, medications | bg agent | ws/B-benefits | merged | H5 | offices outside Wien not curated |
 | WS-D | documents extraction (+golden), prevention (Impfpass) | bg agent | ws/D-documents | merged | H4 | — (live path verified; first live result cached per file hash) |
 | WS-F | forms: schemas, sessions, prefill, real PDF fill | bg agent | ws/F-forms | merged | H6 | Einrichtungswunsch/Senioren-WG/Reha-n-Unfall not mapped |
-| WS-W | web cockpit | human session | ws/W-web | merged (6×); screenshots on clean data | H16 | — |
+| WS-W | web cockpit | human session | ws/W-web | done – frozen (ws/W-web == main); screenshots on clean data | H16 | — |
 | WS-A | agent orchestrator + guardrails + evals | bg agent | ws/A-agent | merged | H7 | evals 34/34 live (REPORT.md) |
 | WS-C | cases + notifications | integrator | main | merged | H3 | — |
 | WS-T | appointments (providers, slots by preferences, booking, ics) | bg agent | ws/T-appointments | merged | — | providers outside Wien not covered |
@@ -78,6 +78,8 @@ See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished it
 - WS-DOC → integrator (found while aligning docs; behaviour not changed): (1) `agent/orchestrator.py` reads `store.get("known_facts", …)` directly — invariant 4 says API only; use `GET /api/benefits/facts`. (2) Notification links are `/prevention`, `/lebenslage`, `/case`, but cockpit routes are `/vorsorge`, `/` (Lebenslage panel), `/fall`; the cockpit maps them via `cockpitRoute()`, a contract-level fix would be cleaner. (3) `identity` (except care-team) and `audit` routes use `Depends(get_context)` instead of `require()` (invariant 5 wording); behaviour is fine (authenticated, audited). (4) `documentation/demo-script.md` says "249 Tests" and "19 Grenzfälle": verified are 250 passed (`make test`: 244 API + 6 extraction) and 20 boundary evals (34 total). (5) No per-service README for identity, cases, notifications, audit (DoD asks for one).
 
 - (integrator, done — WS-DOC findings) Lotsi reads stored answers via `GET /api/benefits/facts` (no direct store access); inbox links use cockpit routes (`/vorsorge`, `/#lebenslage`, `/fall`); demo-script numbers updated; READMEs for identity, cases, notifications, audit added. Kept by design: identity/audit use `get_context` (authenticated + audited, no scope needed for own profile/log).
+
+- (integrator, done — jury-readiness review against `Use Case 1.docx`) `evals/REPORT.md` had been overwritten by a single-case run (1/1) while docs cited 34/34 → full run committed. Erstattungskodex and Rezeptgebühr (Aufgabe 5 im Brief) were built but never shown → prompt rule (`check_benefits` with `rezeptgebuehrenbefreiung`/`-obergrenze` + letter, `search_medication` for named products), eval `rezeptgebuehr_maria`, EKO search matches token-wise („Pantoprazol 20 mg“). Demo script: Rezeptgebühr + EKO lines in Akt 1; Akt 4 now shows the use-case Arzttermin dialogue (Anlass → Nähe → vormittags), the **Kind** scenario (4th jury scenario) and an English reply (personalisation, use case §3); Q&A for off-bundle requests, Wien-only, Honorarordnung, „wissenschaftlich“. `make demo-check` covers the new scenes. Lesson: a running `make api-demo` keeps old code until restarted (English germanisms seen on a stale process) → T-30 checklist.
 
 ## Decisions log
 - D1 Modular monolith (FastAPI routers per service) instead of microservices — same boundaries, 1/10 ops cost.

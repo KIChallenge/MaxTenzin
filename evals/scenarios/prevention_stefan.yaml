@@ -20,5 +20,7 @@ subject: lena
 turns:
   - user: "Was ist bei meiner Tochter Lena an Vorsorge fällig, und welche Familienleistungen gibt es für sie?"
     expect:
-      tools_any: [get_prevention, check_benefits]
+      # the Kind bundle (match_bundle) carries the Eltern-Kind-Pass prevention items and the family benefits
+      tools_any: [get_prevention, check_benefits, match_bundle]
+      reply_any: ["Eltern-Kind-Pass", "Vorsorge", "Impf"]
       reply_none: ["Ihnen fehlt", "fehlt Lena"]

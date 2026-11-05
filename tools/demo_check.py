@@ -9,6 +9,7 @@ Usage: make demo-check            (API on http://localhost:8000)
 from __future__ import annotations
 
 import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -107,6 +108,16 @@ def main() -> int:
                        json={"provider_id": gp["provider_id"] if gp else None, "daypart": "morning", "limit": 5}).json()
         check(len(slots) >= 3, f"Akt 1: freie Vormittagstermine bei der Hausärztin ({len(slots)})", t0)
 
+        # ---------------- Akt 1: Rezeptgebühr (Aufgabe aus dem Brief) + Erstattungskodex
+        t0 = time.perf_counter()
+        rr = chat(c, MARIA_ANNA, "Muss meine Mutter für ihre Medikamente Rezeptgebühr zahlen?", document_ids=["doc-anna-entlassung"])
+        check("check_benefits" in tools(rr) and "7,55" in rr["reply"],
+              "Akt 1: Rezeptgebühr – Anspruchsprüfung, 7,55 € (veraendW), Brief S. 6", t0)
+        t0 = time.perf_counter()
+        rm = chat(c, MARIA_ANNA, "Was kostet Pantoprazol auf Rezept?", rr["conversation_id"])
+        check("search_medication" in tools(rm) and not re.search(r"dosierung|einnehmen|nehmen sie", rm["reply"], re.IGNORECASE),
+              "Akt 1: Erstattungskodex-Abfrage (nur administrativ)", t0)
+
         # ---------------- Akt 2
         t0 = time.perf_counter()
         rb = chat(c, MARIA_ANNA, "Ist ihr Tumor jetzt weg?")
@@ -120,6 +131,25 @@ def main() -> int:
         prev = c.get("/api/prevention/overview", headers=STEFAN).json()
         flu = next((i for i in prev["items"] if i["id"] == "influenza"), {})
         check(flu.get("status") == "due", "Akt 4: Stefan – Grippeimpfung fällig (Impfpass importiert)", t0, "make seed")
+
+        # ---------------- Akt 4: Arzttermin-Dialog, Kind, Personalisierung
+        t0 = time.perf_counter()
+        ra = chat(c, STEFAN, "Ich möchte einen Arzttermin.")
+        ra2 = chat(c, STEFAN, "Zur Kontrolle beim Hausarzt. Ja, gern in der Nähe, und vormittags.", ra["conversation_id"])
+        check(not tools(ra) and "?" in ra["reply"] and "search_slots" in tools(ra2)
+              and any(a["kind"] == "choose_slot" for a in ra2["actions"]),
+              "Akt 4: Arzttermin – Rückfrage zum Anlass → Vormittagstermine angeboten (nicht gebucht)", t0)
+        t0 = time.perf_counter()
+        rk = chat(c, STEFAN, "Ich habe ein Kind und möchte wissen, welche Angebote es gibt.")
+        check("match_bundle" in tools(rk) and "Eltern-Kind-Pass" in rk["reply"], "Akt 4: Kind-Bündel (Eltern-Kind-Pass …)", t0)
+        t0 = time.perf_counter()
+        ren = chat(c, MARIA_ANNA, "What is my mother entitled to after her hospital stay?", document_ids=["doc-anna-entlassung"])
+        low = ren["reply"].lower()
+        check("check_benefits" in tools(ren) and " the " in low and "in question" not in low and "into question" not in low,
+              "Akt 4: englische Antwort (vollständig Englisch, keine Germanismen)", t0, "API nach git pull neu gestartet?")
+        t0 = time.perf_counter()
+        rp = chat(c, MARIA_ANNA, "Was ist Pflegegeld und wer entscheidet darüber?", plain_language=True)
+        check(bool({"get_benefit", "check_benefits"} & set(tools(rp))), "Akt 4: Einfache Sprache", t0)
 
     failed = [r for r in results if not r[0]]
     print(f"\n{len(results) - len(failed)}/{len(results)} ok" + ("" if not failed else " – siehe Hinweise / Fallbacks im Drehbuch"))

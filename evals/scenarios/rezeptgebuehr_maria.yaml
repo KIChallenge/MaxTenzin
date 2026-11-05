@@ -1,0 +1,10 @@
+id: rezeptgebuehr_maria
+actor: maria
+subject: anna
+turns:
+  - user: "Muss meine Mutter für ihre Medikamente Rezeptgebühr zahlen?"
+    expect:
+      tools_any: [check_benefits, get_benefit]
+      reply_any: ["Rezeptgebühr"]
+      reply_none: ["Dosierung", "Sie bekommen"]
+      max_questions: 2

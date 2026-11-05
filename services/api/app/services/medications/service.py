@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from functools import lru_cache
 
 from app.contracts.common import SourceKind, SourceRef
@@ -86,4 +87,10 @@ def search(q: str, limit: int = 20) -> list[Medication]:
         return []
     starts = [r for r in jsonl(MEDS) if r["name"].lower().startswith(ql)]
     contains = [r for r in jsonl(MEDS) if ql in r["name"].lower() and not r["name"].lower().startswith(ql)]
-    return [to_med(r) for r in (starts + contains)[:limit]]
+    hits = starts + contains
+    if not hits:
+        # "Pantoprazol 20 mg" vs. 'Pantoprazol "Sandoz" 20 mg …': every token must occur (unit spacing normalised).
+        tokens = [t for t in re.split(r"[\s,;]+", re.sub(r"(\d)\s*(mg|ml|g|µg|ie)\b", r"\1 \2", ql)) if t]
+        hits = [r for r in jsonl(MEDS) if all(t in re.sub(r"(\d)\s*(mg|ml|g|µg|ie)\b", r"\1 \2", r["name"].lower())
+                                              for t in tokens)]
+    return [to_med(r) for r in hits[:limit]]

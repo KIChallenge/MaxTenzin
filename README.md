@@ -21,10 +21,10 @@
 - **Transparenz:** Jede Abfrage – Mensch, KI oder Service – mit Werkzeug, Berechtigung und Quellen; verweigerte rot.
 
 **Demo-Szenarien** (Drehbuch: [documentation/demo-script.md](documentation/demo-script.md))
-1. **Pflege nach dem Spital:** Maria fotografiert Annas Entlassungsbrief → Empfehlungen mit Zitat → Lebenslage übernehmen → Pflegegeld 206,20 € (Werte-Tabelle 2026, nicht der veraltete § 5 BPGG) → PAL 080 per Chat vorbereitet → Pflegeberatung per Chat im offenen Assistenten → PDF-Entwurf → Meldepflicht im Posteingang → Kontrolltermin bei der Hausärztin → Mein Fall.
+1. **Pflege nach dem Spital:** Maria fotografiert Annas Entlassungsbrief → Empfehlungen mit Zitat → Lebenslage übernehmen → Pflegegeld 206,20 € (Werte-Tabelle 2026, nicht der veraltete § 5 BPGG) → PAL 080 per Chat vorbereitet → Pflegeberatung per Chat im offenen Assistenten → PDF-Entwurf → Meldepflicht im Posteingang → Rezeptgebühr: 7,55 € (Wertetabelle 2026), Befreiung/Obergrenze (RRZ), Brief S. 6 zitiert; Medikament im Erstattungskodex nachgeschlagen → Kontrolltermin bei der Hausärztin → Mein Fall.
 2. **Grenze:** „Ist ihr Tumor jetzt weg?“ → freundliche Absage in < 1 s, ohne Modellaufruf, mit Angebot (Termin, Fragen fürs Arztgespräch).
 3. **Berechtigungen:** Anna entzieht „Anträge vorbereiten“ → auch Lotsi kann es nicht mehr; im Protokoll sichtbar.
-4. **Gesundheit fördern:** Stefan – Vorsorgeuntersuchung, fällige Grippeimpfung, Bewegt im Park, Familiengeschichte Darmkrebs.
+4. **Gesundheit, Kind, Personalisierung:** Stefan – Vorsorgeuntersuchung, fällige Grippeimpfung, Bewegt im Park; „Ich möchte einen Arzttermin“ → Rückfrage Anlass → Nähe/vormittags → Termine; „Ich habe ein Kind“ → Eltern-Kind-Pass, Familienbeihilfe, Kinderbetreuungsgeld; Maria fragt auf Englisch und bekommt eine vollständig englische Antwort; Familiengeschichte Darmkrebs → offizielles Programm, keine Risikozahlen.
 
 **Sicherheit & Grenzen** (Details: [documentation/safety.md](documentation/safety.md))
 - Keine Diagnosen, keine Befundinterpretation, keine Prognosen, keine Therapie- oder Medikamentenempfehlungen. Diagnosen wörtlich abschreiben – ja; deuten – nie.
@@ -117,8 +117,8 @@ Interactive architecture map (Floorplan export, open in a browser): [documentati
 | audit | transparency log of every call (UI, agent, service; incl. denied) | ✅ |
 | agent (Lotsi) | 30 tools (one per endpoint), input boundary guard, output guard, deterministic post-processing, 403-aware | ✅ |
 
-**Tests:** `make test` → 250 passed (244 API + 6 extraction), 6 skipped (need `docs/`), no key needed. `make lint` clean.
-**Evals (live, `gpt-5-4-mini`):** [evals/REPORT.md](evals/REPORT.md) — **34/34**: 10 scenarios (hero, Lebenslage, bundles, appointment, family history, diagnosis copy …), 20 boundary/red-team prompts (diagnosis, findings, prognosis, medication, emergency, suicide, doctor sections, submit, role play, EN/TR, prompt injection in message and PDF), 2 delegation, 2 language. Boundary refusals answer in < 0.2 s without any LLM call.
+**Tests:** `make test` → 262 passed (256 API + 6 extraction), 6 skipped (need `docs/`), no key needed. `make lint` clean.
+**Evals (live, `gpt-5-4-mini`):** [evals/REPORT.md](evals/REPORT.md) — **35/35**: 11 scenarios (hero, Lebenslage, bundles, appointment, family history, diagnosis copy, Rezeptgebühr …), 20 boundary/red-team prompts (diagnosis, findings, prognosis, medication, emergency, suicide, doctor sections, submit, role play, EN/TR, prompt injection in message and PDF), 2 delegation, 2 language. Boundary refusals answer in < 0.2 s without any LLM call.
 
 ## Data & sources
 Raw challenge data lives in `docs/` (gitignored). `make extract` deterministically produces `knowledge/extracted/` with a `MANIFEST.json` (source hashes): 1,976 legal paragraphs from 19 laws (SozDok), veraendW value tables (5 tables mapped, 686 rows), Erstattungskodex (6,985 packs), ÖGK Serviceratgeber 2026 (118 pages, page-accurate), 7 official form templates (all AcroForms, 4 mapped). Curated YAML (`knowledge/*.yaml`) cites a source for every entry; `make sources` lists them all in [documentation/sources.md](documentation/sources.md). Fictional medical documents (Befunde) are never committed.

@@ -16,6 +16,9 @@ named, not interpreted. Cost note uses the Rezeptgebühr from veraendW 2026.
 `knowledge/extracted/eko/medications.jsonl`, `legend.json`; veraendW Tab. 20.
 
 ## Limitations
+Search: prefix hits first, then substring; if neither matches, every token of the query must occur in the
+name with unit spacing normalised ("Pantoprazol 20mg" finds 'Pantoprazol "Sandoz" 20 mg …'). No synonym or
+active-ingredient index (brand names only as printed in the EKO).
 Codes such as `N`, `P`, `Au`, `D`, `U` are shown as "Weitere Einschränkung" without explanation (not in legend).
 
 ## Tests
