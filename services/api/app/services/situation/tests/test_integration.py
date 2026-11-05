@@ -26,11 +26,11 @@ def test_situation_reminders_and_steps_flow(client):
 
 def test_second_copy_of_document_does_not_duplicate_suggestions(client):
     from app.core.db import store
-    from app.fixtures import ANNA_ANALYSIS
 
     first = client.post("/api/situation/suggestions/from-document/doc-anna-entlassung", headers=H).json()
-    copy = ANNA_ANALYSIS.model_copy(update={"document_id": "doc-anna-copy"})
-    store.put("document_analyses", copy.document_id, copy.model_dump(), subject_id="anna")
+    # a second copy of the SAME letter (e.g. photo + PDF) yields the same analysis content
+    original = client.get("/api/documents/doc-anna-entlassung/analysis", headers=H).json()
+    store.put("document_analyses", "doc-anna-copy", {**original, "document_id": "doc-anna-copy"}, subject_id="anna")
     second = client.post("/api/situation/suggestions/from-document/doc-anna-copy", headers=H).json()
     assert {e["id"] for e in second} <= {e["id"] for e in first} | {e["id"] for e in second if e["status"] != "suggested"}
     overview = client.get("/api/situation", headers=H).json()
