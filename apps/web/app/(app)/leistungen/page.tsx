@@ -46,18 +46,26 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
   const transcript = prefillDoc ? await api<components["schemas"]["DocumentTranscript"]>(`/api/documents/${prefillDoc}/transcript`) : null;
   const transcriptPages = transcript?.ok ? transcript.data.pages.map((p) => ({ page: p.page, text: p.text })) : [];
   const prefillName = used.find((d) => d.document_id === prefillDoc)?.filename;
-  const [elig, forms] = await Promise.all([
+  const [elig, forms, ...analyses] = await Promise.all([
     api<EligibilityResult[]>("/api/benefits/eligibility", {
       method: "POST",
       body: { subject_id: subject.id, facts: {}, document_ids: documentIds }, // stored facts are merged by the service
     }),
     api<FormDefinition[]>("/api/forms"),
+    ...documentIds.map((id) => api<components["schemas"]["DocumentAnalysis"]>(`/api/documents/${id}/analysis`)),
   ]);
+  // Benefits the document's explicit recommendations point to (e.g. "Kontaktaufnahme … Beratungsstellen" → Pflegeberatung)
+  const recommendedIds = new Set(
+    analyses.flatMap((a) => (a.ok ? (a.data as components["schemas"]["DocumentAnalysis"]).recommendations.flatMap((r) => r.related_benefit_ids ?? []) : [])),
+  );
   const formTitle = new Map((forms.ok ? forms.data : []).map((f) => [f.form_id, f.title_de]));
   const canPrepare = me.data.scopes.includes("prepare_applications");
   const results = elig.ok ? [...elig.data].sort((a, b) => ORDER[a.status] - ORDER[b.status]) : [];
   const relevant = results.filter((r) => r.status !== "not_applicable");
   const notApplicable = results.filter((r) => r.status === "not_applicable");
+  // With a document: what the letter itself points to comes first; the rest of the catalog is folded away.
+  const fromDoc = relevant.filter((r) => recommendedIds.has(r.benefit.id) || r.criteria.some((c) => c.source?.kind === "document"));
+  const others = fromDoc.length ? relevant.filter((r) => !fromDoc.includes(r)) : relevant;
 
   return (
     <>
@@ -78,28 +86,52 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
         <p className="card text-muted">Derzeit keine passenden Leistungen gefunden. Laden Sie z. B. einen Entlassungsbrief hoch.</p>
       ) : (
         <>
-          <ul id="antraege" className="space-y-2">
-            {relevant.map((r) => (
-              <li key={r.benefit.id} id={r.benefit.id}>
-                <BenefitCard
-                  r={r}
-                  plain={plain}
-                  name={name}
-                  canPrepare={canPrepare}
-                  prefillDoc={prefillDoc}
-                  formTitle={formTitle}
-                  docMap={docMap}
-                  transcriptPages={transcriptPages}
-                  prefillName={prefillName}
-                />
-              </li>
-            ))}
-          </ul>
+          {fromDoc.length > 0 && (
+            <h2 className="mb-2 font-semibold">
+              Laut {used.some((d) => d.doc_type === "discharge_letter") ? "Entlassungsbrief" : "Dokument"} empfohlen ({fromDoc.length})
+            </h2>
+          )}
+          {(() => {
+            const cards = (list: EligibilityResult[]) => (
+              <ul className="space-y-2">
+                {list.map((r) => (
+                  <li key={r.benefit.id} id={r.benefit.id}>
+                    <BenefitCard
+                      r={r}
+                      plain={plain}
+                      name={name}
+                      canPrepare={canPrepare}
+                      prefillDoc={prefillDoc}
+                      formTitle={formTitle}
+                      docMap={docMap}
+                      transcriptPages={transcriptPages}
+                      prefillName={prefillName}
+                    />
+                  </li>
+                ))}
+              </ul>
+            );
+            return (
+              <div id="antraege">
+                {fromDoc.length > 0 ? cards(fromDoc) : cards(others)}
+                {fromDoc.length > 0 && others.length > 0 && (
+                  <details className="group mt-8">
+                    <summary className="mb-2 flex cursor-pointer list-none items-center gap-2 font-semibold text-muted hover:text-ink [&::-webkit-details-marker]:hidden">
+                      <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" aria-hidden />
+                      Weitere Leistungen, die passen könnten ({others.length})
+                    </summary>
+                    {cards(others)}
+                  </details>
+                )}
+              </div>
+            );
+          })()}
           {notApplicable.length > 0 && (
-            <section aria-labelledby="na-h" className="mt-8">
-              <h2 id="na-h" className="mb-2 font-semibold text-muted">
-                Trifft derzeit nicht zu
-              </h2>
+            <details className="group mt-8">
+              <summary className="mb-2 flex cursor-pointer list-none items-center gap-2 font-semibold text-muted hover:text-ink [&::-webkit-details-marker]:hidden">
+                <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" aria-hidden />
+                Trifft derzeit nicht zu ({notApplicable.length})
+              </summary>
               <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
                 {notApplicable.map((r) => (
                   <li key={r.benefit.id} className="flex flex-wrap items-center gap-3 px-5 py-3">
@@ -111,7 +143,7 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
                   </li>
                 ))}
               </ul>
-            </section>
+            </details>
           )}
         </>
       )}
