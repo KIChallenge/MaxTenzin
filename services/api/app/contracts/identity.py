@@ -9,6 +9,7 @@ class Scope(StrEnum):
     manage_appointments = "manage_appointments"
     view_health_prevention = "view_health_prevention"
     manage_case = "manage_case"
+    manage_situation = "manage_situation"     # Lebenslage (Krankenhaus, Reha, Therapie …) sehen/ändern
 
 
 class Address(BaseModel):

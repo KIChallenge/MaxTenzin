@@ -20,6 +20,7 @@ SCOPE_DE = {
     "manage_appointments": "Termine verwalten",
     "view_health_prevention": "Vorsorge- und Gesundheitsdaten einsehen",
     "manage_case": "Fall verwalten",
+    "manage_situation": "Lebenslage",
 }
 
 STATUS_DE = {

@@ -106,6 +106,109 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/situation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Current Lebenslage: episodes, suggestions, effects */
+        get: operations["overview_api_situation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/situation/episodes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add an episode (set by the person/representative) */
+        post: operations["add_api_situation_episodes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/situation/episodes/{episode_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove an episode entered by mistake */
+        delete: operations["delete_api_situation_episodes__episode_id__delete"];
+        options?: never;
+        head?: never;
+        /** Change dates/status (e.g. end an episode) */
+        patch: operations["update_api_situation_episodes__episode_id__patch"];
+        trace?: never;
+    };
+    "/api/situation/suggestions/from-document/{document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Suggest episodes from an analysed document (NOT applied until confirmed) */
+        post: operations["suggest_api_situation_suggestions_from_document__document_id__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/situation/suggestions/{episode_id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Consent: apply a suggestion */
+        post: operations["confirm_api_situation_suggestions__episode_id__confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/situation/suggestions/{episode_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decline a suggestion */
+        post: operations["reject_api_situation_suggestions__episode_id__reject_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/documents": {
         parameters: {
             query?: never;
@@ -1294,6 +1397,31 @@ export interface components {
          * @enum {string}
          */
         DocumentType: "discharge_letter" | "imaging_report" | "vaccination_record" | "other";
+        /** Effect */
+        Effect: {
+            kind: components["schemas"]["EffectKind"];
+            /** Episode Id */
+            episode_id?: string | null;
+            /** Title De */
+            title_de: string;
+            /**
+             * Detail De
+             * @default
+             */
+            detail_de: string;
+            /** Due Date */
+            due_date?: string | null;
+            /** Key */
+            key?: string | null;
+            /** Value */
+            value?: string | boolean | number | null;
+            source?: components["schemas"]["SourceRef"] | null;
+        };
+        /**
+         * EffectKind
+         * @enum {string}
+         */
+        EffectKind: "reminder" | "fact" | "prefill" | "case_step" | "hint";
         /** EligibilityRequest */
         EligibilityRequest: {
             /** Subject Id */
@@ -1347,6 +1475,78 @@ export interface components {
          * @enum {string}
          */
         EligibilityStatus: "likely" | "possible" | "needs_info" | "not_applicable";
+        /** Episode */
+        Episode: {
+            /** Id */
+            id: string;
+            /** Subject Id */
+            subject_id: string;
+            type: components["schemas"]["EpisodeType"];
+            /** Subtype */
+            subtype?: string | null;
+            /** Title De */
+            title_de: string;
+            /** Start */
+            start?: string | null;
+            /** End */
+            end?: string | null;
+            /** End Estimate De */
+            end_estimate_de?: string | null;
+            /** Institution */
+            institution?: string | null;
+            status: components["schemas"]["EpisodeStatus"];
+            source: components["schemas"]["SourceRef"];
+            /** Created By */
+            created_by: string;
+            /** Confirmed By */
+            confirmed_by?: string | null;
+            /** Confirmed At */
+            confirmed_at?: string | null;
+            /** Note De */
+            note_de?: string | null;
+        };
+        /** EpisodeCreate */
+        EpisodeCreate: {
+            type: components["schemas"]["EpisodeType"];
+            /** Subtype */
+            subtype?: string | null;
+            /** Title De */
+            title_de?: string | null;
+            /** Start */
+            start?: string | null;
+            /** End */
+            end?: string | null;
+            /** End Estimate De */
+            end_estimate_de?: string | null;
+            /** Institution */
+            institution?: string | null;
+            /** Note De */
+            note_de?: string | null;
+        };
+        /**
+         * EpisodeStatus
+         * @enum {string}
+         */
+        EpisodeStatus: "suggested" | "planned" | "active" | "ended" | "rejected";
+        /**
+         * EpisodeType
+         * @enum {string}
+         */
+        EpisodeType: "hospital" | "rehab_inpatient" | "rehab_outpatient" | "therapy" | "home_care" | "nursing_home" | "sick_leave" | "cure";
+        /** EpisodeUpdate */
+        EpisodeUpdate: {
+            /** Start */
+            start?: string | null;
+            /** End */
+            end?: string | null;
+            /** End Estimate De */
+            end_estimate_de?: string | null;
+            /** Institution */
+            institution?: string | null;
+            /** Note De */
+            note_de?: string | null;
+            status?: components["schemas"]["EpisodeStatus"] | null;
+        };
         /** ExtractedPerson */
         ExtractedPerson: {
             /** First Name */
@@ -1829,7 +2029,7 @@ export interface components {
          * Scope
          * @enum {string}
          */
-        Scope: "read_documents" | "prepare_applications" | "manage_appointments" | "view_health_prevention" | "manage_case";
+        Scope: "read_documents" | "prepare_applications" | "manage_appointments" | "view_health_prevention" | "manage_case" | "manage_situation";
         /**
          * Session
          * @description Who is logged in (actor) and for whom they currently act (subject).
@@ -1846,6 +2046,51 @@ export interface components {
              * @default []
              */
             delegations: components["schemas"]["Delegation"][];
+        };
+        /** SituationOverview */
+        SituationOverview: {
+            /** Subject Id */
+            subject_id: string;
+            /** As Of */
+            as_of: string;
+            /**
+             * Current
+             * @default []
+             */
+            current: components["schemas"]["Episode"][];
+            /**
+             * Upcoming
+             * @default []
+             */
+            upcoming: components["schemas"]["Episode"][];
+            /**
+             * Past
+             * @default []
+             */
+            past: components["schemas"]["Episode"][];
+            /**
+             * Suggestions
+             * @default []
+             */
+            suggestions: components["schemas"]["Episode"][];
+            /**
+             * Effects
+             * @default []
+             */
+            effects: components["schemas"]["Effect"][];
+            /**
+             * Facts
+             * @description Eligibility facts derived from confirmed episodes
+             * @default {}
+             */
+            facts: {
+                [key: string]: unknown;
+            };
+            /**
+             * Summary De
+             * @default
+             */
+            summary_de: string;
         };
         /** Slot */
         Slot: {
@@ -2199,6 +2444,262 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Delegation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    overview_api_situation_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SituationOverview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_api_situation_episodes_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EpisodeCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Episode"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_api_situation_episodes__episode_id__delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                episode_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_api_situation_episodes__episode_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                episode_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EpisodeUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Episode"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    suggest_api_situation_suggestions_from_document__document_id__post: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Episode"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    confirm_api_situation_suggestions__episode_id__confirm_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                episode_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Episode"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reject_api_situation_suggestions__episode_id__reject_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                episode_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Episode"];
                 };
             };
             /** @description Validation Error */
