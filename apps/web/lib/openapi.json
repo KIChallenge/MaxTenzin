@@ -7068,6 +7068,17 @@
               }
             ]
           },
+          "status_de": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status De"
+          },
           "source": {
             "anyOf": [
               {

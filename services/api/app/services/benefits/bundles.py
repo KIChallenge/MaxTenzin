@@ -196,7 +196,22 @@ def _benefit_item(it: ItemSpec, bc: BundleContext, cache: dict[str, EligibilityR
             src = next((s for s in reversed(p.sources) if s.kind == SourceKind.brochure), src)
     kind = "offer" if catalog.is_offer(it.ref) else "benefit"
     return BundleItem(kind=kind, ref_id=it.ref, title_de=res.benefit.name_de, why_de=it.why_de + doc_note,
-                      status=res.status, source=catalog.resolve(it.source) if it.source else src)
+                      status=res.status, status_de=_status_de(kind, it.ref, res.status),
+                      source=catalog.resolve(it.source) if it.source else src)
+
+
+OPEN_TO_ALL = {"vorsorgeuntersuchung"}  # free services without a decision by a Träger
+STATUS_DE = {"likely": "kommt voraussichtlich in Frage", "possible": "kommt möglicherweise in Frage",
+             "needs_info": "noch Angaben nötig", "not_applicable": "trifft nicht zu"}
+PREVENTION_STATUS_DE = {"due": "jetzt fällig", "upcoming": "demnächst", "up_to_date": "aktuell",
+                        "not_documented": "nicht im e-Impfpass dokumentiert – mit Ärztin bzw. Arzt klären"}
+
+
+def _status_de(kind: str, ref: str, status) -> str | None:
+    st = getattr(status, "value", status)
+    if (kind == "offer" or ref in OPEN_TO_ALL) and st == "likely":
+        return "kostenlos nutzbar"
+    return STATUS_DE.get(st)
 
 
 def _prevention_item(it: ItemSpec, bc: BundleContext) -> BundleItem | None:
@@ -208,6 +223,7 @@ def _prevention_item(it: ItemSpec, bc: BundleContext) -> BundleItem | None:
     if p is None or (p.status == PreventionStatus.up_to_date and not p.explanation_de.startswith(FAMILY_MARK)):
         return None
     return BundleItem(kind="prevention", ref_id=p.id, title_de=p.title_de, why_de=f"{it.why_de} {p.explanation_de}",
+                      status_de=PREVENTION_STATUS_DE.get(getattr(p.status, "value", p.status)),
                       source=p.sources[0] if p.sources else None)
 
 

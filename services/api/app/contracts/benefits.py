@@ -56,6 +56,7 @@ class BundleItem(BaseModel):
     title_de: str
     why_de: str                       # why this is relevant here (administrative, never medical)
     status: EligibilityStatus | None = None
+    status_de: str | None = None      # plain status label, e.g. "jetzt fällig", "kostenlos nutzbar", "kommt voraussichtlich in Frage"
     source: SourceRef | None = None
 
 

@@ -381,8 +381,9 @@ TOOLS: list[Tool] = [
                             "document_ids": a.get("document_ids") or []},
          compact=lambda d: d and {"id": d.get("id"), "title_de": d.get("title_de"), "next_step_de": d.get("next_step_de"),
                                   "questions_de": d.get("questions_de"),
-                                  "items": [{k: i.get(k) for k in ("kind", "ref_id", "title_de", "why_de", "status")}
-                                            for i in d.get("items", [])[:10]]},
+                                  "items": [{k: i.get(k) for k in ("kind", "ref_id", "title_de", "why_de", "status_de")}
+                                            | {"source": (i.get("source") or {}).get("label")}
+                                            for i in d.get("items", [])[:16]]},
          summary=lambda a, d: f"Bündel „{(d or {}).get('title_de', '–')}“ mit {len((d or {}).get('items', []))} Punkt(en)"),
     Tool("get_care_team", "Behandlungsteam der vertretenen Person (Hausärztin, Fachambulanz) mit Adresse und provider_id.",
          {}, [], "GET", lambda a, c: "/api/identity/care-team",

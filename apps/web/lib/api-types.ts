@@ -1252,6 +1252,8 @@ export interface components {
             /** Why De */
             why_de: string;
             status?: components["schemas"]["EligibilityStatus"] | null;
+            /** Status De */
+            status_de?: string | null;
             source?: components["schemas"]["SourceRef"] | null;
         };
         /** BundleRequest */
