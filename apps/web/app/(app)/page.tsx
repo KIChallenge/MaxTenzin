@@ -1,6 +1,9 @@
 import { Building2, Compass, Eye, FilePen, FileText, ListChecks, Pill, Scale, Syringe } from "lucide-react";
 import Link from "next/link";
+import { BundleCard } from "@/components/BundleCard";
 import { CareTeamCard } from "@/components/CareTeamCard";
+import type { components } from "@/lib/api-types";
+import type { DocumentSummary } from "@/lib/types";
 import { Lebenslage } from "@/components/Lebenslage";
 import type { CareTeam } from "@/lib/care";
 import { OpenChatButton } from "@/components/OpenChatButton";
@@ -29,6 +32,20 @@ export default async function Cockpit() {
     api<SituationOverview>("/api/situation"),
     api<CareTeam>("/api/identity/care-team"),
   ]);
+  // Bundle for the current situation: newest copy of each document + the Lebenslage summary as text.
+  const docs = await api<DocumentSummary[]>("/api/documents");
+  const seen = new Set<string>();
+  const docIds = (docs.ok ? [...docs.data].sort((a, b) => b.uploaded_at.localeCompare(a.uploaded_at)) : [])
+    .filter((d) => (seen.has(d.filename) ? false : (seen.add(d.filename), true)))
+    .slice(0, 3)
+    .map((d) => d.document_id);
+  const bundle =
+    docIds.length || (situation.ok && situation.data.summary_de)
+      ? await api<components["schemas"]["Bundle"] | null>("/api/benefits/bundles/match", {
+          method: "POST",
+          body: { document_ids: docIds, text: situation.ok ? situation.data.summary_de || null : null, facts: {} },
+        })
+      : null;
   const subject = me.ok ? me.data.subject : null;
   const actor = me.ok ? me.data.actor : null;
   const forOther = subject && actor && subject.id !== actor.id;
@@ -46,6 +63,11 @@ export default async function Cockpit() {
             firstName={subject?.first_name ?? ""}
           />
         </div>
+        {bundle?.ok && bundle.data && (
+          <div className="mt-5">
+            <BundleCard bundle={bundle.data} />
+          </div>
+        )}
         <div className="card mt-5 flex flex-wrap items-center gap-4 border-accent/30 bg-accent-soft">
           <div className="flex-1">
             <p className="font-semibold">Was möchten Sie heute erledigen?</p>
