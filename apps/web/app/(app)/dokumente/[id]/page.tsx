@@ -6,6 +6,7 @@ import { api } from "@/lib/api";
 import { DOC_TYPE, fmtDate, fullName, REC_CATEGORY } from "@/lib/labels";
 import { getMe } from "@/lib/me";
 import type { DocumentAnalysis } from "@/lib/types";
+import { ImportVaccinations } from "./ImportVaccinations";
 
 export default async function AnalysisPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -48,6 +49,13 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
           <h2 id="rec-h" className="mb-3 text-xl font-bold">
             Empfehlungen im Dokument ({a.recommendations.length})
           </h2>
+          {a.recommendations.length === 0 && (
+            <p className="card text-muted">
+              {a.doc_type === "vaccination_record"
+                ? "Ein e-Impfpass enthält keine Empfehlungen – die dokumentierten Impfungen können Sie in „Vorsorge“ übernehmen."
+                : "In diesem Dokument stehen keine ausdrücklichen Empfehlungen, die wir übernehmen können."}
+            </p>
+          )}
           <ul className="space-y-4">
             {a.recommendations.map((rec) => (
               <li key={rec.id} className="card">
@@ -60,6 +68,7 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
               </li>
             ))}
           </ul>
+          {a.doc_type === "vaccination_record" && <ImportVaccinations documentId={a.document_id} subjectName={name} />}
           {benefitIds.length > 0 && (
             <div className="card mt-6 flex flex-wrap items-center gap-4 border-accent/30 bg-accent-soft">
               <p className="flex-1 text-lg font-bold">Passende Leistungen jetzt prüfen</p>
