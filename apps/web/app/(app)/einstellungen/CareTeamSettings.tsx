@@ -3,6 +3,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Accessibility } from "lucide-react";
 import { bff } from "@/lib/client";
+import { Picker } from "@/components/Picker";
 import type { CareTeam, Provider } from "@/lib/care";
 
 /** Change the Hausärztin/Hausarzt (PUT /api/identity/care-team). */
@@ -35,18 +36,17 @@ export function CareTeamSettings({ team, gps }: { team: CareTeam; gps: Provider[
           });
         }}
       >
-        <label className="flex min-w-64 flex-1 flex-col gap-1">
-          <span className="font-semibold">Hausärztin / Hausarzt ändern</span>
-          <select className="input" value={choice} onChange={(e) => setChoice(e.target.value)}>
-            {options.map((g) => (
-              <option key={g.id} value={g.id}>
-                {g.name}
-                {g.zip ? ` – ${g.zip} ${g.city}` : ""}
-                {g.accessible ? " · barrierefrei" : ""}
-              </option>
-            ))}
-          </select>
-        </label>
+        <Picker
+          className="min-w-64 flex-1"
+          label="Hausärztin / Hausarzt ändern"
+          value={choice}
+          onChange={setChoice}
+          options={options.map((g) => ({
+            value: g.id,
+            label: g.name,
+            sub: [g.zip && `${g.zip} ${g.city}`, g.accessible && "barrierefrei"].filter(Boolean).join(" · ") || undefined,
+          }))}
+        />
         <button className="btn-secondary" disabled={pending || choice === current?.provider_id}>
           Speichern
         </button>

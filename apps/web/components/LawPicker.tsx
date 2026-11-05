@@ -1,106 +1,61 @@
 "use client";
-// Searchable law picker (combobox): type an abbreviation or part of the full title.
-import { useId, useRef, useState } from "react";
-import { Check, ChevronDown } from "lucide-react";
-import { type Law, matchLaws } from "@/lib/laws";
+// Law + paragraph pickers. Paragraphs come from GET /api/legal/laws/{key}/paragraphs; without that endpoint the
+// § field falls back to free text.
+import { useEffect, useState } from "react";
+import { bff } from "@/lib/client";
+import type { Law } from "@/lib/laws";
+import { Picker } from "./Picker";
 
-export function LawPicker({ name, laws, defaultKey, allowAll = false }: { name: string; laws: Law[]; defaultKey?: string; allowAll?: boolean }) {
-  const [selected, setSelected] = useState<Law | undefined>(laws.find((l) => l.key === defaultKey));
-  const [query, setQuery] = useState("");
-  const [open, setOpen] = useState(false);
-  const [active, setActive] = useState(0);
-  const id = useId();
-  const listId = `${id}-list`;
-  const inputRef = useRef<HTMLInputElement>(null);
-  const options: (Law | null)[] = [...(allowAll && !query ? [null] : []), ...matchLaws(laws, query)];
+type Para = { nr: string; heading: string; in_force?: string };
 
-  function choose(l: Law | null) {
-    setSelected(l ?? undefined);
-    setQuery("");
-    setOpen(false);
-  }
+export function LawPicker({ laws, defaultKey, defaultNr }: { laws: Law[]; defaultKey?: string; defaultNr?: string }) {
+  const [law, setLaw] = useState(defaultKey ?? "");
+  const [nr, setNr] = useState(defaultNr ?? "");
+  const [paras, setParas] = useState<Para[] | null>(null);
+
+  useEffect(() => {
+    setParas(null);
+    if (!law) return;
+    let alive = true;
+    bff<Para[]>(`/api/legal/laws/${encodeURIComponent(law)}/paragraphs`).then((r) => alive && setParas(r.ok ? r.data : []));
+    return () => {
+      alive = false;
+    };
+  }, [law]);
 
   return (
-    <div className="relative flex flex-col gap-1">
-      <label htmlFor={id} className="font-semibold">
-        Gesetz / Richtlinie
-      </label>
-      <input type="hidden" name={name} value={selected?.key ?? ""} />
-      <div className="relative">
-        <input
-          ref={inputRef}
-          id={id}
-          role="combobox"
-          aria-expanded={open}
-          aria-controls={listId}
-          aria-autocomplete="list"
-          aria-activedescendant={open ? `${listId}-${active}` : undefined}
-          autoComplete="off"
-          className="input pr-8"
-          placeholder={allowAll ? "Alle Gesetze" : "z. B. BPGG oder Pflegegeld"}
-          value={open ? query : selected ? `${selected.abbr} – ${selected.title}` : ""}
-          onFocus={() => {
-            setOpen(true);
-            setActive(0);
-          }}
-          onBlur={() => setTimeout(() => setOpen(false), 120)}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setOpen(true);
-            setActive(0);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "ArrowDown") {
-              e.preventDefault();
-              setOpen(true);
-              setActive((a) => Math.min(a + 1, options.length - 1));
-            } else if (e.key === "ArrowUp") {
-              e.preventDefault();
-              setActive((a) => Math.max(a - 1, 0));
-            } else if (e.key === "Enter" && open && options.length) {
-              e.preventDefault();
-              choose(options[active]);
-            } else if (e.key === "Escape") {
-              setOpen(false);
-            }
-          }}
+    <>
+      <Picker
+        name="law"
+        label="Gesetz / Richtlinie"
+        emptyLabel="Alle Gesetze"
+        value={law}
+        onChange={(v) => {
+          setLaw(v);
+          setNr("");
+        }}
+        options={laws.map((l) => ({
+          value: l.key,
+          label: l.abbr,
+          sub: `${l.title}${l.paragraphs ? ` · ${l.paragraphs} Bestimmungen` : ""}`,
+          search: l.key,
+        }))}
+      />
+      {law && paras && paras.length > 0 ? (
+        <Picker
+          name="nr"
+          label="§"
+          emptyLabel="Alle Paragrafen"
+          value={nr}
+          onChange={setNr}
+          options={paras.map((p) => ({ value: p.nr, label: `§ ${p.nr}`, sub: p.heading }))}
         />
-        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden />
-      </div>
-      {open && (
-        <ul
-          id={listId}
-          role="listbox"
-          className="absolute top-full right-0 left-0 z-30 mt-1 max-h-80 min-w-80 overflow-y-auto rounded-lg border border-line bg-surface p-1 shadow-lg"
-        >
-          {options.length === 0 && <li className="px-3 py-2 text-muted">Kein Gesetz gefunden.</li>}
-          {options.map((l, i) => (
-            <li
-              key={l?.key ?? "__all"}
-              id={`${listId}-${i}`}
-              role="option"
-              aria-selected={i === active}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                choose(l);
-              }}
-              onMouseEnter={() => setActive(i)}
-              className={`flex cursor-pointer items-start gap-2 rounded-md px-2.5 py-1.5 ${i === active ? "bg-accent-soft" : ""}`}
-            >
-              <span className="min-w-0 flex-1">
-                <span className="block font-semibold">{l ? l.abbr : "Alle Gesetze"}</span>
-                {l && (
-                  <span className="block text-sm leading-snug text-muted">
-                    {l.title}
-                    {l.paragraphs ? ` · ${l.paragraphs} Bestimmungen` : ""}
-                  </span>
-                )}
-              </span>
-              {(l?.key ?? "") === (selected?.key ?? "") && <Check className="mt-1 h-4 w-4 text-accent" aria-hidden />}
-            </li>
-          ))}
-        </ul>
+      ) : (
+        <label className="flex flex-col gap-1">
+          <span className="font-semibold">§</span>
+          <input name="nr" value={nr} onChange={(e) => setNr(e.target.value)} className="input" placeholder={law ? "z. B. 4" : "erst Gesetz wählen"} disabled={!law} />
+        </label>
       )}
-    </div>
+    </>
   );
 }
