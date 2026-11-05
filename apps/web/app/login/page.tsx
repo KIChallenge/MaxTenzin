@@ -1,0 +1,54 @@
+import { login } from "@/app/actions";
+import { api } from "@/lib/api";
+import { fmtDate, fullName } from "@/lib/labels";
+import type { Person } from "@/lib/types";
+
+const ROLE: Record<string, string> = {
+  maria: "Tochter, vertritt ihre Mutter Anna",
+  anna: "Pensionistin, nach Spitalsaufenthalt",
+  stefan: "Vater, Vorsorge für sich und Tochter Lena",
+  lena: "Kind (wird von Stefan vertreten)",
+};
+
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error } = await searchParams;
+  const personas = await api<Person[]>("/api/identity/personas");
+  return (
+    <main className="mx-auto max-w-3xl px-5 py-12">
+      <p className="eyebrow">Demo-Anmeldung</p>
+      <h1 className="text-4xl font-bold tracking-tight">Anmelden mit ID Austria</h1>
+      <p className="mt-2 text-lg text-muted">
+        Simulierte Anmeldung. Wählen Sie eine Demo-Person. Lotsi, die KI, arbeitet danach ausschließlich mit den
+        Berechtigungen dieser Person.
+      </p>
+      {error && (
+        <p role="alert" className="card mt-6 border-danger/40 bg-danger-soft text-danger">
+          {error}
+        </p>
+      )}
+      {!personas.ok ? (
+        <p role="alert" className="card mt-6 border-danger/40 bg-danger-soft">
+          Der Anmeldedienst ist nicht erreichbar ({personas.detail}). Läuft die API unter http://localhost:8000?
+        </p>
+      ) : (
+        <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+          {personas.data.map((p) => (
+            <li key={p.id}>
+              <form action={login}>
+                <input type="hidden" name="persona_id" value={p.id} />
+                <button className="card flex w-full flex-col items-start text-left transition hover:border-accent hover:shadow-md">
+                  <span className="text-xl font-bold text-accent-strong">{fullName(p)}</span>
+                  <span className="text-muted">{ROLE[p.id] ?? ""}</span>
+                  <span className="mt-2 text-sm text-muted">
+                    geb. {fmtDate(p.birth_date)} · {p.insurer}
+                  </span>
+                  <span className="btn-primary mt-4">Als {p.first_name} anmelden</span>
+                </button>
+              </form>
+            </li>
+          ))}
+        </ul>
+      )}
+    </main>
+  );
+}

@@ -1,26 +1,81 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Palette inspired by sozialversicherung.at (green / slate / light grey-blue), darkened green for WCAG AA.
+   No official logos or word marks – the demo must not pass for an official DVSV product. */
+@theme {
+  --color-paper: #f2f5f5;
+  --color-surface: #ffffff;
+  --color-ink: #16232b;
+  --color-muted: #475256;
+  --color-line: #dfe7e7;
+  --color-accent: #007a4f;
+  --color-accent-strong: #006b45;
+  --color-accent-soft: #e3f2ec;
+  --color-ok: #1d6638;
+  --color-ok-soft: #e3f1e6;
+  --color-warn: #7d5200;
+  --color-warn-soft: #fbefd5;
+  --color-info: #1c4a8a;
+  --color-info-soft: #e5edf8;
+  --color-danger: #9e2228;
+  --color-danger-soft: #fbe6e5;
+  --color-neutral: #475256;
+  --color-neutral-soft: #e9eeee;
+  --font-sans: var(--font-atkinson), ui-sans-serif, system-ui, sans-serif;
+  --radius-lg: 0.375rem;
+  --radius-xl: 0.5rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  font-size: 112.5%; /* 18px base for readability */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@utility card {
+  @apply rounded-xl border border-line bg-surface p-5;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-accent text-white hover:bg-accent-strong;
+}
+@utility btn-secondary {
+  @apply btn border border-accent bg-surface text-accent hover:bg-accent-soft;
+}
+@utility btn-ghost {
+  @apply btn text-accent hover:bg-accent-soft;
+}
+@utility input {
+  @apply w-full rounded-lg border border-muted/60 bg-surface px-3 py-1.5 text-ink placeholder:text-muted/70 focus:border-accent;
+}
+@utility link {
+  @apply font-bold text-accent underline decoration-2 underline-offset-2 hover:text-accent-strong;
+}
+@utility eyebrow {
+  @apply text-sm font-bold text-muted;
+}
+
+@keyframes flash {
+  from { background-color: var(--color-warn-soft); }
+  to { background-color: transparent; }
+}
+.flash { animation: flash 2.5s ease-out; }
+
+@media (min-width: 1024px) {
+  body.chat-open {
+    padding-right: 28rem;
+  }
 }
