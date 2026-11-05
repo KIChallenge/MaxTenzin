@@ -490,6 +490,34 @@ def test_change_permissions_only_on_explicit_request_and_merges(client):
         reset_delegations()
 
 
+def test_change_permissions_resolves_delegation_by_name(client):
+    """The model sometimes passes "maria" instead of "del-anna-maria": resolved deterministically, never guessed."""
+    import asyncio
+
+    from app.agent.tools import ToolClient, resolve_delegation
+    from app.seed.loader import reset_delegations
+
+    granted = [{"id": "del-anna-maria", "grantee_id": "maria", "scopes": []}]
+    personas = [{"id": "maria", "first_name": "Maria", "last_name": "Berger"},
+                {"id": "stefan", "first_name": "Stefan", "last_name": "Huber"}]
+    for ref in ("del-anna-maria", "maria", "Maria", "maria berger", "", None, "vollmacht-1"):
+        assert resolve_delegation(ref, granted, personas)["id"] == "del-anna-maria", ref
+    assert resolve_delegation("stefan", granted, personas) is None          # someone else: never another Vollmacht
+    two = granted + [{"id": "del-anna-x", "grantee_id": "stefan", "scopes": []}]
+    assert resolve_delegation("Stefan", two, personas)["id"] == "del-anna-x"
+    assert resolve_delegation("", two, personas) is None                    # ambiguous
+
+    reset_delegations()
+    h = {"Authorization": "Bearer demo-anna"}
+    try:
+        tc = ToolClient(h, "anna", "Anna Berger", memo={"_permission_request": True})
+        out = asyncio.run(tc.run("change_permissions", {"delegation_id": "maria", "grant": ["read_documents"]}))
+        assert out.ok and out.arguments["delegation_id"] == "del-anna-maria"
+        assert "read_documents" in out.data["scopes_de"] or "Dokumente lesen" in out.data["scopes_de"]
+    finally:
+        reset_delegations()
+
+
 def test_permission_request_regex():
     from app.agent.orchestrator import _PERMISSION_REQ
 

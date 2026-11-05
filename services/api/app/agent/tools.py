@@ -522,12 +522,16 @@ class ToolClient:
                 return ToolOutcome(name, args, 422, error_de="Berechtigungen ändere ich nur, wenn Sie das selbst "
                                    "ausdrücklich verlangen.", summary_de="Nicht geändert – kein ausdrücklicher Wunsch")
             r = await self.fetch("/api/identity/delegations", "context:delegations")
-            d = next((x for x in (r.json() if r.status_code == 200 else []) if x["id"] == args.get("delegation_id")), None)
+            granted = r.json() if r.status_code == 200 else []
+            d = next((x for x in granted if x["id"] == args.get("delegation_id")), None)
+            if d is None and granted:
+                pr = await self.fetch("/api/identity/personas", "context:personas")
+                d = resolve_delegation(args.get("delegation_id"), granted, pr.json() if pr.status_code == 200 else [])
             if d is None:
                 return ToolOutcome(name, args, 404, error_de="Diese Vollmacht haben Sie nicht erteilt.",
                                    summary_de="Vollmacht nicht gefunden")
             scopes = (set(d["scopes"]) | set(args.get("grant") or [])) - set(args.get("revoke") or [])
-            args = {**args, "scopes": sorted(scopes)}
+            args = {**args, "delegation_id": d["id"], "scopes": sorted(scopes)}
         if name == "confirm_situation_suggestion" and not self.memo.get("_user_consented"):
             return ToolOutcome(name, args, 422, error_de="Vorschläge übernehme ich erst nach Ihrer ausdrücklichen "
                                "Zustimmung („Ja, übernehmen“).", summary_de="Nicht übernommen – Zustimmung fehlt")
@@ -595,6 +599,25 @@ class ToolClient:
             summary = "erledigt"
         return ToolOutcome(tool.name, args, st, data=tool.compact(raw), summary_de=summary,
                            sources=collect_sources(raw)[:12])
+
+
+def resolve_delegation(ref: str | None, granted: list[dict], personas: list[dict]) -> dict | None:
+    """Which of the person's OWN delegations the model meant: exact id, else grantee id, else grantee first/full name
+    (case-insensitive), else the only one there is. Never a delegation the person did not grant."""
+    key = (ref or "").strip().lower()
+    by_id = {x["id"].lower(): x for x in granted}
+    if key in by_id:
+        return by_id[key]
+    names = {p["id"].lower(): {p["id"].lower(), p.get("first_name", "").lower(),
+                               f"{p.get('first_name', '')} {p.get('last_name', '')}".lower()}
+             for p in personas if isinstance(p, dict) and p.get("id")}
+    if key:
+        hit = [x for x in granted if key in names.get(x.get("grantee_id", "").lower(), {x.get("grantee_id", "").lower()})]
+        if len(hit) == 1:
+            return hit[0]
+        if any(key in n for n in names.values()):
+            return None          # names someone else (e.g. "stefan"): never fall back to another person's Vollmacht
+    return granted[0] if len(granted) == 1 else None
 
 
 def _compact_episode(e: dict) -> dict:
