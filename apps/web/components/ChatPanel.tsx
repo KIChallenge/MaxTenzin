@@ -3,7 +3,7 @@ import { FileText, History, LoaderCircle, Mic, MicOff, Paperclip, SquarePen, Tri
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { bff } from "@/lib/client";
-import { fmtDateTime } from "@/lib/labels";
+import { fmtDateTime, toolLabel } from "@/lib/labels";
 import type { ChatAction, ChatResponse, ToolTrace } from "@/lib/types";
 import type { components } from "@/lib/api-types";
 import { ACCEPT, uploadAndAnalyze } from "@/lib/upload";
@@ -511,7 +511,7 @@ function ChatMessage({
           <ul className="mt-2 space-y-1">
             {msg.trace.map((t, i) => (
               <li key={i} className={t.status >= 400 ? "text-danger" : ""}>
-                <code className="font-semibold">{t.tool}</code> · HTTP {t.status}
+                <span className="font-semibold" title={t.tool}>{toolLabel(t.tool)}</span> · HTTP {t.status}
                 {t.status === 403 && " (keine Berechtigung)"} — {t.summary_de}
                 {t.sources?.length > 0 && <span className="block text-muted">Quellen: {t.sources.join(", ")}</span>}
               </li>
