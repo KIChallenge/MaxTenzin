@@ -115,6 +115,20 @@ Nowhere else: eligibility, amounts, prevention, prefill, deadlines, case steps, 
 document facts are deterministic. Without a key (`LLM_MODE=fake`) extraction falls back to hand-verified goldens and
 the agent to a scripted planner with the same tools and guards — tests and the offline demo need no network.
 
+## How Lotsi calls the services (tool calling, not MCP)
+Lotsi uses the model's function calling. `app/agent/tools.py` defines 30 tools; each tool is exactly one HTTP endpoint
+(e.g. `check_benefits` → `POST /api/benefits/eligibility`, `search_slots` → `POST /api/appointments/slots/search`,
+`set_form_fields` → `PATCH /api/forms/sessions/{id}`). Per turn the orchestrator sends the conversation and the tool
+list to the model, executes the tool calls the model asks for, returns the results (wrapped as data, never as
+instructions) and repeats – at most 6 rounds – until an answer is ready; deterministic post-steps then check it.
+Calls go in-process through `httpx.ASGITransport` into the same FastAPI app – no network hop, but the full HTTP path:
+the **user's own token** and subject, plus `X-Via: agent` and `X-Agent-Tool: <name>`. Scope checks (403), validation
+and the audit log therefore apply to Lotsi exactly as to the cockpit; the Transparenz view shows every tool call.
+
+Why not MCP: MCP is a protocol for exposing tools to *external* AI clients. Here the agent lives inside the API, so
+direct function calling is one moving part less. The tool list is the natural basis for an MCP server later
+(see [roadmap.md](roadmap.md)).
+
 ## Why a modular monolith
 Same service boundaries and contracts as microservices (router + contract + store collection per service, HTTP calls
 between services), but one process. Splitting is a deployment decision on the roadmap ([roadmap.md](roadmap.md)), not

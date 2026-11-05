@@ -47,6 +47,13 @@ roughly by dependency, not by effort.
   data residency in the EU region.
 - Audit log: append-only/tamper-evident storage; export for the person (Auskunftsrecht).
 
+- **MCP server for other AI assistants (option).** Publish the same tool set (`app/agent/tools.py`) as an MCP
+  server, so external assistants (e.g. a Träger's own assistant, assistive apps for people with disabilities) can use
+  the services. Authorization stays the same: the person logs in with ID Austria (OAuth) and the client gets only the
+  delegated scopes; every call is audited as `via: mcp:<client>`. Prerequisites: real ID Austria/OAuth (section 1),
+  per-client consent and rate limits. Because guards inside a foreign client cannot be enforced, all decisions stay in
+  the deterministic services (already the case) and only tools are exposed – never raw data stores.
+
 ## 6. Quality, accessibility, trust
 - Accessibility audit (WCAG 2.1 AA / EN 301 549) of the cockpit; screen-reader pass; Einfache Sprache reviewed by
   plain-language editors.
