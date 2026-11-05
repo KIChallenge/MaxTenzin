@@ -2,6 +2,8 @@ import { Check, ChevronRight, FilePen, Paperclip, X } from "lucide-react";
 import Link from "next/link";
 import { startForm } from "@/app/actions";
 import { FactQuestion } from "@/components/FactQuestion";
+import { findEvidence } from "@/lib/facts";
+import type { components } from "@/lib/api-types";
 import { ApiError } from "@/components/ApiError";
 import { Badge } from "@/components/Badge";
 import { PageTitle } from "@/components/PageTitle";
@@ -40,6 +42,10 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
     used[0]?.document_id ??
     "";
 
+  // Text of the document used for the questions – to show matching passages verbatim next to them.
+  const transcript = prefillDoc ? await api<components["schemas"]["DocumentTranscript"]>(`/api/documents/${prefillDoc}/transcript`) : null;
+  const transcriptPages = transcript?.ok ? transcript.data.pages.map((p) => ({ page: p.page, text: p.text })) : [];
+  const prefillName = used.find((d) => d.document_id === prefillDoc)?.filename;
   const [elig, forms] = await Promise.all([
     api<EligibilityResult[]>("/api/benefits/eligibility", {
       method: "POST",
@@ -83,6 +89,8 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
                   prefillDoc={prefillDoc}
                   formTitle={formTitle}
                   docMap={docMap}
+                  transcriptPages={transcriptPages}
+                  prefillName={prefillName}
                 />
               </li>
             ))}
@@ -119,6 +127,8 @@ function BenefitCard({
   prefillDoc,
   formTitle,
   docMap,
+  transcriptPages,
+  prefillName,
 }: {
   r: EligibilityResult;
   plain: boolean;
@@ -127,6 +137,8 @@ function BenefitCard({
   prefillDoc: string;
   formTitle: Map<string, string>;
   docMap: Record<string, string>;
+  transcriptPages: { page: number; text: string }[];
+  prefillName?: string;
 }) {
   const st = ELIGIBILITY[r.status];
   const b = r.benefit;
@@ -223,7 +235,14 @@ function BenefitCard({
             <p className="mb-1.5 text-sm text-muted">Beantworten Sie, was Sie wissen – die Prüfung wird sofort aktualisiert.</p>
             <ul className="divide-y divide-line rounded-lg border border-info/30 bg-info-soft/40">
               {missing.map((m) => (
-                <FactQuestion key={m} factKey={m} benefitName={b.name_de} />
+                <FactQuestion
+                  key={m}
+                  factKey={m}
+                  benefitName={b.name_de}
+                  evidence={findEvidence(m, transcriptPages)}
+                  documentId={prefillDoc || undefined}
+                  filename={prefillName}
+                />
               ))}
             </ul>
           </section>
