@@ -41,7 +41,7 @@
 | Dokument: ausdrücklich empfohlene Schritte mit Zitat + Seite | Pflegegeld: Kriterien mit Quelle, Betrag aus veraendW 2026 |
 | ![Offene Angabe mit Belegstellen](documentation/screenshots/07-offene-angabe-mit-belegstellen.png) | ![Termine bei der Hausärztin](documentation/screenshots/08-termine-hausaerztin.png) |
 | Offene Angabe mit Belegstellen | Termine bei der Hausärztin (Demo-Termine) |
-| ![Befund: medizinische Grenze](documentation/screenshots/15-befund-medizinische-grenze.png) | |
+| ![Befund: medizinische Grenze](documentation/screenshots/15-befund-medizinische-grenze.png) | ![Chat und Antrag: Lotsi trägt ein, der Assistent zeigt es sofort](documentation/screenshots/16-chat-und-antrag.png) |
 | Röntgenbefund: keine Interpretation | |
 
 ---
