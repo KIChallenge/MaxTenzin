@@ -217,6 +217,9 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
       setBusy(false);   // keep the text and the files; the error is shown above the input
       return;
     }
+    // Straight to the document review (recommendations with quote + page, Lebenslage suggestions); the chat panel lives
+    // in the layout, stays open and answers in parallel.
+    if (up.ids.length) router.push(`/dokumente/${up.ids[up.ids.length - 1]}`);
     const n = pending.length;
     const message =
       text.trim() || `Bitte sieh dir ${up.ids.length > 1 ? "diese Dokumente" : n > 1 ? `dieses Dokument (${n} Fotos)` : "dieses Dokument"} an.`;
