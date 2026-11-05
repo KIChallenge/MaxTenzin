@@ -1,5 +1,6 @@
 # Pitch-Deck – SV KI-Lotse „Lotsi“ (Fachjury, 7 Minuten + Demo)
 
+Ausführliche Fassung (Reserve für Q&A). Für den Pitch gilt die 3-Folien-Fassung `pitch-deck-minimal.md`.
 Entwurf für die Folien, Deutsch. Jede Folie: **Titel · Inhalt der Folie · Sprechtext (≈ 30–40 s)**.
 Zahlen vor dem Pitch gegen `make test`, `evals/REPORT.md` und `knowledge/extracted/MANIFEST.json` prüfen.
 Die Live-Demo (Folie 5) folgt `documentation/demo-script.md`; bei Zeitdruck die Kurzfassung (4 Minuten).
