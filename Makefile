@@ -3,7 +3,7 @@ API := services/api
 WEB := apps/web
 UV  := uv run --project $(CURDIR)/$(API)
 
-.PHONY: help setup dev api web seed test test-api test-extract eval lint extract openapi reset smoke-llm
+.PHONY: help setup dev api api-demo web seed test test-api test-extract eval lint extract openapi reset smoke-llm
 
 help:             ## list targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*##/ —/'
@@ -17,6 +17,9 @@ dev:              ## run API (:8000) + web (:3000) together
 
 api:              ## FastAPI with reload, OpenAPI at http://localhost:8000/docs
 	cd $(API) && uv run uvicorn app.main:app --reload --port 8000
+
+api-demo:         ## API for the live demo: no --reload (stable state during the pitch)
+	cd $(API) && uv run uvicorn app.main:app --port 8000
 
 web:              ## Next.js cockpit at http://localhost:3000
 	cd $(WEB) && npm run dev

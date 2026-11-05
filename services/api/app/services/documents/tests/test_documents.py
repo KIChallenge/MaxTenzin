@@ -189,3 +189,18 @@ def test_dropped_unverified_count_is_reported():
                          person=ExtractedPerson(), recommendations=[rec("ok", pages[1], 2), rec("fake", "Erfundene Empfehlung zur Kur in Bad Ischl", 2)])
     out = verify(a, pages)
     assert [r.id for r in out.recommendations] == ["ok"] and out.dropped_unverified == 1
+
+
+def test_clinical_instructions_are_filtered_reha_survives():
+    from app.contracts.documents import DocumentAnalysis, DocumentType, ExtractedPerson
+    from app.services.documents.extract import enforce_boundary
+
+    recs = [rec("lab", "Kontrolle des Blutbildes, der Elektrolyte und der Nierenfunktion nach ärztlicher Festlegung.", 4),
+            rec("bp", "Regelmäßige Blutdruckmessungen und Überprüfung der antihypertensiven Therapie.", 4),
+            rec("reha", "Prüfung einer stationären onkologischen Rehabilitation nach Abschluss der geplanten Strahlentherapie.", 5)]
+    a = DocumentAnalysis(document_id="d", filename="f.pdf", doc_type=DocumentType.discharge_letter, pages=5,
+                         person=ExtractedPerson(), recommendations=recs)
+    out = enforce_boundary(a)
+    assert [r.id for r in out.recommendations] == ["reha"]
+    assert "Medikation" in out.notice_de
+    assert enforce_boundary(out).notice_de == out.notice_de  # idempotent

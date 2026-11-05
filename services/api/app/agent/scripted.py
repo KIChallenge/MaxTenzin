@@ -204,6 +204,12 @@ class Scripted:
                 "unverbindliche Information, keine Rechtsberatung." + _sources_line(self.outcomes))
 
     async def start_form(self, t: str) -> str:
+        if self.memo.get("form_session_id") and "neu" not in t:
+            # A draft is already open (e.g. in the wizard): continue it, never start a parallel one.
+            q = await self.call("get_next_questions", {"session_id": self.memo["form_session_id"]})
+            if d := self._denied(q):
+                return d
+            return "Ich arbeite im bereits geöffneten Antrags-Entwurf weiter.\n\n" + self._ask(q)
         benefits = self.memo.get("benefits") or []
         target = next((b for b in benefits if b["form_ids"] and b["name_de"].lower().split()[0] in t), None)
         target = target or next((b for b in benefits if b["benefit_id"] == "pflegegeld"), None)

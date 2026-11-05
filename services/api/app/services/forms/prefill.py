@@ -74,6 +74,8 @@ def document_keys(a: DocumentAnalysis) -> dict[str, str]:
         "attachment": f"Kopie: {a.filename}",
         "hospital_stay": "ja" if a.doc_type == DocumentType.discharge_letter else "",
     }
+    for fact in a.facts:
+        keys[fact.key] = fact.value
     for k in ("first_name", "last_name", "insurer"):
         v = getattr(a.person, k)
         if v:
@@ -119,7 +121,11 @@ def prefill(spec: FormSpec, subject: Person, actor: Person, delegation: Delegati
                             ref=f"delegation:{delegation.id}", quote=delegation.consent_note or None)
         elif kind == "document" and analysis:
             value = doc.get(key)
-            src = SourceRef(kind=SourceKind.document, label=analysis.filename, ref=f"document:{analysis.document_id}")
+            fact = next((x for x in analysis.facts if x.key == key), None)
+            src = (SourceRef(kind=SourceKind.document, label=f"{analysis.filename}, S. {fact.page}",
+                             ref=f"document:{analysis.document_id}#page={fact.page}", quote=fact.quote)
+                   if fact else SourceRef(kind=SourceKind.document, label=analysis.filename,
+                                          ref=f"document:{analysis.document_id}"))
         elif kind == "system" and key in ("today", "city_today"):
             value = today.strftime("%d.%m.%Y")
             if key == "city_today":

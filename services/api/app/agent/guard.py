@@ -238,6 +238,20 @@ _SUBMIT_CLAIM = re.compile(r"\b(ich habe|habe ich|wurde|ist)\b[^.!?\n]{0,50}\b(e
 _MISSING_WORDING = re.compile(r"\b(ihnen|dir|ihm|ihr) fehl(t|en)\b|\bfehlende impfung", re.IGNORECASE)
 
 
+# Claims that something was entered/recorded in the form (present/past). Conditional future ("dann trage ich … ein")
+# is fine. Only allowed when set_form_fields actually succeeded in this turn.
+_WRITE_CLAIM = re.compile(r"\b(habe|hab|wurde|wurden|ist|sind)\b[^.!?\n]{0,60}\b(eingetragen|vermerkt|festgehalten|"
+                          r"übernommen|gespeichert|angekreuzt)\b|\bich (halte|trage|vermerke|notiere)\b[^.!?\n]{0,40}"
+                          r"\b(fest|ein|vor)?\b", re.IGNORECASE)
+
+
+def write_claim_violations(reply: str, wrote: bool) -> list[str]:
+    if wrote or not _WRITE_CLAIM.search(reply):
+        return []
+    return [("Behauptung, etwas in den Antrag eingetragen zu haben, ohne erfolgreiches set_form_fields – erst eintragen "
+             "(Feld-ID ggf. über get_next_questions mit include_optional=true finden), dann bestätigen")]
+
+
 MAX_QUESTIONS = 2
 
 

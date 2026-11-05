@@ -874,6 +874,8 @@ export interface components {
              * @default []
              */
             document_ids: string[];
+            /** Form Session Id */
+            form_session_id?: string | null;
         };
         /** ChatResponse */
         ChatResponse: {
@@ -1012,11 +1014,31 @@ export interface components {
              */
             extraction_mode: string;
             /**
+             * Facts
+             * @description Deterministic administrative facts (e.g. Entlassungsdatum)
+             * @default []
+             */
+            facts: components["schemas"]["DocumentFact"][];
+            /**
              * Dropped Unverified
              * @description Recommendations discarded because their quote was not found on the stated page
              * @default 0
              */
             dropped_unverified: number;
+        };
+        /**
+         * DocumentFact
+         * @description Administrative fact found deterministically in a document (never medical content), with quote + page.
+         */
+        DocumentFact: {
+            /** Key */
+            key: string;
+            /** Value */
+            value: string;
+            /** Quote */
+            quote: string;
+            /** Page */
+            page: number;
         };
         /** DocumentSummary */
         DocumentSummary: {
@@ -1202,6 +1224,8 @@ export interface components {
             subject_id: string;
             /** Actor Id */
             actor_id: string;
+            /** Document Id */
+            document_id?: string | null;
             /** Values */
             values: {
                 [key: string]: components["schemas"]["FieldValue"];
