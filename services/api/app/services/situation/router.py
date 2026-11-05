@@ -182,6 +182,13 @@ def suggest(document_id: str, ctx: Context = Depends(require(SCOPE))):
         if raw is None:   # idempotent: an existing suggestion (any state) is never duplicated or reset
             if store.get(svc.COLL, sid) is not None:
                 continue   # id taken by another subject (cannot happen with subject-owned documents)
+            # Same episode from another copy of the document (photo + PDF) or already entered: don't suggest again.
+            twin = next((r for r in svc.raw_episodes(ctx.subject.id)
+                         if r["type"] == s["type"].value and r.get("subtype") == s.get("subtype")
+                         and r.get("end") == s.get("end") and r.get("start") == s.get("start")), None)
+            if twin is not None:
+                out.append(svc.to_episode(twin, today))
+                continue
             raw = {"id": sid, "subject_id": ctx.subject.id, "subtype": None, "start": None, "end": None,
                    "end_estimate_de": None, "institution": None, "note_de": None, **s,
                    "type": s["type"].value, "title_de": svc.title_for(s["type"], s.get("subtype")),
