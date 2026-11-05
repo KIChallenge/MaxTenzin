@@ -1,0 +1,133 @@
+# Appointment providers — owner: WS-T (appointments).
+#
+# Two kinds of entries:
+#   demo: false  REAL facilities. Name/address/phone are taken from a cited source (ÖGK Serviceratgeber 2026
+#                S. 90–96, PVA PAL 080 S. 8, FSW Antrag auf Förderung S. 1 — same sources as knowledge/offices.yaml).
+#                The SLOTS offered for them are still synthetic demo slots (no real booking system is connected).
+#   demo: true   SYNTHETIC demo practices with obviously fictional names "(Demo)". Address/phone are invented.
+#
+# topics = benefit ids (knowledge/benefits.yaml), prevention ids (knowledge/prevention.yaml) and a few
+# appointment tags (hausarzt_kontrolle, koloskopie, darmkrebs_vorsorge, ernaehrungsberatung, impfung …).
+# The service additionally normalises aliases (e.g. vu -> vorsorgeuntersuchung, darmkrebs -> darmkrebs_vorsorge).
+#
+# hours (optional) override the opening hours of the provider kind: weekday (mon..fri) -> list of "HH:MM-HH:MM".
+# slot_minutes (optional) overrides the kind default (20 or 30 minutes).
+
+topic_sets:
+  gp: &gp [allgemeinmedizin, hausarzt, hausarzt_kontrolle, vorsorgeuntersuchung, influenza, covid19, impfung,
+           rezept, ueberweisung]
+  oegk_ks: &oegk_ks [oegk_kundenservice, rezeptgebuehrenbefreiung, rezeptgebuehrenobergrenze, fahrtkostenzuschuss,
+                     krankentransport, hauskrankenpflege, unterstuetzungsfonds, reha, reha_onko, eltern_kind_pass]
+  oegk_gz: &oegk_gz [gesundheitszentrum, vorsorgeuntersuchung]
+  pva: &pva [pflegegeld, pflegeberatung, pension, reha, reha_onko]
+
+providers:
+  # ======================================================== REAL — ÖGK Gesundheitszentren Wien (S. 89–90, 94–96)
+  # Offer overview (Allgemeinmedizin … Vorsorgeuntersuchung) is on S. 90; per-site allocation is not machine-readable
+  # in the extracted text, so only the documented common offer (Vorsorgeuntersuchung) is used as topic.
+  - {id: oegk-gz-landstrasse, name: ÖGK Gesundheitszentrum Landstraße, kind: health_center,
+     specialty: Gesundheitszentrum, topics: *oegk_gz, address: Strohgasse 28, zip: "1030",
+     phone: "+43 5 0766-1140300", contract: ÖGK, accessible: true, demo: false, page: 94}
+  - {id: oegk-gz-mariahilf, name: ÖGK Gesundheitszentrum Mariahilf, kind: health_center,
+     specialty: Gesundheitszentrum, topics: *oegk_gz, address: Mariahilfer Straße 85-87, zip: "1060",
+     phone: "+43 5 0766-1140600", contract: ÖGK, accessible: true, demo: false, page: 94}
+  - {id: oegk-gz-favoriten, name: ÖGK Gesundheitszentrum Favoriten, kind: health_center,
+     specialty: Gesundheitszentrum, topics: *oegk_gz, address: Wienerbergstraße 13, zip: "1100",
+     phone: "+43 5 0766-111722", contract: ÖGK, accessible: true, demo: false, page: 95}
+  - {id: oegk-gz-floridsdorf, name: ÖGK Gesundheitszentrum Floridsdorf, kind: health_center,
+     specialty: Gesundheitszentrum, topics: *oegk_gz, address: Karl-Aschenbrenner-Gasse 3, zip: "1210",
+     phone: "+43 5 0766-1140200", contract: ÖGK, accessible: true, demo: false, page: 96}
+
+  # ======================================================== REAL — ÖGK Physikalische Medizin & Rehabilitation (S. 92, 94–95)
+  - {id: oegk-pmr-neubau, name: ÖGK Gesundheitszentrum für Physikalische Medizin Neubau, kind: rehab,
+     specialty: Physikalische Medizin, topics: [physikalische_medizin, reha, nachsorge],
+     address: Andreasgasse 3, zip: "1070", phone: "+43 5 0766-1115070", contract: ÖGK, accessible: true,
+     demo: false, page: 94}
+  - {id: oegk-pmr-favoriten, name: ÖGK Gesundheitszentrum für Physikalische Medizin Favoriten, kind: rehab,
+     specialty: Physikalische Medizin, topics: [physikalische_medizin, reha, nachsorge],
+     address: Wienerbergstraße 13, zip: "1100", phone: "+43 5 0766-114290", contract: ÖGK, accessible: true,
+     demo: false, page: 95}
+
+  # ======================================================== REAL — ÖGK Kundenservice Wien (S. 94–96)
+  - {id: oegk-ks-leopoldstadt, name: ÖGK Kundenservice Leopoldstadt, kind: counselling, specialty: Kundenservice,
+     topics: *oegk_ks, address: Lassallestraße 9b, zip: "1020", phone: "+43 5 0766-118000", contract: ÖGK,
+     accessible: true, demo: false, page: 94}
+  - {id: oegk-ks-mariahilf, name: ÖGK Kundenservice Mariahilf, kind: counselling, specialty: Kundenservice,
+     topics: *oegk_ks, address: Mariahilfer Straße 85-87, zip: "1060", phone: "+43 5 0766-118000", contract: ÖGK,
+     accessible: true, demo: false, page: 94}
+  - {id: oegk-ks-favoriten, name: ÖGK Kundenservice Favoriten, kind: counselling, specialty: Kundenservice,
+     topics: *oegk_ks, address: Ada-Christen-Gasse 12, zip: "1100", phone: "+43 5 0766-118000", contract: ÖGK,
+     accessible: true, demo: false, page: 95}
+  - {id: oegk-ks-meidling, name: ÖGK Kundenservice Meidling, kind: counselling, specialty: Kundenservice,
+     topics: *oegk_ks, address: "Vio Plaza, Schönbrunner Straße 230", zip: "1120", phone: "+43 5 0766-118000",
+     contract: ÖGK, accessible: true, demo: false, page: 95}
+  - {id: oegk-ks-kagran, name: ÖGK Kundenservice Kagran, kind: counselling, specialty: Kundenservice,
+     topics: *oegk_ks, address: Kagraner Platz 1, zip: "1220", phone: "+43 5 0766-118000", contract: ÖGK,
+     accessible: true, demo: false, page: 96}
+
+  # ======================================================== REAL — PVA / FSW (Pflegegeld & Pflegeberatung)
+  - {id: pva-wien-kundenzone, name: PVA Landesstelle Wien – Kundenzone, kind: counselling, specialty: Pflegeberatung,
+     topics: *pva, address: Ghegastraße 1, zip: "1030", phone: "+43 5 0303-27170", contract: PVA, accessible: true,
+     demo: false, form: pva_pflegegeld_pal080, form_label: "PAL 080", page: 8}
+  - {id: fsw-kundinnenservice, name: Fonds Soziales Wien – Kund:innenservice (Beratung Pflege und Betreuung),
+     kind: counselling, specialty: Pflegeberatung,
+     topics: [pflegeberatung, fsw_mobile_pflege, mobile_pflege, pflege, pflegegeld],
+     address: Guglgasse 7–9, zip: "1030", phone: "01 24 5 24", contract: FSW, accessible: true, demo: false,
+     form: fsw_foerderung, form_label: "FSW Antrag auf Förderung von Leistungen", page: 1}
+
+  # ======================================================== SYNTHETIC DEMO — Allgemeinmedizin (Kassenvertrag ÖGK)
+  - {id: demo-gp-1030-muster, name: Ordination Dr. Muster (Demo), kind: gp, specialty: Allgemeinmedizin,
+     topics: *gp, address: Landstraßer Hauptstraße 40, zip: "1030", phone: "+43 1 000 1030 (Demo)", accessible: true,
+     demo: true, hours: {mon: ["08:00-12:00", "14:00-17:00"], tue: ["08:00-12:00"], wed: ["13:00-18:00"],
+                         thu: ["08:00-12:00", "14:00-17:00"], fri: ["08:00-12:00"]}}
+  - {id: demo-gp-1030-beispiel, name: Gruppenpraxis Beispiel & Partner (Demo), kind: gp, specialty: Allgemeinmedizin,
+     topics: *gp, address: Rennweg 70, zip: "1030", phone: "+43 1 000 1031 (Demo)", accessible: false, demo: true,
+     hours: {mon: ["13:00-18:00"], tue: ["07:30-11:30", "15:00-18:00"], wed: ["07:30-11:30"],
+             thu: ["13:00-18:00"], fri: ["07:30-11:30"]}}
+  - {id: demo-gp-1020-probe, name: Ordination Dr. Probe (Demo), kind: gp, specialty: Allgemeinmedizin,
+     topics: *gp, address: Praterstraße 20, zip: "1020", phone: "+43 1 000 1020 (Demo)", accessible: true,
+     demo: true}
+  - {id: demo-gp-1040-fiktiv, name: Ordination Dr. Fiktiv (Demo), kind: gp, specialty: Allgemeinmedizin,
+     topics: *gp, address: Wiedner Hauptstraße 30, zip: "1040", phone: "+43 1 000 1040 (Demo)", accessible: true,
+     demo: true}
+  - {id: demo-gp-1100-test, name: Ordination Dr. Test (Demo), kind: gp, specialty: Allgemeinmedizin,
+     topics: *gp, address: Favoritenstraße 100, zip: "1100", phone: "+43 1 000 1100 (Demo)", accessible: true,
+     demo: true}
+  - {id: demo-gp-1120-vorlage, name: Ordination Dr. Vorlage (Demo), kind: gp, specialty: Allgemeinmedizin,
+     topics: *gp, address: Meidlinger Hauptstraße 50, zip: "1120", phone: "+43 1 000 1120 (Demo)", accessible: true,
+     demo: true}
+  - {id: demo-gp-1220-platzhalter, name: Ordination Dr. Platzhalter (Demo), kind: gp, specialty: Allgemeinmedizin,
+     topics: *gp, address: Wagramer Straße 120, zip: "1220", phone: "+43 1 000 1220 (Demo)", accessible: false,
+     demo: true}
+
+  # ======================================================== SYNTHETIC DEMO — Fachärztinnen/-ärzte
+  - {id: demo-gastro-1030, name: Ordination Dr. Exempel – Gastroenterologie (Demo), kind: specialist,
+     specialty: Gastroenterologie, topics: [darmkrebs_vorsorge, koloskopie, gastroenterologie],
+     address: Ungargasse 15, zip: "1030", phone: "+43 1 000 2030 (Demo)", accessible: true, demo: true,
+     slot_minutes: 30}
+  - {id: demo-gastro-1100, name: Ambulatorium Musterberg – Gastroenterologie (Demo), kind: specialist,
+     specialty: Gastroenterologie, topics: [darmkrebs_vorsorge, koloskopie, gastroenterologie],
+     address: Quellenstraße 60, zip: "1100", phone: "+43 1 000 2100 (Demo)", accessible: false, demo: true}
+  - {id: demo-gyn-1120, name: Ordination Dr. Muster-Frau – Gynäkologie (Demo), kind: specialist,
+     specialty: Gynäkologie, topics: [gynaekologie, mammografie, krebsabstrich],
+     address: Schönbrunner Straße 200, zip: "1120", phone: "+43 1 000 2120 (Demo)", accessible: true, demo: true}
+  - {id: demo-gyn-1020, name: Ordination Dr. Beispielsdorf – Gynäkologie (Demo), kind: specialist,
+     specialty: Gynäkologie, topics: [gynaekologie, mammografie, krebsabstrich],
+     address: Taborstraße 30, zip: "1020", phone: "+43 1 000 2020 (Demo)", accessible: false, demo: true}
+  - {id: demo-onko-1030, name: Nachsorge-Ambulanz Demo – Onkologie (Demo), kind: specialist,
+     specialty: Onkologie-Nachsorge, topics: [onkologie_nachsorge, nachsorge, reha_onko],
+     address: Kölblgasse 5, zip: "1030", phone: "+43 1 000 3030 (Demo)", accessible: true, demo: true}
+
+  # ======================================================== SYNTHETIC DEMO — Reha-Nachsorge, Impfstelle, Ernährung
+  - {id: demo-reha-1100, name: Reha-Nachsorgezentrum Muster (Demo), kind: rehab, specialty: Onkologische Rehabilitation,
+     topics: [reha, reha_onko, nachsorge], address: Laxenburger Straße 90, zip: "1100",
+     phone: "+43 1 000 4100 (Demo)", accessible: true, demo: true}
+  - {id: demo-impf-1030, name: Impfstelle Landstraße (Demo), kind: vaccination, specialty: Impfungen,
+     topics: [impfung, influenza, covid19, herpes_zoster, pneumococcal, fsme, dtp_polio],
+     address: Erdbergstraße 10, zip: "1030", phone: "+43 1 000 5030 (Demo)", accessible: true, demo: true}
+  - {id: demo-impf-1120, name: Impfstelle Meidling (Demo), kind: vaccination, specialty: Impfungen,
+     topics: [impfung, influenza, covid19, herpes_zoster, pneumococcal, fsme, dtp_polio, kinderimpfprogramm],
+     address: Längenfeldgasse 15, zip: "1120", phone: "+43 1 000 5120 (Demo)", accessible: true, demo: true}
+  - {id: demo-ernaehrung-1040, name: Ernährungsberatung Demo-Praxis (Demo), kind: counselling,
+     specialty: Ernährungsberatung, topics: [ernaehrungsberatung],
+     address: Margaretenstraße 25, zip: "1040", phone: "+43 1 000 6040 (Demo)", accessible: true, demo: true}
