@@ -22,6 +22,7 @@ import {
 import { bff } from "@/lib/client";
 import { fmtDate } from "@/lib/labels";
 import { EPISODE_TYPE, episodeWhen, THERAPY_SUBTYPES, type Effect, type Episode, type EpisodeType, type SituationOverview } from "@/lib/situation";
+import { Picker } from "./Picker";
 import { SourceChip } from "./SourceChip";
 
 const ICON: Record<EpisodeType, LucideIcon> = {
@@ -291,10 +292,11 @@ function AddEpisode({
   onSave: (body: unknown) => Promise<boolean>;
 }) {
   const [type, setType] = useState<EpisodeType>("rehab_inpatient");
+  const [subtype, setSubtype] = useState(THERAPY_SUBTYPES[0]);
   const [busy, setBusy] = useState(false);
   const form = useRef<HTMLFormElement>(null);
   useEffect(() => {
-    form.current?.querySelector("select")?.focus();
+    form.current?.querySelector<HTMLInputElement>("input[role=combobox]")?.focus();
     const esc = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", esc);
     return () => window.removeEventListener("keydown", esc);
@@ -326,25 +328,20 @@ function AddEpisode({
         <h2 id="add-ep-h" className="text-lg font-semibold">
           Wo ist {firstName} gerade – oder demnächst?
         </h2>
-        <label className="flex flex-col gap-1">
-          <span className="font-semibold">Art</span>
-          <select className="input" value={type} onChange={(e) => setType(e.target.value as EpisodeType)}>
-            {(Object.keys(EPISODE_TYPE) as EpisodeType[]).map((t) => (
-              <option key={t} value={t}>
-                {EPISODE_TYPE[t]}
-              </option>
-            ))}
-          </select>
-        </label>
+        <Picker
+          label="Art"
+          value={type}
+          onChange={(v) => setType(v as EpisodeType)}
+          options={(Object.keys(EPISODE_TYPE) as EpisodeType[]).map((t) => ({ value: t, label: EPISODE_TYPE[t] }))}
+        />
         {type === "therapy" && (
-          <label className="flex flex-col gap-1">
-            <span className="font-semibold">Welche Therapie?</span>
-            <select name="subtype" className="input">
-              {THERAPY_SUBTYPES.map((s) => (
-                <option key={s}>{s}</option>
-              ))}
-            </select>
-          </label>
+          <Picker
+            name="subtype"
+            label="Welche Therapie?"
+            value={subtype}
+            onChange={setSubtype}
+            options={THERAPY_SUBTYPES.map((t) => ({ value: t, label: t }))}
+          />
         )}
         <div className="grid grid-cols-2 gap-3">
           <label className="flex flex-col gap-1">

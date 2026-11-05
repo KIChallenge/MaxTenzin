@@ -4,31 +4,53 @@ import { LawPicker } from "@/components/LawPicker";
 import { PageTitle } from "@/components/PageTitle";
 import { api } from "@/lib/api";
 import { fmtDate } from "@/lib/labels";
-import type { Law } from "@/lib/laws";
+import { type Law, type LawParagraph, linkableParagraphs } from "@/lib/laws";
 import type { LegalHit, LegalParagraph } from "@/lib/types";
 
 export default async function LegalPage({ searchParams }: { searchParams: Promise<{ q?: string; law?: string; nr?: string; abs?: string }> }) {
   const sp = await searchParams;
   const laws = await api<Law[]>("/api/legal/laws");
   const para = sp.law && sp.nr ? await api<LegalParagraph>(`/api/legal/paragraphs/${encodeURIComponent(sp.law)}/${encodeURIComponent(sp.nr)}`) : null;
+  const toc =
+    sp.law && !sp.nr && !sp.q
+      ? await api<LawParagraph[]>(`/api/legal/laws/${encodeURIComponent(sp.law)}/paragraphs`)
+      : null;
+  const tocList = toc?.ok ? linkableParagraphs(toc.data) : [];
+  const lawInfo = laws.ok ? laws.data.find((l) => l.key === sp.law) : undefined;
   const hits = sp.q ? await api<LegalHit[]>(`/api/legal/search?q=${encodeURIComponent(sp.q)}${sp.law ? `&law=${encodeURIComponent(sp.law)}` : ""}&limit=10`) : null;
   return (
     <>
       <PageTitle eyebrow="Rechtsgrundlagen" title="Gesetzestexte nachlesen">
         Unverbindliche Information, keine Rechtsberatung. Es gilt immer die angegebene Fassung.
       </PageTitle>
-      <form className="card mb-6 grid gap-3 md:grid-cols-[minmax(0,1.3fr)_6rem_minmax(0,1.5fr)_auto] md:items-end" role="search">
-        <LawPicker name="law" laws={laws.ok ? laws.data : []} defaultKey={sp.law} allowAll />
-        <label className="flex flex-col gap-1">
-          <span className="font-semibold">§</span>
-          <input name="nr" defaultValue={sp.nr} className="input" inputMode="text" placeholder="z. B. 4" />
-        </label>
+      <form className="card mb-6 grid gap-3 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1.3fr)_auto] md:items-end" role="search">
+        <LawPicker laws={laws.ok ? laws.data : []} defaultKey={sp.law} defaultNr={sp.nr} />
         <Autocomplete source="legal" name="q" label="Stichwort" defaultValue={sp.q} placeholder="z. B. Pflegegeld" />
         <button className="btn-primary">Suchen</button>
         <p className="text-sm text-muted md:col-span-4">
-          Gesetz + § öffnet den Paragrafen direkt. Ein Stichwort sucht im Volltext – mit gewähltem Gesetz nur darin.
+          Nur ein Gesetz gewählt: Inhaltsverzeichnis. Mit § : der Paragraf. Ein Stichwort sucht im Volltext – mit gewähltem Gesetz nur darin.
         </p>
       </form>
+      {toc?.ok && (
+        <section aria-labelledby="toc-h" className="mb-6">
+          <h2 id="toc-h" className="mb-2 font-semibold">
+            {lawInfo ? `${lawInfo.abbr} – ${lawInfo.title}` : sp.law} · {tocList.length} Bestimmungen
+          </h2>
+          <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface text-sm">
+            {tocList.map((p) => (
+              <li key={p.type + p.nr}>
+                <a href={`/recht?law=${encodeURIComponent(sp.law!)}&nr=${encodeURIComponent(p.nr)}`} className="flex gap-3 px-4 py-1.5 hover:bg-accent-soft/50">
+                  <span className="w-20 shrink-0 font-semibold tabular-nums">{p.label}</span>
+                  <span className="min-w-0 flex-1">{p.heading || <span className="text-muted">ohne Überschrift</span>}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+      {toc && !toc.ok && (
+        <p className="card mb-6 text-sm text-muted">Das Inhaltsverzeichnis ist gerade nicht verfügbar – bitte § oder Stichwort eingeben.</p>
+      )}
       {para && !para.ok && <ApiError status={para.status} detail={para.detail} />}
       {para?.ok && <Paragraph p={para.data} abs={sp.abs} />}
       {hits && !hits.ok && <ApiError status={hits.status} detail={hits.detail} />}
@@ -81,7 +103,8 @@ function Paragraph({ p, abs }: { p: LegalParagraph; abs?: string }) {
 /** "§ 1 BPGG – Zweck des Pflegegeldes" instead of the full TEIL/ABSCHNITT chain. */
 function shortTitle(p: LegalParagraph) {
   const parts = p.heading.split(" – ").map((x) => x.trim()).filter(Boolean);
-  return `§ ${p.nr} ${p.law} – ${parts[parts.length - 1] ?? p.heading}`;
+  const title = (parts[parts.length - 1] ?? p.heading).trim();
+  return title ? `§ ${p.nr} ${p.law} – ${title}` : `§ ${p.nr} ${p.law}`;
 }
 /** The structural part of the heading (Teil, Abschnitt), shown small as a breadcrumb. */
 function trail(heading: string) {

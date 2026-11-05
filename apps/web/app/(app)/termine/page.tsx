@@ -1,5 +1,6 @@
 import { Accessibility, CalendarDays } from "lucide-react";
 import { ApiError } from "@/components/ApiError";
+import { FormPicker } from "@/components/FormPicker";
 import { PageTitle } from "@/components/PageTitle";
 import { api } from "@/lib/api";
 import { type Appointment, type CareTeam, type Preferences, type Slot, TOPICS, topicLabel } from "@/lib/care";
@@ -55,25 +56,17 @@ export default async function AppointmentsPage({ searchParams }: { searchParams:
 
       <form className="card mb-5 grid gap-3 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1.2fr)_minmax(0,1fr)_9rem_auto] md:items-end" role="search">
         <input type="hidden" name="suche" value="1" />
-        <label className="flex flex-col gap-1">
-          <span className="font-semibold">Anlass</span>
-          <select name="topic" defaultValue={topic} className="input">
-            <option value="">Bitte wählen …</option>
-            {TOPICS.map(([k, l]) => (
-              <option key={k} value={k}>
-                {l}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1">
-          <span className="font-semibold">Wo</span>
-          <select name="wo" defaultValue={where} className="input">
-            {gp && <option value="provider">Bei {gp.name}</option>}
-            <option value="near">In der Nähe von {firstName}</option>
-            <option value="any">Egal wo</option>
-          </select>
-        </label>
+        <FormPicker name="topic" label="Anlass" defaultValue={topic} options={TOPICS.map(([k, l]) => ({ value: k, label: l }))} />
+        <FormPicker
+          name="wo"
+          label="Wo"
+          defaultValue={where}
+          options={[
+            ...(gp ? [{ value: "provider", label: `Bei ${gp.name}`, sub: "Ihre Hausarztpraxis" }] : []),
+            { value: "near", label: `In der Nähe von ${firstName}`, sub: me.ok ? `${me.data.subject.address.zip} ${me.data.subject.address.city}` : undefined },
+            { value: "any", label: "Egal wo" },
+          ]}
+        />
         <fieldset className="flex flex-col gap-1">
           <legend className="mb-1 font-semibold">Tageszeit</legend>
           <div className="flex rounded-lg border border-line bg-surface p-0.5 text-sm">
