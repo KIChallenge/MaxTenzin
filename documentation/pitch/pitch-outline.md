@@ -2,6 +2,8 @@
 
 Laufende Gliederung; Folien werden daraus gebaut. Zahlen vor dem Pitch mit `make test` / `evals/REPORT.md` prüfen.
 
+Kernbotschaft & Sprechnotizen: `kernbotschaft.md` („Lotsi entscheidet nichts – er formuliert nur, was die Dienste entschieden haben, und diese Formulierung wird geprüft.“).
+
 ## Folie: So arbeitet Lotsi – „Lotsi hat keine Sonderrechte“
 - Lotsi versteht die Frage und wählt Werkzeuge – **30 Werkzeuge, jedes ist genau ein Dienst** (Leistungen prüfen, Antrag ausfüllen, Termin suchen …).
 - Lotsi ruft **dieselben Dienste wie das Cockpit** auf – mit der Berechtigung der Person, nicht mit eigener.
