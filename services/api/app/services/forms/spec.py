@@ -41,6 +41,7 @@ class FieldSpec(BaseModel):
     section: str
     required: bool = False
     recommended: bool = Field(False, description="Not required by the form, but worth asking (next-questions?include_optional)")
+    blank_from_prefill: bool = Field(False, description="A prefill that resolves to \"\" WITH a source means 'known: leave empty' (e.g. no temporary stay because the Lebenslage says at home) – stored, not asked again")
     ask_hint_de: str = ""
     options: list[str] = []
     pdf_field: str | None = Field(None, description="AcroForm field name; defaults to id; null for unmapped virtual fields")

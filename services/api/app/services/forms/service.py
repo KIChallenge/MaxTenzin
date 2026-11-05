@@ -79,6 +79,11 @@ def _empty(fv: FieldValue | None) -> bool:
     return fv is None or fv.value is None or fv.value == "" or fv.value is False
 
 
+def _known_blank(fv: FieldValue | None) -> bool:
+    """Deliberately empty with a source (blank_from_prefill) – answered, not to be asked again."""
+    return fv is not None and fv.value == "" and fv.source is not None
+
+
 def relevant(spec: FormSpec, f: FieldSpec, sess: FormSession) -> bool:
     c = f.when
     if c is None:
@@ -109,7 +114,8 @@ def next_questions(spec: FormSpec, sess: FormSession, include_optional: bool = F
     questions: list[FormField] = [f.to_contract() for f in missing]
     if include_optional:
         questions += [f.to_contract() for f in _ordered(spec)
-                      if f.recommended and not f.readonly and relevant(spec, f, sess) and _empty(sess.values.get(f.id))]
+                      if f.recommended and not f.readonly and relevant(spec, f, sess) and _empty(sess.values.get(f.id))
+                      and not _known_blank(sess.values.get(f.id))]
     return NextQuestions(session_id=sess.id, questions=questions,
                          progress=round(1 - len(missing) / max(1, len(required)), 3))
 

@@ -178,6 +178,9 @@ def prefill(spec: FormSpec, subject: Person, actor: Person, delegation: Delegati
             value, src = resolve(rule.strip())
             if value is not None:
                 break
+        if value == "" and src is not None and f.blank_from_prefill:
+            values[f.id] = FieldValue(value="", source=src, confirmed=False)   # known: leave empty
+            continue
         if value in (None, ""):
             continue
         if f.options and value not in f.options:

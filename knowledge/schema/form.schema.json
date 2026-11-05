@@ -84,6 +84,12 @@
           "title": "Recommended",
           "type": "boolean"
         },
+        "blank_from_prefill": {
+          "default": false,
+          "description": "A prefill that resolves to \"\" WITH a source means 'known: leave empty' (e.g. no temporary stay because the Lebenslage says at home) – stored, not asked again",
+          "title": "Blank From Prefill",
+          "type": "boolean"
+        },
         "ask_hint_de": {
           "default": "",
           "title": "Ask Hint De",

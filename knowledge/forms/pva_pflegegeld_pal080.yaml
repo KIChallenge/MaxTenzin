@@ -150,6 +150,8 @@ fields:
     type: text
     section: 1 Persönliche Angaben
     recommended: true
+    prefill: situation.home_care.temp_stay
+    blank_from_prefill: true
     ask_hint_de: Hält sich die Person gerade vorübergehend woanders auf (z. B. Krankenhaus, bei Angehörigen)? Wenn ja, wo genau?
   - id: Telefon
     label_de: Telefonnummer (mit Vorwahl)
@@ -364,6 +366,7 @@ fields:
     recommended: true
     options: [nein, ja]
     pdf_options: {nein: /01, ja: /02}
+    prefill: situation.home_care.any
     ask_hint_de: Hilft derzeit jemand bei der Betreuung (Angehörige, mobile Dienste, Einrichtung)?
   - id: Person Stelle Pflegeperson
     label_de: Pflegeperson(en)

@@ -402,6 +402,11 @@ def prefill_keys(subject_id: str, today: date | None = None) -> dict[str, tuple[
         when = " – ".join(x for x in (date_de(e.start), date_de(e.end)) if x)
         keys[f"rehab5y_{i}.when"] = (when, e.source)
         keys[f"rehab5y_{i}.where"] = (e.institution or "", e.source)
+    home = next((e for e in eps if e.type == EpisodeType.home_care and e.status == EpisodeStatus.active), None)
+    away = any(e.status == EpisodeStatus.active and cfg()["types"][str(e.type)].get("stationary") for e in eps)
+    if home and not away:
+        keys["home_care.any"] = ("ja", home.source)          # PAL 080 § 4: someone helps at home
+        keys["home_care.temp_stay"] = ("", home.source)     # at home → no temporary stay elsewhere (field stays empty)
     therapy = next((e for e in eps if e.type == EpisodeType.therapy and e.status == EpisodeStatus.active), None)
     if therapy:
         keys["therapy.kind"] = (therapy.title_de, therapy.source)
