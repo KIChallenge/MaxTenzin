@@ -94,3 +94,39 @@ export function cockpitRoute(link: string) {
   if (/^\/forms\/[^/]+$/.test(path)) return link;
   return (ROUTES[path] ?? path) + rest;
 }
+
+/** Lotsi's tools (app/agent/tools.py) in plain German – the technical name stays visible as tooltip. */
+export const TOOL_LABELS: Record<string, string> = {
+  list_documents: "Dokumente auflisten",
+  analyze_document: "Dokument lesen",
+  check_benefits: "Leistungen prüfen",
+  get_benefit: "Leistung nachschlagen",
+  start_form: "Antrag beginnen",
+  get_next_questions: "Offene Angaben abfragen",
+  set_form_fields: "Antrag ausfüllen",
+  preview_form: "Antrag prüfen",
+  render_form: "PDF-Entwurf erstellen",
+  list_cases: "Fall ansehen",
+  create_case: "Fall anlegen",
+  update_case_step: "Fall-Schritt ändern",
+  get_prevention: "Vorsorge abfragen",
+  import_vaccination_record: "e-Impfpass übernehmen",
+  find_office: "Zuständige Stelle suchen",
+  get_situation: "Lebenslage abfragen",
+  add_episode: "Lebenslage eintragen",
+  update_episode: "Lebenslage ändern",
+  suggest_situation_from_document: "Lebenslage aus Dokument vorschlagen",
+  confirm_situation_suggestion: "Lebenslage-Vorschlag übernehmen",
+  match_bundle: "Passende Hilfen bündeln",
+  get_care_team: "Behandlungsteam abfragen",
+  set_care_team: "Behandlungsteam ändern",
+  search_slots: "Termine suchen",
+  book_appointment: "Termin buchen",
+  list_appointments: "Termine ansehen",
+  cancel_appointment: "Termin absagen",
+  search_medication: "Medikament nachschlagen",
+  search_law: "Gesetz nachschlagen",
+  get_value: "Betrag nachschlagen",
+  "context:save_facts": "Angaben merken",
+};
+export const toolLabel = (t?: string | null) => (t ? (TOOL_LABELS[t] ?? t) : "");

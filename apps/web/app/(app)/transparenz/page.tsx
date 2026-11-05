@@ -2,7 +2,7 @@ import { Ban, Bot, Check, User } from "lucide-react";
 import { ApiError } from "@/components/ApiError";
 import { PageTitle } from "@/components/PageTitle";
 import { api } from "@/lib/api";
-import { fmtDateTime, fullName, SCOPE_LABELS } from "@/lib/labels";
+import { fmtDateTime, fullName, SCOPE_LABELS, toolLabel } from "@/lib/labels";
 import { getMe } from "@/lib/me";
 import type { AuditEvent, Person, Scope } from "@/lib/types";
 
@@ -94,7 +94,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
                     </td>
                     <td className="px-3 py-1.5 whitespace-nowrap">
                       {e.via === "agent" ? <span className="inline-flex items-center gap-1.5 font-semibold text-accent-strong"><Bot className="h-4 w-4" aria-hidden /> Lotsi (KI)</span> : <span className="inline-flex items-center gap-1.5"><User className="h-4 w-4 text-muted" aria-hidden /> Oberfläche</span>}
-                      {e.tool && <span className="block text-sm text-muted">{e.tool}</span>}
+                      {e.tool && <span className="block text-sm text-muted" title={e.tool}>{toolLabel(e.tool)}</span>}
                     </td>
                     <td className="px-3 py-1.5 text-sm">
                       <code className="whitespace-nowrap" title={`${e.method} ${e.path}`}>
