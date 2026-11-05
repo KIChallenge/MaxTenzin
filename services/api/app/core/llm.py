@@ -25,12 +25,14 @@ class LLMClient:
         """Returns the raw OpenAI ChatCompletion message (live) or a fake one."""
         if not self.live:
             return _fake_message(messages)
+        extra = {"reasoning_effort": kw["reasoning_effort"]} if kw.get("reasoning_effort") else {}
         resp = self._client.chat.completions.create(
-            model=self.model, messages=messages, tools=tools or None, max_completion_tokens=kw.get("max_tokens", 4096)
+            model=self.model, messages=messages, tools=tools or None,
+            max_completion_tokens=kw.get("max_tokens", 4096), **extra,
         )
         return resp.choices[0].message
 
-    def json(self, system: str, user: str, max_tokens: int = 4096) -> dict:
+    def json(self, system: str, user: str, max_tokens: int = 4096, reasoning_effort: str | None = None) -> dict:
         """Structured JSON output (used for document extraction)."""
         if not self.live:
             return {"_fake": True}
@@ -39,6 +41,7 @@ class LLMClient:
             messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
             response_format={"type": "json_object"},
             max_completion_tokens=max_tokens,
+            **({"reasoning_effort": reasoning_effort} if reasoning_effort else {}),
         )
         return json.loads(resp.choices[0].message.content or "{}")
 

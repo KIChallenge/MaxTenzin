@@ -1,0 +1,666 @@
+# FSW – Antrag auf Förderung von Leistungen (V8 03/2026). AcroForm names + export states verified against
+# knowledge/forms/templates/fsw_foerderung.pdf. Signature fields (/Sig) are never filled.
+# Primary demo path: Leistungen Pflege und Betreuung (mobile Pflege for Anna). All other paths are mapped too.
+form_id: fsw_foerderung
+title_de: Antrag auf Förderung von Leistungen (Fonds Soziales Wien)
+provider: FSW
+form_version: FSW Antrag auf Förderung von Leistungen, V8 03/2026
+submit_info_de: >-
+  Bitte prüfen, auf Seite 4 unterschreiben und mit den nötigen Unterlagen (Ausweis, Einkommensnachweise,
+  ggf. Vertretungsnachweis, Befunde) an den Fonds Soziales Wien, Kund:innenservice, Guglgasse 7–9, 1030 Wien
+  (kundinnenservice@fsw.at) senden. Der Antrag wird nicht automatisch eingereicht.
+sections:
+  - 1 Förderung
+  - 2 Persönliche Daten
+  - 3 Vertretungsbefugte Person
+  - 4 Zustellbevollmächtigte:r
+  - 5 Vertrauenspersonen
+  - 6 Einkommen
+  - 8 Unterschrift
+  - 9 Bestätigung durch Zeug:innen
+  - 10 Pflege und Betreuung
+  - 10 Behinderung und Inklusion
+  - 10 Obdach- und Wohnungslosenhilfe
+unmapped_pdf_fields: {}
+fields:
+  # ---------------------------------------------------------------- 1 Förderung
+  - id: Leistungen Pflege und Betreuung
+    label_de: Förderung für Leistungen Pflege und Betreuung
+    type: checkbox
+    section: 1 Förderung
+    pdf_on_value: /Ja
+    prefill: "const:ja"
+    recommended: true
+    ask_hint_de: Geht es um Pflege und Betreuung (z. B. mobile Pflege, Heimhilfe, Tagesbetreuung, Pflegeplatz)?
+  - id: Leistungen Behinderung und Inklusion
+    label_de: Förderung für Leistungen Behinderung und Inklusion
+    type: checkbox
+    section: 1 Förderung
+    pdf_on_value: /Ja
+  - id: Leistungen Obdach- und Wohnungslosenhilfe
+    label_de: Förderung für Leistungen Obdach- und Wohnungslosenhilfe
+    type: checkbox
+    section: 1 Förderung
+    pdf_on_value: /Ja
+  # ---------------------------------------------------------------- 2 Persönliche Daten
+  - id: Familienname Titel KundIn
+    label_de: Familienname und Titel
+    type: text
+    section: 2 Persönliche Daten
+    required: true
+    prefill: profile.last_name
+    ask_hint_de: Wie lautet der Familienname (und ggf. Titel)?
+  - id: Vorname KundIn
+    label_de: Vorname
+    type: text
+    section: 2 Persönliche Daten
+    required: true
+    prefill: profile.first_name
+    ask_hint_de: Wie lautet der Vorname?
+  - id: Geschlecht KundIn
+    label_de: Geschlecht
+    type: choice
+    section: 2 Persönliche Daten
+    required: true
+    options: [männlich, weiblich, divers/inter/offen, keine Angabe]
+    pdf_options: {männlich: /maennlich, weiblich: /weiblich, divers/inter/offen: /divers/inter/offen,
+                  keine Angabe: /keine Angabe}
+    prefill: profile.sex_de
+    ask_hint_de: Welches Geschlecht soll im Antrag stehen?
+  - id: Geburtsdatum KundIn
+    label_de: Geburtsdatum
+    type: date
+    section: 2 Persönliche Daten
+    required: true
+    prefill: profile.birth_date
+    ask_hint_de: Wann ist die Person geboren?
+  - id: Geburtsland KundIn
+    label_de: Geburtsland
+    type: text
+    section: 2 Persönliche Daten
+    recommended: true
+    ask_hint_de: In welchem Land ist die Person geboren?
+  - id: Familienstand
+    label_de: Familienstand
+    type: text
+    section: 2 Persönliche Daten
+    pdf_field: "Familienstand "
+    required: true
+    prefill: profile.marital_status
+    ask_hint_de: Wie ist der Familienstand (ledig, verheiratet, verwitwet, geschieden …)?
+  - id: Familienstand seit
+    label_de: Familienstand seit
+    type: date
+    section: 2 Persönliche Daten
+    recommended: true
+    ask_hint_de: Seit wann gilt dieser Familienstand (ungefähres Datum genügt)?
+  - id: Telefonnummer KundIn
+    label_de: Telefonnummer
+    type: text
+    section: 2 Persönliche Daten
+    prefill: profile.phone
+    recommended: true
+    ask_hint_de: Unter welcher Telefonnummer ist die Person erreichbar?
+  - id: E-Mail Adresse KundIn
+    label_de: E-Mail-Adresse (falls vorhanden)
+    type: text
+    section: 2 Persönliche Daten
+    prefill: profile.email
+  - id: Strassennamen Lebensmittelpunkt
+    label_de: Lebensmittelpunkt – Straße
+    type: text
+    section: 2 Persönliche Daten
+    required: true
+    prefill: profile.street
+    ask_hint_de: Wo lebt die Person (Straße)?
+  - id: Hausnr Lebensmittelpunkt
+    label_de: Lebensmittelpunkt – Hausnummer
+    type: text
+    section: 2 Persönliche Daten
+    required: true
+    prefill: profile.house
+    ask_hint_de: Hausnummer?
+  - id: Stiege Lebensmittelpunkt
+    label_de: Lebensmittelpunkt – Stiege
+    type: text
+    section: 2 Persönliche Daten
+  - id: Tuernr Lebensmittelpunkt
+    label_de: Lebensmittelpunkt – Türnummer
+    type: text
+    section: 2 Persönliche Daten
+  - id: PLZ Lebensmittelpunkt
+    label_de: Lebensmittelpunkt – Postleitzahl
+    type: text
+    section: 2 Persönliche Daten
+    required: true
+    prefill: profile.zip
+    ask_hint_de: Postleitzahl?
+  - id: Ort Lebensmittelpunkt
+    label_de: Lebensmittelpunkt – Ort
+    type: text
+    section: 2 Persönliche Daten
+    required: true
+    prefill: profile.city
+    ask_hint_de: Ort?
+  # ---------------------------------------------------------------- 3 Vertretungsbefugte Person
+  - id: Vertretungsbefugte Person
+    label_de: Vertretungsbefugte Person vorhanden
+    type: choice
+    section: 3 Vertretungsbefugte Person
+    required: true
+    options: [ja, nein]
+    pdf_options: {ja: /Ja, nein: /Nein}
+    prefill: delegation.is_representative
+    ask_hint_de: >-
+      Gibt es eine vertretungsbefugte Person (Vollmacht, Vorsorgevollmacht, Erwachsenenvertretung, Obsorge)?
+      Der Nachweis muss beigelegt werden.
+  - id: Familienname Titel vertretungsbefugte Person 3
+    label_de: Vertretungsbefugte Person – Familienname und Titel
+    type: text
+    section: 3 Vertretungsbefugte Person
+    required: true
+    when: {field: Vertretungsbefugte Person, equals: ja}
+    prefill: actor.last_name
+    ask_hint_de: Familienname der vertretungsbefugten Person?
+  - id: Vorname vertretungsbefugte Person 3
+    label_de: Vertretungsbefugte Person – Vorname
+    type: text
+    section: 3 Vertretungsbefugte Person
+    required: true
+    when: {field: Vertretungsbefugte Person, equals: ja}
+    prefill: actor.first_name
+    ask_hint_de: Vorname der vertretungsbefugten Person?
+  - id: Telefonnummer vertretungsbefugte Person 3
+    label_de: Vertretungsbefugte Person – Telefonnummer
+    type: text
+    section: 3 Vertretungsbefugte Person
+    when: {field: Vertretungsbefugte Person, equals: ja}
+    prefill: actor.phone
+  - id: E-Mail-Adresse vertretungsbefugte Person 3
+    label_de: Vertretungsbefugte Person – E-Mail-Adresse
+    type: text
+    section: 3 Vertretungsbefugte Person
+    when: {field: Vertretungsbefugte Person, equals: ja}
+    prefill: actor.email
+  # ---------------------------------------------------------------- 4 Zustellbevollmächtigte:r (only if wanted)
+  - id: Familienname ZustellbevollmaechtigteR
+    label_de: Zustellbevollmächtigte:r – Familienname und Titel
+    type: text
+    section: 4 Zustellbevollmächtigte:r
+    recommended: true
+    ask_hint_de: >-
+      Soll eine Person (z. B. Angehörige) alle Schreiben des FSW statt der Kundin bzw. des Kunden bekommen
+      (Zustellbevollmächtigte:r)? Wenn ja, wer? Bitte vorher fragen, ob die Person einverstanden ist.
+  - id: Vorname ZustellbevollmaechtigteR
+    label_de: Zustellbevollmächtigte:r – Vorname
+    type: text
+    section: 4 Zustellbevollmächtigte:r
+    required: true
+    when: {field: Familienname ZustellbevollmaechtigteR}
+    ask_hint_de: Vorname der bzw. des Zustellbevollmächtigten?
+  - id: Telefonnummer ZustellbevollmaechtigteR
+    label_de: Zustellbevollmächtigte:r – Telefonnummer
+    type: text
+    section: 4 Zustellbevollmächtigte:r
+    when: {field: Familienname ZustellbevollmaechtigteR}
+  - id: E-Mail-Adresse ZustellbevollmaechtigteR
+    label_de: Zustellbevollmächtigte:r – E-Mail-Adresse
+    type: text
+    section: 4 Zustellbevollmächtigte:r
+    when: {field: Familienname ZustellbevollmaechtigteR}
+  - id: Strassennamen ZustellbevollmaechtigteR 2
+    label_de: Zustellbevollmächtigte:r – Straße
+    type: text
+    section: 4 Zustellbevollmächtigte:r
+    required: true
+    when: {field: Familienname ZustellbevollmaechtigteR}
+    ask_hint_de: Adresse (Straße) der bzw. des Zustellbevollmächtigten?
+  - id: Hausnr ZustellbevollmaechtigteR 2
+    label_de: Zustellbevollmächtigte:r – Hausnummer
+    type: text
+    section: 4 Zustellbevollmächtigte:r
+    required: true
+    when: {field: Familienname ZustellbevollmaechtigteR}
+    ask_hint_de: Hausnummer?
+  - id: Stiege ZustellbevollmaechtigteR 2
+    label_de: Zustellbevollmächtigte:r – Stiege
+    type: text
+    section: 4 Zustellbevollmächtigte:r
+    when: {field: Familienname ZustellbevollmaechtigteR}
+  - id: Tuernr ZustellbevollmaechtigteR 2
+    label_de: Zustellbevollmächtigte:r – Türnummer
+    type: text
+    section: 4 Zustellbevollmächtigte:r
+    when: {field: Familienname ZustellbevollmaechtigteR}
+  - id: PLZ ZustellbevollmaechtigteR 2
+    label_de: Zustellbevollmächtigte:r – Postleitzahl
+    type: text
+    section: 4 Zustellbevollmächtigte:r
+    required: true
+    when: {field: Familienname ZustellbevollmaechtigteR}
+    ask_hint_de: Postleitzahl?
+  - id: Ort ZustellbevollmaechtigteR 2
+    label_de: Zustellbevollmächtigte:r – Ort
+    type: text
+    section: 4 Zustellbevollmächtigte:r
+    required: true
+    when: {field: Familienname ZustellbevollmaechtigteR}
+    ask_hint_de: Ort?
+  # ---------------------------------------------------------------- 5 Vertrauenspersonen
+  - id: Vertretungsbefugte Person 2
+    label_de: Die vertretungsbefugte Person ist auch meine Vertrauensperson
+    type: checkbox
+    section: 5 Vertrauenspersonen
+    when: {field: Vertretungsbefugte Person, equals: ja}
+    pdf_on_value: /Ja
+    recommended: true
+    ask_hint_de: >-
+      Soll die vertretungsbefugte Person auch Vertrauensperson sein? Dann darf der FSW ihr Auskünfte geben, auch
+      über sensible Daten.
+  - id: Vertretungsbefugte Person 3
+    label_de: Ich benenne die unten genannte(n) Person(en) als Vertrauensperson(en)
+    type: checkbox
+    section: 5 Vertrauenspersonen
+    pdf_on_value: /Ja
+  - id: Familienname Vertrauensperson
+    label_de: Vertrauensperson – Familienname und Titel
+    type: text
+    section: 5 Vertrauenspersonen
+    required: true
+    when: {field: Vertretungsbefugte Person 3, equals: true}
+    ask_hint_de: Wer soll Vertrauensperson sein (Familienname)?
+  - id: Vorname Vertrauensperson
+    label_de: Vertrauensperson – Vorname
+    type: text
+    section: 5 Vertrauenspersonen
+    required: true
+    when: {field: Vertretungsbefugte Person 3, equals: true}
+    ask_hint_de: Vorname der Vertrauensperson?
+  - id: Telefonnummer Vertrauensperson
+    label_de: Vertrauensperson – Telefonnummer
+    type: text
+    section: 5 Vertrauenspersonen
+    when: {field: Vertretungsbefugte Person 3, equals: true}
+  - id: E-Mail-Adresse Vertrauensperson
+    label_de: Vertrauensperson – E-Mail-Adresse
+    type: text
+    section: 5 Vertrauenspersonen
+    when: {field: Vertretungsbefugte Person 3, equals: true}
+  - id: Familienname weitere Vertrauensperson
+    label_de: Weitere Vertrauensperson – Familienname und Titel
+    type: text
+    section: 5 Vertrauenspersonen
+    when: {field: Vertretungsbefugte Person 3, equals: true}
+  - id: Vorname weitere Vertrauensperson
+    label_de: Weitere Vertrauensperson – Vorname
+    type: text
+    section: 5 Vertrauenspersonen
+    when: {field: Vertretungsbefugte Person 3, equals: true}
+  - id: Telefonnummer weitere Vertrauensperson
+    label_de: Weitere Vertrauensperson – Telefonnummer
+    type: text
+    section: 5 Vertrauenspersonen
+    when: {field: Vertretungsbefugte Person 3, equals: true}
+  - id: E-Mail-Adresse weitere Vertrauensperson
+    label_de: Weitere Vertrauensperson – E-Mail-Adresse
+    type: text
+    section: 5 Vertrauenspersonen
+    when: {field: Vertretungsbefugte Person 3, equals: true}
+  # ---------------------------------------------------------------- 6 Einkommen
+  - id: Einkommen
+    label_de: Einkommen
+    type: choice
+    section: 6 Einkommen
+    required: true
+    options:
+      - "Ich habe ein Einkommen (z. B. Pension, Gehalt, Geld vom AMS)"
+      - "Ich habe kein Einkommen"
+    pdf_options:
+      "Ich habe ein Einkommen (z. B. Pension, Gehalt, Geld vom AMS)": "/Ich habe ein Einkommen, zum Beispiel Pension, Gehalt, Geld vom AMS "
+      "Ich habe kein Einkommen": /Ich habe kein Einkommen
+    ask_hint_de: Hat die Person ein Einkommen, z. B. eine Pension? (Nachweise in Kopie beilegen.)
+  # ---------------------------------------------------------------- 8 Unterschrift
+  - id: Datum Unterschrift KundIn 4
+    label_de: Datum der Unterschrift
+    type: date
+    section: 8 Unterschrift
+    prefill: system.today
+  # ---------------------------------------------------------------- 9 Zeug:innen (only if the client cannot sign)
+  - id: Begründung Zeugin/Zeuge 4
+    label_de: Begründung, warum die Kundin bzw. der Kunde nicht selbst unterschreiben kann
+    type: textarea
+    section: 9 Bestätigung durch Zeug:innen
+  - id: Familienname erste ZeugIn 3
+    label_de: Erste:r Zeug:in – Familienname
+    type: text
+    section: 9 Bestätigung durch Zeug:innen
+    when: {field: Begründung Zeugin/Zeuge 4}
+  - id: Vorname erste ZeugIn 3
+    label_de: Erste:r Zeug:in – Vorname
+    type: text
+    section: 9 Bestätigung durch Zeug:innen
+    when: {field: Begründung Zeugin/Zeuge 4}
+  - id: Beziehung erste Zeugin / erster Zeuge 3
+    label_de: Erste:r Zeug:in – Beziehung zur Kundin bzw. zum Kunden
+    type: text
+    section: 9 Bestätigung durch Zeug:innen
+    when: {field: Begründung Zeugin/Zeuge 4}
+  - id: Telefon erste Zeugin / erster Zeuge 3
+    label_de: Erste:r Zeug:in – Telefonnummer
+    type: text
+    section: 9 Bestätigung durch Zeug:innen
+    when: {field: Begründung Zeugin/Zeuge 4}
+  - id: Datum Unterschrift erste Zeugin / erster Zeuge 3
+    label_de: Erste:r Zeug:in – Datum der Unterschrift
+    type: date
+    section: 9 Bestätigung durch Zeug:innen
+    when: {field: Begründung Zeugin/Zeuge 4}
+  - id: Familienname zweite ZeugIn 4
+    label_de: Zweite:r Zeug:in – Familienname
+    type: text
+    section: 9 Bestätigung durch Zeug:innen
+    when: {field: Begründung Zeugin/Zeuge 4}
+  - id: Vorname zweite ZeugIn 3
+    label_de: Zweite:r Zeug:in – Vorname
+    type: text
+    section: 9 Bestätigung durch Zeug:innen
+    when: {field: Begründung Zeugin/Zeuge 4}
+  - id: Beziehung zweite ZeugIn 3
+    label_de: Zweite:r Zeug:in – Beziehung zur Kundin bzw. zum Kunden
+    type: text
+    section: 9 Bestätigung durch Zeug:innen
+    when: {field: Begründung Zeugin/Zeuge 4}
+  - id: Telefonnummer zweite ZeugIn 3
+    label_de: Zweite:r Zeug:in – Telefonnummer
+    type: text
+    section: 9 Bestätigung durch Zeug:innen
+    when: {field: Begründung Zeugin/Zeuge 4}
+  - id: Datum Unterschrift zweite ZeugIn 3
+    label_de: Zweite:r Zeug:in – Datum der Unterschrift
+    type: date
+    section: 9 Bestätigung durch Zeug:innen
+    when: {field: Begründung Zeugin/Zeuge 4}
+  # ---------------------------------------------------------------- 10 Pflege und Betreuung
+  - id: Unfall
+    label_de: Bedarf durch Unfall oder anderes Schadensereignis entstanden
+    type: choice
+    section: 10 Pflege und Betreuung
+    required: true
+    when: {field: Leistungen Pflege und Betreuung, equals: true}
+    options: [ja, nein]
+    pdf_options: {ja: /Ja, nein: /Nein}
+    ask_hint_de: Ist der Unterstützungsbedarf durch einen Unfall oder ein anderes Schadensereignis entstanden?
+  - id: Pflege und Betreuung zu Hause
+    label_de: Pflege und Betreuung zu Hause
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Leistungen Pflege und Betreuung, equals: true}
+    pdf_on_value: /Ja
+    recommended: true
+    ask_hint_de: Wird Pflege und Betreuung zu Hause beantragt (z. B. Hauskrankenpflege, Heimhilfe)?
+  - id: Tagesbetreuung
+    label_de: Tagesbetreuung (Tageszentrum, Tageshospiz)
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Leistungen Pflege und Betreuung, equals: true}
+    pdf_on_value: /Ja
+  - id: Wohngemeinschaft
+    label_de: Senior:innen-Wohngemeinschaft – Basispaket
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Leistungen Pflege und Betreuung, equals: true}
+    pdf_on_value: /Ja
+  - id: Wohn und Pflegehäuser
+    label_de: Wohn- und Pflegehäuser
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Leistungen Pflege und Betreuung, equals: true}
+    pdf_on_value: /Ja
+  - id: "Wohn- und Pflegehäuser: befristet"
+    label_de: Wohn- und Pflegehäuser – befristet
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Wohn und Pflegehäuser, equals: true}
+    pdf_on_value: /Ja
+  - id: "Wohn- und Pflegehäuser: unbefristet"
+    label_de: Wohn- und Pflegehäuser – unbefristet
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Wohn und Pflegehäuser, equals: true}
+    pdf_on_value: /Ja
+  - id: Kurzzeitpflege
+    label_de: Kurzzeitpflege – Remobilisation (max. 92 Tage)
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Leistungen Pflege und Betreuung, equals: true}
+    pdf_on_value: /Ja
+  - id: Entlastung Angehoeriger
+    label_de: Betreutes Wohnen – Entlastung für Angehörige (max. 35 Tage)
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Leistungen Pflege und Betreuung, equals: true}
+    pdf_on_value: /Ja
+  - id: Urlaubspflege
+    label_de: Urlaubspflege – Allgemeine Pflege und Betreuung (max. 35 Tage)
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Leistungen Pflege und Betreuung, equals: true}
+    pdf_on_value: /Ja
+  - id: Dringend
+    label_de: Dringender Einzug – FSW sucht in ganz Wien
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Wohn und Pflegehäuser, equals: true}
+    pdf_on_value: /Ja
+  - id: Bezirke dringend
+    label_de: Bevorzugte Bezirke (bei dringendem Einzug)
+    type: textarea
+    section: 10 Pflege und Betreuung
+    when: {field: Dringend, equals: true}
+  - id: Zeit
+    label_de: Ich habe Zeit, auf einen bestimmten Platz zu warten
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Wohn und Pflegehäuser, equals: true}
+    pdf_on_value: /Ja
+  - id: Bezirke Zeit
+    label_de: Nur folgende Bezirke oder Einrichtungen
+    type: textarea
+    section: 10 Pflege und Betreuung
+    required: true
+    when: {field: Zeit, equals: true}
+    ask_hint_de: In welche Bezirke oder Einrichtungen möchte die Person ziehen?
+  - id: Kontaktaufnahme mit mir
+    label_de: Bei freiem Platz Kontakt mit mir
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Wohn und Pflegehäuser, equals: true}
+    pdf_on_value: /Ja
+  - id: Kontaktaufnahme folgende Person
+    label_de: Bei freiem Platz Kontakt mit folgender Person
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Wohn und Pflegehäuser, equals: true}
+    pdf_on_value: /Ja
+  - id: Familienname Kontaktaufnahme
+    label_de: Kontaktperson – Name
+    type: text
+    section: 10 Pflege und Betreuung
+    required: true
+    when: {field: Kontaktaufnahme folgende Person, equals: true}
+    ask_hint_de: Wen soll der FSW kontaktieren?
+  - id: Telefonnummer Kontaktaufnahme 2
+    label_de: Kontaktperson – Telefonnummer
+    type: text
+    section: 10 Pflege und Betreuung
+    when: {field: Kontaktaufnahme folgende Person, equals: true}
+  - id: E-Mail Adresse Kontaktaufnahme 2
+    label_de: Kontaktperson – E-Mail-Adresse
+    type: text
+    section: 10 Pflege und Betreuung
+    when: {field: Kontaktaufnahme folgende Person, equals: true}
+  - id: KontoinhaberIn 3
+    label_de: Kontodaten – Kontoinhaber:in (wie auf der Bankkarte)
+    type: text
+    section: 10 Pflege und Betreuung
+    when: {field: Leistungen Pflege und Betreuung, equals: true}
+    recommended: true
+    ask_hint_de: Auf welches Konto soll ein Guthaben zurücküberwiesen werden? Name der Kontoinhaberin bzw. des Kontoinhabers?
+  - id: IBAN 3
+    label_de: Kontodaten – IBAN
+    type: text
+    section: 10 Pflege und Betreuung
+    when: {field: KontoinhaberIn 3}
+    required: true
+    ask_hint_de: Wie lautet die IBAN?
+  - id: Keine Unterhaltsverpflichtung Unterhaltsberechtigung PuB
+    label_de: Keine unterhaltsverpflichteten oder unterhaltsberechtigten Angehörigen
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Leistungen Pflege und Betreuung, equals: true}
+    pdf_on_value: /Ja
+    recommended: true
+    ask_hint_de: >-
+      Gibt es Angehörige, die der Person Unterhalt zahlen müssen oder von ihr Unterhalt bekommen (z. B.
+      Ehepartner:in)? Wenn nein, kreuze ich „keine“ an.
+  - id: Unterhaltsberechtigte Angehoerige PuB
+    label_de: Unterhaltsberechtigte Angehörige vorhanden (Beilage Angehörige nötig)
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Leistungen Pflege und Betreuung, equals: true}
+    pdf_on_value: /Ja
+  - id: Unterhaltsverpflichtete Angehoerige PuB
+    label_de: Unterhaltsverpflichtete Angehörige vorhanden (Beilage Angehörige nötig)
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Leistungen Pflege und Betreuung, equals: true}
+    pdf_on_value: /Ja
+  - id: Anzahl volljaehrige Personen
+    label_de: Anzahl volljähriger Personen im Haushalt
+    type: text
+    section: 10 Pflege und Betreuung
+    when: {field: Leistungen Pflege und Betreuung, equals: true}
+    recommended: true
+    ask_hint_de: Wie viele Erwachsene leben im Haushalt (inklusive der Person selbst)?
+  - id: Aktuelle Befunde
+    label_de: Aktueller Befund über den Bedarf für Wohnen und Pflege liegt bei
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Wohn und Pflegehäuser, equals: true}
+    pdf_on_value: /Ja
+  - id: Keine Aktuellen Befunde
+    label_de: Noch kein aktueller Befund (Befundbericht Wohnen und Pflege von Ärztin/Arzt ausfüllen lassen)
+    type: checkbox
+    section: 10 Pflege und Betreuung
+    when: {field: Wohn und Pflegehäuser, equals: true}
+    pdf_on_value: /Ja
+  # ---------------------------------------------------------------- 10 Behinderung und Inklusion
+  - id: Unfall 2
+    label_de: Bedarf durch Unfall oder anderes Schadensereignis entstanden
+    type: choice
+    section: 10 Behinderung und Inklusion
+    required: true
+    when: {field: Leistungen Behinderung und Inklusion, equals: true}
+    options: [ja, nein]
+    pdf_options: {ja: /Ja, nein: /Nein}
+    ask_hint_de: Ist der Bedarf durch einen Unfall oder ein anderes Schadensereignis entstanden?
+  - id: Rollstuhl
+    label_de: Benutzen Sie einen Rollstuhl?
+    type: choice
+    section: 10 Behinderung und Inklusion
+    required: true
+    when: {field: Leistungen Behinderung und Inklusion, equals: true}
+    options: [ja, nein]
+    pdf_options: {ja: /Ja, nein: /Nein}
+    ask_hint_de: Wird ein Rollstuhl benutzt?
+  - {id: Tagesstruktur, label_de: Tagesstruktur inklusive Mobilitätskonzept, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Betreutes Wohnen, label_de: Betreutes Wohnen, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Teilbetreutes Wohnen, label_de: Betreutes Wohnen – teilbetreut, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Betreutes Wohnen, equals: true}}
+  - {id: Vollbetreutes Wohnen, label_de: Betreutes Wohnen – vollbetreut, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Betreutes Wohnen, equals: true}}
+  - {id: Mobile Fruehfoerderung, label_de: Mobile Frühförderung, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Schule, label_de: Schule, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Schule Adresse, label_de: Adresse der Schule, type: text, required: true, ask_hint_de: "Wie lautet die Adresse der Schule?",
+     section: 10 Behinderung und Inklusion, when: {field: Schule, equals: true}}
+  - {id: Hilfsmittel, label_de: "Hilfsmittel, PKW-Adaptierung oder Blindenführhund", type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Hilfsmittel Beantragnung, label_de: "Für welches Hilfsmittel wird die Förderung beantragt?", type: text, required: true,
+     ask_hint_de: "Für welches Hilfsmittel wird die Förderung beantragt?",
+     section: 10 Behinderung und Inklusion, when: {field: Hilfsmittel, equals: true}}
+  - {id: Dolmetschleistung, label_de: Dolmetschleistungen, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Berufsintegration, label_de: Berufsintegration, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Berufsqualifizierung, label_de: Berufsqualifizierung, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Lehrlingsausbildung, label_de: Lehrlingsausbildung, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Lohnkostenzuschuss, label_de: Lohnkostenzuschuss, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: MentorInnenzuschuss, label_de: Mentor:innenzuschuss, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Pflegegldergänzungsleistung, label_de: Pflegegeldergänzungsleistung für Persönliche Assistenz, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Fahrtendienst, label_de: Fahrtendienst, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Fahrtendienst Start, label_de: "Fahrtendienst – hier abholen", type: text, required: true,
+     ask_hint_de: "Wo soll der Fahrtendienst abholen?",
+     section: 10 Behinderung und Inklusion, when: {field: Fahrtendienst, equals: true}}
+  - {id: Fahrtendienst Ziel, label_de: "Fahrtendienst – hierhin fahren", type: text, required: true,
+     ask_hint_de: "Wohin soll der Fahrtendienst fahren?",
+     section: 10 Behinderung und Inklusion, when: {field: Fahrtendienst, equals: true}}
+  - {id: Fahrtbegleitung, label_de: Fahrtbegleitung, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Fahrtkostenersatz, label_de: Fahrtkostenersatz, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Mobilitaetstraining, label_de: Mobilitätstraining, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Freizeitfahrtendienst, label_de: Freizeitfahrtendienst für dauerhaft schwer gehbehinderte Menschen, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Sonstige Leistung, label_de: Sonstige Leistung, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Welche sonstige Leistung, label_de: Beschreibung der sonstigen Leistung, type: text, required: true,
+     ask_hint_de: "Welche sonstige Leistung wird beantragt?",
+     section: 10 Behinderung und Inklusion, when: {field: Sonstige Leistung, equals: true}}
+  - {id: Anmerkung Bedarf, label_de: Anmerkungen zum Bedarf, type: text,
+     section: 10 Behinderung und Inklusion, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: KontoinhaberIn 4, label_de: "Kontodaten – Kontoinhaber:in (wie auf der Bankkarte)", type: text,
+     section: 10 Behinderung und Inklusion, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: IBAN 4, label_de: Kontodaten – IBAN, type: text, required: true, ask_hint_de: "Wie lautet die IBAN?",
+     section: 10 Behinderung und Inklusion, when: {field: KontoinhaberIn 4}}
+  - {id: Keine Unterhaltsverpflichtung Unterhaltsberechtigung BuI,
+     label_de: Keine unterhaltsverpflichteten oder unterhaltsberechtigten Angehörigen, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Unterhaltsberechtigte Angehoerige BuI, label_de: Unterhaltsberechtigte Angehörige vorhanden, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  - {id: Unterhaltsverpflichtete Angehoerige BuI, label_de: Unterhaltsverpflichtete Angehörige vorhanden, type: checkbox,
+     section: 10 Behinderung und Inklusion, pdf_on_value: /Ja, when: {field: Leistungen Behinderung und Inklusion, equals: true}}
+  # ---------------------------------------------------------------- 10 Obdach- und Wohnungslosenhilfe
+  - {id: Leistungen Obdach- und Wohnungslosenhilfe 2, label_de: Leistungen Obdach- und Wohnungslosenhilfe (Abschnitt 10),
+     type: checkbox, section: 10 Obdach- und Wohnungslosenhilfe, pdf_on_value: /Ja,
+     when: {field: Leistungen Obdach- und Wohnungslosenhilfe, equals: true}}
+  - id: Vermögen
+    label_de: Vermögen
+    type: choice
+    section: 10 Obdach- und Wohnungslosenhilfe
+    required: true
+    when: {field: Leistungen Obdach- und Wohnungslosenhilfe, equals: true}
+    options: [Ich habe Vermögen, Ich habe kein Vermögen]
+    pdf_options: {Ich habe Vermögen: /Ich habe Vermoegen., Ich habe kein Vermögen: /Ich habe kein Vermoegen.}
+    ask_hint_de: Ist Vermögen vorhanden (z. B. Sparbuch, Wertpapiere)?
+  - id: Personengemeinschaft
+    label_de: Leistung allein oder gemeinsam mit Partner:in / Kindern nutzen
+    type: choice
+    section: 10 Obdach- und Wohnungslosenhilfe
+    required: true
+    when: {field: Leistungen Obdach- und Wohnungslosenhilfe, equals: true}
+    options: [allein, gemeinsam mit Partner:in und/oder Kindern]
+    pdf_options:
+      allein: /Ich moechte die Leistung allein nutzen.
+      gemeinsam mit Partner:in und/oder Kindern: /Ich moechte die Leistung gemeinsam mit Partner:in und/oder meinen Kindern nutzen.
+    ask_hint_de: Soll die Leistung allein oder gemeinsam mit Partner:in bzw. Kindern genutzt werden?

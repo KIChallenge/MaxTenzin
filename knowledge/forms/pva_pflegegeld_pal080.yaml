@@ -1,0 +1,723 @@
+# PVA – Antrag auf Pflegegeld (PAL 080, 01. 2025). AcroForm names + export states verified against
+# knowledge/forms/templates/pva_pflegegeld_pal080.pdf (radio kids /01, /02, ... in reading order).
+# Field ids = AcroForm names (pdf_field defaults to id). Medical content is never prefilled.
+form_id: pva_pflegegeld_pal080
+title_de: Antrag auf Pflegegeld (PAL 080)
+provider: PVA
+form_version: PAL 080 (01. 2025)
+submit_info_de: >-
+  Bitte prüfen, auf Seite 4 mit Datum unterschreiben und mit Befundkopien an die Pensionsversicherungsanstalt
+  senden (Landesstelle Wien: Friedrich-Hillegeist-Straße 1, 1020 Wien). Der Antrag wird nicht automatisch eingereicht.
+sections:
+  - Antragsart
+  - 1 Persönliche Angaben
+  - 2 Antragstellung durch andere Person
+  - 3 Gesundheitszustand
+  - 4 Betreuung und Hilfe
+  - 5 Krankenanstalt
+  - 6 Unfall
+  - 7 Ähnliche Leistungen
+  - 8 Pensionsleistungen
+  - 9 Pflegeberatung
+  - 10 Anweisung
+  - 11 Erklärung und Unterlagen
+unmapped_pdf_fields: {}
+fields:
+  # ---------------------------------------------------------------- Antragsart
+  - id: Antrag Pflg
+    label_de: Art des Antrags
+    type: choice
+    section: Antragsart
+    required: true
+    options: [Zuerkennung / Erhöhung, Weitergewährung nach Befristung]
+    pdf_options: {Zuerkennung / Erhöhung: /01, Weitergewährung nach Befristung: /03}
+    prefill: "const:Zuerkennung / Erhöhung"
+    ask_hint_de: Wird zum ersten Mal (oder mehr) Pflegegeld beantragt, oder läuft ein befristetes Pflegegeld aus?
+  # ---------------------------------------------------------------- 1 Persönliche Angaben
+  - id: VSNR_1
+    label_de: Versicherungsnummer
+    type: text
+    section: 1 Persönliche Angaben
+    required: true
+    prefill: profile.svnr
+    ask_hint_de: Wie lautet die 10-stellige Sozialversicherungsnummer (steht auf der e-card)?
+  - id: Fam.Name
+    label_de: Familienname
+    type: text
+    section: 1 Persönliche Angaben
+    required: true
+    prefill: profile.last_name
+    ask_hint_de: Wie lautet der Familienname?
+  - id: Vorname
+    label_de: Vorname
+    type: text
+    section: 1 Persönliche Angaben
+    required: true
+    prefill: profile.first_name
+    ask_hint_de: Wie lautet der Vorname?
+  - id: Titel
+    label_de: Titel
+    type: text
+    section: 1 Persönliche Angaben
+  - id: frühere Namen
+    label_de: Frühere Namen
+    type: text
+    section: 1 Persönliche Angaben
+    recommended: true
+    ask_hint_de: Gab es frühere Familiennamen (z. B. Geburtsname)?
+  - id: Geburtsdatum
+    label_de: Geburtsdatum
+    type: date
+    section: 1 Persönliche Angaben
+    required: true
+    prefill: profile.birth_date
+    ask_hint_de: Wann ist die Person geboren?
+  - id: Geschlecht
+    label_de: Geschlecht
+    type: text
+    section: 1 Persönliche Angaben
+    required: true
+    prefill: profile.sex_de
+    ask_hint_de: Welches Geschlecht soll im Antrag stehen?
+  - id: Stabü
+    label_de: Staatsbürgerschaft
+    type: choice
+    section: 1 Persönliche Angaben
+    required: true
+    options: [Österreich, andere]
+    pdf_options: {Österreich: /01, andere: /02}
+    prefill: profile.citizenship_choice
+    ask_hint_de: Ist die Person österreichische Staatsbürgerin bzw. österreichischer Staatsbürger?
+  - id: andere Staatsbürgerschaft
+    label_de: Andere Staatsbürgerschaft (Staat)
+    type: text
+    section: 1 Persönliche Angaben
+    required: true
+    when: {field: Stabü, equals: andere}
+    prefill: profile.citizenship_other
+    ask_hint_de: Welche Staatsbürgerschaft? Bitte einen Nachweis über die Aufenthaltsberechtigung beilegen.
+  - id: Personenstand
+    label_de: Personenstand
+    type: choice
+    section: 1 Persönliche Angaben
+    required: true
+    options: [ledig, verheiratet, verwitwet, geschieden, eingetragene Partnerschaft, ehemalige eingetragene Partnerschaft]
+    pdf_options: {ledig: /01, verheiratet: /02, verwitwet: /03, geschieden: /04, eingetragene Partnerschaft: /05,
+                  ehemalige eingetragene Partnerschaft: /08}
+    prefill: profile.marital_status
+    ask_hint_de: Wie ist der Personenstand (ledig, verheiratet, verwitwet, geschieden …)?
+  - id: Personenstand seit
+    label_de: Personenstand seit
+    type: date
+    section: 1 Persönliche Angaben
+    recommended: true
+    ask_hint_de: Seit wann gilt dieser Personenstand (ungefähres Datum genügt)?
+  - id: Adresse Straße
+    label_de: Ständiger Aufenthaltsort – Straße / Gasse / Platz
+    type: text
+    section: 1 Persönliche Angaben
+    required: true
+    prefill: profile.street
+    ask_hint_de: Wo wohnt die Person ständig (Straße)?
+  - id: Hausnummer, Stiege, Tür
+    label_de: Hausnummer / Stiege / Tür
+    type: text
+    section: 1 Persönliche Angaben
+    required: true
+    prefill: profile.house
+    ask_hint_de: Hausnummer, Stiege und Tür?
+  - id: PLZ
+    label_de: Postleitzahl
+    type: text
+    section: 1 Persönliche Angaben
+    required: true
+    prefill: profile.zip
+    ask_hint_de: Postleitzahl?
+  - id: Ort
+    label_de: Ort
+    type: text
+    section: 1 Persönliche Angaben
+    required: true
+    prefill: profile.city
+    ask_hint_de: Ort?
+  - id: Land
+    label_de: Land
+    type: text
+    section: 1 Persönliche Angaben
+    prefill: profile.country
+  - id: voruebergehend
+    label_de: Vorübergehender Aufenthaltsort (z. B. Heim, Krankenhaus, bei Angehörigen) mit genauer Adresse
+    type: text
+    section: 1 Persönliche Angaben
+    recommended: true
+    ask_hint_de: Hält sich die Person gerade vorübergehend woanders auf (z. B. Krankenhaus, bei Angehörigen)? Wenn ja, wo genau?
+  - id: Telefon
+    label_de: Telefonnummer (mit Vorwahl)
+    type: text
+    section: 1 Persönliche Angaben
+    prefill: profile.phone
+    recommended: true
+    ask_hint_de: Unter welcher Telefonnummer ist die Person erreichbar?
+  - id: Email
+    label_de: E-Mail
+    type: text
+    section: 1 Persönliche Angaben
+    prefill: profile.email
+  # ---------------------------------------------------------------- 2 Antragstellung durch andere Person
+  - id: Andere Person
+    label_de: Ich bin (Art der Vertretung)
+    type: choice
+    section: 2 Antragstellung durch andere Person
+    required: true
+    when: {proxy: true}
+    options: [gesetzliche Vertretung, bevollmächtigt, sonstiges]
+    pdf_options: {gesetzliche Vertretung: /01, bevollmächtigt: /02, sonstiges: /03}
+    prefill: delegation.representation
+    ask_hint_de: Sind Sie gesetzliche Vertretung (Obsorge, Erwachsenenvertretung) oder bevollmächtigt?
+  - id: Nachweis
+    label_de: Nachweis der Vertretung
+    type: choice
+    section: 2 Antragstellung durch andere Person
+    required: true
+    when: {proxy: true}
+    options: [liegt bei, wird nachgereicht]
+    pdf_options: {liegt bei: /01, wird nachgereicht: /02}
+    prefill: delegation.proof
+    ask_hint_de: Legen Sie die Vollmacht bzw. den Vertretungsnachweis bei oder reichen Sie ihn nach?
+  - id: Familienname andere
+    label_de: Familienname (antragstellende Person)
+    type: text
+    section: 2 Antragstellung durch andere Person
+    required: true
+    when: {proxy: true}
+    prefill: actor.last_name
+    ask_hint_de: Ihr Familienname?
+  - id: Vorname andere Person
+    label_de: Vorname (antragstellende Person)
+    type: text
+    section: 2 Antragstellung durch andere Person
+    required: true
+    when: {proxy: true}
+    prefill: actor.first_name
+    ask_hint_de: Ihr Vorname?
+  - id: Titel2
+    label_de: Titel (antragstellende Person)
+    type: text
+    section: 2 Antragstellung durch andere Person
+    when: {proxy: true}
+  - id: Adresse Straße 1
+    label_de: Adresse – Straße / Gasse / Platz (antragstellende Person)
+    type: text
+    section: 2 Antragstellung durch andere Person
+    required: true
+    when: {proxy: true}
+    prefill: actor.street
+    ask_hint_de: Ihre Adresse (Straße)?
+  - id: Hausnummer, Stiege, Tür2
+    label_de: Hausnummer / Stiege / Tür (antragstellende Person)
+    type: text
+    section: 2 Antragstellung durch andere Person
+    required: true
+    when: {proxy: true}
+    prefill: actor.house
+    ask_hint_de: Ihre Hausnummer, Stiege und Tür?
+  - id: PLZ 1
+    label_de: Postleitzahl (antragstellende Person)
+    type: text
+    section: 2 Antragstellung durch andere Person
+    required: true
+    when: {proxy: true}
+    prefill: actor.zip
+    ask_hint_de: Ihre Postleitzahl?
+  - id: Ort 1
+    label_de: Ort (antragstellende Person)
+    type: text
+    section: 2 Antragstellung durch andere Person
+    required: true
+    when: {proxy: true}
+    prefill: actor.city
+    ask_hint_de: Ihr Wohnort?
+  - id: Land2
+    label_de: Land (antragstellende Person)
+    type: text
+    section: 2 Antragstellung durch andere Person
+    when: {proxy: true}
+    prefill: actor.country
+  - id: Telefon 1
+    label_de: Telefonnummer (antragstellende Person)
+    type: text
+    section: 2 Antragstellung durch andere Person
+    when: {proxy: true}
+    prefill: actor.phone
+    recommended: true
+    ask_hint_de: Unter welcher Telefonnummer sind Sie erreichbar?
+  - id: Email2
+    label_de: E-Mail (antragstellende Person)
+    type: text
+    section: 2 Antragstellung durch andere Person
+    when: {proxy: true}
+    prefill: actor.email
+  # ---------------------------------------------------------------- 3 Gesundheitszustand
+  - id: Leiden
+    label_de: Krankheiten bzw. gesundheitliche Beeinträchtigungen
+    type: textarea
+    section: 3 Gesundheitszustand
+    required: true
+    pdf_overflow: [Leiden2]
+    max_chars: 95
+    ask_hint_de: >-
+      Wegen welcher Krankheiten oder Beeinträchtigungen wird Hilfe gebraucht? Bitte übernehmen Sie die Diagnosen
+      wörtlich aus dem Befund oder Entlassungsbrief – ich formuliere medizinische Angaben nicht um.
+  - id: körperl. Einschränkung
+    label_de: Grund der Pflegebedürftigkeit – körperliche Einschränkung
+    type: choice
+    section: 3 Gesundheitszustand
+    recommended: true
+    options: [ja, nein]
+    pdf_options: {ja: /01, nein: /02}
+    ask_hint_de: Liegt eine körperliche Einschränkung vor?
+  - id: Rollstuhlfahrer
+    label_de: Grund der Pflegebedürftigkeit – Rollstuhlfahrer*in
+    type: choice
+    section: 3 Gesundheitszustand
+    recommended: true
+    options: [ja, nein]
+    pdf_options: {ja: /01, nein: /02}
+    ask_hint_de: Ist die Person auf einen Rollstuhl angewiesen?
+  - id: Sehbehinderung
+    label_de: Grund der Pflegebedürftigkeit – Sehbehinderung / Blindheit
+    type: choice
+    section: 3 Gesundheitszustand
+    recommended: true
+    options: [ja, nein]
+    pdf_options: {ja: /01, nein: /02}
+    ask_hint_de: Liegt eine Sehbehinderung oder Blindheit vor?
+  - id: geistige Beeinträchtigung
+    label_de: Grund der Pflegebedürftigkeit – geistige Beeinträchtigung
+    type: choice
+    section: 3 Gesundheitszustand
+    recommended: true
+    options: [ja, nein]
+    pdf_options: {ja: /01, nein: /02}
+    ask_hint_de: Liegt eine geistige Beeinträchtigung vor?
+  - id: Demenz
+    label_de: Grund der Pflegebedürftigkeit – Gedächtnisstörung / Demenz
+    type: choice
+    section: 3 Gesundheitszustand
+    recommended: true
+    options: [ja, nein]
+    pdf_options: {ja: /01, nein: /02}
+    ask_hint_de: Ist eine Gedächtnisstörung oder Demenz ärztlich festgestellt?
+  - id: psychische Erkrankung
+    label_de: Grund der Pflegebedürftigkeit – psychische Erkrankung
+    type: choice
+    section: 3 Gesundheitszustand
+    recommended: true
+    options: [ja, nein]
+    pdf_options: {ja: /01, nein: /02}
+    ask_hint_de: Liegt eine psychische Erkrankung vor?
+  - id: regelm. Medikamente
+    label_de: Regelmäßige Einnahme von Medikamenten
+    type: choice
+    section: 3 Gesundheitszustand
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+    ask_hint_de: Werden regelmäßig Medikamente eingenommen?
+  - id: Medikamente
+    label_de: Welche Medikamente (wie im Medikationsplan)
+    type: textarea
+    section: 3 Gesundheitszustand
+    required: true
+    when: {field: regelm. Medikamente, equals: ja}
+    pdf_overflow: [Medikamente2]
+    max_chars: 80
+    ask_hint_de: Welche Medikamente? Bitte genau so angeben, wie sie im Medikationsplan stehen.
+  - id: Hausbesuch
+    label_de: Weitere Person über den Termin des Hausbesuchs informieren
+    type: choice
+    section: 3 Gesundheitszustand
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+    ask_hint_de: Soll noch jemand (z. B. Sie selbst) über den Termin des Hausbesuchs zur Pflegebedarfsfeststellung informiert werden?
+  - id: Name weitere Person
+    label_de: Zu informierende Person – Name und Vorname
+    type: text
+    section: 3 Gesundheitszustand
+    required: true
+    when: {field: Hausbesuch, equals: ja}
+    ask_hint_de: Wer soll informiert werden (Familienname und Vorname)?
+  - id: Adresse weitere Person
+    label_de: Zu informierende Person – Adresse, Telefon, E-Mail
+    type: text
+    section: 3 Gesundheitszustand
+    required: true
+    when: {field: Hausbesuch, equals: ja}
+    ask_hint_de: Adresse, Telefonnummer und E-Mail dieser Person?
+  # ---------------------------------------------------------------- 4 Betreuung und Hilfe
+  - id: Betreuung durch andere Person
+    label_de: Betreuung und Hilfe durch eine andere Person / Stelle
+    type: choice
+    section: 4 Betreuung und Hilfe
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+    ask_hint_de: Hilft derzeit jemand bei der Betreuung (Angehörige, mobile Dienste, Einrichtung)?
+  - id: Person Stelle Pflegeperson
+    label_de: Pflegeperson(en)
+    type: checkbox
+    section: 4 Betreuung und Hilfe
+    when: {field: Betreuung durch andere Person, equals: ja}
+    pdf_on_value: /ja
+    recommended: true
+    ask_hint_de: Hilft eine Pflegeperson (z. B. Angehörige)?
+  - id: Name und Adresse Pflegeperson
+    label_de: Pflegeperson – Name und Adresse (Zeile 1)
+    type: text
+    section: 4 Betreuung und Hilfe
+    required: true
+    when: {field: Person Stelle Pflegeperson, equals: true}
+    ask_hint_de: Name und Adresse der Pflegeperson?
+  - id: Name und Adresse Pflegeperson2
+    label_de: Pflegeperson – Name und Adresse (Zeile 2)
+    type: text
+    section: 4 Betreuung und Hilfe
+    when: {field: Person Stelle Pflegeperson, equals: true}
+  - id: Name und Adresse Pflegeperson3
+    label_de: Pflegeperson – Name und Adresse (Zeile 3)
+    type: text
+    section: 4 Betreuung und Hilfe
+    when: {field: Person Stelle Pflegeperson, equals: true}
+  - id: Familienhospiz
+    label_de: Familienhospizkarenz der Pflegeperson
+    type: choice
+    section: 4 Betreuung und Hilfe
+    when: {field: Person Stelle Pflegeperson, equals: true}
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+  - id: Familienhospiz seit
+    label_de: Familienhospizkarenz von
+    type: date
+    section: 4 Betreuung und Hilfe
+    required: true
+    when: {field: Familienhospiz, equals: ja}
+    ask_hint_de: Seit wann besteht die Familienhospizkarenz?
+  - id: Familienhospiz bis
+    label_de: Familienhospizkarenz bis
+    type: date
+    section: 4 Betreuung und Hilfe
+    when: {field: Familienhospiz, equals: ja}
+  - id: Pflegekarenz/-teilzeit
+    label_de: Pflegekarenz oder Pflegeteilzeit der Pflegeperson
+    type: choice
+    section: 4 Betreuung und Hilfe
+    when: {field: Person Stelle Pflegeperson, equals: true}
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+  - id: Pflegekarenz seit
+    label_de: Pflegekarenz / -teilzeit von
+    type: date
+    section: 4 Betreuung und Hilfe
+    required: true
+    when: {field: Pflegekarenz/-teilzeit, equals: ja}
+    ask_hint_de: Seit wann besteht die Pflegekarenz bzw. Pflegeteilzeit?
+  - id: Pflegekarenz bis
+    label_de: Pflegekarenz / -teilzeit bis
+    type: date
+    section: 4 Betreuung und Hilfe
+    when: {field: Pflegekarenz/-teilzeit, equals: ja}
+  - id: 24 Stunden Betreuuung
+    label_de: Besteht eine 24-Stunden-Betreuung?
+    type: choice
+    section: 4 Betreuung und Hilfe
+    when: {field: Betreuung durch andere Person, equals: ja}
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+    recommended: true
+    ask_hint_de: Gibt es eine 24-Stunden-Betreuung?
+  - id: mobile Dienste
+    label_de: Mobile Dienste (z. B. Hauskrankenpflege, Essen auf Rädern)
+    type: checkbox
+    section: 4 Betreuung und Hilfe
+    when: {field: Betreuung durch andere Person, equals: ja}
+    pdf_on_value: /ja
+    recommended: true
+    ask_hint_de: Kommen bereits mobile Dienste (z. B. Hauskrankenpflege, Heimhilfe, Essen auf Rädern)?
+  - id: Name mobiler Dienst
+    label_de: Mobile Dienste – Dienste, Kostenträger
+    type: text
+    section: 4 Betreuung und Hilfe
+    required: true
+    when: {field: mobile Dienste, equals: true}
+    ask_hint_de: Welche Dienste sind das, und wer bezahlt sie (z. B. FSW)?
+  - id: Person Stelle ambulant teilstationär
+    label_de: Ambulante / teilstationäre Dienste (z. B. Tagespflege)
+    type: checkbox
+    section: 4 Betreuung und Hilfe
+    when: {field: Betreuung durch andere Person, equals: ja}
+    pdf_on_value: /ja
+  - id: ambulante teilstationäre Einrichtung, Kostenträger
+    label_de: Ambulante / teilstationäre Einrichtung – Adresse, Kostenträger
+    type: text
+    section: 4 Betreuung und Hilfe
+    required: true
+    when: {field: Person Stelle ambulant teilstationär, equals: true}
+    ask_hint_de: Welche Einrichtung (mit Adresse) und wer ist Kostenträger?
+  - id: Wohnsituation
+    label_de: Stationäre Unterbringung bzw. betreutes Wohnen
+    type: choice
+    section: 4 Betreuung und Hilfe
+    when: {field: Betreuung durch andere Person, equals: ja}
+    options: [dauernde Unterbringung in stationärer Einrichtung, betreutes Wohnen]
+    pdf_options: {dauernde Unterbringung in stationärer Einrichtung: /01, betreutes Wohnen: /02}
+  - id: dauernde Einrichtung, Kostenträger
+    label_de: Einrichtung – Adresse, Kostenträger
+    type: text
+    section: 4 Betreuung und Hilfe
+    required: true
+    when: {field: Wohnsituation}
+    ask_hint_de: Welche Einrichtung (mit Adresse) und wer ist Kostenträger?
+  # ---------------------------------------------------------------- 5 Krankenanstalt
+  - id: Krankenhaus
+    label_de: Aufenthalt in einer Krankenanstalt in den letzten Monaten
+    type: choice
+    section: 5 Krankenanstalt
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+    prefill: document.hospital_stay
+    ask_hint_de: War die Person in den letzten Monaten im Krankenhaus, auf Reha oder in einer Pflegeeinrichtung?
+  - id: KH von
+    label_de: Aufenthalt 1 – von
+    type: date
+    section: 5 Krankenanstalt
+    required: true
+    when: {field: Krankenhaus, equals: ja}
+    ask_hint_de: Von wann bis wann war der Aufenthalt? Die Daten stehen meist oben im Entlassungsbrief.
+  - id: KH bis
+    label_de: Aufenthalt 1 – bis
+    type: date
+    section: 5 Krankenanstalt
+    required: true
+    when: {field: Krankenhaus, equals: ja}
+    ask_hint_de: Bis wann dauerte der Aufenthalt (Entlassungsdatum)?
+  - id: Spital
+    label_de: Aufenthalt 1 – Krankenanstalt / Einrichtung
+    type: text
+    section: 5 Krankenanstalt
+    required: true
+    when: {field: Krankenhaus, equals: ja}
+    ask_hint_de: In welchem Krankenhaus bzw. welcher Einrichtung?
+  - id: KH von 2
+    label_de: Aufenthalt 2 – von
+    type: date
+    section: 5 Krankenanstalt
+    when: {field: Krankenhaus, equals: ja}
+  - id: KH bis 2
+    label_de: Aufenthalt 2 – bis
+    type: date
+    section: 5 Krankenanstalt
+    when: {field: Krankenhaus, equals: ja}
+  - id: Spital2
+    label_de: Aufenthalt 2 – Krankenanstalt / Einrichtung
+    type: text
+    section: 5 Krankenanstalt
+    when: {field: Krankenhaus, equals: ja}
+  # ---------------------------------------------------------------- 6 Unfall
+  - id: Unfall
+    label_de: Pflegebedürftig durch einen Unfall
+    type: choice
+    section: 6 Unfall
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+    ask_hint_de: Ist die Pflegebedürftigkeit durch einen Unfall entstanden?
+  - id: Datum Unfall
+    label_de: Datum des Unfalls
+    type: date
+    section: 6 Unfall
+    required: true
+    when: {field: Unfall, equals: ja}
+    ask_hint_de: Wann war der Unfall?
+  - id: Unfallhergang
+    label_de: Unfallhergang (Stichworte)
+    type: textarea
+    section: 6 Unfall
+    required: true
+    when: {field: Unfall, equals: ja}
+    pdf_overflow: [Unfallhergang2]
+    max_chars: 95
+    ask_hint_de: Wie ist der Unfall passiert? Ein paar Stichworte genügen.
+  - id: Unfallschuld
+    label_de: Andere Person am Unfall schuld
+    type: choice
+    section: 6 Unfall
+    required: true
+    when: {field: Unfall, equals: ja}
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+    ask_hint_de: War eine andere Person am Unfall schuld?
+  - id: Arbeitsunfall
+    label_de: Arbeitsunfall
+    type: choice
+    section: 6 Unfall
+    required: true
+    when: {field: Unfall, equals: ja}
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+    ask_hint_de: War es ein Arbeitsunfall?
+  - id: Unfallanzeige
+    label_de: Unfallanzeige erstattet
+    type: choice
+    section: 6 Unfall
+    required: true
+    when: {field: Unfall, equals: ja}
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+    ask_hint_de: Wurde eine Unfallanzeige erstattet (z. B. Polizei, AUVA)?
+  - id: Anzeige wo?
+    label_de: Unfallanzeige bei welcher Stelle
+    type: text
+    section: 6 Unfall
+    required: true
+    when: {field: Unfallanzeige, equals: ja}
+    ask_hint_de: Bei welcher Stelle wurde die Unfallanzeige erstattet?
+  # ---------------------------------------------------------------- 7 Ähnliche Leistungen
+  - id: andere Leistung
+    label_de: Anspruch auf eine dem Pflegegeld ähnliche Leistung (z. B. Pflegezulage, Blindenzulage)
+    type: choice
+    section: 7 Ähnliche Leistungen
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+    ask_hint_de: Bekommt die Person bereits eine ähnliche Leistung wie Pflegezulage oder Blindenzulage (auch aus dem Ausland)?
+  - id: andere Leistung beantragt
+    label_de: Ähnliche Leistung beantragt
+    type: choice
+    section: 7 Ähnliche Leistungen
+    when: {field: andere Leistung, equals: nein}
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+    recommended: true
+    ask_hint_de: Wurde eine solche Leistung beantragt?
+  - id: Art der Leistung?
+    label_de: Ähnliche Leistung – Art
+    type: text
+    section: 7 Ähnliche Leistungen
+    required: true
+    when: {field: andere Leistung, equals: ja}
+    ask_hint_de: Welche Leistung ist das?
+  - id: Art der Leistung seit
+    label_de: Ähnliche Leistung – seit
+    type: date
+    section: 7 Ähnliche Leistungen
+    when: {field: andere Leistung, equals: ja}
+  - id: auszahlende Stelle
+    label_de: Ähnliche Leistung – auszahlende Stelle und Aktenzeichen
+    type: text
+    section: 7 Ähnliche Leistungen
+    required: true
+    when: {field: andere Leistung, equals: ja}
+    ask_hint_de: Welche Stelle zahlt die Leistung aus (mit Aktenzeichen)?
+  - id: Pflegesachleistung
+    label_de: Pflegesachleistung aus EU / EWR / Schweiz
+    type: choice
+    section: 7 Ähnliche Leistungen
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+    ask_hint_de: Bekommt die Person aus einem EU-/EWR-Staat oder der Schweiz eine Pflegesachleistung?
+  - id: Pflegesachleistung aus EU
+    label_de: Pflegesachleistung – Art, auszahlende Stelle, Aktenzeichen
+    type: text
+    section: 7 Ähnliche Leistungen
+    required: true
+    when: {field: Pflegesachleistung, equals: ja}
+    ask_hint_de: Welche Leistung, welche auszahlende Stelle, welches Aktenzeichen?
+  # ---------------------------------------------------------------- 8 Pensionsleistungen
+  - id: ausländische Pension
+    label_de: Anspruch auf in- oder ausländische Pensionsleistungen
+    type: choice
+    section: 8 Pensionsleistungen
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+    ask_hint_de: Bekommt die Person eine Pension, Rente oder einen Ruhegenuss (aus dem In- oder Ausland)?
+  - id: ausländische Pension benatragt
+    label_de: Pensionsleistung beantragt
+    type: choice
+    section: 8 Pensionsleistungen
+    when: {field: ausländische Pension, equals: nein}
+    options: [nein, ja]
+    pdf_options: {nein: /01, ja: /02}
+    recommended: true
+    ask_hint_de: Wurde eine Pension beantragt?
+  - id: Art der ausl. Leistung
+    label_de: Pensionsleistung – Art
+    type: text
+    section: 8 Pensionsleistungen
+    required: true
+    when: {field: ausländische Pension, equals: ja}
+    ask_hint_de: Welche Pension (z. B. Alterspension, Witwenpension)?
+  - id: Art der Leistung seit2
+    label_de: Pensionsleistung – seit
+    type: date
+    section: 8 Pensionsleistungen
+    when: {field: ausländische Pension, equals: ja}
+  - id: ausl. Leistung Stelle
+    label_de: Pensionsleistung – auszahlende Stelle und Aktenzeichen
+    type: text
+    section: 8 Pensionsleistungen
+    required: true
+    when: {field: ausländische Pension, equals: ja}
+    ask_hint_de: Welche Stelle zahlt die Pension aus (mit Aktenzeichen bzw. Versicherungsnummer)?
+  # ---------------------------------------------------------------- 9 Pflegeberatung
+  - id: Pflegeberatung
+    label_de: Kostenlose Pflegeberatung zu Hause (Zustimmung zur Datenweitergabe)
+    type: choice
+    section: 9 Pflegeberatung
+    recommended: true
+    options: [Nein, Ja]
+    pdf_options: {Nein: /01, Ja: /02}
+    ask_hint_de: >-
+      Möchte die Person eine kostenlose Pflegeberatung zu Hause durch eine diplomierte Pflegefachkraft? Dafür werden
+      Name, Versicherungsnummer, Anschrift und Telefonnummer an das Kompetenzzentrum weitergegeben.
+  - id: Antragstellung andere Person
+    label_de: Zustimmung der pflegebedürftigen Person zur Datenweitergabe eingeholt (bei Antrag durch Angehörige)
+    type: checkbox
+    section: 9 Pflegeberatung
+    required: true
+    when: {field: Pflegeberatung, equals: Ja}
+    pdf_on_value: /01
+    ask_hint_de: >-
+      Haben Sie die Zustimmung der pflegebedürftigen Person eingeholt, dass ihre Daten für die Pflegeberatung
+      weitergegeben werden dürfen? Bitte nur ankreuzen, wenn das wirklich so ist.
+  # ---------------------------------------------------------------- 10 Anweisung
+  - id: Anweisung
+    label_de: Auszahlung (nur wenn noch keine Leistung bezogen wird)
+    type: choice
+    section: 10 Anweisung
+    options: [Anweisung auf ein Konto, Barzahlung]
+    pdf_options: {Anweisung auf ein Konto: /01, Barzahlung: /02}
+    ask_hint_de: >-
+      Nur wenn noch keine Pension bezogen wird: Soll das Pflegegeld auf ein Konto überwiesen oder bar ausgezahlt werden?
+  # ---------------------------------------------------------------- 11 Erklärung und Unterlagen
+  - id: Datum_1
+    label_de: Datum (neben der Unterschrift)
+    type: date
+    section: 11 Erklärung und Unterlagen
+    prefill: system.today
+  - id: Unterlagen
+    label_de: Beilagen (Zeile 1)
+    type: text
+    section: 11 Erklärung und Unterlagen
+    prefill: document.attachment
+    recommended: true
+    ask_hint_de: Welche Unterlagen legen Sie bei (z. B. Kopie des Entlassungsbriefs, Befunde, Vollmacht)?
+  - id: Unterlagen2
+    label_de: Beilagen (Zeile 2)
+    type: text
+    section: 11 Erklärung und Unterlagen
+    prefill: "const:Kopie des Vertretungsnachweises (Vollmacht)"
+    when: {proxy: true}
