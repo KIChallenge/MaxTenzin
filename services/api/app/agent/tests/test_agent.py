@@ -338,3 +338,16 @@ def test_form_write_reply_is_deterministic_and_honest():
     assert out.startswith("**Eingetragen im Antrag:** Kostenlose Pflegeberatung zu Hause = Ja")
     assert "bitte im Antrag selbst ankreuzen" in out and "als Entwurf gesetzt" not in out
     assert orch._sanitize("Quelle: Antragsentwurf (Sitzung 23161223-9951-4b2c-8a1d-0123456789ab).") == "Quelle: Antragsentwurf."
+
+
+def test_situation_suggestion_needs_explicit_consent():
+    import asyncio
+
+    from app.agent.tools import ToolClient
+
+    tc = ToolClient(MARIA_ANNA, "anna", "Anna Berger", {"_user_consented": False})
+    o = asyncio.run(tc.run("confirm_situation_suggestion", {"episode_id": "e1"}))
+    assert o.status == 422 and "Zustimmung" in o.error_de
+    from app.agent.orchestrator import _CONSENT_YES
+
+    assert _CONSENT_YES.search("Ja, bitte übernehmen") and not _CONSENT_YES.search("Was steht im Brief?")

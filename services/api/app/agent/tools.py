@@ -328,6 +328,41 @@ TOOLS: list[Tool] = [
          query=lambda a, c: {k: a[k] for k in ("topic", "zip") if a.get(k)},
          compact=lambda d: [_compact_office(o) for o in d[:4]],
          summary=lambda a, d: f"{len(d)} zuständige Stelle(n) für „{a.get('topic')}“"),
+    Tool("get_situation", "Lebenslage der vertretenen Person: aktuelle/geplante Episoden (Krankenhaus, Reha, Therapie, "
+         "zu Hause …), Vorschläge aus Dokumenten, Folgen (Meldepflichten, Fakten, Fall-Schritte).", {}, [], "GET",
+         lambda a, c: "/api/situation",
+         compact=lambda d: {"summary": d.get("summary_de"), "facts": d.get("facts"),
+                            "current": [_compact_episode(e) for e in d.get("current", [])],
+                            "upcoming": [_compact_episode(e) for e in d.get("upcoming", [])],
+                            "suggestions": [_compact_episode(e) for e in d.get("suggestions", [])],
+                            "effects": [{k: x.get(k) for k in ("kind", "title_de", "due_date")} for x in d.get("effects", [])][:8]},
+         summary=lambda a, d: f"Lebenslage: {d.get('summary_de') or 'keine Einträge'}"),
+    Tool("add_episode", "Trägt eine Episode der Lebenslage ein, die die Person selbst nennt (z. B. „ab Montag auf Reha“). "
+         "Datum als ISO, unbekanntes weglassen.",
+         {"type": _s("hospital | rehab_inpatient | rehab_outpatient | therapy | home_care | nursing_home | sick_leave | cure"),
+          "subtype": _s("optional, bei therapy: strahlentherapie | chemotherapie | physiotherapie | dialyse | sonstige"),
+          "start": _s("ISO-Datum, optional"), "end": _s("ISO-Datum, optional"),
+          "end_estimate_de": _s("optional, z. B. Mitte November"), "institution": _s("optional")},
+         ["type"], "POST", lambda a, c: "/api/situation/episodes",
+         body=lambda a, c: {k: a.get(k) for k in ("type", "subtype", "start", "end", "end_estimate_de", "institution")
+                            if a.get(k) not in (None, "")},
+         compact=lambda d: _compact_episode(d), summary=lambda a, d: f"Lebenslage ergänzt: {d.get('title_de')}"),
+    Tool("update_episode", "Ändert eine Episode (z. B. Ende eintragen, wenn die Person sagt, der Aufenthalt ist vorbei).",
+         {"episode_id": _s("Episode"), "start": _s("optional"), "end": _s("optional"), "institution": _s("optional"),
+          "status": _s("optional: ended")},
+         ["episode_id"], "PATCH", lambda a, c: f"/api/situation/episodes/{a['episode_id']}",
+         body=lambda a, c: {k: a.get(k) for k in ("start", "end", "institution", "status") if a.get(k) not in (None, "")},
+         compact=lambda d: _compact_episode(d), summary=lambda a, d: f"Lebenslage geändert: {d.get('title_de')}"),
+    Tool("suggest_situation_from_document", "Schlägt Episoden aus einem analysierten Dokument vor (z. B. Spitalsaufenthalt "
+         "laut Entlassungsbrief). Vorschläge gelten erst nach Zustimmung der Person.",
+         {"document_id": _s("Dokument")}, ["document_id"], "POST",
+         lambda a, c: f"/api/situation/suggestions/from-document/{a['document_id']}",
+         compact=lambda d: [_compact_episode(e) for e in d], summary=lambda a, d: f"{len(d)} Vorschlag/Vorschläge zur Lebenslage"),
+    Tool("confirm_situation_suggestion", "Übernimmt einen Vorschlag in die Lebenslage – NUR wenn die Person in ihrer "
+         "letzten Nachricht ausdrücklich zugestimmt hat („ja, übernehmen“).",
+         {"episode_id": _s("Vorschlag")}, ["episode_id"], "POST",
+         lambda a, c: f"/api/situation/suggestions/{a['episode_id']}/confirm",
+         compact=lambda d: _compact_episode(d), summary=lambda a, d: f"Vorschlag übernommen: {d.get('title_de')}"),
     Tool("match_bundle", "Bündel für eine Lebenssituation (z. B. „Mutter braucht Hilfe“, „etwas für die Gesundheit tun“, "
          "„Kind“, „nach dem Spital“): passende Leistungen, Angebote, Vorsorge, Termine und gezielte Rückfragen. "
          "Nutze das bei allgemeinen Anliegen ohne konkrete Leistung.",
@@ -434,6 +469,9 @@ class ToolClient:
         return defs
 
     async def run(self, name: str, args: dict) -> ToolOutcome:
+        if name == "confirm_situation_suggestion" and not self.memo.get("_user_consented"):
+            return ToolOutcome(name, args, 422, error_de="Vorschläge übernehme ich erst nach Ihrer ausdrücklichen "
+                               "Zustimmung („Ja, übernehmen“).", summary_de="Nicht übernommen – Zustimmung fehlt")
         if name == "set_form_fields" and args.get("session_id") and isinstance(args.get("values"), dict):
             defs = await self._field_defs(args["session_id"])
             values = normalize_form_values(args["values"], defs)
@@ -492,6 +530,11 @@ class ToolClient:
             summary = "erledigt"
         return ToolOutcome(tool.name, args, st, data=tool.compact(raw), summary_de=summary,
                            sources=collect_sources(raw)[:12])
+
+
+def _compact_episode(e: dict) -> dict:
+    return {k: e.get(k) for k in ("id", "type", "subtype", "title_de", "start", "end", "end_estimate_de", "institution",
+                                  "status")} | {"source": (e.get("source") or {}).get("label")}
 
 
 def _detail(resp: httpx.Response) -> str:

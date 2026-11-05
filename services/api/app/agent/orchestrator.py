@@ -224,6 +224,8 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
     mode = "live" if get_llm().live else "scripted"
     if req.document_ids:
         memo["last_document_id"] = req.document_ids[0]
+    # Explicit consent in THIS message (deterministic): required to apply document-based situation suggestions.
+    memo["_user_consented"] = bool(_CONSENT_YES.search(req.message or ""))
 
     hit = guard.check_boundary(req.message)
     category = hit.category if hit else await _llm_boundary_check(req.message)
@@ -366,3 +368,6 @@ async def _form_write_reply(client: ToolClient, writes: list[ToolOutcome], model
 def _sanitize(reply: str) -> str:
     """Never show internal ids (session UUIDs) to the person."""
     return _UUID.sub("", reply)
+
+
+_CONSENT_YES = re.compile(r"\b(ja|jawohl|passt|stimmt|einverstanden|übernehmen|übernimm|bestätige|yes|evet)\b", re.IGNORECASE)
