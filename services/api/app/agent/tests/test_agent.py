@@ -288,3 +288,27 @@ def test_write_claim_guard():
     assert guard.write_claim_violations("Ich habe die Pflegeberatung im Antrag eingetragen.", wrote=False)
     assert not guard.write_claim_violations("Ich habe die Pflegeberatung im Antrag eingetragen.", wrote=True)
     assert not guard.write_claim_violations("Wenn Sie mir die Daten schicken, dann trage ich sie ein.", wrote=False)
+
+
+def test_persona_is_lotsi(client):
+    r = chat(client, auth("stefan"), "Hallo, wer bist du?")
+    assert "Lotsi" in r["reply"] and "Ihr Lotse" not in r["reply"]
+    from app.agent.guard import TEMPLATES_DE
+
+    assert all("Ihr Lotse" not in t for t in TEMPLATES_DE.values())
+
+
+def test_agent_never_ticks_consent_checkbox(client):
+    import asyncio
+
+    from app.agent.tools import ToolClient
+
+    sid = client.post("/api/forms/definitions/pva_pflegegeld_pal080/sessions", headers=MARIA_ANNA).json()["id"]
+    tc = ToolClient(MARIA_ANNA, "anna", "Anna Berger", {})
+    o = asyncio.run(tc.run("set_form_fields", {"session_id": sid, "values": {
+        "Pflegeberatung": "Ja", "Antragstellung andere Person": "ja"}}))
+    assert o.status == 422 and "selbst" in o.error_de
+    ok = asyncio.run(tc.run("set_form_fields", {"session_id": sid, "values": {"Pflegeberatung": "ja"}}))
+    assert ok.ok
+    v = client.get(f"/api/forms/sessions/{sid}", headers=MARIA_ANNA).json()["values"]
+    assert v["Pflegeberatung"]["value"] == "Ja" and not v["Antragstellung andere Person"]["value"]

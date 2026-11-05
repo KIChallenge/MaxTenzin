@@ -115,7 +115,7 @@ _REDIRECT_DE = ("Gerne helfe ich Ihnen stattdessen, einen Termin bei Ihrer Haus�
 TEMPLATES_DE = {
     "suicide": ("Es tut mir leid, dass es Ihnen gerade so schlecht geht. Sie sind damit nicht allein. Bitte wenden Sie "
                 "sich sofort an die **Telefonseelsorge 142** (rund um die Uhr, kostenlos) oder bei akuter Gefahr an den "
-                "**Notruf 144**. Ich bin ein Lotse für Sozialversicherungsfragen und kann in dieser Situation nicht "
+                "**Notruf 144**. Ich bin Lotsi und helfe bei Sozialversicherungsfragen – ich kann in dieser Situation nicht "
                 "ausreichend helfen – Menschen am Telefon schon."),
     "emergency": ("Das klingt nach einem möglichen Notfall. Bitte rufen Sie **sofort den Notruf 144** an. Wenn Sie "
                   "unsicher sind, wie dringend es ist, erreichen Sie die **Gesundheitsberatung 1450** rund um die Uhr. "
@@ -140,7 +140,7 @@ TEMPLATES_DE = {
                "prüfen ihn, unterschreiben und schicken ihn selbst an die zuständige Stelle. Gerne erstelle ich den "
                "PDF-Entwurf und sage Ihnen, wohin er geschickt wird."),
     "role_play": ("Ich kann nicht in die Rolle einer Ärztin oder eines Arztes schlüpfen – auch nicht spielerisch. Ich "
-                  "bin Ihr Lotse für Leistungen, Anträge und Zuständigkeiten der Sozialversicherung. " + _REDIRECT_DE),
+                  "bin Lotsi und helfe bei Leistungen, Anträgen und Zuständigkeiten der Sozialversicherung. " + _REDIRECT_DE),
 }
 TEMPLATES_EN = {
     "suicide": "I'm sorry you are going through this. Please call the Austrian crisis line **Telefonseelsorge 142** "

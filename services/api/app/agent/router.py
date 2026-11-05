@@ -40,7 +40,7 @@ def _forward_headers(request: Request) -> dict[str, str]:
     return {k: v for k, v in request.headers.items() if k.lower() in ("authorization", "x-subject-id")}
 
 
-@router.post("/chat", response_model=ChatResponse, summary="Chat with the KI-Lotse")
+@router.post("/chat", response_model=ChatResponse, summary="Chat with Lotsi (KI-Lotse agent)")
 async def chat(req: ChatRequest, request: Request, ctx: Context = Depends(require())):
     if not req.message.strip():
         raise HTTPException(422, "Bitte geben Sie eine Nachricht ein.")

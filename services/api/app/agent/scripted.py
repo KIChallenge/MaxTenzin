@@ -117,7 +117,7 @@ class Scripted:
             return await self.documents_and_benefits()
         if (m2 := re.search(r"pflegegeld|reha|rezeptgebühr|fahrtkosten", t)):
             return await self.explain_benefit(m2.group(0))
-        return ("Ich bin Ihr KI-Lotse für die Sozialversicherung. Ich kann zum Beispiel einen Entlassungsbrief auf "
+        return ("Ich bin Lotsi und helfe Ihnen durch die Sozialversicherung. Ich kann zum Beispiel einen Entlassungsbrief auf "
                 "ausdrücklich dokumentierte Empfehlungen prüfen, passende Leistungen ermitteln, einen Antrag als "
                 "Entwurf vorbereiten oder fällige Vorsorge anzeigen. Womit soll ich beginnen?")
 

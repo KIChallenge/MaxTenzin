@@ -378,14 +378,23 @@ class ToolClient:
         if r.status_code != 200:
             return {}
         d = await self.fetch(f"/api/forms/definitions/{r.json()['form_id']}", "context:form_definition")
-        defs = {f["id"]: {"type": f["type"], "options": f.get("options") or []} for f in d.json().get("fields", [])} \
-            if d.status_code == 200 else {}
+        defs = {f["id"]: {"type": f["type"], "options": f.get("options") or [],
+                          "consent": f["type"] == "checkbox" and bool(re.search(r"zustimmung|einverst|einwillig",
+                                                                                f.get("label_de", ""), re.IGNORECASE))}
+                for f in d.json().get("fields", [])} if d.status_code == 200 else {}
         cache[session_id] = defs
         return defs
 
     async def run(self, name: str, args: dict) -> ToolOutcome:
         if name == "set_form_fields" and args.get("session_id") and isinstance(args.get("values"), dict):
-            args = {**args, "values": normalize_form_values(args["values"], await self._field_defs(args["session_id"]))}
+            defs = await self._field_defs(args["session_id"])
+            values = normalize_form_values(args["values"], defs)
+            blocked = [f for f, v in values.items() if v is True and defs.get(f, {}).get("consent")]
+            if blocked:
+                # Consent confirmations are a conscious act of the person (wizard click), never ticked by the agent.
+                return ToolOutcome(name, args, 422, error_de="Zustimmungs-Häkchen setzt die Person im Antrag selbst – "
+                                   "Lotsi kreuzt sie nicht an.", summary_de="Zustimmung nicht angekreuzt (Person bestätigt selbst)")
+            args = {**args, "values": values}
         tool = TOOL_BY_NAME.get(name)
         if tool is None:
             return ToolOutcome(name, args, 400, error_de=f"Unbekanntes Werkzeug {name}", summary_de="unbekanntes Werkzeug")

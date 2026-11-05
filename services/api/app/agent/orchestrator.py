@@ -258,6 +258,15 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
             # Relay the form's own validation message verbatim instead of letting the model guess why.
             reply = ("**Nicht übernommen:** " + (rejected[-1].error_de or "Die Angabe passt nicht zum Formular.")
                      + "\n\n" + reply)
+        wrote_session = next((o.arguments.get("session_id") for o in reversed(outcomes)
+                              if o.tool == "set_form_fields" and o.ok), None)
+        if wrote_session and "zustimmung" not in reply.lower():
+            # Consent is a conscious act of the person: never ticked by Lotsi, but say so when the form now needs it.
+            r = await client.fetch(f"/api/forms/sessions/{wrote_session}/next-questions", "context:consent_check")
+            if r.status_code == 200 and any(re.search(r"zustimmung|einverst", q.get("label_de", ""), re.IGNORECASE)
+                                            for q in r.json().get("questions", [])):
+                reply += ("\n\n**Bitte bestätigen Sie die Zustimmung im Antrag selbst** – das kreuze ich bewusst "
+                          "nicht für Sie an.")
         denied = [o for o in outcomes if o.status == 403]
         if denied and "berechtigung" not in reply.lower() and "permission" not in reply.lower():
             reply = forbidden_text(denied[0], subject_name) + "\n\n" + reply
