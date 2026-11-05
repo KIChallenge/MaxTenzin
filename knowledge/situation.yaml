@@ -1,0 +1,140 @@
+# Lebenslage (WS-S): episode types, plain-language phrases and the deterministic effect rules with their sources.
+# Read by services/api/app/services/situation/service.py. All user-facing strings are German.
+# Sources: PAL 080 (01. 2025) Meldepflichten (PDF page 6 = "2 von 4" of the Meldepflichten sheet), BPGG § 12 (Ruhen),
+# BPGG § 10 (Anzeigepflicht) — the paragraph texts were checked in knowledge/extracted/legal/paragraphs.jsonl.
+
+types:
+  hospital:
+    title_de: Krankenhausaufenthalt
+    current_de: im Krankenhaus
+    planned_de: Krankenhausaufenthalt geplant
+    stationary: true
+  rehab_inpatient:
+    title_de: Stationäre Rehabilitation
+    current_de: auf Reha (stationär)
+    planned_de: Reha geplant
+    stationary: true
+  rehab_outpatient:
+    title_de: Ambulante Rehabilitation
+    current_de: ambulante Reha
+    planned_de: ambulante Reha geplant
+    stationary: false
+  therapy:
+    title_de: Laufende Therapie
+    current_de: laufende Therapie
+    planned_de: Therapie geplant
+    stationary: false
+  home_care:
+    title_de: Zu Hause mit Unterstützung
+    current_de: zu Hause mit Unterstützung
+    planned_de: Unterstützung zu Hause geplant
+    stationary: false
+  nursing_home:
+    title_de: Pflegeheim
+    current_de: im Pflegeheim
+    planned_de: Pflegeheim geplant
+    stationary: true
+  sick_leave:
+    title_de: Krankenstand
+    current_de: im Krankenstand
+    planned_de: Krankenstand geplant
+    stationary: false
+  cure:
+    title_de: Kur / Gesundheitsvorsorge Aktiv
+    current_de: auf Kur
+    planned_de: Kur geplant
+    stationary: true
+
+# Order of phrases in summary_de (where the person is first, then treatments, then what is planned).
+summary_order: [hospital, nursing_home, rehab_inpatient, cure, home_care, rehab_outpatient, therapy, sick_leave]
+
+therapy_subtypes:
+  strahlentherapie: {title_de: Ambulante Strahlentherapie, current_de: laufende Strahlentherapie, fact: true}
+  chemotherapie: {title_de: Chemotherapie, current_de: laufende Chemotherapie, fact: true}
+  physiotherapie: {title_de: Physiotherapie, current_de: laufende Physiotherapie, fact: false}
+  dialyse: {title_de: Dialyse, current_de: laufende Dialyse, fact: true}
+  sonstige: {title_de: Laufende Therapie, current_de: laufende Therapie, fact: false}
+
+sources:
+  pal080_meldepflicht:
+    kind: form
+    label: "PAL 080 (01. 2025), Meldepflichten S. 2 – Pflegegeld, Meldefrist 4 Wochen"
+    ref: "pva_pflegegeld_pal080#page=6"
+    quote: "Aufenthalte in einer Krankenanstalt, einer Kuranstalt oder einem Rehabilitationszentrum auf Kosten eines inländischen oder ausländischen Sozialversicherungsträgers, des Bundes oder einer Krankenfürsorgeanstalt"
+  pal080_pflegeheim:
+    kind: form
+    label: "PAL 080 (01. 2025), Meldepflichten S. 2 – Pflegegeld, Meldefrist 4 Wochen"
+    ref: "pva_pflegegeld_pal080#page=6"
+    quote: "Aufnahme in ein Pflegeheim"
+  bpgg_ruhen: {law: BPGG, nr: "12", abs: "1"}
+
+rules:
+  meldepflicht_stay:
+    applies_to: [hospital, rehab_inpatient, cure]
+    requires_pflegegeld: true
+    deadline_days: 28
+    title_de: "{stay_de} binnen 4 Wochen an die PVA melden"
+    detail_de: >-
+      Wer Pflegegeld bezieht oder beantragt hat, muss Aufenthalte in einer Krankenanstalt, Kuranstalt oder einem
+      Rehabilitationszentrum auf Kosten der Sozialversicherung binnen 4 Wochen der PVA melden. Ist der
+      Pflegegeld-Antrag noch nicht eingereicht, geben Sie den Aufenthalt im Antrag unter Punkt 5 an.
+    source: pal080_meldepflicht
+    case_step_de: "{stay_de} an die PVA melden (bis {due_de})"
+    case_step_undated_de: "{stay_de} an die PVA melden (binnen 4 Wochen ab Beginn)"
+    responsible_de: "Sie bzw. Ihre Vertrauensperson"
+  meldepflicht_pflegeheim:
+    applies_to: [nursing_home]
+    requires_pflegegeld: true
+    deadline_days: 28
+    title_de: "Aufnahme ins Pflegeheim binnen 4 Wochen an die PVA melden"
+    detail_de: >-
+      Wer Pflegegeld bezieht oder beantragt hat, muss die Aufnahme in ein Pflegeheim binnen 4 Wochen der PVA melden.
+    source: pal080_pflegeheim
+    case_step_de: "Aufnahme ins Pflegeheim an die PVA melden (bis {due_de})"
+    case_step_undated_de: "Aufnahme ins Pflegeheim an die PVA melden (binnen 4 Wochen)"
+    responsible_de: "Sie bzw. Ihre Vertrauensperson"
+  pflegegeld_ruht:
+    applies_to: [hospital, rehab_inpatient, cure]
+    requires_pflegegeld: true
+    only_current_or_planned: true
+    title_de: "Pflegegeld ruht während eines stationären Aufenthalts"
+    detail_de: >-
+      Laut Bundespflegegeldgesetz ruht der Anspruch auf Pflegegeld während eines stationären Aufenthalts ab dem Tag
+      nach der Aufnahme, wenn die Sozialversicherung (bzw. Landesgesundheitsfonds, Bund oder Krankenfürsorgeanstalt)
+      überwiegend die Kosten trägt. In bestimmten Fällen kann es auf Antrag weitergezahlt werden.
+      Unverbindliche Information, keine Rechtsberatung.
+    source: bpgg_ruhen
+  hausarzt_kontrolle:
+    applies_to: [hospital]
+    after_end_days: 56
+    title_de: "Hausärztliche Kontrolle vereinbaren"
+    detail_de_documented: "Im Entlassungsbrief wird eine zeitnahe hausärztliche Kontrolle nach der Entlassung empfohlen."
+    detail_de: "Nach einem Spitalsaufenthalt: Termin bei der Hausärztin bzw. dem Hausarzt vereinbaren, falls im Entlassungsbrief empfohlen."
+    appointment_topic: hausarzt_kontrolle
+  reha_antreten:
+    applies_to: [rehab_inpatient, rehab_outpatient]
+    only_planned: true
+    case_step_de: "Reha antreten"
+    case_step_dated_de: "Reha antreten (ab {start_de})"
+    responsible_de: "Sie bzw. Ihre Vertrauensperson"
+  nach_reha_pflegebedarf:
+    applies_to: [rehab_inpatient, rehab_outpatient]
+    requires_pflegegeld: true
+    case_step_de: "Nach der Reha: Pflegebedarf neu einschätzen lassen"
+    responsible_de: "Sie bzw. Ihre Vertrauensperson, PVA"
+
+# Eligibility facts derived from ACTIVE confirmed episodes (keys documented in app/services/benefits/README.md).
+facts:
+  hospital: {key: in_hospital, title_de: "Derzeit im Krankenhaus"}
+  rehab_inpatient: {key: in_rehab, title_de: "Derzeit auf Reha"}
+  rehab_outpatient: {key: in_rehab, title_de: "Derzeit auf Reha"}
+  home_care: {key: living_at_home_with_support, title_de: "Lebt zu Hause mit Unterstützung"}
+  nursing_home: {key: in_nursing_home, title_de: "Lebt im Pflegeheim"}
+  sick_leave: {key: sick_leave, title_de: "Derzeit im Krankenstand"}
+  therapy: {key: treatment_type, title_de: "Laufende Behandlung: {subtype_de}"}
+
+# Form prefill exposed as rule kind `situation.<key>` in app/services/forms/prefill.py.
+prefill:
+  stay_types: [hospital, rehab_inpatient, cure, nursing_home]   # PAL 080 § 5: "z.B. Krankenhaus, Rehabilitationszentrum, Kur- oder Pflegeeinrichtung"
+  stay_lookback_days: 365
+  rehab_lookback_years: 5                                       # Kur/Reha-Antrag: "in den letzten fünf Jahren"

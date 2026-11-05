@@ -1,10 +1,12 @@
-"""Prefill engine: person profile, actor (Vertretung), delegation and document analysis -> FieldValue + SourceRef.
+"""Prefill engine: person profile, actor (Vertretung), delegation, Lebenslage (situation) and document analysis
+-> FieldValue + SourceRef.
 
 Rules
 - Every prefilled value carries a SourceRef and starts unconfirmed (the person reviews it in wizard/chat/preview).
 - From documents we take ONLY non-medical, explicitly stated facts (file name, document type, extracted person data).
   Medical content (e.g. PAL080 "Leiden") is never derived, paraphrased or interpreted: it is asked from the person.
 - Doctor-only fields are never prefilled (enforced in spec validation).
+- `situation.<key>` reads CONFIRMED Lebenslage episodes only (never suggestions); source = the episode's own source.
 """
 
 from __future__ import annotations
@@ -104,15 +106,65 @@ def _profile_src(p: Person, key: str, who: str) -> SourceRef:
     return SourceRef(kind=SourceKind.external, label=label, ref=f"person:{p.id}#{key}")
 
 
+def _situation_keys(subject: Person, actor: Person, today: date) -> dict[str, tuple[str, SourceRef]]:
+    """Lebenslage (WS-S): confirmed episodes only, and only if the actor may see the subject's situation."""
+    from app.contracts.identity import Scope
+    from app.core.auth import effective_scopes
+    from app.services.situation.service import prefill_keys
+
+    if Scope.manage_situation not in effective_scopes(actor.id, subject.id):
+        return {}
+    return prefill_keys(subject.id, today)
+
+
 def prefill(spec: FormSpec, subject: Person, actor: Person, delegation: Delegation | None = None,
             analysis: DocumentAnalysis | None = None, today: date | None = None) -> dict[str, FieldValue]:
-    """Initial session values. Fields without a usable prefill start empty (value None)."""
+    """Initial session values. Fields without a usable prefill start empty (value None).
+
+    A rule may list alternatives separated by "|" (e.g. "situation.stay1.end|document.discharge_date"): the first
+    alternative that knows the value wins. A known-but-empty value ("") stops the chain (never mix two sources).
+    """
     proxy = actor.id != subject.id
     subj, act = person_keys(subject), person_keys(actor)
     deleg = delegation_keys(delegation) if delegation else {}
     doc = document_keys(analysis) if analysis else {}
     today = today or date.today()
+    situation: dict[str, tuple[str, SourceRef]] | None = None
     values: dict[str, FieldValue] = {}
+
+    def resolve(rule: str) -> tuple[str | None, SourceRef | None]:
+        nonlocal situation
+        kind, _, key = rule.partition(".")
+        if rule.startswith("const:"):
+            return rule.removeprefix("const:"), SourceRef(kind=SourceKind.form, ref=spec.form_id,
+                                                          label=f"Vorschlag – bitte prüfen ({spec.form_version})")
+        if kind == "profile":
+            return subj.get(key), _profile_src(subject, key, f"{subject.first_name} {subject.last_name}")
+        if kind == "actor" and proxy:
+            return act.get(key), _profile_src(actor, key, f"{actor.first_name} {actor.last_name}")
+        if kind == "delegation" and proxy and delegation:
+            return deleg.get(key), SourceRef(kind=SourceKind.external, ref=f"delegation:{delegation.id}",
+                                             label=f"Vertretung im ID-Austria-Profil ({delegation.relation})",
+                                             quote=delegation.consent_note or None)
+        if kind == "document" and analysis:
+            fact = next((x for x in analysis.facts if x.key == key), None)
+            src = (SourceRef(kind=SourceKind.document, label=f"{analysis.filename}, S. {fact.page}",
+                             ref=f"document:{analysis.document_id}#page={fact.page}", quote=fact.quote)
+                   if fact else SourceRef(kind=SourceKind.document, label=analysis.filename,
+                                          ref=f"document:{analysis.document_id}"))
+            return doc.get(key), src
+        if kind == "situation":
+            if situation is None:
+                situation = _situation_keys(subject, actor, today)
+            hit = situation.get(key)
+            return hit if hit else (None, None)
+        if kind == "system" and key in ("today", "city_today"):
+            value = today.strftime("%d.%m.%Y")
+            if key == "city_today":
+                value = f"{subj['city']}, {value}"
+            return value, SourceRef(kind=SourceKind.form, label="Heutiges Datum – bitte beim Unterschreiben prüfen",
+                                    ref="today")
+        return None, None
 
     for f in spec.fields:
         values[f.id] = FieldValue(value=None)
@@ -120,32 +172,12 @@ def prefill(spec: FormSpec, subject: Person, actor: Person, delegation: Delegati
             continue
         if f.when and f.when.proxy is not None and f.when.proxy != proxy:
             continue
-        kind, _, key = f.prefill.partition(".")
         value: str | None = None
         src: SourceRef | None = None
-        if f.prefill.startswith("const:"):
-            value = f.prefill.removeprefix("const:")
-            src = SourceRef(kind=SourceKind.form, label=f"Vorschlag – bitte prüfen ({spec.form_version})", ref=spec.form_id)
-        elif kind == "profile":
-            value, src = subj.get(key), _profile_src(subject, key, f"{subject.first_name} {subject.last_name}")
-        elif kind == "actor" and proxy:
-            value, src = act.get(key), _profile_src(actor, key, f"{actor.first_name} {actor.last_name}")
-        elif kind == "delegation" and proxy and delegation:
-            value = deleg.get(key)
-            src = SourceRef(kind=SourceKind.external, label=f"Vertretung im ID-Austria-Profil ({delegation.relation})",
-                            ref=f"delegation:{delegation.id}", quote=delegation.consent_note or None)
-        elif kind == "document" and analysis:
-            value = doc.get(key)
-            fact = next((x for x in analysis.facts if x.key == key), None)
-            src = (SourceRef(kind=SourceKind.document, label=f"{analysis.filename}, S. {fact.page}",
-                             ref=f"document:{analysis.document_id}#page={fact.page}", quote=fact.quote)
-                   if fact else SourceRef(kind=SourceKind.document, label=analysis.filename,
-                                          ref=f"document:{analysis.document_id}"))
-        elif kind == "system" and key in ("today", "city_today"):
-            value = today.strftime("%d.%m.%Y")
-            if key == "city_today":
-                value = f"{subj['city']}, {value}"
-            src = SourceRef(kind=SourceKind.form, label="Heutiges Datum – bitte beim Unterschreiben prüfen", ref="today")
+        for rule in f.prefill.split("|"):
+            value, src = resolve(rule.strip())
+            if value is not None:
+                break
         if value in (None, ""):
             continue
         if f.options and value not in f.options:
