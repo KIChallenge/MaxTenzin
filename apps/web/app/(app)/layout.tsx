@@ -1,13 +1,14 @@
 import { redirect } from "next/navigation";
 import { ChatPanel } from "@/components/ChatPanel";
 import { Header } from "@/components/Header";
-import { isPlain } from "@/lib/api";
+import { api, isPlain } from "@/lib/api";
+import type { Preferences } from "@/lib/care";
 import { fullName } from "@/lib/labels";
 import { getMe, getRepresented } from "@/lib/me";
 
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const [me, rep, plain] = await Promise.all([getMe(), getRepresented(), isPlain()]);
+  const [me, rep, plain, prefs] = await Promise.all([getMe(), getRepresented(), isPlain(), api<Preferences>("/api/identity/preferences")]);
   if (!me.ok) {
     if (me.status === 401 || me.status === 403) redirect("/login");
     return (
@@ -30,7 +31,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         Demo · Unverbindliche Information, keine Rechtsberatung und keine medizinische Beratung. Lotsi sendet nie
         etwas ab – Sie prüfen, unterschreiben und senden selbst.
       </footer>
-      <ChatPanel subjectId={me.data.subject.id} subjectName={fullName(me.data.subject)} plain={plain} />
+      <ChatPanel subjectId={me.data.subject.id} subjectName={fullName(me.data.subject)} plain={plain} voice={prefs.ok && prefs.data.voice} />
     </>
   );
 }

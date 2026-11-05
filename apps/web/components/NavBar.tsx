@@ -11,6 +11,7 @@ const MAIN = [
   ["/leistungen", "Leistungen"],
   ["/fall", "Mein Fall"],
   ["/vorsorge", "Vorsorge"],
+  ["/termine", "Termine"],
   ["/transparenz", "Transparenz"],
 ] as const;
 const LOOKUP = [
@@ -40,7 +41,7 @@ export function NavBar() {
   }, []);
   const lookupActive = LOOKUP.some(([href]) => isActive(pathname, href));
   const item = (active: boolean) =>
-    `block rounded-md px-2.5 py-1.5 text-[0.9375rem] whitespace-nowrap transition-colors ${
+    `block rounded-md px-2 py-1.5 text-[0.9375rem] whitespace-nowrap transition-colors ${
       active ? "bg-accent-soft font-semibold text-accent-strong" : "text-muted hover:bg-neutral-soft hover:text-ink"
     }`;
   return (

@@ -38,6 +38,9 @@ export async function setLargeText(on: boolean) {
 
 export async function setPlain(on: boolean) {
   (await cookies()).set(COOKIE_PLAIN, on ? "1" : "0", cookieOpts);
+  // Preferences PUT replaces the whole object: read, change one field, write back.
+  const prefs = await api<Record<string, unknown>>("/api/identity/preferences");
+  if (prefs.ok) await api("/api/identity/preferences", { method: "PUT", body: { ...prefs.data, plain_language: on } });
   revalidatePath("/", "layout");
 }
 

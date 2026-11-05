@@ -43,6 +43,16 @@ export function sourceHref(s: SourceRef, documents?: Record<string, string>): st
       return `/dokumente/${id}/quelle?seite=${page ?? 1}${q}`;
     }
   }
+  if (s.kind === "form") {
+    const [formId, frag] = ref.split("#");
+    const page = /page=(\d+)/.exec(frag ?? "")?.[1];
+    if (formId && /^[a-z0-9_]+$/.test(formId)) return `/bff/api/forms/definitions/${formId}/template${page ? `#page=${page}` : ""}`;
+  }
+  if (s.kind === "brochure" && /Serviceratgeber/i.test(s.label)) {
+    // Printed page "S. 63"; the PDF has two A5 pages per sheet.
+    const printed = Number(/S\.\s*(\d+)/.exec(s.label)?.[1] ?? /page[:=](\d+)/.exec(ref)?.[1]);
+    return `/bff/api/forms/brochures/serviceratgeber${printed ? `#page=${Math.floor(printed / 2) + 1}` : ""}`;
+  }
   if (s.kind === "external" && /^https?:\/\//.test(ref)) return ref;
   return null;
 }
@@ -60,7 +70,7 @@ export function SourceChip({ source, documents }: { source: SourceRef; documents
   const content = (
     <>
       {Icon && !(source.kind === "law" && source.label.trim().startsWith("§")) && <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />}
-      {source.label}
+      <span className="max-w-[16rem] truncate">{source.label}</span>
     </>
   );
   const label = `${href ? "Quelle öffnen" : "Quelle"}: ${source.label}. ${detail.join(". ")}`;
@@ -70,7 +80,7 @@ export function SourceChip({ source, documents }: { source: SourceRef; documents
         <span tabIndex={0} className={cls} aria-label={label}>
           {content}
         </span>
-      ) : href.startsWith("/") ? (
+      ) : href.startsWith("/") && !href.startsWith("/bff/") ? (
         <Link href={href} className={`${cls} hover:border-accent hover:underline`} aria-label={label}>
           {content}
         </Link>

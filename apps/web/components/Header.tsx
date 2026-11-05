@@ -14,7 +14,7 @@ export function Header({ me, represented }: { me: Session; represented: Person[]
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur-xl backdrop-saturate-150">
       <div className="@container mx-auto max-w-7xl px-5">
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-1 py-2">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2">
           <Link href="/" className="flex items-center gap-2 text-[1.0625rem] font-semibold tracking-[-0.01em] text-ink">
             <span aria-hidden className="grid h-7 w-7 place-items-center rounded-md bg-accent text-white">
               <Sailboat className="h-4 w-4" />
@@ -24,7 +24,7 @@ export function Header({ me, represented }: { me: Session; represented: Person[]
           <div className="order-last w-full @5xl:order-none @5xl:w-auto">
             <NavBar />
           </div>
-          <div className="ml-auto flex items-center gap-3 text-[0.9375rem]">
+          <div className="ml-auto flex items-center gap-1.5 text-[0.9375rem]">
             {canRepresent ? (
               <SubjectSwitcher
                 current={me.subject.id}
@@ -48,9 +48,9 @@ export function Header({ me, represented }: { me: Session; represented: Person[]
               <span className="sr-only">Einstellungen</span>
             </Link>
             <form action={logout}>
-              <button className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-muted hover:bg-neutral-soft hover:text-ink">
-                <LogOut className="h-4 w-4" aria-hidden />
-                Abmelden
+              <button className="rounded-md p-1.5 text-muted hover:bg-neutral-soft hover:text-ink" title="Abmelden">
+                <LogOut className="h-5 w-5" aria-hidden />
+                <span className="sr-only">Abmelden</span>
               </button>
             </form>
           </div>

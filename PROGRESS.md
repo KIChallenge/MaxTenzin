@@ -19,7 +19,7 @@ Single source of truth for all sessions. Update your row at start and at Definit
 | WS-B | benefits catalog + eligibility, directory, legal FTS5, medications | bg agent | ws/B-benefits | merged | H5 | offices outside Wien not curated |
 | WS-D | documents extraction (+golden), prevention (Impfpass) | bg agent | ws/D-documents | merged | H4 | live LLM path untested (key 401) |
 | WS-F | forms: schemas, sessions, prefill, real PDF fill | bg agent | ws/F-forms | merged | H6 | Einrichtungswunsch/Senioren-WG/Reha-n-Unfall not mapped |
-| WS-W | web cockpit | human session | ws/W-web | review → 2nd merge requested (UI pass, settings, icons) | H11 | — |
+| WS-W | web cockpit | human session | ws/W-web | review → 4th merge requested (Lebenslage, Termine, Behandlungsteam, photos, preferences/voice, bundle card) | H13 | bundle service still stub |
 | WS-A | agent orchestrator + guardrails + evals | bg agent | ws/A-agent | merged | H7 | evals 28/28 live (REPORT.md) |
 | WS-C | cases + notifications | integrator | main | merged | H3 | — |
 | WS-T | appointments (providers, slots by preferences, booking, ics) | bg agent | ws/T-appointments | merged | — | providers outside Wien not covered |
@@ -33,6 +33,8 @@ Single source of truth for all sessions. Update your row at start and at Definit
 See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished items here as one line).
 
 ## Contract requests (agents → integrator)
+- WS-W → WS-S (minor): the same episode is suggested again from every copy of a document (e.g. a photo of page 1 + the PDF) → duplicate "Krankenhausaufenthalt" suggestions after confirming one. Cockpit hides suggestions matching an existing episode (type + dates); a server-side dedupe would be cleaner.
+- WS-W → integrator (FYI): `PUT /api/identity/preferences` replaces the whole object (missing fields → defaults). The cockpit always sends the full state; if partial updates are intended, please merge server-side.
 - WS-W → WS-B/integrator (clickable sources): (1) `GET /api/legal/laws` (key, abbr, title) – the cockpit has a static copy in apps/web/lib/laws.ts until then. (2) Document SourceRefs from eligibility only carry `ref: "page:6"` → please `document:<document_id>#page=6` (cockpit maps by file name meanwhile). (3) Serve the official blank form PDFs and the Serviceratgeber (e.g. `GET /api/forms/definitions/{id}/template`, `GET /api/knowledge/brochures/serviceratgeber`) so form/brochure chips can open the cited page.
 - WS-W → WS-B (nice to have): `Medication` only has the patient cost as a sentence (`patient_cost_note_de`). For a real "Sie zahlen" column the cockpit needs structured, service-computed fields: `patient_pays_eur_per_pack` (min(price, Rezeptgebühr), or 0 if befreit) and `max_packs_per_prescription`. Until then the cockpit shows the sentence (it must not compute costs itself – invariant 1).
 - WS-W → integrator/WS-A (blocks the "chat fills the wizard" demo moment): (1) add `ChatRequest.form_session_id: str | None` — the cockpit already sends it from `/forms/<id>` (ignored today). The agent must use that session instead of `start_form` (today it creates a second session, so the open wizard never updates). (2) `set_form_fields` on choice fields: agent sent free text to `Pflegeberatung` (options Nein/Ja) → 422, then told the user „das Feld braucht einen kurzen Text, kein Ja/Nein" — wrong and confidently stated. Agent must read `options` from the definition and pass one of them; on 422 relay the validation message instead of guessing.

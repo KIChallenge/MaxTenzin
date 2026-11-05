@@ -8,15 +8,23 @@ import { getMe } from "@/lib/me";
 import { COOKIE_TEXT } from "@/lib/session";
 import type { Delegation, Person } from "@/lib/types";
 import { ScopeToggles } from "./ScopeToggles";
+import { CareTeamSettings } from "./CareTeamSettings";
+import { PreferencesForm } from "./PreferencesForm";
+import type { CareTeam, Preferences, Provider } from "@/lib/care";
 
 export default async function SettingsPage() {
-  const [me, dels, personas, plain, jar] = await Promise.all([
+  const [me, dels, personas, plain, jar, team, prefs] = await Promise.all([
     getMe(),
     api<Delegation[]>("/api/identity/delegations"),
     api<Person[]>("/api/identity/personas"),
     isPlain(),
     cookies(),
+    api<CareTeam>("/api/identity/care-team"),
+    api<Preferences>("/api/identity/preferences"),
   ]);
+  const zip = me.ok ? me.data.subject.address.zip : "";
+  const providers = team.ok ? await api<Provider[]>(`/api/appointments/providers?zip=${encodeURIComponent(zip)}`) : null;
+  const gps = providers?.ok ? providers.data.filter((p) => p.kind === "gp") : [];
   if (!me.ok) return <ApiError status={me.status} detail={me.detail} />;
   const large = jar.get(COOKIE_TEXT)?.value === "large";
   const names = new Map((personas.ok ? personas.data : []).map((p) => [p.id, fullName(p)]));
@@ -39,6 +47,17 @@ export default async function SettingsPage() {
           <LargeTextToggle on={large} />
         </div>
       </section>
+
+      {prefs.ok && <PreferencesForm initial={prefs.data} actorFirstName={actor.first_name} />}
+
+      {team.ok && (
+        <section id="behandlungsteam" aria-labelledby="team-h" className="mb-8 scroll-mt-28">
+          <h2 id="team-h" className="mb-2 text-lg font-semibold">
+            Behandlungsteam{forOther ? ` von ${subject.first_name}` : ""}
+          </h2>
+          <CareTeamSettings team={team.data} gps={gps} />
+        </section>
+      )}
 
       <section id="vollmachten" aria-labelledby="vollmachten-h" className="scroll-mt-28">
         <h2 id="vollmachten-h" className="mb-1 text-lg font-semibold">

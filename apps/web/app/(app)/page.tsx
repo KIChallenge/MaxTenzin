@@ -1,6 +1,13 @@
 import { Building2, Compass, Eye, FilePen, FileText, ListChecks, Pill, Scale, Syringe } from "lucide-react";
 import Link from "next/link";
+import { BundleCard } from "@/components/BundleCard";
+import { CareTeamCard } from "@/components/CareTeamCard";
+import type { components } from "@/lib/api-types";
+import type { DocumentSummary } from "@/lib/types";
+import { Lebenslage } from "@/components/Lebenslage";
+import type { CareTeam } from "@/lib/care";
 import { OpenChatButton } from "@/components/OpenChatButton";
+import type { SituationOverview } from "@/lib/situation";
 import { api } from "@/lib/api";
 import { cockpitRoute, fmtDate, fullName } from "@/lib/labels";
 import { getMe } from "@/lib/me";
@@ -19,7 +26,30 @@ const TILES = [
 ];
 
 export default async function Cockpit() {
-  const [me, inbox] = await Promise.all([getMe(), api<Notification[]>("/api/notifications")]);
+  const [me, inbox, situation, team] = await Promise.all([
+    getMe(),
+    api<Notification[]>("/api/notifications"),
+    api<SituationOverview>("/api/situation"),
+    api<CareTeam>("/api/identity/care-team"),
+  ]);
+  // Bundle for the current situation: newest copy of each document + the Lebenslage summary as text.
+  const docs = await api<DocumentSummary[]>("/api/documents");
+  const seen = new Set<string>();
+  const docIds = (docs.ok ? [...docs.data].sort((a, b) => b.uploaded_at.localeCompare(a.uploaded_at)) : [])
+    .filter((d) => (seen.has(d.filename) ? false : (seen.add(d.filename), true)))
+    .slice(0, 3)
+    .map((d) => d.document_id);
+  const latestLetter = (docs.ok ? [...docs.data].sort((a, b) => b.uploaded_at.localeCompare(a.uploaded_at)) : []).find((d) => d.doc_type === "discharge_letter")?.document_id;
+  const catalog = await api<components["schemas"]["Benefit"][]>("/api/benefits");
+  const formOwner: Record<string, string> = {};
+  for (const b of catalog.ok ? catalog.data : []) for (const f of b.form_ids ?? []) formOwner[f] ??= b.id;
+  const bundle =
+    docIds.length || (situation.ok && situation.data.summary_de)
+      ? await api<components["schemas"]["Bundle"] | null>("/api/benefits/bundles/match", {
+          method: "POST",
+          body: { document_ids: docIds, text: situation.ok ? situation.data.summary_de || null : null, facts: {} },
+        })
+      : null;
   const subject = me.ok ? me.data.subject : null;
   const actor = me.ok ? me.data.actor : null;
   const forOther = subject && actor && subject.id !== actor.id;
@@ -30,6 +60,18 @@ export default async function Cockpit() {
           Guten Tag, {actor?.first_name}
           {forOther && <span className="text-muted">. Sie handeln für {fullName(subject)}.</span>}
         </h1>
+        <div className="mt-5">
+          <Lebenslage
+            {...(situation.ok ? { ok: true as const, data: situation.data } : { ok: false as const, status: situation.status, detail: situation.detail })}
+            subjectName={subject ? fullName(subject) : ""}
+            firstName={subject?.first_name ?? ""}
+          />
+        </div>
+        {bundle?.ok && bundle.data && (
+          <div className="mt-5">
+            <BundleCard bundle={bundle.data} formOwner={formOwner} documentId={latestLetter} canPrepare={!!me.ok && me.data.scopes.includes("prepare_applications")} />
+          </div>
+        )}
         <div className="card mt-5 flex flex-wrap items-center gap-4 border-accent/30 bg-accent-soft">
           <div className="flex-1">
             <p className="font-semibold">Was möchten Sie heute erledigen?</p>
@@ -50,6 +92,7 @@ export default async function Cockpit() {
         </ul>
       </section>
       <aside aria-labelledby="inbox-h">
+        <CareTeamCard team={team} firstName={subject?.first_name ?? ""} forOther={!!forOther} />
         <h2 id="inbox-h" className="text-lg font-semibold">
           Posteingang
         </h2>

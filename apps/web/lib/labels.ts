@@ -77,6 +77,8 @@ export function fmtAmount(value: number, unit: string) {
 /** API links (service names, English) → cockpit routes (German). Unknown links pass through unchanged. */
 const ROUTES: Record<string, string> = {
   "/case": "/fall",
+  "/lebenslage": "/#lebenslage",
+  "/situation": "/#lebenslage",
   "/cases": "/fall",
   "/prevention": "/vorsorge",
   "/benefits": "/leistungen",
