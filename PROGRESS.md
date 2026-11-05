@@ -9,7 +9,7 @@ Single source of truth for all sessions. Update your row at start and at Definit
 - [x] **G0b** Azure LLM reachable (`make smoke-llm`) — live extraction of Entlassungsbrief: 12/12 quotes verified, 5.6 s
 - [x] **G1 (H8)** hero flow clickable in cockpit; ✅ WS-B/D/F real services merged (114 tests) — API end-to-end verified: letter → eligibility → PAL080 official PDF (30 fields, ENTWURF stamp)
 - [x] **G2 (H13)** hero flow on real API incl. agent — ✅ API side done (agent + evals 28/28 live); ✅ cockpit wired (WS-W): photo upload → Lebenslage → Leistungen → PAL 080 via chat in the open wizard → PDF → inbox → appointment → Mein Fall; evals now 34/34 live
-- [ ] **G3 (H19) FREEZE** evals green, Floorplan health check clean, demo script run 3×, backup video recorded — in progress: evals 35/35 live (full run committed in `evals/REPORT.md`), `make test` 262 passed, `make demo-check` 22/22; ⬜ rehearsal 3×, ⬜ backup video
+- [ ] **G3 (H19) FREEZE** evals green, Floorplan health check clean, demo script run 3×, backup video recorded — in progress: evals 35/35 live (full run committed in `evals/REPORT.md`), `make test` 268 passed, `make demo-check` 22/22; ⬜ rehearsal 3×, ⬜ backup video
 - [ ] **G4 (H23)** pitch deck (DE) done, rehearsed 3× — draft with speaker notes: `documentation/pitch/pitch-deck.md`; ⬜ slides built, ⬜ rehearsed
 
 ## Workstreams
@@ -20,7 +20,7 @@ Single source of truth for all sessions. Update your row at start and at Definit
 | WS-D | documents extraction (+golden), prevention (Impfpass) | bg agent | ws/D-documents | merged | H4 | — (live path verified; first live result cached per file hash) |
 | WS-F | forms: schemas, sessions, prefill, real PDF fill | bg agent | ws/F-forms | merged | H6 | Einrichtungswunsch/Senioren-WG/Reha-n-Unfall not mapped |
 | WS-W | web cockpit | human session | ws/W-web | done – frozen (ws/W-web == main); screenshots on clean data | H16 | — |
-| WS-A | agent orchestrator + guardrails + evals | bg agent | ws/A-agent | merged | H7 | evals 34/34 live (REPORT.md) |
+| WS-A | agent orchestrator + guardrails + evals | bg agent | ws/A-agent | merged | H7 | evals 35/35 live (REPORT.md) |
 | WS-C | cases + notifications | integrator | main | merged | H3 | — |
 | WS-T | appointments (providers, slots by preferences, booking, ics) | bg agent | ws/T-appointments | merged | — | providers outside Wien not covered |
 | WS-V | photo upload (vision transcription → same pipeline) | bg agent | ws/V-vision | merged | — | quotes verified against model transcription (notice shown) |
@@ -81,6 +81,8 @@ See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished it
 
 - (integrator, done — jury-readiness review against `Use Case 1.docx`) `evals/REPORT.md` had been overwritten by a single-case run (1/1) while docs cited 34/34 → full run committed. Erstattungskodex and Rezeptgebühr (Aufgabe 5 im Brief) were built but never shown → prompt rule (`check_benefits` with `rezeptgebuehrenbefreiung`/`-obergrenze` + letter, `search_medication` for named products), eval `rezeptgebuehr_maria`, EKO search matches token-wise („Pantoprazol 20 mg“). Demo script: Rezeptgebühr + EKO lines in Akt 1; Akt 4 now shows the use-case Arzttermin dialogue (Anlass → Nähe → vormittags), the **Kind** scenario (4th jury scenario) and an English reply (personalisation, use case §3); Q&A for off-bundle requests, Wien-only, Honorarordnung, „wissenschaftlich“. `make demo-check` covers the new scenes. Lesson: a running `make api-demo` keeps old code until restarted (English germanisms seen on a stale process) → T-30 checklist.
 
+- (integrator, done — late changes 05.11.2026) `change_permissions` agent tool (31 tools): the grantor grants/revokes Vollmacht scopes via Lotsi, only on an explicit request in the person's own message (deterministic gate `_PERMISSION_REQ`), grant/revoke merged server-side, representatives cannot widen their own rights; permissions granted mid-conversation are announced to the model (`_granted_since_last_turn`); German user-facing 403 details (`core/auth.py:forbidden_detail`, `SCOPE_LABEL_DE`); `make demo-fresh` (preflight on full data, then `DEMO_LIVE=1 SEED_SKIP_DOCS=doc-anna-entlassung` seed: Maria without Dokumente lesen/Anträge vorbereiten, Stefan English, Anna without documents); bundles with English keywords, document-only `nach_spital` needs a discharge letter; cases pick up confirmed Lebenslage steps on creation; forms `blank_from_prefill` + Lebenslage `home_care` prefill (PAL 080 Betreuung / vorübergehender Aufenthalt); `GET /api/legal/laws/{key}/paragraphs`; Lotsi persona is a lighthouse; cockpit Einstellungen as tabs. Docs (README, architecture, safety, services, demo script, service READMEs) aligned.
+
 ## Decisions log
 - D1 Modular monolith (FastAPI routers per service) instead of microservices — same boundaries, 1/10 ops cost.
 - D2 Raw data in `docs/` gitignored; deterministic extraction into committed `knowledge/extracted/` (`make extract`).
@@ -90,6 +92,7 @@ See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished it
 - D7 Statute-only amounts (Satzung ÖGK § 46 Fahrtkosten, RRZ § 13 2 %-cap) are cited from the paragraph; veraendW stays primary where a table exists.
 - D8 Clinical instructions to physicians are never relisted, even if quoted verbatim (deterministic filter after LLM).
 - D9 Verbatim copying of documented diagnoses into forms that ask for them is allowed (unconfirmed, quote+page); explaining/assessing them is not.
+- D10 (user decision, 05.11.2026) In the chat Lotsi may repeat verbatim what a document says (incl. diagnoses, symptoms), never interpret it. The document analysis still extracts only explicit recommendations; instructions to physicians are not turned into tasks (D8 unchanged).
 - D6 LLM: Azure AI Foundry OpenAI-v1 endpoint, model `gpt-5-4-mini`, fake mode for tests/offline.
 - ADRs: D1–D9 as `documentation/decisions/0001–0009`; plus 0010 shared form session (wizard + chat), 0011 consent-gated Lebenslage suggestions, 0012 shared known facts, 0013 deterministic post-processing of agent replies.
 

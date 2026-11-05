@@ -82,7 +82,7 @@ Stefan hat in seinen **Einstellungen Englisch** gewählt (Demo-Startzustand) –
 
 ## Akt 5 – Infrastruktur & Roadmap (6:50–7:10) · Tab `localhost:8000/docs` + Folie
 
-> „Darunter liegen 14 Services mit klaren Schnittstellen – Vertretung, Lebenslage, Dokumente, Leistungen, Anträge, Termine, Fall, Vorsorge, Rechtsgrundlagen, Werte, Protokoll. 1.976 Paragraphen aus 19 Gesetzen, die Wertetabellen 2026, der Erstattungskodex, die offiziellen Formulare – alles mit Quelle. 266 automatische Tests, 35/35 Live-Evals. Lotsi ist nur der oberste Layer: Jeder neue Service macht ihn klüger, ohne dass wir die KI neu bauen.“
+> „Darunter liegen 14 Services mit klaren Schnittstellen – Vertretung, Lebenslage, Dokumente, Leistungen, Anträge, Termine, Fall, Vorsorge, Rechtsgrundlagen, Werte, Protokoll. 1.976 Paragraphen aus 19 Gesetzen, die Wertetabellen 2026, der Erstattungskodex, die offiziellen Formulare – alles mit Quelle. 268 automatische Tests, 35/35 Live-Evals. Lotsi ist nur der oberste Layer: Jeder neue Service macht ihn klüger, ohne dass wir die KI neu bauen.“
 
 ---
 
@@ -114,7 +114,7 @@ Akt 0 (20 s) → Akt 1 nur: Login · Upload + Antrag scheitern → Anna erlaubt 
 - **„Datenschutz?“** – Gesundheitsdaten nur mit eigenem Scope (Lebenslage, Vorsorge getrennt), jede Abfrage protokolliert, KI erbt nur die Rechte der Person, Dokument-Vorschläge erst nach Zustimmung; Demo-Daten fiktiv.
 - **„Prompt-Injection?“** – Dokumentinhalte sind Daten, nie Anweisungen; getestet mit präpariertem PDF; zusätzlich Azure Prompt Shields.
 - **„Andere Sprachen / Barrierefreiheit?“** – Antworten auf Englisch/Türkisch (Akt 4 zeigt es), Einfache Sprache, Detailtiefe kurz/ausführlich, Spracheingabe, größere Schrift. Die Oberfläche selbst ist Deutsch; Übersetzung der Oberfläche ist Roadmap.
-- **„Was, wenn die Situation in keines Ihrer fünf Bündel passt?“** – Bündel sind eine Abkürzung, kein Tor. Lotsi wählt frei aus 30 Werkzeugen (Anspruchsprüfung, Rechtsgrundlagen, Stellen, Termine …). Live getestet: „Meine Frau ist schwanger – was müssen wir organisieren?“ → Eltern-Kind-Pass, Kinderbetreuungsgeld, Familienbeihilfe mit Quellen, obwohl es kein Schwangerschafts-Bündel gibt. Was kein Dienst beantworten kann, sagt Lotsi offen, statt zu raten.
+- **„Was, wenn die Situation in keines Ihrer fünf Bündel passt?“** – Bündel sind eine Abkürzung, kein Tor. Lotsi wählt frei aus 31 Werkzeugen (Anspruchsprüfung, Rechtsgrundlagen, Stellen, Termine …). Live getestet: „Meine Frau ist schwanger – was müssen wir organisieren?“ → Eltern-Kind-Pass, Kinderbetreuungsgeld, Familienbeihilfe mit Quellen, obwohl es kein Schwangerschafts-Bündel gibt. Was kein Dienst beantworten kann, sagt Lotsi offen, statt zu raten.
 - **„Nur Wien?“** – Ja, bewusst: Stellen und Ordinationen sind für Wien kuratiert (ÖGK, PVA, FSW). Der Serviceratgeber S. 96–115 listet die Stellen aller Bundesländer – das ist Datenpflege, keine Architektur. Auf der Bühne nie „ganz Österreich“ sagen.
 - **„Warum die Honorarordnung nicht?“** – Die bereitgestellte gilt für die Steiermark 2025; unsere Personen sind in Wien versichert. Eine Quelle aus der falschen Region zu zitieren wäre ein Fehler, keine Funktion. Roadmap.
 - **„Wissenschaftlich erklärt?“ (Use Case 3.4)** – Lotsi erklärt den Nutzen aus dem **offiziellen Programm** (Vorsorgeuntersuchung, Brustkrebs-Früherkennung, Impfplan) mit Seitenangabe – keine eigenen Studienzitate, keine Risikozahlen. Literaturbelege je Programmpunkt mit fachlicher Freigabe sind Roadmap.
