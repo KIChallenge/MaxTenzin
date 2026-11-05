@@ -433,3 +433,10 @@ def test_rezeptgebuehr_dot_decimal_still_gets_german_line_and_hyphen_variants():
         {"label_de": "Rezeptgebühr pro Packung (2026)", "value": 7.55, "source": "veraendW Tab. 20 (2026)"}]}]})
     assert "7,55 € pro Packung" in _ensure_rezeptgebuehr_amount("Rezeptgebühr?", "Sie beträgt 7.55 EUR.", [o], "de")
     assert "Ergebnis" not in _sanitize("Laut Tool‑Ergebnis gilt das. Das Tool–Ergebnis zeigt …").replace("Prüfergebnis", "")
+
+
+def test_next_questions_summary_separates_optional():
+    from app.agent.tools import _questions_summary
+
+    d = {"questions": [{"required": False}] * 17, "progress": 1.0}
+    assert _questions_summary(d) == "0 offene Pflichtangabe(n), 17 freiwillige Angabe(n), Pflichtangaben zu 100 % erledigt"

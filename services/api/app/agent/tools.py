@@ -149,7 +149,8 @@ def _compact_questions(q: dict) -> dict:
     return {
         "session_id": q.get("session_id"), "progress": q.get("progress"),
         "questions": [{"field_id": f.get("id"), "label_de": f.get("label_de"), "type": f.get("type"),
-                       "section": f.get("section"), "ask_hint_de": f.get("ask_hint_de"), "options": f.get("options"),
+                       "section": f.get("section"), "required": bool(f.get("required")),
+                       "ask_hint_de": f.get("ask_hint_de"), "options": f.get("options"),
                        "readonly_reason_de": f.get("readonly_reason_de")} for f in q.get("questions", [])],
     }
 
@@ -286,8 +287,7 @@ TOOLS: list[Tool] = [
          ["session_id"], "GET",
          lambda a, c: f"/api/forms/sessions/{a['session_id']}/next-questions", compact=_compact_questions,
          query=lambda a, c: {"include_optional": "true"} if a.get("include_optional") else {},
-         summary=lambda a, d: f"{len(d.get('questions', []))} offene Pflichtangabe(n), Fortschritt "
-                              f"{round(100 * (d.get('progress') or 0))} %"),
+         summary=lambda a, d: _questions_summary(d)),
     Tool("set_form_fields", "Trägt von der Person bestätigte Antworten in den Antragsentwurf ein.",
          {"session_id": _s("Formular-Sitzung"),
           "values": {"type": "object", "description": "field_id -> Wert (Text oder true/false)"}},
@@ -449,6 +449,15 @@ TOOL_SPECS = [t.spec() for t in TOOLS]
 
 
 # --------------------------------------------------------------------------------------------- executor
+def _questions_summary(d: dict) -> str:
+    """Required vs. optional open questions (with include_optional the list also holds optional fields)."""
+    qs = d.get("questions", [])
+    req = sum(1 for q in qs if q.get("required"))
+    opt = len(qs) - req
+    parts = [f"{req} offene Pflichtangabe(n)"] + ([f"{opt} freiwillige Angabe(n)"] if opt else [])
+    return ", ".join(parts) + f", Pflichtangaben zu {round(100 * (d.get('progress') or 0))} % erledigt"
+
+
 class ToolClient:
     """Calls the API in-process with the caller's own Authorization + X-Subject-Id."""
 
