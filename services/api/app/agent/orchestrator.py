@@ -152,6 +152,19 @@ def fallback_reply(outcomes: list[ToolOutcome]) -> str:
     return "\n".join(lines)
 
 
+CONTENT_FILTER_REPLY = (
+    "Ihre Nachricht enthält Anweisungen, die ich aus Sicherheitsgründen nicht ausführe (z. B. Regeln zu ignorieren). "
+    "Ich prüfe Ansprüche nur über die Services der Sozialversicherung, nenne keine erfundenen Beträge und reiche "
+    "nichts ein. Beschreiben Sie mir gerne Ihr Anliegen in eigenen Worten – z. B. „Welche Leistungen kommen laut "
+    "Entlassungsbrief in Frage?“"
+)
+
+
+def _is_content_filter(e: Exception) -> bool:
+    text = str(e).lower()
+    return "content management policy" in text or "content_filter" in text or "responsibleaipolicyviolation" in text
+
+
 # --------------------------------------------------------------------------------------------- entry point
 async def _llm_boundary_check(message: str) -> str | None:
     llm = get_llm()
@@ -193,9 +206,16 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
         if mode == "live":
             try:
                 reply = await run_live(client, ctx, conv, req.message, req.plain_language, outcomes)
-            except Exception:
-                log.exception("live agent failed, falling back to scripted")
-                mode = "scripted-fallback"
+            except Exception as e:
+                if _is_content_filter(e):
+                    # Provider-side safety filter (e.g. jailbreak / injection attempt): fixed safe reply, no fallback
+                    # planner, so injected instructions can never steer the scripted path either.
+                    log.warning("content filter triggered: %s", e)
+                    mode = "content-filter"
+                    reply = CONTENT_FILTER_REPLY
+                else:
+                    log.exception("live agent failed, falling back to scripted")
+                    mode = "scripted-fallback"
         if not reply:
             sp = Scripted(run, memo, ctx.subject.id, subject_name, ctx.actor.id == ctx.subject.id)
             reply = await sp.reply(req.message)

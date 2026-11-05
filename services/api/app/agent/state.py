@@ -27,11 +27,10 @@ def load_or_create(conversation_id: str | None, actor_id: str, subject_id: str) 
     # Always touch the store first: core.db.engine() is lazily created and not thread-safe, and the tool loop may run
     # parallel in-process calls on a fresh DB ("table already exists" race).
     conv = store.get(COLL, conversation_id or "_")
-    if conversation_id:
-        if conv:
-            if conv["actor_id"] != actor_id or conv["subject_id"] != subject_id:
-                raise HTTPException(404, "Gespräch nicht gefunden")
-            return conv
+    if conversation_id and conv:
+        if conv["actor_id"] != actor_id or conv["subject_id"] != subject_id:
+            raise HTTPException(404, "Gespräch nicht gefunden")
+        return conv
     return {"id": conversation_id or f"conv-{uuid.uuid4().hex[:10]}", "actor_id": actor_id, "subject_id": subject_id,
             "created_at": now_iso(), "turns": [], "memo": {}}
 

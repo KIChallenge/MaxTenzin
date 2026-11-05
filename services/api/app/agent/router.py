@@ -24,6 +24,7 @@ class ConversationTurn(BaseModel):
     boundary_triggered: bool = False
     suggestions_de: list[str] = []
     latency_ms: int | None = None
+    mode: str | None = None           # live | scripted | scripted-fallback | content-filter | boundary:<category>
 
 
 class Conversation(BaseModel):

@@ -12,12 +12,11 @@ if str(API_DIR) not in sys.path:
     sys.path.insert(0, str(API_DIR))
 os.environ["DB_URL"] = f"sqlite:///{tempfile.mkdtemp()}/eval.db"
 
-from fastapi.testclient import TestClient  # noqa: E402
+import eval_harness
+from fastapi.testclient import TestClient
 
-from app.main import app  # noqa: E402
-from app.seed.loader import reset_delegations  # noqa: E402
-
-import eval_harness  # noqa: E402
+from app.main import app
+from app.seed.loader import reset_delegations
 
 
 @pytest.fixture
