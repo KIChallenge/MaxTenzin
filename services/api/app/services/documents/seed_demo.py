@@ -16,10 +16,13 @@ from app.services.prevention.impfpass import parse_impfpass
 from app.services.prevention.router import VACCINATIONS
 
 
-def seed() -> list[str]:
+def seed(skip: set[str] | None = None) -> list[str]:
+    """skip: demo document ids NOT to seed (live demo: Anna's discharge letter is uploaded as photos on stage)."""
     befunde = get_settings().raw_data_dir / "Befunde"
     seeded = []
     for g in goldens.all_goldens():
+        if g["demo_document_id"] in (skip or set()):
+            continue
         src = befunde / g["source_filename"]
         if not src.exists():
             continue
@@ -47,5 +50,8 @@ def seed() -> list[str]:
 
 
 if __name__ == "__main__":
-    for line in seed() or ["nothing seeded — RAW_DATA_DIR/Befunde not found"]:
+    import os
+
+    skip = {s.strip() for s in os.environ.get("SEED_SKIP_DOCS", "").split(",") if s.strip()}
+    for line in seed(skip) or ["nothing seeded — RAW_DATA_DIR/Befunde not found"]:
         print(line)

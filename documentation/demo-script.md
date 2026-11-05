@@ -14,14 +14,13 @@ Gemessene Wartezeiten (Probelauf 05.11., live `gpt-5-4-mini`): Foto-Upload + Ana
 | ✓ | Schritt | Befehl / Aktion |
 |---|---|---|
 | ☐ | Stand holen | `git pull` – **danach die API immer neu starten** (sie lädt Code nur beim Start; eine alte API antwortet mit altem Verhalten) |
-| ☐ | **Alles frisch in einem Befehl** (Terminal 1): stoppt eine laufende API, leert DB + Uploads, lädt Demo-Daten (Vollmachten, Lebenslage, Termine, Stefans e-Impfpass), erzeugt die 4 Fotos und startet die API ohne Auto-Reload | `make demo-fresh` |
+| ☐ | **Alles frisch in einem Befehl** (Terminal 1): stoppt eine laufende API, Preflight auf vollen Demo-Daten (~2 min, Ergebnis X/22), dann DB + Uploads leeren und Demo-Daten **ohne Annas Entlassungsbrief** laden (den lädt Maria live als Fotos hoch), API ohne Auto-Reload starten. Ohne Preflight: `make demo-fresh SKIP_CHECK=1` | `make demo-fresh` |
 | ☐ | Cockpit (Terminal 2) | `make web` |
-| ☐ | Preflight: alle Demo-Schritte live, ohne den Demo-Stand zu verändern | `make demo-check` → alle ✅ |
 | ☐ | Browser: Chrome, Zoom 125 %, nur Tab `http://localhost:3000`, abgemeldet | |
 | ☐ | Finder-Fenster mit `var/demo/entlassungsbrief-foto-*.jpg` (4 Fotos) daneben | |
 | ☐ | Zweiter Tab: `http://localhost:8000/docs` · drittes Fenster: Backup-Video, pausiert | |
 
-Nach jeder Probe: im API-Terminal `Ctrl+C`, dann `make demo-fresh` und im zweiten Terminal `make demo-check`.
+Nach jeder Probe: im API-Terminal `Ctrl+C`, dann `make demo-fresh` (enthält den Preflight).
 
 ---
 

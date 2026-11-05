@@ -21,12 +21,20 @@ api:              ## FastAPI with reload, OpenAPI at http://localhost:8000/docs
 api-demo:         ## API for the live demo: no --reload (stable state during the pitch)
 	cd $(API) && uv run uvicorn app.main:app --port 8000
 
-demo-fresh:       ## wipe everything + demo data + photos, then start the demo API (stops a running API on :8000 first)
+demo-fresh:       ## preflight on full demo data, then wipe + demo data WITHOUT Anna's letter (uploaded on stage) + start demo API. SKIP_CHECK=1 skips the preflight
 	@pids=$$(lsof -ti tcp:8000 -sTCP:LISTEN); if [ -n "$$pids" ]; then echo "Stoppe laufende API auf :8000"; kill $$pids; sleep 1; fi
-	$(MAKE) reset
-	$(MAKE) seed
 	@if [ ! -f var/demo/entlassungsbrief-foto-6.jpg ]; then $(MAKE) demo-assets; fi
-	@echo "Frischer Demo-Stand. API startet jetzt (Ctrl+C beendet). Im zweiten Terminal: make demo-check"
+	@if [ -z "$(SKIP_CHECK)" ]; then \
+	  $(MAKE) reset >/dev/null && $(MAKE) seed >/dev/null; \
+	  (cd $(API) && uv run uvicorn app.main:app --port 8000 --log-level warning) & api=$$!; \
+	  for i in $$(seq 1 40); do curl -sf localhost:8000/api/health >/dev/null && break; sleep 1; done; \
+	  echo "== Preflight (dauert ~2 min) =="; $(UV) python tools/demo_check.py; ok=$$?; \
+	  kill $$api; sleep 1; \
+	  if [ $$ok -ne 0 ]; then echo "!! Preflight nicht 22/22 – Hinweise oben lesen. Demo-Stand wird trotzdem vorbereitet."; fi; \
+	fi
+	$(MAKE) reset >/dev/null
+	SEED_SKIP_DOCS=doc-anna-entlassung $(MAKE) seed
+	@echo "Frischer Demo-Stand: Anna ohne Dokumente (Fotos aus var/demo hochladen). API startet jetzt (Ctrl+C beendet)."
 	$(MAKE) api-demo
 
 web:             ## Next.js cockpit at http://localhost:3000
