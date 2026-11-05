@@ -96,9 +96,13 @@ def main() -> int:
             r2 = chat(c, MARIA_ANNA, "Trag beim Pflegegeld-Antrag ein, dass wir die kostenlose Pflegeberatung möchten. "
                                      "Meine Mutter hat zugestimmt.", form_session_id=form)
             v = c.get(f"/api/forms/sessions/{form}", headers=MARIA_ANNA).json()["values"]
-            check(v["Pflegeberatung"]["value"] == "Ja" and not v["Antragstellung andere Person"]["value"]
-                  and "start_form" not in tools(r2) and r2["reply"].startswith("**Eingetragen im Antrag:**"),
-                  "Akt 1: Chat → Assistent (Pflegeberatung = Ja, Zustimmung offen)", t0)
+            # an extra start_form is harmless: the agent continues the open session (ToolClient._existing_session)
+            why = [w for w, bad in (("Pflegeberatung im offenen Antrag nicht 'Ja'", v["Pflegeberatung"]["value"] != "Ja"),
+                                    ("Zustimmung wurde angekreuzt", bool(v["Antragstellung andere Person"]["value"])),
+                                    ("Antwort beginnt nicht mit 'Eingetragen im Antrag'",
+                                     not r2["reply"].startswith("**Eingetragen im Antrag:**"))) if bad]
+            check(not why, "Akt 1: Chat → Assistent (Pflegeberatung = Ja, Zustimmung offen)", t0,
+                  "; ".join(why) + " – Szene wiederholen")
             t0 = time.perf_counter()
             pdf = c.post(f"/api/forms/sessions/{form}/render", headers=MARIA_ANNA)
             check(pdf.status_code == 200 and pdf.content[:4] == b"%PDF", "Akt 1: PDF-Entwurf", t0)

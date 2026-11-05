@@ -29,7 +29,8 @@ demo-fresh:       ## preflight on full demo data, then wipe + demo data WITHOUT 
 	  (cd $(API) && uv run uvicorn app.main:app --port 8000 --log-level warning) & api=$$!; \
 	  for i in $$(seq 1 40); do curl -sf localhost:8000/api/health >/dev/null && break; sleep 1; done; \
 	  echo "== Preflight (dauert ~2 min) =="; $(UV) python tools/demo_check.py; ok=$$?; \
-	  kill $$api; sleep 1; \
+	  kill $$api 2>/dev/null; pids=$$(lsof -ti tcp:8000 -sTCP:LISTEN); [ -n "$$pids" ] && kill $$pids; \
+	  for i in $$(seq 1 20); do lsof -ti tcp:8000 -sTCP:LISTEN >/dev/null || break; sleep 0.5; done; \
 	  if [ $$ok -ne 0 ]; then echo "!! Preflight nicht 22/22 – Hinweise oben lesen. Demo-Stand wird trotzdem vorbereitet."; fi; \
 	fi
 	$(MAKE) reset >/dev/null
