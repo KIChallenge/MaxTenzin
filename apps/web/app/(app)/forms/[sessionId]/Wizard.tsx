@@ -325,12 +325,20 @@ function FieldRow(props: {
         {hint}
       </div>
       <div className="min-w-0">
+        {fv?.source?.kind === "document" && fv.source.quote && filled && !fv.confirmed && (
+          <p className="mb-1 rounded-md bg-paper px-2 py-1 text-sm text-muted">
+            Im Dokument: „{fv.source.quote}“
+          </p>
+        )}
         <Input field={f} id={id} value={value} onChange={props.onDraft} onFocus={props.onFocus} onBlur={props.onBlur} onCommit={props.onSave} />
         {(missingReq || flashAt || filled || dirty) && (
         <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
           {missingReq && <span className="font-semibold text-warn">Fehlt noch</span>}
           {flashAt && <span className="font-semibold text-info">Gerade über den Chat aktualisiert</span>}
           {fv?.source && filled && <SourceChip source={fv.source} />}
+          {fv?.source?.kind === "document" && filled && !fv.confirmed && !dirty && (
+            <span className="font-semibold text-warn">Bitte prüfen – aus dem Dokument übernommen</span>
+          )}
           {filled && fv?.confirmed && !dirty && <span className="inline-flex items-center gap-1 font-semibold text-ok"><Check className="h-4 w-4" aria-hidden /> Bestätigt</span>}
           <span className="ml-auto flex gap-2">
             {dirty && (

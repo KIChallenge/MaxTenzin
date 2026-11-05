@@ -87,12 +87,22 @@ export function Lebenslage(props: Props) {
   }
 
   const o = props.data;
-  const empty = !o.current?.length && !o.upcoming?.length && !o.past?.length && !o.suggestions?.length;
-  const reminders = (o.effects ?? []).filter((e) => e.kind === "reminder");
-  const others = (o.effects ?? []).filter((e) => e.kind !== "reminder");
+  const empty = !o.current?.length && !o.upcoming?.length && !o.past?.length && !(o.suggestions ?? []).length;
+  const effects = o.effects ?? [];
+  // Always visible: deadlines and hints that change what the person must do. The rest is folded away.
+  const important = effects.filter((e) => e.kind === "reminder" || e.kind === "hint");
+  const steps = effects.filter((e) => e.kind === "case_step");
+  const prefill = effects.filter((e) => e.kind === "prefill");
+  const facts = effects.filter((e) => e.kind === "fact");
+  const folded = [...steps, ...prefill, ...facts];
+  // A suggestion that already exists as an entry (same type and dates, e.g. from a second copy of the letter) is noise.
+  const known = [...(o.current ?? []), ...(o.upcoming ?? []), ...(o.past ?? [])];
+  const suggestions = (o.suggestions ?? []).filter(
+    (s) => !known.some((k) => k.type === s.type && (k.start ?? null) === (s.start ?? null) && (k.end ?? null) === (s.end ?? null)),
+  );
 
   return (
-    <section aria-label="Lebenslage" className="card space-y-3" aria-busy={pending}>
+    <section id="lebenslage" aria-label="Lebenslage" className="card scroll-mt-28 space-y-3" aria-busy={pending}>
       <div className="flex flex-wrap items-start gap-3">
         <div className="min-w-0 flex-1">{header}</div>
         <button type="button" className="btn-secondary py-1 text-sm" onClick={() => setAdding(true)}>
@@ -100,7 +110,7 @@ export function Lebenslage(props: Props) {
         </button>
       </div>
 
-      {(o.suggestions ?? []).map((s) => (
+      {suggestions.map((s) => (
         <div key={s.id} role="group" aria-label="Vorschlag zur Lebenslage" className="rounded-lg border border-info/30 bg-info-soft px-3 py-2.5">
           <p className="text-sm">
             <span className="font-semibold">Vorschlag aus </span>
@@ -141,25 +151,33 @@ export function Lebenslage(props: Props) {
         </div>
       ) : null}
 
-      {(reminders.length > 0 || others.length > 0) && (
+      {effects.length > 0 && (
         <div className="border-t border-line pt-3">
           <h3 className="mb-1.5 font-semibold">Was das jetzt bedeutet</h3>
-          <ul className="space-y-1.5 text-sm">
-            {[...reminders, ...others].map((e, i) => {
-              const Icon = EFFECT_ICON[e.kind] ?? Info;
-              return (
-                <li key={i} className="flex gap-2">
-                  <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${e.kind === "reminder" ? "text-warn" : "text-muted"}`} aria-hidden />
-                  <span className="min-w-0">
-                    <span className="font-semibold">{e.title_de}</span>
-                    {e.due_date && <span className="ml-1.5 rounded-full bg-warn-soft px-1.5 font-semibold text-warn">bis {fmtDate(e.due_date)}</span>}
-                    {e.detail_de && <span className="block text-muted">{e.detail_de}</span>}
-                    {e.source && <SourceChip source={e.source} />}
-                  </span>
-                </li>
-              );
-            })}
+          <ul className="space-y-2 text-sm">
+            {important.map((e, i) => (
+              <EffectRow key={i} e={e} />
+            ))}
           </ul>
+          {folded.length > 0 && (
+            <details className="mt-2 text-sm">
+              <summary className="cursor-pointer text-muted hover:text-ink">
+                Außerdem:{" "}
+                {[
+                  steps.length && `${steps.length} ${steps.length === 1 ? "neuer Schritt" : "neue Schritte"} in Mein Fall`,
+                  prefill.length && `${prefill.length} ${prefill.length === 1 ? "Angabe" : "Angaben"} für Anträge`,
+                  facts.length && `${facts.length} ${facts.length === 1 ? "Angabe" : "Angaben"} für die Leistungsprüfung`,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </summary>
+              <ul className="mt-2 space-y-1.5">
+                {folded.map((e, i) => (
+                  <EffectRow key={i} e={e} compact />
+                ))}
+              </ul>
+            </details>
+          )}
         </div>
       )}
 
@@ -180,6 +198,25 @@ export function Lebenslage(props: Props) {
         />
       )}
     </section>
+  );
+}
+
+function EffectRow({ e, compact = false }: { e: Effect; compact?: boolean }) {
+  const Icon = EFFECT_ICON[e.kind] ?? Info;
+  return (
+    <li className="flex gap-2">
+      <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${e.kind === "reminder" ? "text-warn" : "text-muted"}`} aria-hidden />
+      <span className="min-w-0">
+        <span className="font-semibold">{e.title_de}</span>
+        {e.due_date && <span className="ml-1.5 rounded-full bg-warn-soft px-1.5 font-semibold text-warn">bis {fmtDate(e.due_date)}</span>}
+        {e.detail_de && !compact && <span className="block text-muted">{e.detail_de}</span>}
+        {e.source && (
+          <span className="ml-1.5">
+            <SourceChip source={e.source} />
+          </span>
+        )}
+      </span>
+    </li>
   );
 }
 
@@ -205,7 +242,7 @@ function EpisodeGroup({
               <Icon className={`h-5 w-5 shrink-0 ${ended ? "text-muted" : "text-accent"}`} aria-hidden />
               <span className="min-w-0 flex-1">
                 <span className="font-semibold">{e.title_de || EPISODE_TYPE[e.type]}</span>
-                {e.subtype && <span className="text-muted"> · {e.subtype}</span>}
+                {e.subtype && !(e.title_de ?? "").toLowerCase().includes(e.subtype.toLowerCase()) && <span className="text-muted"> · {e.subtype}</span>}
                 <span className="block text-sm text-muted">
                   {episodeWhen(e)}
                   {e.institution && ` · ${e.institution}`}

@@ -30,6 +30,13 @@ documents → recommendations → benefits → form wizard → PDF draft → Mei
 | `/einstellungen` | Darstellung (Einfache Sprache, Größere Schrift) + Vollmachten (scope toggles via `PUT /api/identity/delegations/{id}/scopes`, only the grantor can edit; note that real delegation runs via ID Austria). `/vertretung` redirects here |
 | `/stellen`, `/medikamente`, `/recht` | directory, EKO search, legal search/paragraph (Fassung + „keine Rechtsberatung“) |
 | chat panel („Lotsi“) | `POST /api/agent/chat` with page context (`form_session_id` on `/forms/<id>`, `document_ids` on `/dokumente/<id>`) so the agent works on the open form; tool trace collapsible, boundary replies highlighted, action buttons (open form, download draft, open case), minimal safe Markdown; refreshes server data after tool calls |
+| `/` Lebenslage panel | `GET /api/situation` (current/planned/past episodes, effects: deadlines + hints visible, steps/prefill/facts folded), consent cards for suggestions (`…/suggestions/{id}/confirm|reject`), add dialog (`POST …/episodes`), end/remove (`PATCH`/`DELETE`); suggestions from discharge letters after upload and on the document page |
+| `/` Behandlungsteam + `/einstellungen` | `GET/PUT /api/identity/care-team` – GP first, "Termin buchen" → `/termine?provider=` |
+| `/termine` | `POST /api/appointments/slots/search` (topic, place, daypart, accessible; defaults from preferences), book (`POST /api/appointments`, 409 → choose again), `.ics`, cancel |
+| `/einstellungen` preferences | `GET/PUT /api/identity/preferences` (PUT replaces the whole object – the form always sends the full state); voice input in the chat (SpeechRecognition de-AT) |
+| documents: photos | `POST /api/documents` with `file` (PDF/photo) or `files` (several photos = one document), camera capture; `GET …/transcript` → "Was Lotsi gelesen hat" |
+| `/` bundle card | `POST /api/benefits/bundles/match` – only rendered when a bundle comes back |
+| sources | law → `/recht?law&nr&abs` (Absatz highlighted); document quote → `/dokumente/{id}/quelle?seite&zitat` (PDF inline via BFF `?view=1`); form → blank template PDF; Serviceratgeber → brochure PDF at the page |
 | autocomplete | Medikamente + Rechtsgrundlagen: debounced (250 ms, ≥ 3 chars) typeahead over the search APIs (each lookup is audited) |
 
 ## Design
