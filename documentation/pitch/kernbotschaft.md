@@ -19,7 +19,7 @@ Merksatz für die Folie: **„Erst die Prozesse, dann die KI.“**
 ## Wie wir Halluzinationen per Design eingrenzen (drei Schichten)
 | Schicht | Was passiert | Beleg im Projekt |
 |---|---|---|
-| **Vorher: Grenzen** | Medizinische Fragen (Diagnose, Befund, Medikation, Prognose) werden erkannt, **bevor** das Modell antwortet | 20 Grenzfälle in den Evals, Antwort in < 0,2 s ohne Sprachmodell |
+| **Vorher: Grenzen** | Medizinische Fragen (Diagnose, Befund, Medikation, Prognose) werden erkannt, **bevor** das Modell antwortet | 20 Grenzfälle in den Evals, Absage vor jedem Dienst- und Antwortmodell-Aufruf |
 | **Währenddessen: nur Werkzeuge** | Lotsi hat keine Datenbank und kein eigenes Wissen über Ansprüche. 31 Werkzeuge, jedes genau ein Dienst-Aufruf – mit dem Login und den Rechten der Person | Ohne erteilte Berechtigung kann Lotsi es auch nicht (Demo-Start, Transparenz-Protokoll) |
 | **Nachher: Prüfung der Antwort** | €-Beträge ohne Dienst-Herkunft werden verworfen; Zitate aus Dokumenten werden gegen die Seite geprüft; „eingereicht“-Behauptungen werden abgefangen; Pflichtangaben (z. B. Rezeptgebühr 7,55 € mit Quelle) werden deterministisch ergänzt | 35/35 Live-Evals, Prüfung: „jeder €-Betrag auf einen Dienst rückführbar“ |
 

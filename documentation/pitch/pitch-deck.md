@@ -56,7 +56,7 @@ Dann: die medizinische Grenze · Transparenz-Protokoll · Stefan auf Englisch: G
 
 ## Folie 7 – Grenzen, die man sehen kann
 **Diagnose abschreiben – ja. Deuten – nie.**
-- Keine Diagnosen, keine Befundinterpretation, keine Risiken, keine Therapie- oder Medikamentenratschläge – Prüfung **vor** dem Antwortmodell, Antwort in < 1 s
+- Keine Diagnosen, keine Befundinterpretation, keine Risiken, keine Therapie- oder Medikamentenratschläge – Prüfung **vor** dem Antwortmodell, Absage vor jedem Dienst- und Antwortmodell-Aufruf
 - Aus Dokumenten nur ausdrücklich dokumentierte Empfehlungen, jedes Zitat deterministisch gegen die Seite geprüft; Inhalte werden wörtlich wiedergegeben, nie gedeutet; ärztliche Anweisungen macht Lotsi nicht zu Aufgaben
 - Nichts wird eingereicht; Zustimmungs-Häkchen setzt nur die Person; Dokument-Vorschläge gelten erst nach „Ja, übernehmen“
 - Rechtsinformation immer mit Fassung und „unverbindlich, keine Rechtsberatung“
