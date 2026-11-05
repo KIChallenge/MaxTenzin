@@ -145,8 +145,11 @@ def main() -> int:
         t0 = time.perf_counter()
         ren = chat(c, MARIA_ANNA, "What is my mother entitled to after her hospital stay?", document_ids=["doc-anna-entlassung"])
         low = ren["reply"].lower()
-        check("check_benefits" in tools(ren) and " the " in low and "in question" not in low and "into question" not in low,
-              "Akt 4: englische Antwort (vollständig Englisch, keine Germanismen)", t0, "API nach git pull neu gestartet?")
+        why = [w for w, bad in (("check_benefits nicht aufgerufen", "check_benefits" not in tools(ren)),
+                                ("Antwort nicht englisch", " the " not in low),
+                                ("Germanismus 'in question'", "in question" in low or "into question" in low)) if bad]
+        check(not why, "Akt 4: englische Antwort (vollständig Englisch, keine Germanismen)", t0,
+              "; ".join(why) + " – Szene wiederholen; API nach git pull neu gestartet?")
         t0 = time.perf_counter()
         rp = chat(c, MARIA_ANNA, "Was ist Pflegegeld und wer entscheidet darüber?", plain_language=True)
         check(bool({"get_benefit", "check_benefits"} & set(tools(rp))), "Akt 4: Einfache Sprache", t0)

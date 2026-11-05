@@ -412,10 +412,15 @@ _TOOL_RE = re.compile(r"`?\b(" + "|".join(_TOOL_DE) + r")\b`?")
 
 
 # Literal German→English status translations the model tends to produce ("kommt in Frage" → "comes in question").
+_Q = r"\s+(?:in|into)\s+question\b"
+# Germanism "kommt in Frage" → idiomatic English, per verb form (the bare infinitive after "may"/"likely to" needs "be").
 _EN_FIXES = [
-    (re.compile(r"\bcomes?\s+(?:very\s+)?likely\s+(?:in|into)\s+question\b", re.IGNORECASE), "is likely an option"),
-    (re.compile(r"\bcomes?\s+possibly\s+(?:in|into)\s+question\b", re.IGNORECASE), "may be an option"),
-    (re.compile(r"\bcomes?\s+(?:in|into)\s+question\b", re.IGNORECASE), "is an option"),
+    (re.compile(r"\bcomes\s+(?:very\s+)?likely" + _Q, re.IGNORECASE), "is likely an option"),
+    (re.compile(r"\bcomes\s+possibly" + _Q, re.IGNORECASE), "may be an option"),
+    (re.compile(r"\bcomes" + _Q, re.IGNORECASE), "is an option"),
+    (re.compile(r"\bcame" + _Q, re.IGNORECASE), "was an option"),
+    (re.compile(r"\bcoming" + _Q, re.IGNORECASE), "being an option"),
+    (re.compile(r"\bcome(?:\s+(?:very\s+)?likely|\s+possibly)?" + _Q, re.IGNORECASE), "be an option"),
 ]
 
 

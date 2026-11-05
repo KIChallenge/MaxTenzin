@@ -930,6 +930,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/legal/laws/{law_key}/paragraphs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Table of contents of one law: all paragraphs in natural order, then annexes */
+        get: operations["law_paragraphs_api_legal_laws__law_key__paragraphs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/values/{key}": {
         parameters: {
             query?: never;
@@ -1912,6 +1929,22 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * LawParagraphEntry
+         * @description Table-of-contents entry of a law (GET /api/legal/laws/{law_key}/paragraphs).
+         */
+        LawParagraphEntry: {
+            /** Nr */
+            nr: string;
+            /** Type */
+            type: string;
+            /** Label */
+            label: string;
+            /** Heading */
+            heading: string;
+            /** In Force */
+            in_force: string;
         };
         /** LegalHit */
         LegalHit: {
@@ -4790,6 +4823,42 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    law_paragraphs_api_legal_laws__law_key__paragraphs_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                law_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LawParagraphEntry"][];
                 };
             };
             /** @description Validation Error */

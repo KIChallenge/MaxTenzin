@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from app.contracts.misc import LegalHit, LegalParagraph
+from app.contracts.misc import LawParagraphEntry, LegalHit, LegalParagraph
 from app.core.auth import Context, require
 from app.services.legal import fts, service
 
@@ -35,3 +35,12 @@ def laws(ctx: Context = Depends(require())):
         e = out.setdefault(r["law_key"], {"key": r["law_key"], "abbr": r["law"], "title": r["law_title"], "paragraphs": 0})
         e["paragraphs"] += 1
     return sorted(out.values(), key=lambda x: x["abbr"])
+
+
+@router.get("/laws/{law_key}/paragraphs", response_model=list[LawParagraphEntry],
+            summary="Table of contents of one law: all paragraphs in natural order, then annexes")
+def law_paragraphs(law_key: str, ctx: Context = Depends(require())):
+    out = service.law_paragraphs(law_key)
+    if out is None:
+        raise HTTPException(404, "Gesetz nicht gefunden")
+    return out

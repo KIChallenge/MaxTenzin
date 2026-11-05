@@ -399,6 +399,9 @@ def test_english_germanisms_are_fixed():
     out = _sanitize("FSW — **comes very likely in question**. Reha — comes possibly into question.", "en")
     assert "likely an option" in out and "may be an option" in out and "question" not in out
     assert _sanitize("kommt voraussichtlich in Frage", "de") == "kommt voraussichtlich in Frage"
+    # bare infinitive after a modal / "likely to" (seen live: "likely to is an option")
+    out = _sanitize("likely to come into question. It may come into question. Most likely to come in question.", "en")
+    assert out == "likely to be an option. It may be an option. Most likely to be an option."
 
 
 def test_rezeptgebuehr_amount_always_stated_and_no_tool_wording():
