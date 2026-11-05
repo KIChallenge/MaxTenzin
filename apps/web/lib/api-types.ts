@@ -219,7 +219,7 @@ export interface paths {
         /** Documents of the current subject */
         get: operations["list_docs_api_documents_get"];
         put?: never;
-        /** Upload a PDF for the current subject */
+        /** Upload a PDF or photos (JPG/PNG) of a document for the current subject */
         post: operations["upload_api_documents_post"];
         delete?: never;
         options?: never;
@@ -268,8 +268,25 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Download the uploaded PDF */
+        /** Download the uploaded PDF (or photo page ?page=N) */
         get: operations["get_file_api_documents__document_id__file_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/documents/{document_id}/transcript": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Text read from the document, per page (photo transcription or PDF text layer) */
+        get: operations["get_transcript_api_documents__document_id__transcript_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1048,8 +1065,16 @@ export interface components {
         };
         /** Body_upload_api_documents_post */
         Body_upload_api_documents_post: {
-            /** File */
-            file: string;
+            /**
+             * File
+             * @description One PDF or one photo (JPG/PNG)
+             */
+            file?: string | null;
+            /**
+             * Files
+             * @description Several photos (JPG/PNG), one per page, in page order
+             */
+            files?: string[] | null;
         };
         /** BookingRequest */
         BookingRequest: {
@@ -1391,6 +1416,25 @@ export interface components {
             uploaded_at: string;
             /** Owner Id */
             owner_id: string;
+        };
+        /**
+         * DocumentTranscript
+         * @description What was read from the document, per page — so the user can check the basis of every quote.
+         */
+        DocumentTranscript: {
+            /** Document Id */
+            document_id: string;
+            /** Source */
+            source: string;
+            /** Mode */
+            mode: string;
+            /** Pages */
+            pages: components["schemas"]["TranscriptPage"][];
+            /**
+             * Notice De
+             * @default
+             */
+            notice_de: string;
         };
         /**
          * DocumentType
@@ -2205,6 +2249,23 @@ export interface components {
              */
             sources: string[];
         };
+        /** TranscriptPage */
+        TranscriptPage: {
+            /** Page */
+            page: number;
+            /** Text */
+            text: string;
+            /**
+             * Unreadable
+             * @default 0
+             */
+            unreadable: number;
+            /**
+             * Low Resolution
+             * @default false
+             */
+            low_resolution: boolean;
+        };
         /** VaccinationEntry */
         VaccinationEntry: {
             /** Disease */
@@ -2759,7 +2820,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody: {
+        requestBody?: {
             content: {
                 "multipart/form-data": components["schemas"]["Body_upload_api_documents_post"];
             };
@@ -2859,7 +2920,10 @@ export interface operations {
     };
     get_file_api_documents__document_id__file_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Photo uploads: page number */
+                page?: number;
+            };
             header?: {
                 Authorization?: string;
                 "X-Subject-Id"?: string | null;
@@ -2880,6 +2944,44 @@ export interface operations {
                 };
                 content: {
                     "application/pdf": unknown;
+                    "image/jpeg": unknown;
+                    "image/png": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_transcript_api_documents__document_id__transcript_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentTranscript"];
                 };
             };
             /** @description Validation Error */
