@@ -527,15 +527,11 @@ function ChatMessage({
         {msg.boundary && <p className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-warn"><TriangleAlert className="h-4 w-4" aria-hidden /> Medizinische Grenze – bitte mit Ärztin/Arzt klären</p>}
         <SimpleMarkdown text={msg.text} />
       </div>
-      {latest &&
-        msg.trace
-          .filter((t) => t.tool === "search_slots" && t.status < 400)
-          .slice(-1)
-          .map((t, i) => <SlotChoices key={i} args={t.arguments as Record<string, unknown>} onChoose={onSuggest} disabled={busy} />)}
-      {msg.actions && msg.actions.length > 0 && (
+      {latest && <SlotChoices actions={(msg.actions ?? []).filter((a) => a.kind === "choose_slot")} onChoose={onSuggest} disabled={busy} />}
+      {msg.actions && msg.actions.some((a) => a.kind !== "choose_slot") && (
         <div className="flex flex-wrap gap-2">
           {msg.actions
-            .filter((a) => !(a.kind === "open_form" && a.url === pathname))
+            .filter((a) => a.kind !== "choose_slot" && !(a.kind === "open_form" && a.url === pathname))
             .map((a) => (
               <ActionButton key={a.kind + a.url} action={a} />
             ))}
