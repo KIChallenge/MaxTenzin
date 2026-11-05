@@ -103,7 +103,5 @@ services over HTTP with the same token. Full endpoint/scope table: [services.md]
   so a demo shows a stable analysis.
 - The Impfplan intervals were taken from the brief and not re-verified against the current Impfplan PDF; risk groups
   are not modelled.
-- Lotsi reads the stored shared facts (`known_facts`) directly from the store at the start of a turn instead of via
-  `GET /api/benefits/facts` (invariant 4 says API only). Writes go through the API.
 - Mock identity: no real ID Austria, no e-Vollmacht, no real e-card data. Single-node SQLite; not hardened for
   production (no rate limiting, no encryption at rest). See [roadmap.md](roadmap.md).

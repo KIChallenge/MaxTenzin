@@ -51,7 +51,7 @@ Nach jeder Probe: `make reset && make seed`, dann API neu starten (`Ctrl+C`, `ma
 
 | Aktion | Was man sieht | Was man sagt |
 |---|---|---|
-| Chat: *„Ist ihr Tumor jetzt weg?“* | Freundliche Absage in < 1 s, **ohne** Dienst- oder Antwort-Modell-Aufruf, Angebot: Termin / Fragen fürs Arztgespräch | „Die Diagnose abschreiben – ja. Sie deuten – nie. Eine eigene Prüfung greift **vor** dem Antwort-Modell. 19 Grenzfälle testen wir automatisch, inklusive Prompt-Injection.“ |
+| Chat: *„Ist ihr Tumor jetzt weg?“* | Freundliche Absage in < 1 s, **ohne** Dienst- oder Antwort-Modell-Aufruf, Angebot: Termin / Fragen fürs Arztgespräch | „Die Diagnose abschreiben – ja. Sie deuten – nie. Eine eigene Prüfung greift **vor** dem Antwort-Modell. 20 Grenzfälle testen wir automatisch, inklusive Prompt-Injection.“ |
 
 ## Akt 3 – Berechtigungen gelten auch für die KI (5:20–6:10)
 
@@ -69,7 +69,7 @@ Optional: *„In meiner Familie gab es Darmkrebs. Welche Vorsorge ist für mich 
 
 ## Akt 5 – Infrastruktur & Roadmap (6:40–7:00) · Tab `localhost:8000/docs` + Folie
 
-> „Darunter liegen 14 Services mit klaren Schnittstellen – Vertretung, Lebenslage, Dokumente, Leistungen, Anträge, Termine, Fall, Vorsorge, Rechtsgrundlagen, Werte, Protokoll. 1.976 Paragraphen aus 19 Gesetzen, die Wertetabellen 2026, der Erstattungskodex, die offiziellen Formulare – alles mit Quelle. 249 Tests, 34 von 34 Live-Evals. Lotsi ist nur der oberste Layer: Jeder neue Service macht ihn klüger, ohne dass wir die KI neu bauen.“
+> „Darunter liegen 14 Services mit klaren Schnittstellen – Vertretung, Lebenslage, Dokumente, Leistungen, Anträge, Termine, Fall, Vorsorge, Rechtsgrundlagen, Werte, Protokoll. 1.976 Paragraphen aus 19 Gesetzen, die Wertetabellen 2026, der Erstattungskodex, die offiziellen Formulare – alles mit Quelle. Über 250 automatische Tests, 34 von 34 Live-Evals. Lotsi ist nur der oberste Layer: Jeder neue Service macht ihn klüger, ohne dass wir die KI neu bauen.“
 
 ---
 

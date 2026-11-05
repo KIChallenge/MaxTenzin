@@ -28,7 +28,7 @@ Each call produces a `ToolTrace` with a German one-line `summary_de` and `source
 ## Rules & knowledge
 - The prompt is `prompts/system_de.md` (persona Lotsi): no amounts, eligibility or benefits except from tool results; cautious wording ("Entscheidung trifft der Träger"); ask only `missing_fields` / `next-questions`, 1–2 per turn; never derive medical facts from documents; diagnoses only verbatim; drafts only, never submit; consent checkboxes are the person's own click; prevention wording; 403 handling; reply in the user's language; plain language and detail level on request.
 - `state.DEMO_DOCUMENTS` lists demo document ids (golden-backed, see `documents/README.md`) so Lotsi can find them without an upload. Ids only; access still goes through the documents API.
-- Lotsi never reads `knowledge/` or other services' data except through their APIs — with one exception: the shared `known_facts` document is read directly from the store at the start of a turn (see Limitations).
+- Lotsi never reads `knowledge/` or other services' data except through their APIs (including the shared answers via `GET /api/benefits/facts`).
 
 ## Sources
 Only what the services return: law § with in-force date, veraendW table and year, Serviceratgeber page, form, document quote with page, external page with retrieval date.
@@ -37,7 +37,6 @@ Only what the services return: law § with in-force date, veraendW table and yea
 - The input guard uses regex and can be phrased around; the LLM double-check (live only) and the system prompt are the second and third lines of defence. False positives are possible on unusual phrasings; the redirect offer softens them.
 - The output guard checks € amounts, submission/write/consent claims, prevention wording and question count. It does not check every factual sentence.
 - Scripted mode understands only simple answers (numbers, yes/no, free text for the current form question).
-- `orchestrator.py` reads `store.get("known_facts", …)` directly instead of `GET /api/benefits/facts` (CLAUDE.md invariant 4 asks for API-only access).
 
 ## Tests
 - `app/agent/tests/test_agent.py` (fake mode, no key; 28 test functions): hero flow up to `render_form`, no invented amounts, boundary categories incl. emergency and English replies, false-positive checks, copy request vs. interpretation, prevention-programme questions, revoked scope → 403 explained plus an audit row (`via=agent`, `allowed=false`), delegation revoke survives reload, prevention scope missing, conversation isolation, chat edits the session open in the wizard, choice normalisation, readable 422, write-claim guard, consent checkbox never ticked, deterministic write reply, situation suggestion needs explicit consent, persona Lotsi, and the live loop with a stubbed model (regenerate → fallback, accepted amount, content filter, failure → scripted, soft question limit).

@@ -39,7 +39,7 @@ async def inbox(request: Request, ctx: Context = Depends(require())):
             if item["status"] in ("due", "not_documented"):
                 nid = f"prev-{item['id']}"
                 out.append(Notification(id=nid, subject_id=sid, kind="prevention", created_at=now_iso(),
-                                        title_de=item["title_de"], body_de=item["explanation_de"], link="/prevention",
+                                        title_de=item["title_de"], body_de=item["explanation_de"], link="/vorsorge",
                                         read=_is_read(sid, nid)))
     sit = await _call(request, "/api/situation")
     if sit.status_code == 200:
@@ -50,7 +50,7 @@ async def inbox(request: Request, ctx: Context = Depends(require())):
             due = f" – Frist: {eff['due_date'][8:10]}.{eff['due_date'][5:7]}.{eff['due_date'][:4]}" if eff.get("due_date") else ""
             out.append(Notification(id=nid, subject_id=sid, kind="situation", created_at=now_iso(),
                                     title_de=eff["title_de"] + due, body_de=eff.get("detail_de") or "",
-                                    link="/lebenslage", read=_is_read(sid, nid)))
+                                    link="/#lebenslage", read=_is_read(sid, nid)))
     cases = await _call(request, "/api/cases")
     if cases.status_code == 200:
         for case in cases.json():
@@ -59,7 +59,7 @@ async def inbox(request: Request, ctx: Context = Depends(require())):
                 nid = f"case-{case['id']}"
                 out.append(Notification(id=nid, subject_id=sid, kind="case", created_at=now_iso(),
                                         title_de=f"{len(open_steps)} offene Schritte: {case['title_de']}",
-                                        body_de=f"Nächster Schritt: {open_steps[0]['title_de']}", link="/case",
+                                        body_de=f"Nächster Schritt: {open_steps[0]['title_de']}", link="/fall",
                                         read=_is_read(sid, nid)))
     return out
 

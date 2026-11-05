@@ -19,7 +19,7 @@ from app.agent.scripted import Scripted, forbidden_text
 from app.agent.tools import SCOPE_DE, TOOL_SPECS, ToolClient, ToolOutcome, llm_payload
 from app.contracts.agent import ChatAction, ChatRequest, ChatResponse, ToolTrace
 from app.core.auth import Context
-from app.core.db import now_iso, store
+from app.core.db import now_iso
 from app.core.llm import get_llm
 from app.seed.loader import delegations_for
 
@@ -229,9 +229,6 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
     mode = "live" if get_llm().live else "scripted"
     if req.document_ids:
         memo["last_document_id"] = req.document_ids[0]
-    kf = store.get("known_facts", ctx.subject.id)  # answers given in the cockpit: never ask them again
-    if kf and kf.get("facts"):
-        memo["facts"] = {**kf["facts"], **(memo.get("facts") or {})}
     # Explicit consent in THIS message (deterministic): required to apply document-based situation suggestions.
     memo["_user_consented"] = bool(_CONSENT_YES.search(req.message or ""))
 
@@ -249,6 +246,10 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
                             suggestions_de=suggestions)
     else:
         client = ToolClient(headers, ctx.subject.id, subject_name, memo)
+        # Answers given earlier (cockpit or Lotsi) – via the API like every other read: never ask them again.
+        kf = await client.fetch("/api/benefits/facts", "context:known_facts")
+        if kf.status_code == 200 and kf.json().get("facts"):
+            memo["facts"] = {**kf.json()["facts"], **(memo.get("facts") or {})}
         if req.form_session_id and req.form_session_id != memo.get("form_session_id"):
             # The wizard has this session open: the chat must edit exactly this one (never start a parallel draft).
             r = await client.fetch(f"/api/forms/sessions/{req.form_session_id}", "context:open_form")

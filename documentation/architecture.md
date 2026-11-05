@@ -55,8 +55,8 @@ own scope, so permissions apply transitively, and the audit log shows the inner 
 | agent (every tool) | one tool = one endpoint (`app/agent/tools.py`), headers `X-Via: agent`, `X-Agent-Tool: <tool>` | 403 explained to the person ("Dafür hat … keine Berechtigung erteilt"), never worked around |
 
 The agent also reads its context through the API (`/api/identity/preferences`, `/api/identity/care-team`, open form
-session) and writes answers to the shared facts via `PATCH /api/benefits/facts`. Exception: it reads the stored
-`known_facts` document directly before the turn (`orchestrator.py`), see Limitations in [safety.md](safety.md).
+session, stored answers via `GET /api/benefits/facts`) and writes answers via `PATCH /api/benefits/facts` – no
+direct data access.
 
 Some reads are in-process function calls on the same request context (no second scope check needed because the route
 already holds it): eligibility reads `situation_facts()` only if the caller has `manage_situation`; form prefill
