@@ -300,6 +300,13 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
             o = await _copy_diagnoses(client, run, memo, req.document_ids, outcomes)
             if o is not None:
                 outcomes.append(o)
+        if _REZEPT_RX.search(req.message or "") and not any(o.tool == "check_benefits" and o.ok for o in outcomes):
+            # Rezeptgebühr question but the model skipped the eligibility service: run it deterministically.
+            doc_ids = list(req.document_ids or []) or ([memo["last_document_id"]] if memo.get("last_document_id") else [])
+            o = await run("check_benefits", {"benefit_ids": ["rezeptgebuehrenbefreiung", "rezeptgebuehrenobergrenze"],
+                                             "document_ids": doc_ids, "facts": {}})
+            outcomes.append(o)
+        reply = _ensure_rezeptgebuehr_amount(req.message, reply, outcomes, lang)
         writes = [o for o in outcomes if o.tool == "set_form_fields" and o.ok]
         if writes:
             reply = await _form_write_reply(client, writes, reply)
@@ -421,6 +428,10 @@ def _sanitize(reply: str, lang: str = "de") -> str:
     out = re.sub(r"[^\n]*\b(provider_id|slot_id|session_id|episode_id|case_id|step_id)\b[^\n]*\n?", "", out)
     out = re.sub(r"\s*\(?`?demo-[a-z0-9-]+`?\)?", "", out)
     out = re.sub(r"\n*\**Quellen:?\**:?\s*(keine|keine angegeben|keine Tool-Ergebnisse)[^\n]*", "", out, flags=re.IGNORECASE)
+    # internal wording: "laut Tool-Ergebnis", "Aus dem Tool-Ergebnis", "Terminsuche-Ergebnis dieser Antwortrunde" …
+    out = re.sub(r"\b(laut|aus dem|aus den|gemäß)\s+Tool[-‑–\s]?Ergebnis(sen)?\b",
+                 lambda m: "laut Prüfung" if m.group(1).lower() == "laut" else "aus der Prüfung", out, flags=re.IGNORECASE)
+    out = re.sub(r"\bTool[-‑–\s]?Ergebnis(se|sen)?\b", "Prüfergebnis", out, flags=re.IGNORECASE)
     return out.strip()
 
 
@@ -465,3 +476,39 @@ def _slot_label(start_iso: str) -> str:
     except ValueError:
         return start_iso
     return f"{_WEEKDAYS_DE[dt.weekday()]} {dt.day}.{dt.month}., {dt:%H:%M}"
+
+
+def _amounts(data) -> list[dict]:
+    """All 'amounts' entries anywhere in a (compacted) tool result."""
+    out: list[dict] = []
+    if isinstance(data, dict):
+        for k, v in data.items():
+            if k == "amounts" and isinstance(v, list):
+                out += [a for a in v if isinstance(a, dict)]
+            else:
+                out += _amounts(v)
+    elif isinstance(data, list):
+        for v in data:
+            out += _amounts(v)
+    return out
+
+
+def _ensure_rezeptgebuehr_amount(message: str, reply: str, outcomes: list[ToolOutcome], lang: str) -> str:
+    """Question about the Rezeptgebühr + amount returned by the eligibility service → the amount (with its value-table
+    source) is always stated, whatever the model chose to mention."""
+    if not reply or not _REZEPT_RX.search(message or ""):
+        return reply
+    fee = next((a for o in outcomes if o.tool == "check_benefits" and o.ok for a in _amounts(o.data)
+                if "Rezeptgebühr pro Packung" in (a.get("label_de") or "")), None)
+    if fee is None or fee.get("value") is None:
+        return reply
+    value_de = f"{float(fee['value']):.2f}".replace(".", ",")
+    if (value_de if lang != "en" else f"{float(fee['value']):.2f}") in reply:
+        return reply
+    src = f" (Quelle: {fee['source']})" if fee.get("source") else ""
+    line = (f"**Prescription fee (Rezeptgebühr) 2026:** € {value_de} per pack{src}." if lang == "en"
+            else f"**Rezeptgebühr 2026:** {value_de} € pro Packung{src}.")
+    return reply.rstrip() + "\n\n" + line
+
+
+_REZEPT_RX = re.compile(r"rezeptgeb|prescription (fee|charge)", re.IGNORECASE)
