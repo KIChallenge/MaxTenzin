@@ -1,4 +1,5 @@
-"""Uploaded PDF bytes under var/uploads/<doc_id>.pdf (gitignored) + document metadata in the doc store."""
+"""Uploaded bytes under var/uploads/ (gitignored): <doc_id>.pdf, or <doc_id>-p<N>.<jpg|png> per photo page.
+Document metadata lives in the doc store."""
 
 from __future__ import annotations
 
@@ -7,7 +8,7 @@ from pathlib import Path
 from app.core.config import get_settings
 from app.core.db import store
 
-DOCS = "documents"            # DocumentSummary (+ sha256, pages) per document id
+DOCS = "documents"            # DocumentSummary (+ sha256, pages, source, images) per document id
 ANALYSES = "document_analyses"  # DocumentAnalysis.model_dump() per document id (read by WS-B benefits, WS-F forms)
 
 
@@ -34,3 +35,25 @@ def load_pdf(doc_id: str) -> bytes | None:
 
 def get_meta(doc_id: str) -> dict | None:
     return store.get(DOCS, doc_id)
+
+
+def image_name(doc_id: str, page: int, ext: str) -> str:
+    return f"{doc_id}-p{page}.{ext}"
+
+
+def save_image(name: str, data: bytes) -> Path:
+    p = uploads_dir() / name
+    p.write_bytes(data)
+    return p
+
+
+def image_path(name: str) -> Path:
+    return uploads_dir() / name
+
+
+def load_images(meta: dict) -> list[bytes] | None:
+    """Photo pages of an image upload in page order, or None if any file is missing."""
+    paths = [image_path(i["name"]) for i in meta.get("images") or []]
+    if not paths or not all(p.exists() for p in paths):
+        return None
+    return [p.read_bytes() for p in paths]
