@@ -100,6 +100,16 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
       setMsgs(saved?.msgs ?? []);
       setConv(saved?.conv ?? null);
       setOpen(sessionStorage.getItem("lotse-chat-open") === "1");
+      // The browser keeps the chat, the server may not (make demo-fresh / reset): drop a conversation the API no
+      // longer knows, so a fresh demo never shows an old chat.
+      if (saved?.conv) {
+        bff<Conversation>(`/api/agent/conversations/${saved.conv}`).then((r) => {
+          if (!r.ok) {
+            setMsgs([]);
+            setConv(null);
+          }
+        });
+      }
     } catch {}
     setFiles([]);
     setView("chat");
