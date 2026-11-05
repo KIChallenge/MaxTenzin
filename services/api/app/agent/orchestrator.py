@@ -110,6 +110,11 @@ def _assistant_msg(msg) -> dict:
     return out
 
 
+_FORM_TOOLS = {"start_form", "set_form_fields", "get_next_questions", "render_form"}
+_RETRY_SUFFIX = (" Antworte NICHT auf diese Prüfung, sondern beantworte die ursprüngliche Nachricht der Person noch "
+                 "einmal vollständig – so, als wäre es deine erste Antwort.")
+
+
 async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, plain: bool, lang: str,
                    outcomes: list[ToolOutcome]) -> str:
     memo = conv["memo"]
@@ -129,26 +134,33 @@ async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, p
     allowed = guard.numbers_in([o.data for o in outcomes]) | guard.numbers_in([o.arguments for o in outcomes]) | \
         guard.numbers_in(message)
     wrote = any(o.tool == "set_form_fields" and o.ok for o in outcomes)
-    problems = (guard.output_violations(reply, allowed) + guard.write_claim_violations(reply, wrote)
+    form_open = bool(memo.get("form_session_id")) or any(o.tool in _FORM_TOOLS for o in outcomes)
+    problems = (guard.output_violations(reply, allowed) + guard.write_claim_violations(reply, wrote, form_open)
                 + guard.question_violations(reply)) if reply else ["leere Antwort"]
     if problems and any(p.startswith("Behauptung, etwas in den Antrag") for p in problems):
         # Claimed a form entry without writing it: give the model tools again to actually do it (max 3 rounds).
         log.warning("output guard (write claim): %s", problems)
         messages += [{"role": "assistant", "content": reply},
-                     {"role": "user", "content": "SYSTEMPRÜFUNG (nicht von der Person): " + "; ".join(problems)}]
+                     {"role": "user", "content": "SYSTEMPRÜFUNG (nicht von der Person): " + "; ".join(problems)
+                      + _RETRY_SUFFIX}]
         reply = await _tool_loop(client, memo, messages, outcomes, 3)
         wrote = any(o.tool == "set_form_fields" and o.ok for o in outcomes)
-        problems = (guard.output_violations(reply, allowed) + guard.write_claim_violations(reply, wrote)) \
+        problems = (guard.output_violations(reply, allowed) + guard.write_claim_violations(reply, wrote, form_open)) \
             if reply else ["leere Antwort"]
+        if guard.is_meta_reply(reply):
+            problems = problems or ["Antwort auf die Systemprüfung statt auf die Person"]
     if problems:
         log.warning("output guard: %s", problems)
         messages += [{"role": "assistant", "content": reply},
                      {"role": "user", "content": "SYSTEMPRÜFUNG (nicht von der Person): Deine Antwort verletzt Regeln: "
                       + "; ".join(problems) + ". Formuliere die Antwort neu – nur Beträge, die wörtlich in den "
-                      "Tool-Ergebnissen stehen, keine Einreichung behaupten, Vorsorge-Wording beachten, höchstens 2 Rückfragen."}]
+                      "Tool-Ergebnissen stehen, keine Einreichung behaupten, Vorsorge-Wording beachten, höchstens 2 Rückfragen."
+                      + _RETRY_SUFFIX}]
         reply = (await _llm(messages, None)).content or ""
-        problems = (guard.output_violations(reply, allowed) + guard.write_claim_violations(reply, wrote)) \
+        problems = (guard.output_violations(reply, allowed) + guard.write_claim_violations(reply, wrote, form_open)) \
             if reply else ["leere Antwort"]
+        if guard.is_meta_reply(reply):
+            problems = problems or ["Antwort auf die Systemprüfung statt auf die Person"]
         if problems:
             log.warning("output guard fallback: %s", problems)
             reply = fallback_reply(outcomes)
@@ -437,6 +449,7 @@ def _sanitize(reply: str, lang: str = "de") -> str:
     out = re.sub(r"\b(laut|aus dem|aus den|gemäß)\s+Tool[-‑–\s]?Ergebnis(sen)?\b",
                  lambda m: "laut Prüfung" if m.group(1).lower() == "laut" else "aus der Prüfung", out, flags=re.IGNORECASE)
     out = re.sub(r"\bTool[-‑–\s]?Ergebnis(se|sen)?\b", "Prüfergebnis", out, flags=re.IGNORECASE)
+    out = re.sub(r"\b(laut|gemäß)\s+(dem\s+)?Tool\b", "laut Prüfung", out, flags=re.IGNORECASE)
     return out.strip()
 
 

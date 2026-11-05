@@ -269,13 +269,16 @@ _MISSING_WORDING = re.compile(r"\b(ihnen|dir|ihm|ihr) fehl(t|en)\b|\bfehlende im
 
 # Claims that something was entered/recorded in the form (present/past). Conditional future ("dann trage ich … ein")
 # is fine. Only allowed when set_form_fields actually succeeded in this turn.
-_WRITE_CLAIM = re.compile(r"\b(habe|hab|wurde|wurden|ist|sind)\b[^.!?\n]{0,60}\b(eingetragen|vermerkt|festgehalten|"
-                          r"übernommen|gespeichert|angekreuzt)\b|\bich (halte|trage|vermerke|notiere)\b[^.!?\n]{0,40}"
-                          r"\b(fest|ein|vor)?\b", re.IGNORECASE)
+# "übernommen"/"gespeichert" only in first person ("ich habe … übernommen"): "die Kosten werden übernommen" is no claim.
+_WRITE_CLAIM = re.compile(r"\b(ich habe|habe ich|ich hab|hab ich)\b[^.!?\n]{0,60}\b(eingetragen|vermerkt|festgehalten|"
+                          r"übernommen|gespeichert|angekreuzt)\b"
+                          r"|\b(wurde|wurden|ist|sind)\b[^.!?\n]{0,60}\b(eingetragen|vermerkt|angekreuzt)\b"
+                          r"|\bich (halte|trage|vermerke|notiere)\b[^.!?\n]{0,40}\b(fest|ein)\b", re.IGNORECASE)
 
 
-def write_claim_violations(reply: str, wrote: bool) -> list[str]:
-    if wrote or not _WRITE_CLAIM.search(reply):
+def write_claim_violations(reply: str, wrote: bool, form_open: bool = True) -> list[str]:
+    """Only relevant while a form is involved; without a form there is nothing the reply could falsely claim."""
+    if wrote or not form_open or not _WRITE_CLAIM.search(reply):
         return []
     return [("Behauptung, etwas in den Antrag eingetragen zu haben, ohne erfolgreiches set_form_fields – erst eintragen "
              "(Feld-ID ggf. über get_next_questions mit include_optional=true finden), dann bestätigen")]
@@ -303,3 +306,12 @@ def output_violations(reply: str, allowed_numbers: set[float]) -> list[str]:
         problems.append("Formulierung 'fehlt' bei Vorsorge – verwende 'laut Impfplan empfohlen' bzw. "
                         "'nicht im e-Impfpass dokumentiert'")
     return problems
+
+
+_META_REPLY = re.compile(r"^\s*(verstanden|okay|ok|alles klar|in ordnung)\b[^\n]{0,80}\b(ich werde|werde ich|künftig|"
+                         r"nur dann|ab jetzt)\b|systemprüfung|systempruefung", re.IGNORECASE)
+
+
+def is_meta_reply(reply: str) -> bool:
+    """The model answered our internal correction instead of the person ("Verstanden. Ich werde nur dann …")."""
+    return bool(_META_REPLY.search(reply or ""))

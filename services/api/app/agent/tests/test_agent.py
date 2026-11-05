@@ -288,6 +288,13 @@ def test_write_claim_guard():
     assert guard.write_claim_violations("Ich habe die Pflegeberatung im Antrag eingetragen.", wrote=False)
     assert not guard.write_claim_violations("Ich habe die Pflegeberatung im Antrag eingetragen.", wrote=True)
     assert not guard.write_claim_violations("Wenn Sie mir die Daten schicken, dann trage ich sie ein.", wrote=False)
+    # prevention answers are no form claims (seen live with Stefan: "Verstanden. Ich werde nur dann sagen …")
+    assert not guard.write_claim_violations("Die Kosten werden von der ÖGK übernommen.", wrote=False)
+    assert not guard.write_claim_violations("Ich habe die Pflegeberatung eingetragen.", wrote=False, form_open=False)
+    assert guard.is_meta_reply("Verstanden. Ich werde nur dann sagen, dass etwas eingetragen wurde, wenn …")
+    assert not guard.is_meta_reply("Verstanden – hier sind die Vorsorge-Angebote für Sie:")
+    from app.agent.orchestrator import _sanitize
+    assert _sanitize("Vorsorgeuntersuchung: laut Tool jetzt fällig.") == "Vorsorgeuntersuchung: laut Prüfung jetzt fällig."
 
 
 def test_persona_is_lotsi(client):
