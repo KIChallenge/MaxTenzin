@@ -1,0 +1,393 @@
+# Benefit catalog (owner: WS-B). Curated, deterministic, source-cited.
+#
+# Source specs (resolved by app/services/benefits/catalog.py against committed knowledge):
+#   {law: <law_key>, nr: "<nr>", abs: "<Abs.>"}  -> knowledge/extracted/legal/paragraphs.jsonl (label + in-force date)
+#   {page: <printed page>}                        -> ÖGK Serviceratgeber 2026 (knowledge/extracted/serviceratgeber)
+#   {form: <form_id>, page: <n>, label: "..."}    -> knowledge/forms/templates/<form_id>.fields.json
+#   {value: <key>}                                -> knowledge/extracted/values/veraendw.json (year 2026)
+# Every criterion carries exactly one source. Amounts are listed in value_refs (veraendW only) — the
+# eligibility engine adds rule-based amounts (e.g. Satzung § 46 Fahrtkosten) with their law source.
+# Schema: knowledge/schema/benefits.schema.json (generated from app/services/benefits/catalog.py).
+
+version: 1
+areas:
+  A: Vorsorge & Prävention
+  B: Gesund werden (Behandlung, Heilmittel)
+  C: Rehabilitation
+  D: Pflege & Betreuung
+  E: Kosten, Befreiungen & Zuschüsse
+  F: Familie & Kind
+
+benefits:
+  - id: pflegegeld
+    name_de: Pflegegeld
+    area: D
+    provider: PVA
+    summary_de: >-
+      Monatliche Geldleistung bei ständigem Pflegebedarf, der voraussichtlich mindestens sechs Monate andauert
+      (Stufe 1–7, abhängig vom Pflegebedarf in Stunden pro Monat).
+    plain_de: Geld jeden Monat, wenn jemand lange Zeit Hilfe im Alltag braucht.
+    form_ids: [pva_pflegegeld_pal080]
+    required_documents_de:
+      - Antrag auf Pflegegeld (PAL 080), unterschrieben
+      - Aktuelle Befunde in Kopie (z. B. Entlassungsbrief)
+      - Bei Antrag durch eine andere Person ggf. Nachweis der Vertretung
+    legal_basis:
+      - {law: BPGG, nr: "4"}
+      - {law: BPGG, nr: "25"}
+      - {law: BPGG, nr: "3"}
+    sources:
+      - {form: pva_pflegegeld_pal080, page: 8, label: "PAL 080, S. 8 (Adressen der Landesstellen)"}
+    value_refs: [pflegegeld_stufe_1, pflegegeld_stufe_2, pflegegeld_stufe_3, pflegegeld_stufe_4,
+                 pflegegeld_stufe_5, pflegegeld_stufe_6, pflegegeld_stufe_7]
+    criteria:
+      pg_6m:
+        label_de: Pflegebedarf voraussichtlich mindestens 6 Monate
+        source: {law: BPGG, nr: "4", abs: "1"}
+      pg_hours:
+        label_de: Pflegebedarf durchschnittlich mehr als 65 Stunden pro Monat (Stufe 1)
+        source: {law: BPGG, nr: "4", abs: "2"}
+      pg_residence:
+        label_de: Gewöhnlicher Aufenthalt in Österreich
+        source: {law: BPGG, nr: "3"}
+
+  - id: pflegeberatung
+    name_de: Kostenlose Pflegeberatung zu Hause
+    area: D
+    provider: PVA
+    summary_de: >-
+      Kostenloser Hausbesuch durch eine diplomierte Pflegefachkraft mit Information über regionale
+      Unterstützungsangebote. Kann im Pflegegeldantrag (PAL 080, Punkt 9) angekreuzt werden.
+    plain_de: Eine Pflege-Fachkraft kommt kostenlos nach Hause und berät Sie.
+    form_ids: [pva_pflegegeld_pal080]
+    required_documents_de:
+      - Zustimmung zur Weitergabe der Kontaktdaten (PAL 080, Punkt 9)
+    legal_basis:
+      - {law: BPGG, nr: "33a", abs: "1"}
+    sources:
+      - {form: pva_pflegegeld_pal080, page: 4, label: "PAL 080, Punkt 9 (Kostenlose Pflegeberatung)"}
+    value_refs: []
+    criteria:
+      pb_care:
+        label_de: Pflegegeld wird beantragt oder bezogen
+        source: {form: pva_pflegegeld_pal080, page: 4, label: "PAL 080, Punkt 9 (Kostenlose Pflegeberatung)"}
+
+  - id: fsw_mobile_pflege
+    name_de: Mobile Pflege und Betreuung (Fonds Soziales Wien)
+    area: D
+    provider: FSW
+    summary_de: >-
+      Geförderte Pflege- und Betreuungsleistungen zu Hause (z. B. Heimhilfe, Hauskrankenpflege) für Menschen
+      mit Hauptwohnsitz in Wien. Beratung und Antrag beim FSW-Kund:innenservice.
+    plain_de: In Wien hilft der FSW mit Pflege und Betreuung zu Hause.
+    form_ids: [fsw_foerderung]
+    required_documents_de:
+      - Antrag auf Förderung von Leistungen (FSW)
+      - Aktuelle Befunde in Kopie (z. B. Entlassungsbrief)
+      - Einkommensnachweise sowie Nachweis über Hauptmietzins und Betriebskosten (für den Kostenbeitrag)
+    legal_basis: []
+    sources:
+      - {form: fsw_foerderung, page: 1, label: "FSW Antrag auf Förderung von Leistungen, S. 1"}
+      - {form: fsw_foerderung, page: 3, label: "FSW Antrag auf Förderung von Leistungen, S. 3 (Kostenbeitrag)"}
+      - {form: fsw_foerderung, page: 12, label: "FSW Antrag auf Förderung von Leistungen, S. 12 (Nötige Unterlagen)"}
+    value_refs: []
+    criteria:
+      fsw_vienna:
+        label_de: Hauptwohnsitz in Wien
+        source: {form: fsw_foerderung, page: 1, label: "FSW Antrag auf Förderung von Leistungen, S. 1"}
+      fsw_need:
+        label_de: Unterstützungsbedarf bei Pflege oder Betreuung zu Hause
+        source: {form: fsw_foerderung, page: 1, label: "FSW Antrag auf Förderung von Leistungen, S. 1"}
+
+  - id: hauskrankenpflege
+    name_de: Medizinische Hauskrankenpflege
+    area: B
+    provider: ÖGK
+    summary_de: >-
+      Medizinische Leistungen und qualifizierte Pflege zu Hause (z. B. Wundversorgung, Injektionen) auf
+      ärztliche Anordnung anstelle eines Spitalsaufenthalts; grundsätzlich bis zu vier Wochen.
+    plain_de: Eine Krankenpflegerin kommt nach Hause, wenn die Ärztin oder der Arzt das anordnet.
+    form_ids: []
+    required_documents_de:
+      - Ärztliche Anordnung der medizinischen Hauskrankenpflege
+    legal_basis:
+      - {law: ASVG, nr: "151"}
+    sources:
+      - {page: 48}
+    value_refs: []
+    criteria:
+      hkp_order:
+        label_de: Ärztliche Anordnung liegt vor
+        source: {law: ASVG, nr: "151", abs: "3"}
+      hkp_insured:
+        label_de: Krankenversichert (z. B. ÖGK)
+        source: {page: 48}
+
+  - id: reha_onko
+    name_de: Onkologische Rehabilitation (stationär)
+    area: C
+    provider: PVA
+    summary_de: >-
+      Medizinische Maßnahme der Rehabilitation in einem Rehabilitationszentrum im Anschluss an die
+      Krankenbehandlung. Antrag mit ärztlicher Begründung; der Träger entscheidet nach pflichtgemäßem Ermessen.
+    plain_de: Ein Aufenthalt in einer Reha-Klinik, damit Sie nach der Behandlung wieder zu Kräften kommen.
+    form_ids: [sv_kur_reha]
+    required_documents_de:
+      - Antrag auf Rehabilitations-, Kur- bzw. Erholungsaufenthalt
+      - Ärztliche Stellungnahme (füllt die Ärztin bzw. der Arzt aus)
+      - Aktuelle Befunde in Kopie (z. B. Entlassungsbrief)
+    legal_basis:
+      - {law: ASVG, nr: "302"}
+      - {law: ASVG, nr: "154a"}
+      - {law: RRK_2021, nr: "12"}
+    sources:
+      - {page: 48}
+      - {page: 49}
+    value_refs: [reha_zuzahlung_frei_bis, reha_stufe1_bis, reha_stufe1_pro_tag, reha_stufe2_bis,
+                 reha_stufe2_pro_tag, reha_stufe3_pro_tag]
+    criteria:
+      reha_application:
+        label_de: Antrag mit ärztlicher Begründung
+        source: {page: 48}
+      reha_insured:
+        label_de: Versichert in der Kranken- bzw. Pensionsversicherung
+        source: {law: ASVG, nr: "302"}
+
+  - id: krankentransport
+    name_de: Krankentransport / Krankenbeförderung
+    area: B
+    provider: ÖGK
+    summary_de: >-
+      Übernahme der Transportkosten zu Behandlungen, wenn eine ärztliche Transportanweisung über die
+      Gehunfähigkeit vorliegt. Kostenanteil pro Fahrtstrecke in Höhe der (doppelten) Rezeptgebühr; entfällt u. a.
+      bei Chemo-, Strahlen- oder Immuntherapie.
+    plain_de: Die ÖGK zahlt den Transport, wenn die Ärztin oder der Arzt bestätigt, dass Sie nicht gehen können.
+    form_ids: []
+    required_documents_de:
+      - Ärztliche Transportanweisung (medizinische Begründung der Gehunfähigkeit)
+    legal_basis:
+      - {law: Satzung_OEGK_2025, nr: "47"}
+    sources:
+      - {page: 63}
+      - {page: 64}
+    value_refs: [rezeptgebuehr]
+    criteria:
+      kt_walking:
+        label_de: Ärztliche Transportanweisung über die Gehunfähigkeit
+        source: {law: Satzung_OEGK_2025, nr: "47", abs: "1"}
+      kt_copay:
+        label_de: Kostenanteil pro Fahrtstrecke entfällt (z. B. Strahlen-/Chemotherapie, Rezeptgebührenbefreiung)
+        source: {law: Satzung_OEGK_2025, nr: "47", abs: "3b"}
+
+  - id: fahrtkostenzuschuss
+    name_de: Fahrtkostenzuschuss
+    area: E
+    provider: ÖGK
+    summary_de: >-
+      Pauschaler Zuschuss zu Fahrten zur Behandlung außerhalb des Ortsgebiets bei mehr als 20 km Entfernung.
+      Grundsätzlich nur bei Rezeptgebührenbefreiung; ohne Befreiung u. a. bei Dialyse, Chemo- oder
+      Strahlentherapie.
+    plain_de: Geld für weite Fahrten zur Behandlung (mehr als 20 km).
+    form_ids: [oegk_fahrtkosten_wien]
+    required_documents_de:
+      - Antrag auf Zuschuss zu Fahrtkosten (pro Fahrt ein Stempel der Behandlungsstelle)
+      - Belege über die tatsächlichen Kosten in Kopie
+    legal_basis:
+      - {law: Satzung_OEGK_2025, nr: "46"}
+    sources:
+      - {form: oegk_fahrtkosten_wien, page: 2, label: "ÖGK Antrag auf Zuschuss zu Fahrtkosten, S. 2"}
+    value_refs: []
+    criteria:
+      fk_entitled_group:
+        label_de: Rezeptgebührenbefreiung oder Ausnahme (Dialyse, Chemo-/Strahlentherapie, Reha)
+        source: {law: Satzung_OEGK_2025, nr: "46", abs: "6"}
+      fk_distance:
+        label_de: Behandlungsstelle außerhalb des Ortsgebiets und mehr als 20 km entfernt
+        source: {law: Satzung_OEGK_2025, nr: "46", abs: "2"}
+
+  - id: rezeptgebuehrenbefreiung
+    name_de: Befreiung von der Rezeptgebühr
+    area: E
+    provider: ÖGK
+    summary_de: >-
+      Befreiung von der Rezeptgebühr ohne Antrag (z. B. bei Ausgleichszulage) oder auf Antrag, wenn das monatliche
+      Nettoeinkommen den Richtsatz nicht übersteigt (bei nachgewiesenen krankheitsbedingten Mehrausgaben bis 115 %).
+    plain_de: Sie zahlen keine Rezeptgebühr, wenn Ihr Einkommen niedrig ist.
+    form_ids: []
+    required_documents_de:
+      - Antrag auf Rezeptgebührenbefreiung (ÖGK)
+      - Einkommensnachweise aller im Haushalt lebenden Personen (z. B. Pensionsbescheid)
+    legal_basis:
+      - {law: RRZ_2008, nr: "3"}
+      - {law: RRZ_2008, nr: "4"}
+      - {law: ASVG, nr: "136"}
+    sources:
+      - {page: 43}
+      - {page: 44}
+    value_refs: [rezeptgebuehr, rgb_befreiungsgrenze_alleinstehend, rgb_befreiungsgrenze_paar, rgb_erhoehung_pro_kind]
+    criteria:
+      rgb_auto:
+        label_de: Bezug einer Ausgleichszulage (Befreiung ohne Antrag)
+        source: {law: RRZ_2008, nr: "3", abs: "1"}
+      rgb_income:
+        label_de: Monatliches Nettoeinkommen nicht über dem Richtsatz
+        source: {law: RRZ_2008, nr: "4", abs: "1"}
+
+  - id: rezeptgebuehrenobergrenze
+    name_de: Rezeptgebühren-Obergrenze (REGO)
+    area: E
+    provider: ÖGK
+    summary_de: >-
+      Rezeptgebühren sind 2026 nur bis 2 % des Jahresnettoeinkommens (ohne Sonderzahlungen) zu zahlen; danach
+      besteht für den Rest des Kalenderjahres automatisch eine Befreiung.
+    plain_de: Wer im Jahr schon viel für Medikamente gezahlt hat, zahlt danach keine Rezeptgebühr mehr.
+    form_ids: []
+    required_documents_de: []
+    legal_basis:
+      - {law: RRZ_2008, nr: "13"}
+      - {law: RRZ_2008, nr: "16"}
+    sources:
+      - {page: 44}
+    value_refs: [rezeptgebuehr, az_richtsatz_alleinstehend]
+    criteria:
+      rego_income:
+        label_de: Jahresnettoeinkommen bekannt (Berechnungsgrundlage)
+        source: {law: RRZ_2008, nr: "13", abs: "1a"}
+
+  - id: unterstuetzungsfonds
+    name_de: Zuschuss aus dem Unterstützungsfonds
+    area: E
+    provider: ÖGK
+    summary_de: >-
+      Freiwilliger Zuschuss in finanziellen Notlagen bei Kosten im Zusammenhang mit einer Krankheit (mindestens 40 €).
+      Es besteht kein Rechtsanspruch; berücksichtigt werden Familien-, Einkommens- und Vermögensverhältnisse.
+    plain_de: Hilfe mit Geld, wenn Krankheit Sie viel kostet und Sie wenig Geld haben.
+    form_ids: []
+    required_documents_de:
+      - Schriftlicher Antrag
+      - Einkommensnachweise aller im Haushalt lebenden Personen
+      - Rechnungen bzw. Kostenvoranschläge
+    legal_basis:
+      - {law: RUF_2020, nr: "1"}
+      - {law: RUF_2020, nr: "2"}
+    sources:
+      - {page: 85}
+    value_refs: []
+    criteria:
+      uf_costs:
+        label_de: Krankheitsbedingte Kosten von mindestens 40 €
+        source: {law: RUF_2020, nr: "2", abs: "1"}
+      uf_situation:
+        label_de: Besonders berücksichtigungswürdige wirtschaftliche und soziale Verhältnisse
+        source: {law: RUF_2020, nr: "2", abs: "1"}
+
+  - id: vorsorgeuntersuchung
+    name_de: Vorsorgeuntersuchung
+    area: A
+    provider: ÖGK
+    summary_de: >-
+      Kostenlose jährliche Vorsorge(Gesunden)untersuchung ab dem vollendeten 18. Lebensjahr, meist bei der
+      Hausärztin bzw. beim Hausarzt.
+    plain_de: Einmal im Jahr kostenlos zur Gesundheits-Kontrolle gehen.
+    form_ids: []
+    required_documents_de:
+      - e-card
+    legal_basis:
+      - {law: ASVG, nr: "132b"}
+      - {law: RVU, nr: "3"}
+    sources:
+      - {page: 23}
+      - {page: 24}
+    value_refs: []
+    criteria:
+      vu_age:
+        label_de: Vollendetes 18. Lebensjahr
+        source: {law: RVU, nr: "3"}
+      vu_insured:
+        label_de: Versichert oder mitversichert
+        source: {law: ASVG, nr: "132b", abs: "1"}
+
+  - id: familienbeihilfe
+    name_de: Familienbeihilfe
+    area: F
+    provider: Finanzamt Österreich
+    summary_de: >-
+      Monatliche Familienleistung für minderjährige Kinder (und unter Voraussetzungen für volljährige Kinder in
+      Ausbildung). Antrag beim Finanzamt Österreich; sie ist Voraussetzung für das Kinderbetreuungsgeld.
+    plain_de: Geld jeden Monat für Ihr Kind.
+    form_ids: []
+    required_documents_de:
+      - Antrag auf Familienbeihilfe (Finanzamt Österreich)
+      - Geburtsurkunde des Kindes
+    legal_basis:
+      - {law: FLAG, nr: "2"}
+      - {law: FLAG, nr: "10"}
+      - {law: FLAG, nr: "13"}
+    sources:
+      - {page: 69}
+    value_refs: []
+    criteria:
+      fb_minor:
+        label_de: Minderjähriges Kind
+        source: {law: FLAG, nr: "2", abs: "1"}
+      fb_residence:
+        label_de: Wohnsitz bzw. gewöhnlicher Aufenthalt in Österreich
+        source: {law: FLAG, nr: "2", abs: "1"}
+
+  - id: kinderbetreuungsgeld
+    name_de: Kinderbetreuungsgeld
+    area: F
+    provider: ÖGK
+    summary_de: >-
+      Leistung für Eltern in der Betreuungszeit (Konto-Variante bis zu 851 Tage für einen Elternteil bzw. 1.063 Tage
+      für beide, oder einkommensabhängig). Voraussetzungen u. a. Bezug der Familienbeihilfe, gemeinsamer Haushalt,
+      Eltern-Kind-Pass-Untersuchungen; rückwirkend höchstens 182 Tage.
+    plain_de: Geld für Eltern, die ihr kleines Kind zu Hause betreuen.
+    form_ids: []
+    required_documents_de:
+      - Antrag auf Kinderbetreuungsgeld (beim zuständigen Krankenversicherungsträger)
+      - Nachweise der Eltern-Kind-Pass-Untersuchungen
+    legal_basis:
+      - {law: KBGG, nr: "2"}
+      - {law: KBGG, nr: "3"}
+      - {law: KBGG, nr: "4"}
+      - {law: KBGG, nr: "25"}
+    sources:
+      - {page: 69}
+      - {page: 70}
+      - {page: 72}
+    value_refs: [kbg_taeglich]
+    criteria:
+      kbg_age:
+        label_de: Kind innerhalb der möglichen Bezugsdauer (höchstens 1.063 Tage ab Geburt)
+        source: {page: 72}
+      kbg_fb:
+        label_de: Familienbeihilfe wird für das Kind bezogen
+        source: {law: KBGG, nr: "2", abs: "1"}
+      kbg_household:
+        label_de: Gemeinsamer Haushalt mit dem Kind
+        source: {law: KBGG, nr: "2", abs: "1"}
+
+  - id: eltern_kind_pass
+    name_de: Eltern-Kind-Pass-Untersuchungen
+    area: A
+    provider: ÖGK
+    summary_de: >-
+      Kostenlose ärztliche Untersuchungen des Kindes bis zum 62. Lebensmonat. Die Untersuchungen bis zum 14.
+      Lebensmonat sind Voraussetzung für das Kinderbetreuungsgeld in voller Höhe.
+    plain_de: Kostenlose Untersuchungen für Ihr Kind bis etwa 5 Jahre.
+    form_ids: []
+    required_documents_de:
+      - Eltern-Kind-Pass bzw. e-card des Kindes
+    legal_basis:
+      - {law: MuKiPassV_2002, nr: "7"}
+      - {law: MuKiPassV_2002, nr: "9"}
+      - {law: KBGG, nr: "7"}
+    sources:
+      - {page: 74}
+      - {page: 75}
+    value_refs: []
+    criteria:
+      ekp_age:
+        label_de: Kind bis zum 62. Lebensmonat
+        source: {law: MuKiPassV_2002, nr: "9", abs: "1"}
