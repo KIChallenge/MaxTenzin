@@ -12,6 +12,7 @@ export type Recommendation = S["Recommendation"];
 export type Benefit = S["Benefit"];
 export type EligibilityResult = S["EligibilityResult"];
 export type EligibilityStatus = S["EligibilityStatus"];
+export type CriterionResult = S["CriterionResult"];
 export type FormDefinition = S["FormDefinition"];
 export type FormField = S["FormField"];
 export type FormSession = S["FormSession"];

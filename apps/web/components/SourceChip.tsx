@@ -28,18 +28,18 @@ export function SourceChip({ source }: { source: SourceRef }) {
     source.quote ? `„${source.quote}"` : null,
   ].filter(Boolean);
   return (
-    <span className="group relative inline-flex align-middle">
+    <span className="group/chip relative inline-flex align-middle">
       <span
         tabIndex={0}
         className="inline-flex items-center gap-1 rounded-full border border-accent/30 bg-accent-soft px-2 py-0.5 text-xs font-bold text-accent-strong"
         aria-label={`Quelle: ${source.label}. ${detail.join(". ")}`}
       >
-        <span aria-hidden>{KIND_ICON[source.kind] ?? "•"}</span>
+        {!(source.kind === "law" && source.label.trim().startsWith("§")) && <span aria-hidden>{KIND_ICON[source.kind] ?? "•"}</span>}
         {source.label}
       </span>
       <span
         role="tooltip"
-        className="pointer-events-none invisible absolute bottom-full left-0 z-30 mb-2 w-72 rounded-lg bg-ink p-3 text-sm font-normal text-white opacity-0 shadow-lg transition-opacity group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100"
+        className="pointer-events-none invisible absolute bottom-full left-0 z-30 mb-2 w-72 rounded-lg bg-ink p-3 text-sm font-normal text-white opacity-0 shadow-lg transition-opacity group-focus-within/chip:visible group-focus-within/chip:opacity-100 group-hover/chip:visible group-hover/chip:opacity-100"
       >
         <strong className="block">{source.label}</strong>
         {detail.map((d) => (
