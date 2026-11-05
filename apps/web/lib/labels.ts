@@ -6,6 +6,7 @@ export const SCOPE_LABELS: Record<Scope, string> = {
   manage_appointments: "Termine verwalten",
   view_health_prevention: "Vorsorge & Impfungen",
   manage_case: "Fall verwalten",
+  manage_situation: "Lebenslage",
 };
 export const ALL_SCOPES = Object.keys(SCOPE_LABELS) as Scope[];
 
