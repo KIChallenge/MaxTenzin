@@ -19,7 +19,7 @@ Single source of truth for all sessions. Update your row at start and at Definit
 | WS-B | benefits catalog + eligibility, directory, legal FTS5, medications | bg agent | ws/B-benefits | merged | H5 | offices outside Wien not curated |
 | WS-D | documents extraction (+golden), prevention (Impfpass) | bg agent | ws/D-documents | merged | H4 | live LLM path untested (key 401) |
 | WS-F | forms: schemas, sessions, prefill, real PDF fill | bg agent | ws/F-forms | merged | H6 | Einrichtungswunsch/Senioren-WG/Reha-n-Unfall not mapped |
-| WS-W | web cockpit | human session | ws/W-web | review → merge requested | H10 | — (UI remarks from user follow as a 2nd small merge) |
+| WS-W | web cockpit | human session | ws/W-web | review → 2nd merge requested (UI pass, settings, icons) | H11 | — |
 | WS-A | agent orchestrator + guardrails + evals | bg agent | ws/A-agent | merged | H7 | evals 28/28 live (REPORT.md) |
 | WS-C | cases + notifications | integrator | main | merged | H3 | — |
 

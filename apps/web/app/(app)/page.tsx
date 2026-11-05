@@ -2,7 +2,7 @@ import { Building2, Compass, Eye, FilePen, FileText, ListChecks, Pill, Scale, Sy
 import Link from "next/link";
 import { OpenChatButton } from "@/components/OpenChatButton";
 import { api } from "@/lib/api";
-import { fmtDate, fullName } from "@/lib/labels";
+import { cockpitRoute, fmtDate, fullName } from "@/lib/labels";
 import { getMe } from "@/lib/me";
 import type { Notification } from "@/lib/types";
 
@@ -63,7 +63,7 @@ export default async function Cockpit() {
                 <h3 className="font-semibold">{n.title_de}</h3>
                 <p className="text-muted">{n.body_de}</p>
                 {n.link && (
-                  <Link href={n.link} className="link mt-1 inline-block">
+                  <Link href={cockpitRoute(n.link)} className="link mt-1 inline-block">
                     Öffnen
                   </Link>
                 )}
