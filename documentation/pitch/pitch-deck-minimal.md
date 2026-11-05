@@ -1,9 +1,9 @@
-# Pitch-Deck minimal – 5 Folien, der Rest ist Demo
+# Pitch-Deck minimal – 4 Folien, der Rest ist Demo
 
-Deutsch, Fachjury, 7 Minuten. Folie 1 und 2 vor der Demo, Folie 3 bis 5 danach. Dazwischen (0:30–6:50) nur das Cockpit – Drehbuch `documentation/demo-script.md`.
+Deutsch, Fachjury, 7 Minuten. Folie 1 und 2 vor der Demo, Folie 3 und 4 danach. Dazwischen (0:30–6:50) nur das Cockpit – Drehbuch `documentation/demo-script.md`.
 Die drei Kernbotschaften aus `kernbotschaft.md` stehen je einmal auf einer Folie und werden sonst nur gesprochen.
 Zahlen vor dem Pitch mit `make test` und `evals/REPORT.md` prüfen. Das ausführliche 11-Folien-Deck (`pitch-deck.md`) bleibt als Reserve für Q&A.
-Gebaut als Slide-Deck: https://claude.ai/artifact/RkjTdgdGPBaSBzZGfkXUTn – Folien 1–5 sind der Pitch, ab Folie 6 („Reserve für Q&A“) folgt das alte 12-Folien-Deck.
+Gebaut als Slide-Deck: https://claude.ai/artifact/RkjTdgdGPBaSBzZGfkXUTn – Folien 1–4 sind der Pitch, ab Folie 5 („Reserve für Q&A“) folgt das alte 12-Folien-Deck.
 
 ---
 
@@ -34,32 +34,20 @@ Die Botschaft wird im Cockpit gesagt, nicht gezeigt. Je ein Satz pro Moment:
 | Röntgenbefund „Was bedeutet das?“ | „Die Grenze ist kein Prompt-Wunsch, sondern ein Prüfschritt vor dem Modell.“ |
 | Transparenz-Protokoll | „Jeder Schritt der KI ist ein normaler Dienst-Aufruf: sichtbar, mit Rechten, prüfbar. Auch der verweigerte von vorhin.“ |
 
-## Folie 3 – Nachher (6:50–7:20)
-**Fünf Schichten. Lotsi ist nur die oberste.**
-
-| Schicht | Was dort passiert |
-|---|---|
-| Lotsi | versteht, wählt Werkzeuge, formuliert. **Entscheidet nichts.** |
-| Werkzeuge | 30 Werkzeuge, jedes genau ein Dienst-Aufruf, mit den Rechten der Person |
-| API | 70 Endpunkte, jeder mit Login, Berechtigungsprüfung und Protokoll |
-| Dienste | 14 deterministische Dienste: Anspruch, Betrag, Frist, Zuständigkeit. Jede Aussage mit Quelle |
-| Daten | 1.976 § aus 19 Gesetzen · 686 Werte 2026 · 6.985 EKO-Packungen · offizielle Formulare · Serviceratgeber ÖGK |
-
+## Folie 3 – Die Infrastruktur (6:50–7:20)
+**Cockpit und Lotsi, eine Infrastruktur.**
+Flussdiagramm im Mermaid-Stil (blassgrüne Kästen, Pfeile mit Beschriftung, Dienste im Rahmen):
+Person oder Vertretung → **Cockpit** (direkt, mit den Rechten der Person) und **Lotsi · KI-Agent** (Chat, 30 Werkzeuge, derselbe Token) → **ein Eingang für alle Aufrufe** (70 Endpunkte: Login → Berechtigung der Person → Protokoll) → **14 Dienste**, deterministisch, in drei Gruppen (Person & Rechte · Anliegen & Anträge · Regeln & Werte) → **Wissen** (versioniert, quellenbelegt · 1.976 § · 686 Werte 2026 · 6.985 EKO-Packungen · Formulare).
 Schlusszeile: **Lotsi entscheidet nichts. Er formuliert, was die Dienste entschieden haben. Und die Formulierung wird geprüft.**
 
-> Sprechtext (30 s): „Was Sie gerade gesehen haben, läuft auf fünf Schichten. Unten die Daten der Challenge, mit Herkunft. Darauf 14 Dienste, die entscheiden, jede Aussage mit Quelle. Darüber die API mit Login, Rechten und Protokoll, daraus 30 Werkzeuge, und erst ganz oben Lotsi. Das Modell ist austauschbar, die Schichten darunter nicht. Halluzinationen verhindert kein besserer Prompt, sondern dieser Aufbau. Der schwierige Teil war nicht die KI, es waren die Daten und Prozesse.“
+> Sprechtext (30 s): „Was Sie gerade gesehen haben, läuft auf einer Infrastruktur. Oben zwei Zugänge: das Cockpit der Person und Lotsi. Beide landen am selben Eingang, mit Login, Rechten und Protokoll. Lotsi hat keinen eigenen Weg daran vorbei. Dahinter 14 Dienste, die entscheiden, jede Aussage mit Quelle, und ganz unten die Daten der Challenge. Das Modell ist austauschbar, die Schichten darunter nicht. Halluzinationen verhindert kein besserer Prompt, sondern dieser Aufbau. Der schwierige Teil war nicht die KI, es waren die Daten und Prozesse.“
 
-Die Zahl 157,30 € gegen 206,20 € ist nur noch Nice-to-have: optional in der Demo um 2:30 und als Q&A-Antwort auf „Halluziniert das nicht?“.
+Die Zahl 157,30 € gegen 206,20 € ist nur noch Nice-to-have: optional in der Demo um 2:30, in den Sprechnotizen und als Q&A-Antwort auf „Halluziniert das nicht?“.
 
-## Folie 4 – Die Kommunikationswege (7:20–7:35)
-**Zwei Wege hinein, ein Eingang zu den Diensten.**
-Eigene Zeichnung (kein Mermaid): Person → Cockpit → zwei Wege (direkt oder über Lotsi) → ein Eingang „Login → Berechtigung der Person → Protokoll“ → Dienste in drei Gruppen (Person & Rechte · Anliegen & Anträge · Regeln & Werte) → Wissen (versioniert, quellenbelegt).
+## Reserve – Die Kommunikationswege (nicht präsentiert)
+**Zwei Wege hinein, ein Eingang zu den Diensten.** Eigene Zeichnung: Person → Cockpit → zwei Wege (direkt oder über Lotsi) → ein Eingang „Login → Berechtigung der Person → Protokoll“ → Dienste in drei Gruppen → Wissen. Liegt im Deck hinter der Trennfolie „Reserve für Q&A“, für technische Rückfragen. Das vollständige Mermaid-Diagramm mit allen 14 Diensten steht in der `README.md`.
 
-> Sprechtext (15 s): „Vom Cockpit gibt es zwei Wege: direkt oder über Lotsi. Beide landen am selben Eingang: Login, Berechtigung der Person, Protokoll. Lotsi hat keinen eigenen Weg daran vorbei. Dienst zu Dienst geht es nur über denselben Eingang mit dem Token der Person. Ganz unten das Wissen, versioniert und quellenbelegt.“
-
-Das vollständige Mermaid-Diagramm mit allen 14 Diensten bleibt in der `README.md` (Reserve für Q&A).
-
-## Folie 5 – Schluss (7:35–7:50, bei Zeitdruck nur sprechen)
+## Folie 4 – Schluss (7:20–7:40, bei Zeitdruck nur sprechen)
 **Bausteine tauschen, nicht neu bauen**
 
 - ID Austria statt Demo-Login · ELGA statt Upload · meinSV statt Entwurf. Abgeschickt wird immer von der Person.
@@ -76,12 +64,12 @@ Das vollständige Mermaid-Diagramm mit allen 14 Diensten bleibt in der `README.m
 | 1 Titel, 3 These | Folie 1 und 2 |
 | Infrastruktur (altes Artifact-Deck, Folie 2) | Folie 3 |
 | 2 Problem (Brief) | ein Satz im Sprechtext von Folie 1, dann Demo |
-| 4 Keine Sonderrechte, 7 Grenzen | Demo-Sätze (Protokoll, Vollmacht, Röntgen); Kommunikationswege Folie 4 |
+| 4 Keine Sonderrechte, 7 Grenzen | Demo-Sätze (Protokoll, Vollmacht, Röntgen); Kommunikationswege: Reserve |
 | 5 Live-Demo | die Demo selbst |
 | 6 Schlüsselsatz | Nice-to-have: Demo 2:30 (optional) und Q&A |
 | 8 Vier Szenarien | Demo (Akt 1 + Akt 4), Rest Q&A |
-| 9 Daten | Folie 3 (Daten-Zeile) und Folie 5 (Kacheln) |
-| 10 Betrieb, 11 Warum | Folie 5 |
+| 9 Daten | Folie 3 (Daten-Zeile) und Folie 4 (Kacheln) |
+| 10 Betrieb, 11 Warum | Folie 4 |
 
 ## Nicht sagen
 „Lotsi halluziniert nicht.“ Ein Jurymitglied testet das live. Stattdessen die fette Zeile auf Folie 3.
