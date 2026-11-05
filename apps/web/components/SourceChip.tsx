@@ -70,7 +70,7 @@ export function SourceChip({ source, documents }: { source: SourceRef; documents
   const content = (
     <>
       {Icon && !(source.kind === "law" && source.label.trim().startsWith("§")) && <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />}
-      {source.label}
+      <span className="max-w-[16rem] truncate">{source.label}</span>
     </>
   );
   const label = `${href ? "Quelle öffnen" : "Quelle"}: ${source.label}. ${detail.join(". ")}`;

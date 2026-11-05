@@ -1,6 +1,8 @@
 import { Building2, Compass, Eye, FilePen, FileText, ListChecks, Pill, Scale, Syringe } from "lucide-react";
 import Link from "next/link";
+import { CareTeamCard } from "@/components/CareTeamCard";
 import { Lebenslage } from "@/components/Lebenslage";
+import type { CareTeam } from "@/lib/care";
 import { OpenChatButton } from "@/components/OpenChatButton";
 import type { SituationOverview } from "@/lib/situation";
 import { api } from "@/lib/api";
@@ -21,7 +23,12 @@ const TILES = [
 ];
 
 export default async function Cockpit() {
-  const [me, inbox, situation] = await Promise.all([getMe(), api<Notification[]>("/api/notifications"), api<SituationOverview>("/api/situation")]);
+  const [me, inbox, situation, team] = await Promise.all([
+    getMe(),
+    api<Notification[]>("/api/notifications"),
+    api<SituationOverview>("/api/situation"),
+    api<CareTeam>("/api/identity/care-team"),
+  ]);
   const subject = me.ok ? me.data.subject : null;
   const actor = me.ok ? me.data.actor : null;
   const forOther = subject && actor && subject.id !== actor.id;
@@ -59,6 +66,7 @@ export default async function Cockpit() {
         </ul>
       </section>
       <aside aria-labelledby="inbox-h">
+        <CareTeamCard team={team} firstName={subject?.first_name ?? ""} forOther={!!forOther} />
         <h2 id="inbox-h" className="text-lg font-semibold">
           Posteingang
         </h2>

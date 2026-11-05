@@ -466,6 +466,11 @@ function ActionButton({ action }: { action: ChatAction }) {
   async function run() {
     if (action.kind === "open_form" && action.url.startsWith("/forms/")) return router.push(action.url);
     if (action.kind === "open_case") return router.push("/fall");
+    if (action.kind === "open_appointments") return router.push("/termine");
+    if (action.kind === "download_ics" && action.url.startsWith("/api/appointments/")) {
+      window.location.href = `/bff${action.url}`;
+      return;
+    }
     if (action.kind === "download_pdf" && action.url.startsWith("/api/forms/sessions/")) {
       setBusy(true);
       const res = await fetch(`/bff${action.url}`, { method: action.method || "POST" }).catch(() => null);
