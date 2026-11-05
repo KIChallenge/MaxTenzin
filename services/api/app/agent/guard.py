@@ -114,6 +114,19 @@ def is_copy_request(message: str) -> bool:
     return bool(_COPY_INTENT.search(m) and _DOC_DIAG.search(m) and not _INTERPRET.search(m))
 
 
+_PREVENTION_Q = re.compile(r"(vorsorge|früherkennung|screening|impf|untersuchung|koloskopie|darmspiegelung|mammograf)",
+                           re.IGNORECASE)
+_PERSONAL_RISK = re.compile(r"(mein(em|e)? risiko|wie (hoch|wahrscheinlich)|bekomme ich|werde ich .{0,20}(krank|krebs)|"
+                            r"habe ich .{0,20}(krebs|krank)|erblich belastet bin)", re.IGNORECASE)
+
+
+def is_prevention_programme_question(message: str) -> bool:
+    """'Welche Vorsorge ist sinnvoll (Familiengeschichte …)?' asks for official programmes (use case §3.4), not a
+    personal risk assessment – answered via the prevention service, never with risk numbers."""
+    m = message or ""
+    return bool(_PREVENTION_Q.search(m) and not _PERSONAL_RISK.search(m) and not _INTERPRET.search(m))
+
+
 def check_boundary(message: str) -> BoundaryHit | None:
     t = _norm(message)
     for cat, rx in _COMPILED:
@@ -196,7 +209,9 @@ LLM_BOUNDARY_SYSTEM = (
     "prognosis (Prognose/Risiko), medication (Medikament/Dosis/Therapie-Rat), emergency (akuter Notfall), none. "
     "Administrative Fragen (Kosten, Rezeptgebühr, Anträge, Zuständigkeit, was im Dokument ausdrücklich empfohlen wird) "
     "sind none. Auch die Bitte, im Dokument stehende Diagnosen WÖRTLICH in ein Antragsformular zu übernehmen, ist none "
-    "(Abschreiben, keine Deutung). Antworte als JSON: {\"category\": \"...\"}"
+    "(Abschreiben, keine Deutung). Fragen, welche offizielle Vorsorge, Früherkennung oder Impfung (auch wegen "
+    "Erkrankungen in der Familie) in Frage kommt, sind none; nur die Bitte um eine persönliche Risiko-Einschätzung ist "
+    "prognosis. Antworte als JSON: {\"category\": \"...\"}"
 )
 
 

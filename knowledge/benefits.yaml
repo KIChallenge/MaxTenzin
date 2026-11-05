@@ -10,13 +10,13 @@
 # Schema: knowledge/schema/benefits.schema.json (generated from app/services/benefits/catalog.py).
 
 version: 1
-areas:
+areas:  # = 'Mögliche Bereiche' A–F of Use Case 1
   A: Vorsorge & Prävention
-  B: Gesund werden (Behandlung, Heilmittel)
-  C: Rehabilitation
-  D: Pflege & Betreuung
-  E: Kosten, Befreiungen & Zuschüsse
-  F: Familie & Kind
+  B: Gesundheit & Gesundheitsförderung
+  C: Behandlung, Rehabilitation & Nachsorge
+  D: Pflege & Unterstützung
+  E: Soziale & finanzielle Unterstützung
+  F: Organisation & Administration
 
 benefits:
   - id: pflegegeld
@@ -101,7 +101,7 @@ benefits:
 
   - id: hauskrankenpflege
     name_de: Medizinische Hauskrankenpflege
-    area: B
+    area: C
     provider: ÖGK
     summary_de: >-
       Medizinische Leistungen und qualifizierte Pflege zu Hause (z. B. Wundversorgung, Injektionen) auf
@@ -155,7 +155,7 @@ benefits:
 
   - id: krankentransport
     name_de: Krankentransport / Krankenbeförderung
-    area: B
+    area: C
     provider: ÖGK
     summary_de: >-
       Übernahme der Transportkosten zu Behandlungen, wenn eine ärztliche Transportanweisung über die
@@ -309,7 +309,7 @@ benefits:
 
   - id: familienbeihilfe
     name_de: Familienbeihilfe
-    area: F
+    area: E
     provider: Finanzamt Österreich
     summary_de: >-
       Monatliche Familienleistung für minderjährige Kinder (und unter Voraussetzungen für volljährige Kinder in
@@ -336,7 +336,7 @@ benefits:
 
   - id: kinderbetreuungsgeld
     name_de: Kinderbetreuungsgeld
-    area: F
+    area: E
     provider: ÖGK
     summary_de: >-
       Leistung für Eltern in der Betreuungszeit (Konto-Variante bis zu 851 Tage für einen Elternteil bzw. 1.063 Tage
@@ -395,7 +395,7 @@ benefits:
   # ---------------------------------------------------------------------------------------------- WS-K2 additions
   - id: heilbehelfe_hilfsmittel
     name_de: Heilbehelfe und Hilfsmittel (z. B. Rollator, Gehhilfe, Pflegebett)
-    area: B
+    area: C
     provider: ÖGK
     summary_de: >-
       Die ÖGK übernimmt bzw. bezuschusst notwendige Heilbehelfe (z. B. Einlagen, Kompressionsstrümpfe) und Hilfsmittel
@@ -583,7 +583,7 @@ benefits:
   - id: angebot_gesund_leben_regional
     kind: offer
     name_de: Gesundheitskurse, Ernährungsberatung und Workshops der ÖGK in Ihrer Region
-    area: A
+    area: B
     provider: ÖGK
     summary_de: >-
       Regionale Angebote der ÖGK zur Gesundheitsförderung: Ernährungsberatung, Nikotin- und Tabakentwöhnung,
@@ -604,7 +604,7 @@ benefits:
   - id: angebot_bewegt_im_park
     kind: offer
     name_de: „Bewegt im Park“ – kostenlose Bewegungskurse im Sommer
-    area: A
+    area: B
     provider: Bewegt im Park
     summary_de: >-
       Kostenlose Bewegungskurse im Freien von Juni bis September, laut Website ohne Anmeldung; gefördert u. a. vom
@@ -629,7 +629,7 @@ benefits:
   - id: angebot_gesunder_ruecken
     kind: offer
     name_de: „Beweg' dich – Gesunder Rücken“ (Bewegungskurse und Online-Beratung)
-    area: A
+    area: B
     provider: ÖGK
     summary_de: >-
       Kostenlose angeleitete Bewegungskurse in der Gruppe (14 Wochen, je zwei Einheiten; Anmeldung erforderlich) für
@@ -655,7 +655,7 @@ benefits:
   - id: angebot_bewusst_leben
     kind: offer
     name_de: „Bewusst leben +“ – fit und gesund ab der Lebensmitte
-    area: A
+    area: B
     provider: ÖGK
     summary_de: >-
       Kostenloses ÖGK-Programm für Menschen ab der Lebensmitte: Videoreihe, Ratgeber und Gymnastikband zu
@@ -676,7 +676,7 @@ benefits:
   - id: angebot_trittsicher
     kind: offer
     name_de: „Trittsicher & aktiv“ – Kurse zur Sturzvorbeugung ab 65
-    area: A
+    area: B
     provider: ÖGK
     summary_de: Kostenlose, mehrwöchige Kurse zur Sturzvorbeugung für Personen ab 65 Jahren (österreichweit).
     plain_de: Kostenlose Kurse ab 65, damit Sie nicht so leicht stürzen.
@@ -698,7 +698,7 @@ benefits:
   - id: angebot_rauchfrei
     kind: offer
     name_de: Rauchfrei Telefon und Entwöhnungsangebote der ÖGK
-    area: A
+    area: B
     provider: ÖGK
     summary_de: >-
       Unterstützung beim Rauchstopp bzw. beim Loskommen von E-Zigaretten und Nikotin: Gruppenkurse, Online-Vorträge,
@@ -719,7 +719,7 @@ benefits:
   - id: angebot_momente_fuer_mich
     kind: offer
     name_de: „Momente für mich“ – psychisch gesund bleiben
-    area: A
+    area: B
     provider: ÖGK
     summary_de: >-
       Alltagstaugliche Tipps und Übungen für die psychische Gesundheit, Vorträge in Präsenz und online sowie
@@ -739,7 +739,7 @@ benefits:
   - id: angebot_richtig_essen
     kind: offer
     name_de: „Richtig essen von Anfang an!“ – Ernährungsworkshops für Eltern
-    area: A
+    area: B
     provider: ÖGK
     summary_de: >-
       Kostenlose Workshops für werdende Eltern und Eltern von Babys und Kleinkindern (bis 3 Jahre) zur Ernährung in
@@ -763,7 +763,7 @@ benefits:
   - id: angebot_therapie_aktiv
     kind: offer
     name_de: „Therapie Aktiv – Diabetes im Griff“
-    area: A
+    area: B
     provider: ÖGK
     summary_de: >-
       Kostenloses Langzeitbetreuungsprogramm der ÖGK für Menschen mit Diabetes mellitus Typ 2 bei teilnehmenden
@@ -816,7 +816,7 @@ benefits:
   - id: angebot_bgf
     kind: offer
     name_de: Betriebliche Gesundheitsförderung (BGF)
-    area: A
+    area: B
     provider: ÖGK
     summary_de: >-
       Die ÖGK berät und begleitet Unternehmen kostenlos bei Gesundheitsförderungsprojekten (Ernährung, Bewegung,
@@ -838,7 +838,7 @@ benefits:
   - id: angebot_gesunde_schule
     kind: offer
     name_de: Schulische Gesundheitsförderung („Servicestelle gesunde Schule“)
-    area: A
+    area: B
     provider: ÖGK
     summary_de: >-
       Die „Servicestellen gesunde Schule“ der ÖGK unterstützen Schulen kostenlos bei gesundheitsfördernden Projekten
@@ -860,7 +860,7 @@ benefits:
   - id: angebot_vereinscoaching
     kind: offer
     name_de: Vereinscoaching (Fußball- und Handballvereine)
-    area: A
+    area: B
     provider: ÖGK
     summary_de: >-
       Kostenlose, praxisorientierte Gesundheitsangebote in Fußball- und Handballvereinen – auch für Eltern, Großeltern

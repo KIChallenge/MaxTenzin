@@ -55,10 +55,12 @@ OFFER_DISCLAIMER = "Unverbindliche Information – Angebote und Termine können 
 class DocRec:
     rec: Recommendation
     filename: str
+    document_id: str | None = None
 
     def source(self) -> SourceRef:
-        return SourceRef(kind=SourceKind.document, label=f"{self.filename}, S. {self.rec.page}",
-                         ref=f"page:{self.rec.page}", quote=self.rec.quote)
+        ref = f"document:{self.document_id}#page={self.rec.page}" if self.document_id else f"page:{self.rec.page}"
+        return SourceRef(kind=SourceKind.document, label=f"{self.filename}, S. {self.rec.page}", ref=ref,
+                         quote=self.rec.quote)
 
 
 @dataclass

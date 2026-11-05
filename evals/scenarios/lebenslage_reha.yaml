@@ -1,0 +1,9 @@
+id: lebenslage_reha
+actor: maria
+subject: anna
+turns:
+  - user: "Meine Mutter fährt ab 16.11.2026 auf stationäre Reha."
+    expect:
+      tools_any: [add_episode]
+      reply_any: ["Reha"]
+      sources: false

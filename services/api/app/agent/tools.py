@@ -318,8 +318,13 @@ TOOLS: list[Tool] = [
          lambda a, c: f"/api/cases/{a['case_id']}/steps/{a['step_id']}",
          body=lambda a, c: {k: a[k] for k in ("status", "form_session_id") if a.get(k)}, compact=_compact_case,
          summary=lambda a, d: f"Fall-Schritt {a.get('step_id')} aktualisiert"),
-    Tool("get_prevention", "Impfhistorie (e-Impfpass) und laut Impfplan/ÖGK fällige Vorsorge der vertretenen Person.",
-         {}, [], "GET", lambda a, c: "/api/prevention/overview", compact=_compact_prevention, summary=_sum_prev),
+    Tool("get_prevention", "Impfhistorie (e-Impfpass) und laut Impfplan/ÖGK fällige Vorsorge der vertretenen Person. "
+         "Nennt die Person Erkrankungen in der Familie, family_history mitgeben (z. B. darmkrebs, brustkrebs, diabetes, "
+         "herz_kreislauf) – dann werden passende offizielle Programme markiert und erklärt.",
+         {"family_history": {"type": "array", "items": {"type": "string"}}}, [], "GET",
+         lambda a, c: "/api/prevention/overview",
+         query=lambda a, c: {"family_history": a["family_history"]} if a.get("family_history") else {},
+         compact=_compact_prevention, summary=_sum_prev),
     Tool("import_vaccination_record", "Importiert Impfungen aus einem e-Impfpass-Dokument (z. B. doc-stefan-impfpass).",
          {"document_id": _s("Dokument-ID eines e-Impfpasses")}, ["document_id"], "POST",
          lambda a, c: f"/api/prevention/import/{a['document_id']}", compact=_compact_prevention,

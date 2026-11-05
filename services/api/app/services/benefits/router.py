@@ -56,8 +56,16 @@ def build_input(ctx: Context, req: EligibilityRequest) -> EvalInput:
     recs: list[DocRec] = []
     living = None
     for a in _analyses(ctx, req.document_ids):
-        recs += [DocRec(r, a.filename) for r in a.recommendations]
+        recs += [DocRec(r, a.filename, a.document_id) for r in a.recommendations]
         living = living or a.person.living_situation
+    # Lebenslage: facts from CONFIRMED episodes (only with the Lebenslage scope); explicit request facts win.
+    if Scope.manage_situation in ctx.scopes:
+        from app.services.situation.service import situation_facts
+
+        sit = situation_facts(ctx.subject.id)
+        if sit:
+            facts = {**sit, **facts}
+            ctx.rule_ids.append("benefits.facts_from_situation:" + ",".join(sorted(sit)))
     for r in facts.pop("recommendations", None) or []:
         recs.append(DocRec(Recommendation.model_validate(r), str(facts.get("document_filename", "Dokument"))))
     as_of = date.today()
