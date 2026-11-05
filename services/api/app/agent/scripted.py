@@ -96,7 +96,9 @@ class Scripted:
         m = self.memo
         if re.search(r"impf|vorsorge|prevention|vaccin|aşı|check-?up|gesundenuntersuchung", t):
             return await self.prevention()
-        if re.search(r"zuständig|wohin|adresse|stelle|schicken|senden|office", t):
+        if m.get("form_session_id") and re.search(r"\bpdf\b|entwurf (erstellen|erzeugen)|fertig|ausdruck|render", t):
+            return await self.render()
+        if re.search(r"zuständig|wohin|adresse|\bstelle\b|schicken|senden|office", t):
             return await self.office()
         if re.search(r"fall anlegen|mein fall|fall erstellen|aufgabenliste|create a case", t):
             return await self.case()
@@ -111,8 +113,10 @@ class Scripted:
             if r:
                 return r
         if re.search(r"entlass|dokument|brief|befund|zusteh|leistung|unterstützung|hilfe|spital|krankenhaus|"
-                     r"what can|entitled|document|hak", t):
+                     r"what can|entitled|document|discharge|benefit|hak", t):
             return await self.documents_and_benefits()
+        if (m2 := re.search(r"pflegegeld|reha|rezeptgebühr|fahrtkosten", t)):
+            return await self.explain_benefit(m2.group(0))
         return ("Ich bin Ihr KI-Lotse für die Sozialversicherung. Ich kann zum Beispiel einen Entlassungsbrief auf "
                 "ausdrücklich dokumentierte Empfehlungen prüfen, passende Leistungen ermitteln, einen Antrag als "
                 "Entwurf vorbereiten oder fällige Vorsorge anzeigen. Womit soll ich beginnen?")
@@ -187,6 +191,17 @@ class Scripted:
         if d := self._denied(e):
             return d
         return self._eligibility_text(e, ["Danke, ich habe das in der Anspruchsprüfung berücksichtigt:"])
+
+    async def explain_benefit(self, word: str) -> str:
+        bid = {"pflegegeld": "pflegegeld", "reha": "reha_onko", "rezeptgebühr": "rezeptgebuehrenbefreiung",
+               "fahrtkosten": "fahrtkostenzuschuss"}[word]
+        g = await self.call("get_benefit", {"benefit_id": bid})
+        if not g.ok:
+            return "Dazu habe ich gerade keine Informationen."
+        b = g.data
+        text = b.get("plain_de") or b.get("summary_de")
+        return (f"**{b['name_de']}**: {text}\n\nZuständig für die Entscheidung ist {b['provider']}. Das ist eine "
+                "unverbindliche Information, keine Rechtsberatung." + _sources_line(self.outcomes))
 
     async def start_form(self, t: str) -> str:
         benefits = self.memo.get("benefits") or []

@@ -1,0 +1,24 @@
+# Scenario 2: Stefan's proactive prevention (e-Impfpass + Vorsorge), then for his daughter Lena.
+id: prevention_stefan
+actor: stefan
+subject: null
+turns:
+  - user: "Welche Impfungen oder Vorsorgeuntersuchungen sind bei mir gerade fällig?"
+    expect:
+      tools_any: [get_prevention, import_vaccination_record]
+      tools_none: [start_form, check_benefits]
+      reply_any: ["Grippe", "Influenza", "Vorsorge"]
+      reply_none: ["Ihnen fehlt", "fehlt Ihnen", "fehlende Impfung"]
+  - user: "Wer ist dafür zuständig bzw. wo bekomme ich die Vorsorgeuntersuchung?"
+    expect:
+      tools_any: [find_office, get_prevention, get_benefit, check_benefits]
+      reply_none: ["Ihnen fehlt"]
+---
+id: prevention_lena
+actor: stefan
+subject: lena
+turns:
+  - user: "Was ist bei meiner Tochter Lena an Vorsorge fällig, und welche Familienleistungen gibt es für sie?"
+    expect:
+      tools_any: [get_prevention, check_benefits]
+      reply_none: ["Ihnen fehlt", "fehlt Lena"]

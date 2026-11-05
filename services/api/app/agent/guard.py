@@ -14,7 +14,7 @@ from typing import Any
 
 
 def _norm(text: str) -> str:
-    t = unicodedata.normalize("NFC", text.lower())
+    t = unicodedata.normalize("NFC", text.lower().replace("i\u0307", "i"))
     return re.sub(r"\s+", " ", t)
 
 
@@ -46,11 +46,11 @@ class BoundaryHit:
 _PATTERNS: list[tuple[str, str]] = [
     ("suicide", (r"(umbringen|suizid|selbstmord|nicht mehr leben|das leben nehmen|kill myself|suicid|"
                 r"intihar|kendimi öldür)")),
-    ("emergency", (r"(notfall|notarzt|keine luft|atemnot|bekomm\w* kaum luft|brustschmerz|schmerzen in der brust|"
+    ("emergency", (r"(notfall|notarzt|keine luft|atemnot|kaum luft|brustschmerz|schmerzen in der brust|"
                   r"bewusstlos|ohnmächtig|krampfanfall|starke blutung|blutet stark|schlaganfall|herzinfarkt|"
                   r"lähmung|gesicht hängt|vergiftung|emergency|can'?t breathe|chest pain|unconscious|acil durum|"
                   r"nefes alamıyor)")),
-    ("role_play", (r"(tu so,? als (ob )?(du|wärst)|stell dir vor,? du (bist|wärst)|du bist (jetzt )?(ein|eine|mein|"
+    ("role_play", (r"(du bist (jetzt |ab jetzt )?(dr\.?|doktor) |dr\.? house|tu so,? als (ob )?(du|wärst)|stell dir vor,? du (bist|wärst)|du bist (jetzt )?(ein|eine|mein|"
                   r"meine) ?(arzt|ärztin|doktor|onkolog|radiolog)|als (arzt|ärztin|doktor) (antworten|sprechen|"
                   r"beurteilen)|antworte (wie|als) (ein |eine )?(arzt|ärztin)|pretend (to be|you are) a doctor|"
                   r"act as a doctor|doktor gibi davran)")),
@@ -58,13 +58,13 @@ _PATTERNS: list[tuple[str, str]] = [
                        r"[^.?!]{0,40}(aus|füll|ergänz|schreib|übernehm)|"
                        r"(füll|ergänz|schreib|übernimm|mach)\w*[^.?!]{0,40}(ärztlich|arztteil|arzt-teil|"
                        r"ärzteteil|medizinischen teil|stellungnahme des arztes)|fill (in|out) the doctor)")),
-    ("submit", (r"((reich|schick|send|übermittel|stell)\w*[^.?!]{0,40}\b(antrag|anträge|formular|ansuchen)\b[^.?!]{0,30}"
+    ("submit", (r"((reich|schick|send|übermittel|stell)\w*[^.?!]{0,40}\w*(antrag|anträge|formular|ansuchen)\b[^.?!]{0,30}"
                r"\b(ein|ab|weg|für mich|direkt)\b|\b(antrag|anträge|formular)\b[^.?!]{0,40}\b(einreichen|abschicken|"
                r"absenden|übermitteln|abgeben)\b|submit (the|my) (application|form)|başvuruyu gönder)")),
     ("diagnosis", (r"(was (habe|hab|hat) (ich|sie|er|meine mutter|mein vater|mein kind)\b[^.?!]{0,30}\?|"
                   r"(stell|stelle|gib|mach)\w*[^.?!]{0,20}diagnose|welche (krankheit|erkrankung|diagnose) "
                   r"(habe|hat|könnte)|habe ich (wohl |vielleicht |etwa )?(krebs|einen tumor|corona|covid|diabetes)|"
-                  r"(ist|sind) (das|es|der knoten|die werte)\b[^.?!]{0,20}(krebs|bösartig|gutartig|gefährlich|schlimm|"
+                  r"(ist|sind) (das|es|der knoten|die werte)\b[^.?!]{0,35}(krebs|bösartig|gutartig|gefährlich|schlimm|"
                   r"ernst)|könnte (das|es) (krebs|ein tumor|bösartig)|what do i have|diagnose me|teşhis)")),
     ("findings", (r"((was|wie) (bedeutet|heißt|heisst|sagt|zeigt)\w*[^.?!]{0,60}(befund|röntgen|mrt|ct|ultraschall|"
                  r"laborwert|blutwert|werte\b|aufnahme|histolog|befundergebnis)|"
