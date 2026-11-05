@@ -163,12 +163,22 @@ export function Lebenslage(props: Props) {
         </div>
       )}
 
-      {error && (
+      {error && !adding && (
         <p role="alert" className="rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger">
           {error}
         </p>
       )}
-      {adding && <AddEpisode firstName={props.firstName} onClose={() => setAdding(false)} onSave={(body) => act("/api/situation/episodes", "POST", body)} />}
+      {adding && (
+        <AddEpisode
+          firstName={props.firstName}
+          error={error}
+          onClose={() => {
+            setAdding(false);
+            setError(null);
+          }}
+          onSave={(body) => act("/api/situation/episodes", "POST", body)}
+        />
+      )}
     </section>
   );
 }
@@ -232,7 +242,17 @@ function EpisodeGroup({
   );
 }
 
-function AddEpisode({ firstName, onClose, onSave }: { firstName: string; onClose: () => void; onSave: (body: unknown) => Promise<boolean> }) {
+function AddEpisode({
+  firstName,
+  error,
+  onClose,
+  onSave,
+}: {
+  firstName: string;
+  error: string | null;
+  onClose: () => void;
+  onSave: (body: unknown) => Promise<boolean>;
+}) {
   const [type, setType] = useState<EpisodeType>("rehab_inpatient");
   const [busy, setBusy] = useState(false);
   const form = useRef<HTMLFormElement>(null);
@@ -311,6 +331,11 @@ function AddEpisode({ firstName, onClose, onSave }: { firstName: string; onClose
           </span>
           <input name="institution" className="input" placeholder="z. B. Reha-Zentrum, Krankenhaus" />
         </label>
+        {error && (
+          <p role="alert" className="rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger">
+            {error}
+          </p>
+        )}
         <div className="flex justify-end gap-2 pt-1">
           <button type="button" className="btn-ghost" onClick={onClose}>
             Abbrechen

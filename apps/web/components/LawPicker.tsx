@@ -2,17 +2,17 @@
 // Searchable law picker (combobox): type an abbreviation or part of the full title.
 import { useId, useRef, useState } from "react";
 import { Check, ChevronDown } from "lucide-react";
-import { type Law, lawByKey, matchLaws } from "@/lib/laws";
+import { type Law, matchLaws } from "@/lib/laws";
 
-export function LawPicker({ name, defaultKey, allowAll = false }: { name: string; defaultKey?: string; allowAll?: boolean }) {
-  const [selected, setSelected] = useState<Law | undefined>(lawByKey(defaultKey));
+export function LawPicker({ name, laws, defaultKey, allowAll = false }: { name: string; laws: Law[]; defaultKey?: string; allowAll?: boolean }) {
+  const [selected, setSelected] = useState<Law | undefined>(laws.find((l) => l.key === defaultKey));
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const id = useId();
   const listId = `${id}-list`;
   const inputRef = useRef<HTMLInputElement>(null);
-  const options: (Law | null)[] = [...(allowAll && !query ? [null] : []), ...matchLaws(query)];
+  const options: (Law | null)[] = [...(allowAll && !query ? [null] : []), ...matchLaws(laws, query)];
 
   function choose(l: Law | null) {
     setSelected(l ?? undefined);
@@ -89,7 +89,12 @@ export function LawPicker({ name, defaultKey, allowAll = false }: { name: string
             >
               <span className="min-w-0 flex-1">
                 <span className="block font-semibold">{l ? l.abbr : "Alle Gesetze"}</span>
-                {l && <span className="block text-sm leading-snug text-muted">{l.title}</span>}
+                {l && (
+                  <span className="block text-sm leading-snug text-muted">
+                    {l.title}
+                    {l.paragraphs ? ` · ${l.paragraphs} Bestimmungen` : ""}
+                  </span>
+                )}
               </span>
               {(l?.key ?? "") === (selected?.key ?? "") && <Check className="mt-1 h-4 w-4 text-accent" aria-hidden />}
             </li>

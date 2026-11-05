@@ -4,10 +4,12 @@ import { LawPicker } from "@/components/LawPicker";
 import { PageTitle } from "@/components/PageTitle";
 import { api } from "@/lib/api";
 import { fmtDate } from "@/lib/labels";
+import type { Law } from "@/lib/laws";
 import type { LegalHit, LegalParagraph } from "@/lib/types";
 
 export default async function LegalPage({ searchParams }: { searchParams: Promise<{ q?: string; law?: string; nr?: string; abs?: string }> }) {
   const sp = await searchParams;
+  const laws = await api<Law[]>("/api/legal/laws");
   const para = sp.law && sp.nr ? await api<LegalParagraph>(`/api/legal/paragraphs/${encodeURIComponent(sp.law)}/${encodeURIComponent(sp.nr)}`) : null;
   const hits = sp.q ? await api<LegalHit[]>(`/api/legal/search?q=${encodeURIComponent(sp.q)}${sp.law ? `&law=${encodeURIComponent(sp.law)}` : ""}&limit=10`) : null;
   return (
@@ -16,7 +18,7 @@ export default async function LegalPage({ searchParams }: { searchParams: Promis
         Unverbindliche Information, keine Rechtsberatung. Es gilt immer die angegebene Fassung.
       </PageTitle>
       <form className="card mb-6 grid gap-3 md:grid-cols-[minmax(0,1.3fr)_6rem_minmax(0,1.5fr)_auto] md:items-end" role="search">
-        <LawPicker name="law" defaultKey={sp.law} allowAll />
+        <LawPicker name="law" laws={laws.ok ? laws.data : []} defaultKey={sp.law} allowAll />
         <label className="flex flex-col gap-1">
           <span className="font-semibold">§</span>
           <input name="nr" defaultValue={sp.nr} className="input" inputMode="text" placeholder="z. B. 4" />
