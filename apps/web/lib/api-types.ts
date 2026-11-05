@@ -587,6 +587,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/forms/definitions/{form_id}/template": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Blank official form PDF (as published by the Träger) */
+        get: operations["template_api_forms_definitions__form_id__template_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/forms/brochures/serviceratgeber": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** ÖGK Serviceratgeber 2026 PDF (only if the raw data folder is present) */
+        get: operations["serviceratgeber_api_forms_brochures_serviceratgeber_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/cases": {
         parameters: {
             query?: never;
@@ -836,6 +870,23 @@ export interface paths {
         };
         /** Full-text search (SQLite FTS5, BM25, core-law boost) */
         get: operations["search_api_legal_search_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/legal/laws": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** All laws/guidelines in the corpus: key, abbreviation, title, paragraph count */
+        get: operations["laws_api_legal_laws_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3865,6 +3916,76 @@ export interface operations {
             };
         };
     };
+    template_api_forms_definitions__form_id__template_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                form_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    serviceratgeber_api_forms_brochures_serviceratgeber_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_cases_api_cases_get: {
         parameters: {
             query?: never;
@@ -4477,6 +4598,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LegalHit"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    laws_api_legal_laws_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

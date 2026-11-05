@@ -3664,6 +3664,181 @@
         }
       }
     },
+    "/api/forms/definitions/{form_id}/template": {
+      "get": {
+        "tags": [
+          "forms"
+        ],
+        "summary": "Blank official form PDF (as published by the Träger)",
+        "operationId": "template_api_forms_definitions__form_id__template_get",
+        "parameters": [
+          {
+            "name": "form_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Form Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/forms/brochures/serviceratgeber": {
+      "get": {
+        "tags": [
+          "forms"
+        ],
+        "summary": "ÖGK Serviceratgeber 2026 PDF (only if the raw data folder is present)",
+        "operationId": "serviceratgeber_api_forms_brochures_serviceratgeber_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/cases": {
       "get": {
         "tags": [
@@ -5395,6 +5570,89 @@
                   },
                   "title": "Response Search Api Legal Search Get"
                 }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/legal/laws": {
+      "get": {
+        "tags": [
+          "legal"
+        ],
+        "summary": "All laws/guidelines in the corpus: key, abbreviation, title, paragraph count",
+        "operationId": "laws_api_legal_laws_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           },

@@ -24,3 +24,14 @@ def search(q: str, law: str | None = None, limit: int = Query(10, ge=1, le=50), 
     hits = [LegalHit(paragraph=service.to_paragraph(r), score=s, snippet=snip) for r, s, snip in fts.search(q, law, limit)]
     ctx.cite(*(h.paragraph.citation_de for h in hits[:3]))
     return hits
+
+
+@router.get("/laws", summary="All laws/guidelines in the corpus: key, abbreviation, title, paragraph count")
+def laws(ctx: Context = Depends(require())):
+    from app.core.knowledge import jsonl
+
+    out: dict[str, dict] = {}
+    for r in jsonl("extracted/legal/paragraphs.jsonl"):
+        e = out.setdefault(r["law_key"], {"key": r["law_key"], "abbr": r["law"], "title": r["law_title"], "paragraphs": 0})
+        e["paragraphs"] += 1
+    return sorted(out.values(), key=lambda x: x["abbr"])

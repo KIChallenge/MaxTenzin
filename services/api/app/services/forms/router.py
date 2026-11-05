@@ -90,3 +90,30 @@ def render(session_id: str, ctx: Context = Depends(require(Scope.prepare_applica
     filename = f"{spec.form_id}_ENTWURF.pdf"
     return Response(pdf, media_type="application/pdf",
                     headers={"Content-Disposition": f'attachment; filename="{filename}"'})
+
+
+@router.get("/definitions/{form_id}/template", summary="Blank official form PDF (as published by the Träger)")
+def template(form_id: str, ctx: Context = Depends(require())):
+    from fastapi.responses import FileResponse
+
+    from app.core.config import get_settings
+
+    service.spec_or_404(form_id)
+    path = get_settings().knowledge_dir / "forms" / "templates" / f"{form_id}.pdf"
+    if not path.exists():
+        raise HTTPException(404, "Formularvorlage nicht vorhanden")
+    return FileResponse(path, media_type="application/pdf", filename=f"{form_id}.pdf",
+                        content_disposition_type="inline")
+
+
+@router.get("/brochures/serviceratgeber", summary="ÖGK Serviceratgeber 2026 PDF (only if the raw data folder is present)")
+def serviceratgeber(ctx: Context = Depends(require())):
+    from fastapi.responses import FileResponse
+
+    from app.core.config import get_settings
+
+    p = get_settings().raw_data_dir / "Leistungskataloge" / "Serviceratgeber-2026_Broschuere_A5_OEAM_99-19_klein_korr.pdf"
+    if not p.exists():
+        raise HTTPException(404, "Broschüre lokal nicht vorhanden (Rohdaten nicht eingebunden)")
+    return FileResponse(p, media_type="application/pdf", filename="OEGK-Serviceratgeber-2026.pdf",
+                        content_disposition_type="inline")
