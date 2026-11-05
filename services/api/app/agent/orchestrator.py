@@ -41,7 +41,21 @@ def _full_name(p) -> str:
     return f"{p.first_name} {p.last_name}"
 
 
-def system_prompt(ctx: Context, memo: dict, plain: bool, lang: str = "de") -> str:
+DETAIL_DE = {"short": "DETAILTIEFE KURZ: höchstens 4 Sätze oder 4 Aufzählungspunkte, nur das Nötigste.",
+             "normal": "Detailtiefe normal.",
+             "detailed": "DETAILTIEFE AUSFÜHRLICH: erkläre Hintergründe, Voraussetzungen und Schritte ausführlicher."}
+
+
+def _prefs_text(prefs: dict) -> str:
+    if not prefs:
+        return "keine gespeichert"
+    daypart = {"morning": "vormittags", "afternoon": "nachmittags"}.get(prefs.get("daypart"), "keine Tageszeit-Präferenz")
+    return (f"Sprache {prefs.get('language', 'de')}, Detailtiefe {prefs.get('detail', 'normal')}, Termine {daypart}, "
+            f"{'möglichst in der Nähe' if prefs.get('near_home', True) else 'Entfernung egal'}"
+            f"{', barrierefrei' if prefs.get('accessible') else ''}")
+
+
+def system_prompt(ctx: Context, memo: dict, plain: bool, lang: str = "de", prefs: dict | None = None) -> str:
     s = ctx.subject
     relation = ""
     if ctx.actor.id != s.id:
@@ -57,7 +71,8 @@ def system_prompt(ctx: Context, memo: dict, plain: bool, lang: str = "de") -> st
     return _prompt_template().format(
         plain_language=plain_txt, reply_language=LANG_NAMES.get(lang, "Deutsch"), today=date.today().isoformat(), actor_name=_full_name(ctx.actor),
         subject_name=_full_name(s), subject_birth=s.birth_date, subject_zip=s.address.zip, subject_insurer=s.insurer,
-        relation=relation, scopes=scopes, documents=doc_txt, memo=state.memo_text(memo))
+        relation=relation, scopes=scopes, documents=doc_txt, memo=state.memo_text(memo),
+        preferences=_prefs_text(prefs or {}), detail=DETAIL_DE.get((prefs or {}).get("detail", "normal"), ""))
 
 
 def _trace(o: ToolOutcome) -> ToolTrace:
@@ -97,7 +112,12 @@ def _assistant_msg(msg) -> dict:
 async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, plain: bool, lang: str,
                    outcomes: list[ToolOutcome]) -> str:
     memo = conv["memo"]
-    messages = [{"role": "system", "content": system_prompt(ctx, memo, plain, lang)}, *state.history_messages(conv),
+    r = await client.fetch("/api/identity/preferences", "context:preferences")
+    prefs = r.json() if r.status_code == 200 else {}
+    plain = plain or bool(prefs.get("plain_language"))
+    if lang == "de" and prefs.get("language") and prefs["language"] != "de":
+        lang = prefs["language"]
+    messages = [{"role": "system", "content": system_prompt(ctx, memo, plain, lang, prefs)}, *state.history_messages(conv),
                 {"role": "user", "content": message}]
     reply = await _tool_loop(client, memo, messages, outcomes, MAX_TOOL_ROUNDS)
 
