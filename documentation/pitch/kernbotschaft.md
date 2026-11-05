@@ -51,5 +51,5 @@ Merksatz für die Folie: **„Erst die Prozesse, dann die KI.“**
 - **„Was war am schwierigsten?“** – Nicht die KI, sondern die Daten und Prozesse: richtige Quelle, richtige Fassung, richtige Formularfelder, richtige Rechte.
 
 ## Offen vor dem Pitch
-- Folie 9 nennt 268 automatische Tests (262 API + 6 Extraktion), Stand `make test` in der Nacht vor dem Pitch. Vor dem Pitch erneut abgleichen.
+- Folie 9 nennt 280 automatische Tests (274 API + 6 Extraktion), Stand `make test` in der Nacht vor dem Pitch. Vor dem Pitch erneut abgleichen.
 - Optional: Folie 3 und 11 auf die Kernbotschaft „nur so gut wie die Infrastruktur“ zuspitzen.
