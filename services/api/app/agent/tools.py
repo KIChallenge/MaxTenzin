@@ -344,28 +344,42 @@ TOOL_SPECS = [t.spec() for t in TOOLS]
 class ToolClient:
     """Calls the API in-process with the caller's own Authorization + X-Subject-Id."""
 
-    def __init__(self, headers: dict[str, str], subject_id: str, subject_name: str):
+    def __init__(self, headers: dict[str, str], subject_id: str, subject_name: str, memo: dict | None = None):
         self.headers = headers
         self.ctx = {"subject_id": subject_id}
         self.subject_name = subject_name
+        self.memo = memo if memo is not None else {}
+
+    def _existing_session(self, name: str, args: dict) -> str | None:
+        """Idempotent start_form: within a conversation, the same form continues the open draft (never loses answers)."""
+        if name != "start_form" or not self.memo.get("form_session_id"):
+            return None
+        return self.memo["form_session_id"] if self.memo.get("form_id") == args.get("form_id") else None
 
     async def run(self, name: str, args: dict) -> ToolOutcome:
         tool = TOOL_BY_NAME.get(name)
         if tool is None:
             return ToolOutcome(name, args, 400, error_de=f"Unbekanntes Werkzeug {name}", summary_de="unbekanntes Werkzeug")
+        existing = self._existing_session(name, args)
+        method = tool.method
         try:
             path = tool.path(args, self.ctx)
         except KeyError as e:
             return ToolOutcome(name, args, 422, error_de=f"Parameter fehlt: {e}", summary_de="Parameter fehlt")
+        if existing:
+            method, path = "GET", f"/api/forms/sessions/{existing}"
         from app.main import app  # lazy: avoid import cycle
 
         headers = {**self.headers, "X-Via": "agent", "X-Agent-Tool": name}
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://internal",
                                      timeout=120) as c:
-            resp = await c.request(tool.method, path, headers=headers,
-                                   json=tool.body(args, self.ctx) if tool.body else None,
-                                   params=tool.query(args, self.ctx) if tool.query else None)
-        return self._outcome(tool, args, path, resp)
+            resp = await c.request(method, path, headers=headers,
+                                   json=tool.body(args, self.ctx) if tool.body and not existing else None,
+                                   params=tool.query(args, self.ctx) if tool.query and not existing else None)
+        out = self._outcome(tool, args, path, resp)
+        if existing and out.ok:
+            out.summary_de = "Bestehender Antrags-Entwurf fortgesetzt (keine Angaben verloren)"
+        return out
 
     def _outcome(self, tool: Tool, args: dict, path: str, resp: httpx.Response) -> ToolOutcome:
         st = resp.status_code

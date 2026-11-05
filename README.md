@@ -57,18 +57,18 @@ Details: [documentation/architecture.md](documentation/architecture.md) · inter
 ## Services
 | Service | Purpose | Status |
 |---|---|---|
-| identity | mock ID Austria, delegation with scopes | ✅ |
-| audit | transparency log of every call (UI + agent) | ✅ |
-| values | yearly amounts (Pflegegeld, Rezeptgebühr, Reha-Zuzahlung …) | ✅ |
-| legal | legal paragraphs with in-force date, search | 🟡 lookup ✅, ranking WIP |
-| medications | EKO administrative lookup | 🟡 |
-| benefits | catalog + deterministic eligibility | ⬜ stub |
-| documents | explicit recommendations with quote + page | ⬜ stub |
-| prevention | e-Impfpass + Vorsorge reminders | ⬜ stub |
-| forms | schema-driven wizard + chat, official PDF fill | ⬜ stub |
-| cases / notifications | Mein Fall, proactive inbox | ⬜ stub |
-| directory | responsible offices by topic/PLZ | ⬜ stub |
-| agent | AI top layer | ⬜ stub |
+| identity | mock ID Austria, delegation with scopes (AI inherits them) | ✅ |
+| audit | transparency log of every call (UI + agent, incl. denied ones) | ✅ |
+| documents | explicitly documented recommendations, verbatim quote + page, deterministic quote check | ✅ |
+| benefits | 14 benefits, deterministic eligibility, every criterion source-cited | ✅ |
+| forms | 4 official forms (PAL 080, FSW, Kur/Reha p.1, Fahrtkosten): wizard + chat share one session, official PDF filled as draft | ✅ |
+| cases / notifications | Mein Fall from documented tasks; inbox composed via APIs (scopes apply transitively) | ✅ |
+| prevention | e-Impfpass parser + Vorsorge/Impfplan rules | ✅ |
+| directory | ÖGK Wien, PVA Landesstellen, FSW, 1450 by topic/PLZ | ✅ |
+| legal / values / medications | SozDok paragraphs (FTS5), 2026 amounts (veraendW), EKO lookup | ✅ |
+| agent | AI top layer: 18 tools, input boundary guard, output guard, 403-aware | ✅ |
+
+**Evals (live, `gpt-5-4-mini`):** see [evals/REPORT.md](evals/REPORT.md) — 28/28: 4 scenarios, 19 boundary/red-team prompts (diagnosis, findings, prognosis, medication, emergencies, doctor sections, submit, role play, prompt injection, EN/TR), delegation 403 cases, language. Boundary refusals answer in < 0.2 s without any LLM call.
 
 ## Data & sources
 Raw challenge data lives in `docs/` (gitignored). `make extract` deterministically produces `knowledge/extracted/` with a `MANIFEST.json` (source hashes): 1,976 legal paragraphs from 19 laws (SozDok), veraendW value tables, Erstattungskodex (6,985 packs), ÖGK Serviceratgeber 2026 (page-accurate), 7 official form templates (all fillable). Fictional medical documents (Befunde) are never committed.

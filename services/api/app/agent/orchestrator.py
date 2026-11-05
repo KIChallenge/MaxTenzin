@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import re
 import time
 from datetime import date
 from functools import lru_cache
@@ -16,7 +17,7 @@ from pathlib import Path
 from app.agent import guard, state
 from app.agent.scripted import Scripted, forbidden_text
 from app.agent.tools import SCOPE_DE, TOOL_SPECS, ToolClient, ToolOutcome, llm_payload
-from app.contracts.agent import ChatRequest, ChatResponse, ToolTrace
+from app.contracts.agent import ChatAction, ChatRequest, ChatResponse, ToolTrace
 from app.core.auth import Context
 from app.core.db import now_iso
 from app.core.llm import get_llm
@@ -124,13 +125,13 @@ async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, p
 
     allowed = guard.numbers_in([o.data for o in outcomes]) | guard.numbers_in([o.arguments for o in outcomes]) | \
         guard.numbers_in(message)
-    problems = guard.output_violations(reply, allowed) if reply else ["leere Antwort"]
+    problems = (guard.output_violations(reply, allowed) + guard.question_violations(reply)) if reply else ["leere Antwort"]
     if problems:
         log.warning("output guard: %s", problems)
         messages += [{"role": "assistant", "content": reply},
                      {"role": "user", "content": "SYSTEMPRÜFUNG (nicht von der Person): Deine Antwort verletzt Regeln: "
                       + "; ".join(problems) + ". Formuliere die Antwort neu – nur Beträge, die wörtlich in den "
-                      "Tool-Ergebnissen stehen, keine Einreichung behaupten, Vorsorge-Wording beachten."}]
+                      "Tool-Ergebnissen stehen, keine Einreichung behaupten, Vorsorge-Wording beachten, höchstens 2 Rückfragen."}]
         reply = (await _llm(messages, None)).content or ""
         problems = guard.output_violations(reply, allowed) if reply else ["leere Antwort"]
         if problems:
@@ -197,7 +198,7 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
         resp = ChatResponse(conversation_id=conv["id"], reply=reply, tool_trace=[], boundary_triggered=True,
                             suggestions_de=suggestions)
     else:
-        client = ToolClient(headers, ctx.subject.id, subject_name)
+        client = ToolClient(headers, ctx.subject.id, subject_name, memo)
 
         async def run(name: str, args: dict) -> ToolOutcome:
             o = await client.run(name, args)
@@ -218,6 +219,14 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
                 else:
                     log.exception("live agent failed, falling back to scripted")
                     mode = "scripted-fallback"
+            if reply and mode == "live" and _wants_pdf(req.message) and memo.get("form_session_id") \
+                    and not any(o.tool == "render_form" for o in outcomes):
+                # Explicit user command: render deterministically instead of depending on the model's choice.
+                o = await run("render_form", {"session_id": memo["form_session_id"]})
+                outcomes.append(o)
+                if o.ok:
+                    reply += ("\n\nIch habe den **PDF-Entwurf** erstellt. Bitte prüfen, unterschreiben und selbst "
+                              "einreichen – es wurde nichts eingereicht.")
         if not reply:
             sp = Scripted(run, memo, ctx.subject.id, subject_name, ctx.actor.id == ctx.subject.id)
             reply = await sp.reply(req.message)
@@ -229,7 +238,8 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
         if srcs and not any(w in reply.lower() for w in ("quelle", "source", "kaynak")):
             reply += "\n\n**Quellen:** " + "; ".join(list(dict.fromkeys(srcs))[:6])
         resp = ChatResponse(conversation_id=conv["id"], reply=reply, tool_trace=[_trace(o) for o in outcomes],
-                            boundary_triggered=False, suggestions_de=_suggestions(memo, outcomes))
+                            boundary_triggered=False, suggestions_de=_suggestions(memo, outcomes),
+                            actions=_actions(outcomes))
 
     conv["turns"].append({"ts": now_iso(), "user": req.message, "reply": resp.reply,
                           "tool_trace": [t.model_dump() for t in resp.tool_trace],
@@ -237,3 +247,29 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
                           "mode": mode, "language": lang, "latency_ms": int((time.perf_counter() - t0) * 1000)})
     state.save(conv)
     return resp
+
+
+def _actions(outcomes) -> list[ChatAction]:
+    """Deterministic UI buttons derived from successful tool calls (never from model text)."""
+    acts: dict[str, ChatAction] = {}
+    for o in outcomes:
+        if not o.ok:
+            continue
+        sid = (o.arguments or {}).get("session_id")
+        if not sid and o.tool == "start_form" and isinstance(o.data, dict):
+            sid = o.data.get("id")
+        if o.tool == "render_form" and sid:
+            acts["download"] = ChatAction(kind="download_pdf", label_de="Entwurf als PDF herunterladen", method="POST",
+                                          url=f"/api/forms/sessions/{sid}/render")
+        elif o.tool in ("start_form", "set_form_fields", "get_next_questions") and sid:
+            acts["form"] = ChatAction(kind="open_form", label_de="Antrag im Assistenten öffnen", url=f"/forms/{sid}")
+        elif o.tool in ("create_case", "update_case_step"):
+            acts["case"] = ChatAction(kind="open_case", label_de="Mein Fall öffnen", url="/case")
+    return list(acts.values())
+
+
+_PDF_RE = re.compile(r"\b(pdf|entwurf\s+(erstellen|herunterladen|ausdrucken)|draft)\b", re.IGNORECASE)
+
+
+def _wants_pdf(message: str) -> bool:
+    return bool(_PDF_RE.search(message or ""))

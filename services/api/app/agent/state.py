@@ -75,7 +75,7 @@ def update_memo(memo: dict, o: ToolOutcome) -> None:
     elif o.tool in ("start_form", "set_form_fields"):
         memo["form_session_id"] = d.get("session_id")
         memo["form_id"] = d.get("form_id")
-        if o.tool == "start_form":
+        if o.tool == "start_form" and not o.summary_de.startswith("Bestehender"):
             memo["form_rendered"] = False
             memo.pop("open_questions", None)
     elif o.tool == "get_next_questions":

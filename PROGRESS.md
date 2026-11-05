@@ -8,7 +8,7 @@ Single source of truth for all sessions. Update your row at start and at Definit
 - [x] **G0 (H2)** skeleton, contracts, stub API (33 paths), auth/scopes/audit, extraction, `make test` green
 - [x] **G0b** Azure LLM reachable (`make smoke-llm`) — live extraction of Entlassungsbrief: 12/12 quotes verified, 5.6 s
 - [ ] **G1 (H8)** hero flow clickable in cockpit; ✅ WS-B/D/F real services merged (114 tests) — API end-to-end verified: letter → eligibility → PAL080 official PDF (30 fields, ENTWURF stamp)
-- [ ] **G2 (H13)** hero flow on real API incl. agent (chat + wizard share form session)
+- [ ] **G2 (H13)** hero flow on real API incl. agent — ✅ API side done (agent + evals 28/28 live); ⬜ cockpit wiring (WS-W)
 - [ ] **G3 (H19) FREEZE** evals green, Floorplan health check clean, demo script run 3×, backup video recorded
 - [ ] **G4 (H23)** pitch deck (DE) done, rehearsed 3×
 
@@ -20,7 +20,7 @@ Single source of truth for all sessions. Update your row at start and at Definit
 | WS-D | documents extraction (+golden), prevention (Impfpass) | bg agent | ws/D-documents | merged | H4 | live LLM path untested (key 401) |
 | WS-F | forms: schemas, sessions, prefill, real PDF fill | bg agent | ws/F-forms | merged | H6 | Einrichtungswunsch/Senioren-WG/Reha-n-Unfall not mapped |
 | WS-W | web cockpit | human session | ws/W-web | todo | — | — |
-| WS-A | agent orchestrator + guardrails + evals | bg agent | ws/A-agent | doing | H5 | builds against contracts; B/F stubs until merged |
+| WS-A | agent orchestrator + guardrails + evals | bg agent | ws/A-agent | merged | H7 | evals 28/28 live (REPORT.md) |
 | WS-C | cases + notifications | integrator | main | merged | H3 | — |
 
 ## Task checklists
@@ -36,6 +36,9 @@ See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished it
 
 - WS-F (open): make PAL080 yes/no sections §3–§9 required (smoke test may then expect more questions); move FormPreview/PreviewItem into contracts; `FormSession.document_id`; hospital stay dates as verbatim quotes in DocumentAnalysis (→ prefill §5 von/bis). Start-session takes `?document_id=` (needs read_documents). Field ids = AcroForm names (opaque; show label_de).
 - (integrator, done) `llm.chat(..., reasoning_effort=)` / `llm.json(..., reasoning_effort=)` passthrough for WS-A.
+
+- (integrator, done) WS-A: `ChatResponse.actions` (download_pdf/open_form/open_case, derived deterministically), `ChatRequest.document_ids`, thread-safe `core.db.engine()`. Open: move Conversation models into contracts.
+- (integrator, fixes after independent live eval run 27/28): start_form idempotent per conversation (no lost answers), explicit "PDF" command renders deterministically, soft guard max 2 questions/turn → 3/3 hero runs, suite 28/28.
 
 ## Decisions log
 - D1 Modular monolith (FastAPI routers per service) instead of microservices — same boundaries, 1/10 ops cost.

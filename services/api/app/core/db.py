@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import threading
 from datetime import UTC, datetime
 
 from sqlmodel import Field, Session, SQLModel, create_engine, select
@@ -10,13 +11,18 @@ from sqlmodel import Field, Session, SQLModel, create_engine, select
 from app.core.config import get_settings
 
 _engine = None
+_engine_lock = threading.Lock()
 
 
 def engine():
+    """Lazily create the engine + tables exactly once (thread-safe: parallel in-process calls on a fresh DB)."""
     global _engine
     if _engine is None:
-        _engine = create_engine(get_settings().database_url, connect_args={"check_same_thread": False})
-        SQLModel.metadata.create_all(_engine)
+        with _engine_lock:
+            if _engine is None:
+                eng = create_engine(get_settings().database_url, connect_args={"check_same_thread": False})
+                SQLModel.metadata.create_all(eng)
+                _engine = eng
     return _engine
 
 

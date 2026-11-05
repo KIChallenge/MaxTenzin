@@ -36,6 +36,7 @@ def test_hero_flow_document_benefits_form_render(client):
 
     r2 = chat(client, MARIA_ANNA, "Bitte bereite den Pflegegeld-Antrag vor.", cid)
     assert tools(r2)[:2] == ["start_form", "get_next_questions"]
+    assert any(a["kind"] == "open_form" and a["url"].startswith("/forms/") for a in r2["actions"])
     assert r2["reply"].count("?") <= 3  # at most 1-2 questions
 
     seen = set(tools(r1) + tools(r2))
@@ -52,6 +53,9 @@ def test_hero_flow_document_benefits_form_render(client):
     r = chat(client, MARIA_ANNA, "Bitte erstelle jetzt den PDF-Entwurf.", cid)
     seen |= set(tools(r))
     assert "render_form" in seen
+    if "render_form" in tools(r):
+        dl = next(a for a in r["actions"] if a["kind"] == "download_pdf")
+        assert dl["method"] == "POST" and dl["url"].endswith("/render")
     hist = client.get(f"/api/agent/conversations/{cid}", headers=MARIA_ANNA).json()
     assert len(hist["turns"]) >= 3
 
@@ -228,3 +232,9 @@ def test_live_failure_falls_back_to_scripted(client, monkeypatch):
     monkeypatch.setattr(orchestrator, "get_llm", lambda: SimpleNamespace(live=True))
     r = chat(client, STEFAN, "Welche Vorsorge ist fällig?")
     assert "get_prevention" in tools(r) and "laut Impfplan" in r["reply"]
+
+
+def test_question_limit_is_soft_rule():
+    assert guard.question_violations("Wie alt ist sie? Wo wohnt sie?") == []
+    assert guard.question_violations("A? B? C? D?")
+    assert guard.output_violations("A? B? C? D?", set()) == []  # never triggers the hard fallback

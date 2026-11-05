@@ -238,6 +238,15 @@ _SUBMIT_CLAIM = re.compile(r"\b(ich habe|habe ich|wurde|ist)\b[^.!?\n]{0,50}\b(e
 _MISSING_WORDING = re.compile(r"\b(ihnen|dir|ihm|ihr) fehl(t|en)\b|\bfehlende impfung", re.IGNORECASE)
 
 
+MAX_QUESTIONS = 2
+
+
+def question_violations(reply: str) -> list[str]:
+    """Soft rule: ask only what is needed — at most two questions per turn (regenerate once, never hard-fail)."""
+    n = len(re.findall(r"\?(?=\s|$|\*|\))", reply))
+    return [f"{n} Rückfragen – stelle höchstens {MAX_QUESTIONS}, die wichtigsten zuerst"] if n > MAX_QUESTIONS else []
+
+
 def output_violations(reply: str, allowed_numbers: set[float]) -> list[str]:
     problems = []
     bad = sorted({a for a in amounts_in_text(reply) if a not in allowed_numbers})
