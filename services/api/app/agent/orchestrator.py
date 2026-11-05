@@ -385,6 +385,8 @@ _TOOL_RE = re.compile(r"`?\b(" + "|".join(_TOOL_DE) + r")\b`?")
 def _sanitize(reply: str) -> str:
     """Never show internal ids (session UUIDs) or internal tool names to the person."""
     out = _TOOL_RE.sub(lambda m: _TOOL_DE[m.group(1)], _UUID.sub("", reply))
+    out = re.sub(r"[^\n]*\b(provider_id|slot_id|session_id|episode_id|case_id|step_id)\b[^\n]*\n?", "", out)
+    out = re.sub(r"\s*\(?`?demo-[a-z0-9-]+`?\)?", "", out)
     out = re.sub(r"\n*\**Quellen:?\**:?\s*(keine|keine angegeben|keine Tool-Ergebnisse)[^\n]*", "", out, flags=re.IGNORECASE)
     return out.strip()
 
