@@ -414,8 +414,12 @@ function Review({
         <p className="mt-1">{definition.submit_info_de}</p>
         <p className="mt-1 text-muted">Bitte prüfen Sie das PDF, unterschreiben Sie es und senden Sie es selbst ab. Ärztliche Abschnitte bleiben leer.</p>
         <div className="mt-4 flex flex-wrap gap-3">
-          <button type="button" className="btn-primary" onClick={onPdf} disabled={pdfBusy}>
-            {pdfBusy ? "PDF wird erstellt …" : "⬇ Entwurf als PDF"}
+          <button type="button" className={missing.length > 0 ? "btn-secondary" : "btn-primary"} onClick={onPdf} disabled={pdfBusy}>
+            {pdfBusy
+              ? "PDF wird erstellt …"
+              : missing.length > 0
+                ? `⬇ Unvollständigen Entwurf herunterladen (${missing.length} Pflichtangaben fehlen)`
+                : "⬇ Entwurf als PDF"}
           </button>
           <Link href="/fall" className="btn-secondary">
             Weiter zu „Mein Fall“
