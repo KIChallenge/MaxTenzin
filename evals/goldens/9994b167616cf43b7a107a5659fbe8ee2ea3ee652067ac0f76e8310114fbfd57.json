@@ -1,0 +1,152 @@
+{
+  "sha256": "9994b167616cf43b7a107a5659fbe8ee2ea3ee652067ac0f76e8310114fbfd57",
+  "source_filename": "Entlassungsbefund.pdf",
+  "demo_document_id": "doc-anna-entlassung",
+  "demo_subject_id": "anna",
+  "verified": "Hand-checked 2026-11-05 against pypdf page text; every quote verified verbatim (whitespace-normalised) on its page.",
+  "analysis": {
+    "filename": "Entlassungsbefund.pdf",
+    "doc_type": "discharge_letter",
+    "pages": 7,
+    "person": {
+      "first_name": "Anna",
+      "last_name": "Berger",
+      "birth_date": "1948-03-14",
+      "address": "Musterstraße 12, 1030 Wien",
+      "insurer": "ÖGK",
+      "living_situation": "Lebt allein in einer Mietwohnung mit Lift"
+    },
+    "recommendations": [
+      {
+        "id": "r1",
+        "text_de": "Im Entlassungsbrief wird die Prüfung einer stationären onkologischen Rehabilitation nach Abschluss der Strahlentherapie empfohlen.",
+        "quote": "Prüfung einer stationären onkologischen Rehabilitation nach Abschluss der geplanten Strahlentherapie.",
+        "page": 5,
+        "category": "rehabilitation",
+        "related_benefit_ids": [
+          "reha_onko"
+        ]
+      },
+      {
+        "id": "r2",
+        "text_de": "Laut Entlassungsbrief soll geprüft werden, ob die Voraussetzungen für Pflegegeld erfüllt sind.",
+        "quote": "Aufgrund des voraussichtlich längerfristigen Unterstützungsbedarfs soll geprüft werden, ob die Voraussetzungen für Pflegegeld erfüllt sind.",
+        "page": 6,
+        "category": "care",
+        "related_benefit_ids": [
+          "pflegegeld"
+        ]
+      },
+      {
+        "id": "r3",
+        "text_de": "Im Entlassungsbrief wird mobile Hauskrankenpflege empfohlen.",
+        "quote": "Mobile Hauskrankenpflege zur Unterstützung bei pflegerischen Aufgaben und zur Beobachtung des Allgemeinzustands.",
+        "page": 4,
+        "category": "care",
+        "related_benefit_ids": [
+          "fsw_mobile_pflege"
+        ]
+      },
+      {
+        "id": "r4",
+        "text_de": "Laut Entlassungsbrief soll geklärt werden, ob eine Transportleistung zu den Bestrahlungsterminen in Betracht kommt.",
+        "quote": "Prüfung, ob aufgrund des Gesundheitszustands und der geltenden Voraussetzungen eine medizinisch begründete Transportleistung zulasten des zuständigen Kostenträgers in Betracht kommt.",
+        "page": 6,
+        "category": "transport",
+        "related_benefit_ids": [
+          "krankentransport",
+          "fahrtkostenzuschuss"
+        ]
+      },
+      {
+        "id": "r5",
+        "text_de": "Laut Entlassungsbrief soll über die Rezeptgebührenbefreiung informiert werden.",
+        "quote": "Bei entsprechender finanzieller Situation Information über die Voraussetzungen einer Rezeptgebührenbefreiung.",
+        "page": 6,
+        "category": "costs",
+        "related_benefit_ids": [
+          "rezeptgebuehrenbefreiung"
+        ]
+      },
+      {
+        "id": "r6",
+        "text_de": "Laut Entlassungsbrief sollen mögliche Unterstützungsleistungen für Fahrten zu notwendigen Behandlungsterminen geklärt werden.",
+        "quote": "Klärung möglicher Unterstützungsleistungen für Fahrten zu notwendigen Behandlungsterminen.",
+        "page": 6,
+        "category": "transport",
+        "related_benefit_ids": [
+          "fahrtkostenzuschuss"
+        ]
+      },
+      {
+        "id": "r7",
+        "text_de": "Laut Entlassungsbrief soll mit den zuständigen Wiener Beratungs- und Servicestellen Kontakt aufgenommen werden, um mobile Pflege und gegebenenfalls weitere Alltagshilfen zu organisieren.",
+        "quote": "Kontaktaufnahme mit den zuständigen Wiener Beratungs- und Servicestellen zur Organisation mobiler Pflege und gegebenenfalls weiterer Alltagshilfen.",
+        "page": 6,
+        "category": "care",
+        "related_benefit_ids": [
+          "fsw_mobile_pflege",
+          "pflegeberatung"
+        ]
+      },
+      {
+        "id": "r8",
+        "text_de": "Laut Entlassungsbrief sollen Informationen zur Antragstellung (Pflegegeld) und zum zuständigen Entscheidungsträger eingeholt werden.",
+        "quote": "Informationen zur Antragstellung und zum zuständigen Entscheidungsträger sollen eingeholt werden.",
+        "page": 6,
+        "category": "care",
+        "related_benefit_ids": [
+          "pflegegeld"
+        ]
+      },
+      {
+        "id": "r9",
+        "text_de": "Im Entlassungsbrief wird Unterstützung bei Körperpflege, Einkäufen, Haushaltsführung und gegebenenfalls Essensversorgung empfohlen.",
+        "quote": "Unterstützung bei Körperpflege, Einkäufen, Haushaltsführung und gegebenenfalls Essensversorgung.",
+        "page": 4,
+        "category": "care",
+        "related_benefit_ids": [
+          "fsw_mobile_pflege"
+        ]
+      },
+      {
+        "id": "r10",
+        "text_de": "Laut Entlassungsbrief soll der Reha-Antrag rechtzeitig mit dem onkologischen Team bzw. der Hausärztin vorbereitet werden.",
+        "quote": "Der Antrag soll rechtzeitig mit dem behandelnden onkologischen Team bzw. der Hausärztin vorbereitet werden.",
+        "page": 5,
+        "category": "rehabilitation",
+        "related_benefit_ids": [
+          "reha_onko"
+        ]
+      },
+      {
+        "id": "r11",
+        "text_de": "Im Entlassungsbrief wird eine zeitnahe hausärztliche Kontrolle nach der Entlassung empfohlen.",
+        "quote": "Zeitnahe Kontrolle nach der Entlassung.",
+        "page": 4,
+        "category": "follow_up",
+        "related_benefit_ids": []
+      },
+      {
+        "id": "r12",
+        "text_de": "Im Entlassungsbrief wird empfohlen, die Ernährungssituation zu überprüfen und bei Bedarf eine Ernährungsberatung einzubinden.",
+        "quote": "Überprüfung der Ernährungssituation und bei Bedarf Einbindung einer Ernährungsberatung.",
+        "page": 4,
+        "category": "nutrition",
+        "related_benefit_ids": []
+      }
+    ],
+    "open_tasks": [
+      "Termin zur hausärztlichen Kontrolle vereinbaren",
+      "Weitere Bestrahlungstermine koordinieren",
+      "Aktuellen Medikationsplan abstimmen",
+      "Mobile Hauskrankenpflege organisieren",
+      "Rehabilitationsantrag vorbereiten",
+      "Pflegegeldanspruch prüfen",
+      "Fahrtmöglichkeiten zu Behandlungsterminen klären",
+      "Rezeptgebührenbefreiung prüfen"
+    ],
+    "notice_de": "Ich gebe nur wieder, was im Dokument ausdrücklich steht. Medizinische Fragen klären Sie bitte mit Ihrer Ärztin bzw. Ihrem Arzt.",
+    "extraction_mode": "golden"
+  }
+}
