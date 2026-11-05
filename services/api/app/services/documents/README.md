@@ -41,6 +41,11 @@ Each golden is keyed by the sha256 of the PDF and holds only quotes and structur
 
 ## Demo seeding (optional, local only)
 `cd services/api && RAW_DATA_DIR=/path/to/docs uv run python -m app.services.documents.seed_demo` copies the demo PDFs into `var/uploads` under their demo ids, stores their analyses and imports Stefan's e-Impfpass.
+- `SEED_SKIP_DOCS=<id>[,<id>…]` leaves those demo documents out (`make demo-fresh` skips `doc-anna-entlassung`, which
+  Maria uploads as photos on stage).
+- `DEMO_LIVE=1` additionally sets the live demo start state (`seed_live_start`): the Anna → Maria delegation without
+  `read_documents` and `prepare_applications` (Anna grants them on stage) and Stefan's preference language = English.
+`make seed` runs the plain seed; `make demo-fresh` runs it with both variables after a preflight on the full data.
 
 ## Sources
 The document itself: every recommendation carries a quote and a page. The audit log records `"<filename>, S. <page>"` and rule `documents.quote_verification.v1`.

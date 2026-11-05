@@ -7,12 +7,13 @@ added by other services (Lebenslage, appointments). Status open / in_progress / 
 | Method | Path | Notes |
 |---|---|---|
 | GET | `` · `/{id}` | cases of the subject (404 for other subjects) |
-| POST | `` | `{title_de, document_id?, benefit_ids}` → steps from the document's `open_tasks` (responsible party by rule) + benefits |
+| POST | `` | `{title_de, document_id?, benefit_ids}` → steps from the document's `open_tasks` (responsible party by rule) + benefits + the steps of an already confirmed Lebenslage (Meldepflicht, Reha antreten …), so a case created after the Lebenslage is complete |
 | PATCH | `/{id}/steps/{step_id}` | `{status?, form_session_id?}` (linking a form → in_progress) |
 | POST | `/{id}/steps` | add steps, idempotent by step id – used by situation (Meldepflicht, Reha antreten) and appointments via HTTP |
 
 ## Rules & sources
 Deterministic keyword → benefit mapping (`service.py` `TASK_RULES`); each document step carries the document as source.
+Benefit steps without a curated title use the German catalog name ("Leistung prüfen: <name_de>"), never the internal id.
 
 ## Limitations
 No due-date reminders of its own (reminders come from Lebenslage/notifications). Steps from the situation service go to

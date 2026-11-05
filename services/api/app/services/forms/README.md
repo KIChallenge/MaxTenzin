@@ -26,7 +26,9 @@ Sessions are scoped to the subject (other subjects get 404). Status: `draft` →
   is generated from them (`uv run python -m app.services.forms.spec`) and a test keeps it in sync.
 - Per field: `pdf_field` (defaults to `id`), `pdf_on_value` (checkbox), `pdf_options` (choice → radio export state),
   `pdf_overflow` + `max_chars` (long text continues on the form's next line), `when` (relevance: other field value or
-  `proxy`), `required` / `recommended`, `ask_hint_de`, `prefill`, `doctor_only` + `readonly_reason_de`.
+  `proxy`), `required` / `recommended`, `ask_hint_de`, `prefill`, `blank_from_prefill`, `doctor_only` +
+  `readonly_reason_de`. `blank_from_prefill: true`: a prefill that resolves to `""` *with* a source means "known:
+  leave empty" – the empty value is stored with its source and `next-questions` does not ask for it again.
 - Prefill (`prefill.py`): `profile.*` (subject), `actor.*` + `delegation.*` (only when acting for someone else),
   `document.*` (admin facts from the analysis, quote + page), `situation.*` (confirmed Lebenslage episodes, only if
   the actor has `manage_situation`; see `situation/README.md`), `system.today`, `const:` (a suggestion). Rules may
@@ -39,6 +41,9 @@ Sessions are scoped to the subject (other subjects get 404). Status: `draft` →
   in `documents/facts.py`, quote + page, unconfirmed — the person checks it); Lotsi adds the secondary diagnoses
   verbatim on request. Other document prefills are administrative: hospital stay (§5 Krankenanstalt = ja, KH bis =
   discharge date) and the attachment "Kopie des Entlassungsbefunds".
+- **Lebenslage "zu Hause mit Unterstützung"** (active `home_care` episode, no active stationary stay): PAL 080
+  "Betreuung durch andere Person" = ja (`situation.home_care.any`) and "vorübergehender Aufenthaltsort" stays empty
+  (`situation.home_care.temp_stay` + `blank_from_prefill`); neither is asked again. Without that episode both are asked.
 - **Doctor-only:** `doctor_only_pages` blocks every AcroForm field whose widgets lie only on those pages
   (Kur/Reha p. 2 "Ärztliche Stellungnahme"); such fields are never prefilled, never asked, PATCH → 422, and are dropped
   at render even if a session was tampered with. Header fields shared with page 1 (VSNR) stay writable.
@@ -62,7 +67,8 @@ start, preview and render cite the form version in the audit log (`ctx.cite`). P
 ## Limitations
 - PAL080 "Antragsart" defaults to "Zuerkennung / Erhöhung" (unconfirmed suggestion) to keep the demo session short;
   Yes/No sections (§4–§9) are `recommended`, not required, for the same reason (Lotsi offers them via
-  `next-questions?include_optional=true`). KH von / Spital are asked: the letter has no admission date or hospital name.
+  `next-questions?include_optional=true`). KH von / Spital are asked (KH von only for the admission date; KH bis comes from the letter): the letter has no
+  admission date or hospital name.
 - No IBAN checksum / SVNR check digit validation. Text is not wrapped inside a single line; very long values shrink
   (auto font size) in viewers.
 - Document prefill reads `store('document_analyses')`; the document must have been analysed first.
@@ -72,4 +78,5 @@ start, preview and render cite the form version in the audit log (`ctx.cite`). P
 states exist in the PDF, doctor-only enforcement, Maria→Anna prefill, document prefill, HTTP session flow + 422,
 render read-back with pypdf, preview. `test_prefill_facts.py` — document facts (discharge date, verbatim diagnosis)
 with quote + page. `test_prefill_situation.py` — Lebenslage prefill vs. document fallback, no mixing, scope check.
+`test_lebenslage_prefill_home.py` — home care prefills "Betreuung" and the known-empty temporary stay.
 Run `make test-api`.

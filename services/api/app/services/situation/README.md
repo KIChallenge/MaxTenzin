@@ -53,9 +53,11 @@ Episodes of another subject → 404. Create/confirm/patch add Mein-Fall steps (s
   if the actor has `manage_situation` for the subject): stationary stays (hospital, rehab_inpatient, cure,
   nursing_home; active or ended ≤ 365 days), most recent first → `stay.any`, `stay1.*`/`stay2.*`
   (`start`, `end`, `institution`); `hospital.*`; ended Reha/Kur ≤ 5 years → `rehab5y.any`, `rehab5y_N.when|where`;
-  active therapy → `therapy.kind|institution`. Rules may chain alternatives (`situation.stay1.end|document.discharge_date`);
+  active therapy → `therapy.kind|institution`; active home_care with no active stationary stay → `home_care.any` ("ja")
+  and `home_care.temp_stay` ("" with source = known empty, see `blank_from_prefill` in `forms/README.md`). Rules may chain alternatives (`situation.stay1.end|document.discharge_date`);
   a known-but-empty situation value stops the chain so two stays are never mixed. Used in PAL 080 § 5, Kur/Reha
-  "Frühere Aufenthalte" and ÖGK Fahrtkosten "Art der Behandlung"/"Behandler/in".
+  "Frühere Aufenthalte", ÖGK Fahrtkosten "Art der Behandlung"/"Behandler/in" and PAL 080 § 4 "Betreuung durch andere
+  Person" / "vorübergehender Aufenthaltsort".
 - **Case steps** (deterministic ids `sit-<episode>-<rule>`, added once to the subject's most recent case):
   "Spitalsaufenthalt an die PVA melden (bis …)", "Reha antreten", "Nach der Reha: Pflegebedarf neu einschätzen lassen".
   The case list is read via `GET /api/cases` and new steps are added via `POST /api/cases/{id}/steps` (idempotent by

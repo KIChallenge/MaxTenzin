@@ -14,7 +14,7 @@ Obergrenze) or the verbatim brochure sentence (Heilbehelfe/Hilfsmittel, Servicer
 | POST | `/api/benefits/eligibility` | `EligibilityRequest` → `list[EligibilityResult]` (catalog order). Without `benefit_ids` offers are left out; request them by id or via bundles |
 | GET | `/api/benefits/rezeptgebuehr/check?net_income_monthly=&household=alleinstehend\|paar&children_count=&chronic_illness_expenses=&receives_ausgleichszulage=` | calculator → results for `rezeptgebuehrenbefreiung` + `rezeptgebuehrenobergrenze` |
 | GET | `/api/benefits/bundles/catalog` | all 5 bundles, evaluated for the current person without facts |
-| POST | `/api/benefits/bundles/match` | `BundleRequest` {`situation` id \| `text`, `facts`, `document_ids`} → `Bundle` or `null` (text matches nothing). Unknown id → 404; neither → 422; only `document_ids` → `nach_spital` |
+| POST | `/api/benefits/bundles/match` | `BundleRequest` {`situation` id \| `text`, `facts`, `document_ids`} → `Bundle` or `null` (text matches nothing). Unknown id → 404; neither → 422; only `document_ids` → `nach_spital` if one of them is a discharge letter (or unclassified letter) of the subject, else `null` (imaging reports / e-Impfpass imply no hospital stay); the same check applies when free text matches nothing |
 
 `subject_id` must equal the acting context (`X-Subject-Id`), else 403. `document_ids` need scope `read_documents`;
 analyses are read from store collection `document_analyses` (WS-D), fallback: golden `doc-anna-entlassung` for Anna.
@@ -89,6 +89,9 @@ bundle evaluation merges them: request facts win over known facts, known facts w
 
 - Matching: lower-case + umlaut folding + punctuation removed; keyword matches at a word start; 3 points per strong,
   1 per weak keyword; highest wins, ties by file order; audit rule `bundles.match.text:<id>:<hits>`.
+  Keyword lists are German plus English (e.g. "my health", "flu shot", "child", "daughter"), so English requests
+  match the same bundles. Document-only fallback: audit rule `bundles.match.document:nach_spital` or
+  `bundles.match.document:none`.
 - Items: benefit/offer status from `service.evaluate` (same facts and document recommendations as `/eligibility`;
   a document recommendation becomes the item's source + "Im Dokument ausdrücklich empfohlen (Datei, S. x)");
   `not_applicable` items are dropped; prevention items need scope `view_health_prevention` (else skipped, audit
