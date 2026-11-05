@@ -3,6 +3,7 @@
 // (same session, PATCH via X-Via: agent) appear live; fields being edited are never overwritten.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { ApiError } from "@/components/ApiError";
 import { SourceChip } from "@/components/SourceChip";
 import { bff } from "@/lib/client";
 import type { FieldValue, FormDefinition, FormField, FormSession, NextQuestions } from "@/lib/types";
@@ -22,6 +23,8 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [pdfBusy, setPdfBusy] = useState(false);
+  // Access lost while the wizard is open (e.g. the represented person revoked the scope).
+  const [lost, setLost] = useState<{ status: number; detail: string } | null>(null);
   // Server truth for "missing": respects conditional fields (e.g. other citizenship only if "andere").
   const [missingIds, setMissingIds] = useState<Set<string> | null>(null);
   const [serverProgress, setServerProgress] = useState<number | null>(null);
@@ -72,7 +75,11 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
     const t = setInterval(async () => {
       if (document.hidden) return;
       const r = await bff<FormSession>(`/api/forms/sessions/${session.id}`);
-      if (r.ok && r.data.updated_at !== session.updated_at) applyRemote(r.data);
+      if (!r.ok && (r.status === 403 || r.status === 404)) setLost({ status: r.status, detail: r.detail });
+      else if (r.ok) {
+        setLost(null);
+        if (r.data.updated_at !== session.updated_at) applyRemote(r.data);
+      }
     }, 2000);
     return () => clearInterval(t);
   }, [session.id, session.updated_at, applyRemote]);
@@ -119,6 +126,8 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
 
   const current = steps[step];
   const isReview = current === REVIEW;
+
+  if (lost) return <ApiError status={lost.status} detail={lost.detail} subjectName={subjectName} />;
 
   return (
     <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
