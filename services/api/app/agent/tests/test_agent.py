@@ -351,3 +351,10 @@ def test_situation_suggestion_needs_explicit_consent():
     from app.agent.orchestrator import _CONSENT_YES
 
     assert _CONSENT_YES.search("Ja, bitte übernehmen") and not _CONSENT_YES.search("Was steht im Brief?")
+
+
+def test_copy_request_is_not_a_boundary_but_interpretation_is():
+    assert guard.is_copy_request("mein entlassungsbefund ist anbei - bitte daraus die krankheiten und beeinträchtigungen nehmen.")
+    assert guard.is_copy_request("Bitte trag die Diagnose aus dem Entlassungsbrief wörtlich in den Antrag ein.")
+    assert not guard.is_copy_request("Was bedeutet die Diagnose im Entlassungsbrief?")
+    assert not guard.is_copy_request("Ist die Krankheit heilbar? Bitte übernehmen.")

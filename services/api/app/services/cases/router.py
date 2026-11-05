@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.contracts.cases import Case, CaseCreate, StepStatus, StepUpdate
+from app.contracts.cases import Case, CaseCreate, CaseStep, StepStatus, StepUpdate
 from app.contracts.documents import DocumentAnalysis
 from app.contracts.identity import Scope
 from app.core.auth import Context, require
@@ -65,4 +65,16 @@ def update_step(case_id: str, step_id: str, body: StepUpdate, ctx: Context = Dep
         if step.status == StepStatus.open:
             step.status = StepStatus.in_progress
     store.put(COLL, case.id, case.model_dump(), subject_id=ctx.subject.id)
+    return case
+
+
+@router.post("/{case_id}/steps", response_model=Case, summary="Add steps (idempotent by step id) – used by other services")
+def add_steps(case_id: str, steps: list[CaseStep], ctx: Context = Depends(require(Scope.manage_case))):
+    case = _load(case_id, ctx)
+    have = {s.id for s in case.steps}
+    new = [s for s in steps if s.id not in have]
+    case.steps.extend(new)
+    if new:
+        store.put(COLL, case.id, case.model_dump(), subject_id=ctx.subject.id)
+        ctx.rule_ids.append(f"cases.steps_added:{len(new)}")
     return case

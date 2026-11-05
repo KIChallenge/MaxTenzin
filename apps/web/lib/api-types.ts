@@ -673,6 +673,23 @@ export interface paths {
         patch: operations["update_step_api_cases__case_id__steps__step_id__patch"];
         trace?: never;
     };
+    "/api/cases/{case_id}/steps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add steps (idempotent by step id) – used by other services */
+        post: operations["add_steps_api_cases__case_id__steps_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/appointments/providers": {
         parameters: {
             query?: never;
@@ -2848,7 +2865,10 @@ export interface operations {
     };
     overview_api_situation_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Stichtag (ISO), default heute */
+                as_of?: string | null;
+            };
             header?: {
                 Authorization?: string;
                 "X-Subject-Id"?: string | null;
@@ -4112,6 +4132,46 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["StepUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Case"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_steps_api_cases__case_id__steps_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CaseStep"][];
             };
         };
         responses: {

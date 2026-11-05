@@ -4,6 +4,8 @@ Scopes therefore apply transitively: no 'view_health_prevention' for this subjec
 REAL (WS-C).
 """
 
+import hashlib
+
 import httpx
 from fastapi import APIRouter, Depends, Request
 
@@ -39,6 +41,16 @@ async def inbox(request: Request, ctx: Context = Depends(require())):
                 out.append(Notification(id=nid, subject_id=sid, kind="prevention", created_at=now_iso(),
                                         title_de=item["title_de"], body_de=item["explanation_de"], link="/prevention",
                                         read=_is_read(sid, nid)))
+    sit = await _call(request, "/api/situation")
+    if sit.status_code == 200:
+        for eff in sit.json().get("effects", []):
+            if eff["kind"] != "reminder":
+                continue
+            nid = f"sit-{eff.get('episode_id') or 'x'}-{hashlib.sha1(eff['title_de'].encode()).hexdigest()[:8]}"
+            due = f" – Frist: {eff['due_date'][8:10]}.{eff['due_date'][5:7]}.{eff['due_date'][:4]}" if eff.get("due_date") else ""
+            out.append(Notification(id=nid, subject_id=sid, kind="situation", created_at=now_iso(),
+                                    title_de=eff["title_de"] + due, body_de=eff.get("detail_de") or "",
+                                    link="/lebenslage", read=_is_read(sid, nid)))
     cases = await _call(request, "/api/cases")
     if cases.status_code == 200:
         for case in cases.json():

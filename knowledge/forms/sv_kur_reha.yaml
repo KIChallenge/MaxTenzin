@@ -264,13 +264,16 @@ fields:
     options: [nein, ja]
     pdf_options: {nein: /n, ja: /j}
     ask_hint_de: Gab es in den letzten fünf Jahren schon einen Reha-, Kur- oder Erholungsaufenthalt, den die Versicherung mitbezahlt hat?
+    prefill: situation.rehab5y.any
   - {id: Wann1, label_de: Aufenthalt 1 – wann, type: text, required: true, ask_hint_de: "Wann war der Aufenthalt?",
+     prefill: situation.rehab5y_1.when,
      section: Frühere Aufenthalte, when: {field: Aufenthalt innerhalb von  Jahren, equals: ja}}
   - {id: Wo1, label_de: Aufenthalt 1 – wo, type: text, required: true, ask_hint_de: "Wo war der Aufenthalt?",
+     prefill: situation.rehab5y_1.where,
      section: Frühere Aufenthalte, when: {field: Aufenthalt innerhalb von  Jahren, equals: ja}}
-  - {id: Wann2, label_de: Aufenthalt 2 – wann, type: text,
+  - {id: Wann2, label_de: Aufenthalt 2 – wann, type: text, prefill: situation.rehab5y_2.when,
      section: Frühere Aufenthalte, when: {field: Aufenthalt innerhalb von  Jahren, equals: ja}}
-  - {id: Wo2, label_de: Aufenthalt 2 – wo, type: text,
+  - {id: Wo2, label_de: Aufenthalt 2 – wo, type: text, prefill: situation.rehab5y_2.where,
      section: Frühere Aufenthalte, when: {field: Aufenthalt innerhalb von  Jahren, equals: ja}}
   - id: Datum
     label_de: Datum (neben der Unterschrift)

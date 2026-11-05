@@ -25,7 +25,7 @@ Single source of truth for all sessions. Update your row at start and at Definit
 | WS-T | appointments (providers, slots by preferences, booking, ics) | bg agent | ws/T-appointments | merged | — | providers outside Wien not covered |
 | WS-V | photo upload (vision transcription → same pipeline) | bg agent | ws/V-vision | merged | — | quotes verified against model transcription (notice shown) |
 | WS-K2 | catalog: offers (Gesundheitsförderung), Heilbehelfe, Angehörige, Sozialhilfe, bundles, family history | bg agent | ws/K2-catalog | doing | — | — |
-| WS-S | Lebenslage (episodes, suggestions w/ consent, effects) | bg agent | ws/S-situation | doing | — | — |
+| WS-S | Lebenslage (episodes, suggestions w/ consent, effects) | bg agent | ws/S-situation | merged | — | benefits facts wiring after WS-K2 |
 
 ## Task checklists
 - WS-W: login, header/subject switch + scopes, cockpit + inbox, Dokumente, Leistungen, Antrag-Wizard (2 s poll, PDF), Chat panel, Mein Fall, Vorsorge, Transparenz, Vertretung, 403 handling, Stellen/Medikamente/Recht — build + lint green, screenshots in `documentation/screenshots/`.
@@ -66,6 +66,8 @@ See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished it
 
 - (integrator, done) Lotsi: offered slots kept in memo (exact slot ids → "den ersten" books the right slot), calendar + "Meine Termine" chat actions, internal tool names translated / empty "Quellen" lines stripped; Lebenslage tools with deterministic consent backstop. Live: appointment dialogue from the use case (Anlass → Nähe → vormittags → buchen) works; photo upload (2 JPG pages) → 8 verified recommendations + Entlassungsdatum.
 
+- (integrator, done) Diagnosis loop fixed (user report): copying documented diagnoses VERBATIM into PAL 080 "Krankheiten" is administrative (use case §4) → deterministic copy-intent exemption before the LLM boundary check; documents extract `main_diagnosis` / `secondary_diagnoses` facts verbatim (quote+page); PAL 080 `Leiden` prefilled unconfirmed from `document.main_diagnosis`; on an explicit copy request with an open form, Lotsi writes it deterministically. Interpretation questions ("Was bedeutet …? heilbar?") still blocked. Cases: `POST /api/cases/{id}/steps` (situation no longer writes the store directly); Lebenslage reminders in the inbox. Evals 28/28.
+
 ## Decisions log
 - D1 Modular monolith (FastAPI routers per service) instead of microservices — same boundaries, 1/10 ops cost.
 - D2 Raw data in `docs/` gitignored; deterministic extraction into committed `knowledge/extracted/` (`make extract`).
@@ -74,6 +76,7 @@ See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished it
 - D5 Mock ID Austria: stateless token `demo-<persona>` + `X-Subject-Id`; scopes from delegations; AI inherits user's scopes.
 - D7 Statute-only amounts (Satzung ÖGK § 46 Fahrtkosten, RRZ § 13 2 %-cap) are cited from the paragraph; veraendW stays primary where a table exists.
 - D8 Clinical instructions to physicians are never relisted, even if quoted verbatim (deterministic filter after LLM).
+- D9 Verbatim copying of documented diagnoses into forms that ask for them is allowed (unconfirmed, quote+page); explaining/assessing them is not.
 - D6 LLM: Azure AI Foundry OpenAI-v1 endpoint, model `gpt-5-4-mini`, fake mode for tests/offline.
 
 ## Cut list (→ roadmap slide)

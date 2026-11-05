@@ -233,7 +233,12 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
     memo["_user_consented"] = bool(_CONSENT_YES.search(req.message or ""))
 
     hit = guard.check_boundary(req.message)
-    category = hit.category if hit else await _llm_boundary_check(req.message)
+    if hit:
+        category = hit.category
+    elif guard.is_copy_request(req.message):
+        category = None  # verbatim copy of documented diagnoses into a form: administrative (use case §4)
+    else:
+        category = await _llm_boundary_check(req.message)
     if category:
         reply, suggestions = guard.boundary_reply(category, lang)
         mode = f"boundary:{category}"
@@ -285,6 +290,12 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
             # Relay the form's own validation message verbatim instead of letting the model guess why.
             reply = ("**Nicht übernommen:** " + (rejected[-1].error_de or "Die Angabe passt nicht zum Formular.")
                      + "\n\n" + reply)
+        if guard.is_copy_request(req.message) and memo.get("form_session_id") and \
+                not any(o.tool == "set_form_fields" and o.ok for o in outcomes):
+            # Explicit request to copy documented diagnoses into the open form: do it deterministically, verbatim.
+            o = await _copy_diagnoses(client, run, memo, req.document_ids, outcomes)
+            if o is not None:
+                outcomes.append(o)
         writes = [o for o in outcomes if o.tool == "set_form_fields" and o.ok]
         if writes:
             reply = await _form_write_reply(client, writes, reply)
@@ -392,3 +403,30 @@ def _sanitize(reply: str) -> str:
 
 
 _CONSENT_YES = re.compile(r"\b(ja|jawohl|passt|stimmt|einverstanden|übernehmen|übernimm|bestätige|yes|evet)\b", re.IGNORECASE)
+
+
+LEIDEN_MAX = 190  # PAL 080 "Leiden" + overflow line "Leiden2"
+
+
+async def _copy_diagnoses(client: ToolClient, run, memo: dict, document_ids: list[str],
+                          outcomes: list[ToolOutcome]) -> ToolOutcome | None:
+    """Write the documented diagnoses verbatim into PAL 080 'Leiden' (main diagnosis; secondary ones if they fit)."""
+    if memo.get("form_id") != "pva_pflegegeld_pal080":
+        return None
+    facts: list[dict] = []
+    for o in outcomes:
+        if o.tool == "analyze_document" and o.ok and isinstance(o.data, dict):
+            facts = o.data.get("facts") or []
+    doc_id = (document_ids or [None])[0] or memo.get("last_document_id")
+    if not facts and doc_id:
+        r = await client.fetch(f"/api/documents/{doc_id}/analysis", "context:document_facts")
+        if r.status_code == 200:
+            facts = r.json().get("facts") or []
+    by_key = {f.get("key"): f.get("value") for f in facts}
+    main = by_key.get("main_diagnosis")
+    if not main:
+        return None
+    value = main
+    if by_key.get("secondary_diagnoses") and len(main) + 2 + len(by_key["secondary_diagnoses"]) <= LEIDEN_MAX:
+        value = f"{main}; {by_key['secondary_diagnoses']}"
+    return await run("set_form_fields", {"session_id": memo["form_session_id"], "values": {"Leiden": value}})

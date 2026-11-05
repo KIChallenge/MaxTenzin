@@ -131,6 +131,8 @@ def _compact_analysis(a: dict) -> dict:
                              "source": f"{a.get('filename')}, S. {r.get('page')}"}
                             for r in a.get("recommendations", [])],
         "open_tasks": a.get("open_tasks", []),
+        "facts": [{"key": f.get("key"), "value": f.get("value"), "source": f"{a.get('filename')}, S. {f.get('page')}"}
+                  for f in a.get("facts", [])],
         "notice_de": a.get("notice_de"),
     }
 

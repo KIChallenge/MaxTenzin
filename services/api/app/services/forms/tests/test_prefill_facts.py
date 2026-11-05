@@ -38,3 +38,17 @@ def test_source_labels_are_honest_and_when_exposed(client):
     assert not any(lbl.startswith("ID Austria") for k, lbl in labels.items() if k in ("Telefon", "Personenstand"))
     d = client.get("/api/forms/definitions/pva_pflegegeld_pal080", headers=H).json()
     assert any(f.get("when") for f in d["fields"])
+
+
+def test_main_diagnosis_prefilled_verbatim_unconfirmed(client):
+    from app.core.db import store
+
+    a = ANNA_ANALYSIS.model_copy(update={"document_id": "doc-test-diag", "facts": [
+        DocumentFact(key="main_diagnosis", value="Lokal fortgeschrittenes Rektumkarzinom mit regionalem Lymphknotenbefall",
+                     quote="Hauptdiagnose: Lokal fortgeschrittenes Rektumkarzinom mit regionalem Lymphknotenbefall.", page=1)]})
+    store.put("document_analyses", a.document_id, a.model_dump(), subject_id="anna")
+    s = client.post("/api/forms/definitions/pva_pflegegeld_pal080/sessions", params={"document_id": a.document_id},
+                    headers=H).json()
+    v = s["values"]["Leiden"]
+    assert v["value"].startswith("Lokal fortgeschrittenes Rektumkarzinom") and v["confirmed"] is False
+    assert v["source"]["quote"].startswith("Hauptdiagnose:")
