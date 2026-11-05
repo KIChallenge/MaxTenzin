@@ -6,6 +6,7 @@ Medical boundary: imaging reports and vaccination records never yield recommenda
 from __future__ import annotations
 
 import logging
+import re
 from pathlib import Path
 
 from app.contracts.documents import (
@@ -17,6 +18,7 @@ from app.contracts.documents import (
 )
 from app.core.llm import get_llm
 from app.services.documents import goldens
+from app.services.documents.facts import admin_facts
 from app.services.documents.verify import verify_recommendations
 
 log = logging.getLogger(__name__)
@@ -82,7 +84,8 @@ def analyze_pdf(document_id: str, filename: str, sha: str, doc_type: DocumentTyp
         analysis = DocumentAnalysis(document_id=document_id, filename=filename, doc_type=doc_type, pages=len(pages),
                                     person=ExtractedPerson(), recommendations=[], open_tasks=[], extraction_mode="fake")
     # Deterministic doc type wins over model/golden; boundary types never carry recommendations.
-    analysis = analysis.model_copy(update={"doc_type": doc_type, "pages": len(pages)})
+    analysis = analysis.model_copy(update={"doc_type": doc_type, "pages": len(pages),
+                                           "facts": admin_facts(doc_type, pages)})
     return enforce_boundary(verify(analysis, pages))
 
 
@@ -93,10 +96,24 @@ def verify(analysis: DocumentAnalysis, pages: list[str]) -> DocumentAnalysis:
     return analysis.model_copy(update={"recommendations": kept, "dropped_unverified": len(dropped)})
 
 
+# Clinical instructions addressed to physicians (labs, blood pressure, medication review, dosing) are not navigation
+# content: relisting them would read as medical advice. Narrow terms on purpose ("Strahlentherapie" in a Reha
+# recommendation must survive).
+CLINICAL = re.compile(r"Medikation|Medikament|antihypertensiv|Wechselwirkung|Blutbild|Elektrolyt|Nierenfunktion|"
+                      r"Blutdruck|Dosis|Dosierung|Laborkontroll|Laborwert", re.IGNORECASE)
+CLINICAL_NOTICE_DE = (" Medizinische Behandlungsempfehlungen an Ärztinnen und Ärzte (z. B. Laborkontrollen, Blutdruck, "
+                      "Medikation) gebe ich bewusst nicht wieder – bitte besprechen Sie diese mit Ihrer Hausärztin "
+                      "bzw. Ihrem Hausarzt.")
+
+
 def enforce_boundary(analysis: DocumentAnalysis) -> DocumentAnalysis:
     if analysis.doc_type in NO_RECOMMENDATION_TYPES:
         update: dict = {"recommendations": [], "open_tasks": []}
         if analysis.doc_type == DocumentType.imaging_report:
             update["notice_de"] = IMAGING_NOTICE_DE
         return analysis.model_copy(update=update)
-    return analysis
+    kept = [r for r in analysis.recommendations if not CLINICAL.search(r.quote)]
+    if len(kept) == len(analysis.recommendations):
+        return analysis
+    notice = analysis.notice_de if CLINICAL_NOTICE_DE in analysis.notice_de else analysis.notice_de + CLINICAL_NOTICE_DE
+    return analysis.model_copy(update={"recommendations": kept, "notice_de": notice})

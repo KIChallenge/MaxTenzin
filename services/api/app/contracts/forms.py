@@ -44,6 +44,7 @@ class FormSession(BaseModel):
     form_id: str
     subject_id: str
     actor_id: str
+    document_id: str | None = None    # document the prefill was taken from (if any)
     values: dict[str, FieldValue]
     status: str = "draft"             # draft | ready | rendered  (never 'submitted')
     updated_at: str

@@ -4849,6 +4849,15 @@
             "title": "Extraction Mode",
             "default": "live"
           },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentFact"
+            },
+            "type": "array",
+            "title": "Facts",
+            "description": "Deterministic administrative facts (e.g. Entlassungsdatum)",
+            "default": []
+          },
           "dropped_unverified": {
             "type": "integer",
             "title": "Dropped Unverified",
@@ -4866,6 +4875,35 @@
           "recommendations"
         ],
         "title": "DocumentAnalysis"
+      },
+      "DocumentFact": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "value": {
+            "type": "string",
+            "title": "Value"
+          },
+          "quote": {
+            "type": "string",
+            "title": "Quote"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "value",
+          "quote",
+          "page"
+        ],
+        "title": "DocumentFact",
+        "description": "Administrative fact found deterministically in a document (never medical content), with quote + page."
       },
       "DocumentSummary": {
         "properties": {
@@ -5340,6 +5378,17 @@
           "actor_id": {
             "type": "string",
             "title": "Actor Id"
+          },
+          "document_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Id"
           },
           "values": {
             "additionalProperties": {

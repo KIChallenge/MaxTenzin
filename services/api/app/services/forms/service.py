@@ -56,6 +56,7 @@ def spec_or_404(form_id: str) -> FormSpec:
 def start_session(spec: FormSpec, subject: Person, actor: Person, analysis: DocumentAnalysis | None = None) -> FormSession:
     delegation = next((d for d in delegations_for(subject.id) if d.grantee_id == actor.id), None)
     sess = FormSession(id=str(uuid.uuid4()), form_id=spec.form_id, subject_id=subject.id, actor_id=actor.id,
+                       document_id=analysis.document_id if analysis else None,
                        values=prefill(spec, subject, actor, delegation, analysis), updated_at=now_iso())
     save(sess)
     return sess

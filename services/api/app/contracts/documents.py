@@ -24,6 +24,14 @@ class Recommendation(BaseModel):
     related_benefit_ids: list[str] = []
 
 
+class DocumentFact(BaseModel):
+    """Administrative fact found deterministically in a document (never medical content), with quote + page."""
+    key: str                          # e.g. discharge_date, department
+    value: str
+    quote: str
+    page: int
+
+
 class ExtractedPerson(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
@@ -52,6 +60,7 @@ class DocumentAnalysis(BaseModel):
         "Ich gebe nur wieder, was im Dokument ausdrücklich steht. Medizinische Fragen klären Sie bitte mit Ihrer Ärztin bzw. Ihrem Arzt.",
     )
     extraction_mode: str = "live"   # live | golden | fake
+    facts: list[DocumentFact] = Field([], description="Deterministic administrative facts (e.g. Entlassungsdatum)")
     dropped_unverified: int = Field(0, description="Recommendations discarded because their quote was not found on the stated page")
 
 

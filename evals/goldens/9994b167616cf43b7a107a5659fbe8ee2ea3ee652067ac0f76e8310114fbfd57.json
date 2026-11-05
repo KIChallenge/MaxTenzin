@@ -147,6 +147,20 @@
       "Rezeptgebührenbefreiung prüfen"
     ],
     "notice_de": "Ich gebe nur wieder, was im Dokument ausdrücklich steht. Medizinische Fragen klären Sie bitte mit Ihrer Ärztin bzw. Ihrem Arzt.",
-    "extraction_mode": "golden"
+    "extraction_mode": "golden",
+    "facts": [
+      {
+        "key": "discharge_date",
+        "value": "29.10.2026",
+        "quote": "Entlassungsdatum 29.10.2026",
+        "page": 1
+      },
+      {
+        "key": "department",
+        "value": "Abteilung für Innere Medizin und Onkologie",
+        "quote": "Abteilung für Innere Medizin und Onkologie –",
+        "page": 1
+      }
+    ]
   }
 }

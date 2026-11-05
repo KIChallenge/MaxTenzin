@@ -501,6 +501,7 @@ fields:
     section: 5 Krankenanstalt
     required: true
     when: {field: Krankenhaus, equals: ja}
+    prefill: document.discharge_date
     ask_hint_de: Bis wann dauerte der Aufenthalt (Entlassungsdatum)?
   - id: Spital
     label_de: Aufenthalt 1 – Krankenanstalt / Einrichtung
@@ -508,7 +509,7 @@ fields:
     section: 5 Krankenanstalt
     required: true
     when: {field: Krankenhaus, equals: ja}
-    ask_hint_de: In welchem Krankenhaus bzw. welcher Einrichtung?
+    ask_hint_de: In welchem Krankenhaus bzw. welcher Einrichtung? (Der Entlassungsbrief nennt nur die Abteilung, nicht den Namen des Krankenhauses.)
   - id: KH von 2
     label_de: Aufenthalt 2 – von
     type: date
