@@ -1,0 +1,24 @@
+{
+  "sha256": "bba492babb1af3afea9572d383fa50cf827be87e9d08f08d1689d32dedf32041",
+  "source_filename": "Röntgen Befund.pdf",
+  "demo_document_id": "doc-stefan-roentgen-1",
+  "demo_subject_id": "stefan",
+  "verified": "Hand-checked 2026-11-05 against pypdf page text; every quote verified verbatim (whitespace-normalised) on its page.",
+  "analysis": {
+    "filename": "Röntgen Befund.pdf",
+    "doc_type": "imaging_report",
+    "pages": 3,
+    "person": {
+      "first_name": "Stefan",
+      "last_name": "Testpatient",
+      "birth_date": "1987-03-02",
+      "address": null,
+      "insurer": null,
+      "living_situation": null
+    },
+    "recommendations": [],
+    "open_tasks": [],
+    "notice_de": "Ich gebe nur wieder, was im Dokument ausdrücklich steht. Medizinische Fragen klären Sie bitte mit Ihrer Ärztin bzw. Ihrem Arzt.",
+    "extraction_mode": "golden"
+  }
+}
