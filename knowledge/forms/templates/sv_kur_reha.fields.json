@@ -1,0 +1,651 @@
+{
+  "fields": [
+    {
+      "name": "Aktuelle Vorgeschichte",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Amb",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Ambulanzwagen",
+      "states": [
+        "/Off",
+        "/j"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Anschrift",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Anschrift Patient(in)",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Antragsrelevante Diagnose",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Arbeitslosenversicherung",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Atemwegserkrankungen",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Aufenthalt innerhalb von  Jahren",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Befunde",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Begleitperson",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Begründung",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Bei welcher Anstalt1",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Bei welcher Anstalt2",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Bei welcher Anstalt3",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Bei welcher Anstalt4",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Bewegungs-/Stützapparat",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Bundesamt",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Datum",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Datum1",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Diätart",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Erholung",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Familienname",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Geburtsjahr",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Genesung",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Geschlecht",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Geschäftsstelle AMS",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Gewicht",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Größe",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Hauterkrankungen",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Herz-/Kreislauf",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Kur/GVA",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Landaufenthalt",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Neurol",
+      "states": null,
+      "tooltip": null,
+      "type": "None"
+    },
+    {
+      "name": "Neurol. Formenkreis",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Onkologie",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Ort",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "PKW priv",
+      "states": null,
+      "tooltip": null,
+      "type": "None"
+    },
+    {
+      "name": "PKW priv., Taxi",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Patient(in)",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Pensionsantrag",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Pensionsbezug",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Pensionsversicherung",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Pensionsversicherungsträger",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Personenstand",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Pflegegeld",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Pflegegeld1",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Psychische Erkrankungen",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "RR",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Rehabilitation",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Rettungswagen",
+      "states": [
+        "/Off",
+        "/j"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Rheumat",
+      "states": null,
+      "tooltip": null,
+      "type": "None"
+    },
+    {
+      "name": "Rheumat. Formenkreis",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Rollstuhl",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Sonstige",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Sonstige Erkrankungen",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Sozialhilfeträger",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Stoffwechselerkrankungen",
+      "states": [
+        "/Off",
+        "/n"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Stufe1",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Stufe2",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Telefonnummer",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Transport",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Unfallversicherung",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Unfallversicherungsanstalt",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "VSNR_1",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "VSNR_2",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Versicherte(r)",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Versicherte(r) beschäftigt",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Verwandschaftsverhältnis",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Von welcher Anstalt",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Von welcher Anstalt2",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Von welcher Stelle",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Von welcher Stelle2",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Vorname",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Wann1",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Wann2",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Wo1",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Wo2",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "andere wichtige Hinweise",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "benötigt Diät",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "freiwillig versichert",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "freiwillig versichert1",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "fremde Hilfe",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "für den Aufenthalt",
+      "states": [
+        "/Off",
+        "/j"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "für die Anreise",
+      "states": [
+        "/Off",
+        "/j"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "gehfähig",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "heimfähig",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "kurfähig",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "mit Hilfsmittel",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "pensions- unfallversichert",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "priv",
+      "states": null,
+      "tooltip": null,
+      "type": "None"
+    },
+    {
+      "name": "priv. PKW, Taxi",
+      "states": [
+        "/Off",
+        "/j"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "zuletzt beschäftigt bis",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "zuständiger SV-träger",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "öffentlich-rechtl",
+      "states": null,
+      "tooltip": null,
+      "type": "None"
+    },
+    {
+      "name": "öffentlich-rechtl. DVH",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    }
+  ],
+  "fillable": true,
+  "form_id": "sv_kur_reha",
+  "page_text": [
+    "Antrag auf Rehabilitations-, \nKur- bzw. Erholungsaufenthalt\nRaum für Posteingangsstempel\nVon dem/der Versicherten (Antragsteller/in) in allen Teilen auszufüllenVon dem/der Versicherten (Antragsteller/in) in allen Teilen auszufüllen\nZutreffende Felder bitte ankreuzen \nZuständiger Sozialversicherungsträger: \nFamilienname Vorname Versicherungsnummer\nPatient(in)\nLfd.Nr. Tag Monat Jahr\nAnschrift\nVersicherte(r) \n(Nur auszufüllen, wenn Patient(in) ein(e) Angehörige(r) ist)\nLfd.Nr. Tag Monat Jahr\nVersicherte(r) beschäftigt bei (Dienstgeber(in), Dienstort, Tel.-Nr.)\nAngaben des (der) Versicherten:\nPersonenstand: Telefon Nr.:\nAnschrift:\nBeziehen Sie Leistungen nein ja\na) aus der Pensionsversicherung   Pensionsversicherungsträger\nb) aus der Arbeitslosenversicherung   Geschäftsstelle des AMS\nc) aus der Unfallversicherung   Anstalt\nd vom Bundesamt für Soziales und  \nBehindertenwesen\ne) von einem Sozialhilfeträger  \nf) aus einem öffentlich-rechtlichen   Von welcher Stelle\nDienstverhältnis (Ruhebezug etc.)\nHaben Sie einen Pensions-   Bei welcher Anstalt\n(Renten-)antrag gestellt\nSind Sie in der Pensionsver-   Bei welcher Anstalt\nsicherung freiwillig versichert\nBeziehen Sie Pflegegeld   Von welcher Anstalt Welche Stufe \nZusatzangaben Nur auszufüllen, wenn der Antrag für eine(n) Angehörige(n) gestellt wird:\nVerwandtschaftsverhältnis zuletzt beschäftigt bis\nBeziehen Sie eine Pension nein  ja  Von welcher Anstalt\nSind Sie in der Pensionsver- \nsicherung freiwillig versichert nein  ja  Bei welcher Anstalt\nSind Sie pensions- oder unfallversichert nein  ja  Bei welcher Anstalt\nBeziehen Sie Pflegegeld nein  ja  Von welcher Stelle Welche Stufe\nHaben Sie in den letzten fünf Jahren Rehabilitations-, Kur-, Land-, Erholungsaufenthalte mit Kostenbeteiligung eines Versicherungs-\nträgers konsumiert?\nnein  ja  Wann Wo\nWann Wo Datum, Unterschrift des/der Versicherten (Antragstellers/Antragstellerin)\nAnmerkungen des Versicherungsträgers \nEntsendung bzw. Zuschüsse in den letzten 5 Kalenderjahren vor der Antragstellung\nJahr vom – bis Kur- oder Aufenthaltsort (Anstalt)\nDatum und Namensstempel des/der Bearbeiters/Bearbeiterin\nDVSV – KUR1 – V/8.10\n5551_15_Antrag-Aufenthalt_fsch.indd   1\n",
+    "Ärztliche StellungnahmeÄrztliche Stellungnahme Zutreffende Felder bitte ankreuzen \nErledigungsvermerke:\nDVSV– KUR1 – R/8.10\nErledigung des Versicherungsträgers\nja nein Begründung\nRehabilitation  \nKurheilverfahren  \nErholung  \nGenesung  \nLandaufenthalt  \nKurkostenzuschuss  \nDatum, Unterschrift des/der Vertrauensarztes/-ärztin\nbewilligt abgelehnt Aufenthaltsort\n \n\t£ £\t\n\t£ \n\t£  Sonstiges(z.B. Abtretung, Begutachtung, Zurückweisung etc.):\n £\t\n\t£ \nDatum, Unterschrift des/der leitenden Arztes/Ärztin\nfür  \nmännlich weiblichFamilienname Vorname Geburtsjahr \nAktuelle Vorgeschichte – soweit antragsrelevant\n(Beginn, Arbeitsunfall, Berufserkrankung, Privatunfall, Vorbehandlung sowie Spitalsaufenthalte und Operationen mit Datumsangabe)\nAntragsrelevante Diagnose\nBefunde (allenfalls als Beilage angeschlossen) Größe Gewicht RR\na) maßgebliche Befunde und Funktionseinschränkungen für das vorzuschlagende Verfahren\nb) andere wichtige Hinweise (zur Kurfähigkeit bzw. Heimfähigkeit)\ninVorgeschlagen wird \n Stationäre Rehabilitation\n    Ambulante Rehabilitation \nK  Kurheilverfahren/GVA\n Erholung\n Genesung\n Landaufenthalt\nfür\n Atemwegserkrankungen\n.Herz-/Kreislauf\n      Bewegungs-/Stützapparat   \n N Neurol. Formenkreis\n Rheumat. Formenkreis      \nS  Stoffwechselerkrankungen\nHauterkrankungen \nOnkologie\nPsychische Erkrankungen \nSonstige\nist heimfähig nein  ja  ist kurfähig nein  ja  benötigt Diät nein  ja  Art\nist gehfähig nein £ mit Hilfsmittel nein  ja  Rollstuhl nein  ja ja \nbenötigt Begleitperson nein  ja  für die Anreise  für den Aufenthalt \nbenötigt fremde Hilfe (waschen, anziehen usw.) nein  ja \nbenötigt T\nransport nein  ja \nRettungswagen mit Sanitäter (liegend oder mit Tragsessel) \nAmbulanzwagen (ohne Sanitäter) \nSonstiges (priv. PKW, Taxi) \nHinweis:\nDer vorgeschlagene Ort wird nach Möglichkeit berücksich-\ntigt; medizinische Notwendigkeiten sind jedoch vorrangig.\nDatum, Unterschrift und Stempel des/der Arztes/Ärztin bzw. der Krankenanstalt\n5551_15_Antrag-Aufenthalt_fsch.indd   2\nBegründung für die vorgeschlagene Maßnahme (Berufsbild, medizinische, berufliche oder soziale Zielsetzung) \nPatient(in)"
+  ],
+  "pages": 2,
+  "source_file": "Anträge und Formulare/Antrag Kur und Reha.pdf"
+}

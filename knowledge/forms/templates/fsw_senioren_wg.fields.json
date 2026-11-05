@@ -1,0 +1,138 @@
+{
+  "fields": [
+    {
+      "name": "Akademischer Grad Titel Kundin",
+      "states": null,
+      "tooltip": "Akademischer Grad/Titel Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "Ansprechperson",
+      "states": null,
+      "tooltip": "Name der Ansprechperson",
+      "type": "text"
+    },
+    {
+      "name": "Begruendung Einzug",
+      "states": null,
+      "tooltip": "Begruendung für Einzug in die Senior:innen-Wohngemeinschaft",
+      "type": "text"
+    },
+    {
+      "name": "Datum 7",
+      "states": null,
+      "tooltip": "Datum der Unterschriftszeichnung",
+      "type": "text"
+    },
+    {
+      "name": "FSW Kundinnennummer  1",
+      "states": null,
+      "tooltip": "FSW-Kund:innennummer (falls vorhanden) \n",
+      "type": "text"
+    },
+    {
+      "name": "FSW Plegegeldstufe",
+      "states": null,
+      "tooltip": "Pflegegeldstufe Kund:in\n",
+      "type": "text"
+    },
+    {
+      "name": "Familienname Kundin",
+      "states": null,
+      "tooltip": "Familienname Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "Geburtsdatum Kundin",
+      "states": null,
+      "tooltip": "Geburtsdatum Kund:in (Bitte geben Sie Tag, Monat und Jahr an) Beispiel 31.01.1972",
+      "type": "text"
+    },
+    {
+      "name": "Geschlecht Kundin",
+      "states": null,
+      "tooltip": "Geschlecht Kund:in",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Hausnr der Adresse WG",
+      "states": null,
+      "tooltip": "Hausnummer der Adresse Wohngemeinschaft",
+      "type": "text"
+    },
+    {
+      "name": "Kundin Mobilitaet Notsituation",
+      "states": null,
+      "tooltip": "Ausreichende Mobilitaet für Notsituation vorhanden",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Kundin Unterstuetzung",
+      "states": null,
+      "tooltip": "Der:Die Kund:in benoetigt in folgenden Bereichen Unterstuetzung",
+      "type": "text"
+    },
+    {
+      "name": "Kundin selbststaendig Hilfe",
+      "states": null,
+      "tooltip": "Kund:in kann selbständig Hilfe holen",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Name Partnerorganisation",
+      "states": null,
+      "tooltip": "Name Partnerorganisation",
+      "type": "text"
+    },
+    {
+      "name": "Ort der Adresse WG",
+      "states": null,
+      "tooltip": "Ort der Adresse Wohngemeinschaft",
+      "type": "text"
+    },
+    {
+      "name": "PLZ der Adresse WG",
+      "states": null,
+      "tooltip": "Postleitzahl der Adresse Wohngemeinschaft",
+      "type": "text"
+    },
+    {
+      "name": "Stiege der Adresse WG",
+      "states": null,
+      "tooltip": "Stiege der Adresse Wohngemeinschaft",
+      "type": "text"
+    },
+    {
+      "name": "Strassenname der Adresse WG",
+      "states": null,
+      "tooltip": "Strassenname der Adresse Wohngemeinschaft",
+      "type": "text"
+    },
+    {
+      "name": "Tuernr der Adresse WG",
+      "states": null,
+      "tooltip": "Türnummer der Adresse Wohngemeinschaft",
+      "type": "text"
+    },
+    {
+      "name": "Unterschrift der betroffenen Person oder einer für diese zur Vertretung befugten Person 4",
+      "states": null,
+      "tooltip": "Name der unterschreibenden Person",
+      "type": "text"
+    },
+    {
+      "name": "Vorname Kundin",
+      "states": null,
+      "tooltip": "Vorname Kund:in",
+      "type": "text"
+    }
+  ],
+  "fillable": true,
+  "form_id": "fsw_senioren_wg",
+  "page_text": [
+    "Bedarfsmeldung Sennior:innen-Wohngemeinschaften – Basispaket, V2.0 12/2024 Seite 1 von 2\nFonds Soziales Wien\nBeratungszentrum Pflege- und Betreuung\nGuglgasse 7–9, 1030 Wien\nTel.: 01 24 5 24 \nwww.fsw.at \nBedarfsmeldung   \nSenior:innen-Wohngemeinschaften – Basispaket\n Partnerorganisation\nAnsprechperson in der Wohngemeinschaft\nPersönliche Kund:innendaten\n Familienname  Vorname\n Geschlecht  Akademischer Grad/Titel\n Geburtsdatum (TT.MM.JJJJ)\n Pflegegeldstufe\n FSW-Kund:innennummer (falls vorhanden)\n Straße\n PLZ  Ort  Ansprechperson\n Hausnr.  Stiege  Türnr.\n1. Wohngemeinschaft\n2. Persönliche Kund:innendaten\nmännlich weiblich divers/inter/offen keine Angabe\nPflege- und Betreuungsbedarf\n3. Pflege- und Betreuungsbedarf\n Der:Die Kund:in kann selbständig Hilfe holen  Ausreichende Mobilität für Notsituationen vorhanden\nJa JaNein Nein\n Der:Die Kund:in benötigt in folgenden Bereichen Unterstützung:",
+    "Bedarfsmeldung Sennior:innen-Wohngemeinschaften – Basispaket, V2.0 12/2024 Seite 2 von 2\nFortzetzung Pflege- und Betreuungsbedarf \n4. Unterschrift\n Begründung für den Einzug in die Senior:innen-Wohngemeinschaft\n Datum  Unterschrift der:des Kundin:Kunden oder der für sie:ihn zur Vertretung befugten Person\nMit meiner Unterschrift bestätige ich die Richtigkeit der angeführten Daten.\n Name der unterschreibenden Person in BLOCKBUCHSTABEN\nDie Verarbeitung der in diesem Formular angegebenen personenbezogenen Daten erfolgt auf Grundlage des Antrags auf Förderung.  \nBei neuen Kund:innen ist ein Antrag auf Förderung beizulegen. \nWeitere Informationen zur Verarbeitung von personenbezogenen Daten im Fonds Soziales Wien sowie Aktualisierungen finden sich unter  \nwww.fsw.at/datenschutz."
+  ],
+  "pages": 2,
+  "source_file": "Anträge und Formulare/Bedarfsmeldung-Senior_innen-Wohngemeinschaft_Basispaket.1736522017.pdf"
+}

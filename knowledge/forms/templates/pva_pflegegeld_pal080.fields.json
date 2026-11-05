@@ -1,0 +1,642 @@
+{
+  "fields": [
+    {
+      "name": "24 Stunden Betreuuung",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Adresse Straße",
+      "states": null,
+      "tooltip": "Adresse - Straße, Gasse, Platz",
+      "type": "text"
+    },
+    {
+      "name": "Adresse Straße 1",
+      "states": null,
+      "tooltip": "Adresse - Straße, Gasse, Platz von ausfüllender Person",
+      "type": "text"
+    },
+    {
+      "name": "Adresse weitere Person",
+      "states": null,
+      "tooltip": "Familienname(n) und Vorname(n) sowie Adresse und Telefonnummer der weiteren Person, die noch verständigt werden soll.",
+      "type": "text"
+    },
+    {
+      "name": "Andere Person",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Antrag Pflg",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Antragstellung andere Person",
+      "states": [
+        "/01",
+        "/Off"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Anweisung",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Anzeige wo?",
+      "states": null,
+      "tooltip": "Wenn ja, bei welcher Stelle wurde die Unfallanzeige erstattet?",
+      "type": "text"
+    },
+    {
+      "name": "Arbeitsunfall",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Art der Leistung seit",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Art der Leistung seit2",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Art der Leistung?",
+      "states": null,
+      "tooltip": "Art der Leistung, auszahlende Stelle, Aktenzeichen",
+      "type": "text"
+    },
+    {
+      "name": "Art der ausl",
+      "states": null,
+      "tooltip": null,
+      "type": "None"
+    },
+    {
+      "name": "Art der ausl. Leistung",
+      "states": null,
+      "tooltip": "Art der Leistung, auszahlende Stelle, Aktenzeichen",
+      "type": "text"
+    },
+    {
+      "name": "Betreuung durch andere Person",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Datum Unfall",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Datum_1",
+      "states": null,
+      "tooltip": "Antragsdatum",
+      "type": "text"
+    },
+    {
+      "name": "Demenz",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Email",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Email2",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Fam",
+      "states": null,
+      "tooltip": null,
+      "type": "None"
+    },
+    {
+      "name": "Fam.Name",
+      "states": null,
+      "tooltip": "Familienname",
+      "type": "text"
+    },
+    {
+      "name": "Familienhospiz",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Familienhospiz bis",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Familienhospiz seit",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Familienname andere",
+      "states": null,
+      "tooltip": "Familienname von ausfüllender Person",
+      "type": "text"
+    },
+    {
+      "name": "Geburtsdatum",
+      "states": null,
+      "tooltip": "Geburtsdatum",
+      "type": "text"
+    },
+    {
+      "name": "Geschlecht",
+      "states": null,
+      "tooltip": "Geschlecht",
+      "type": "text"
+    },
+    {
+      "name": "Hausbesuch",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Hausnummer, Stiege, Tür",
+      "states": null,
+      "tooltip": "Hausnummer, Stiege, Tür",
+      "type": "text"
+    },
+    {
+      "name": "Hausnummer, Stiege, Tür2",
+      "states": null,
+      "tooltip": "Hausnummer, Stiege, Tür",
+      "type": "text"
+    },
+    {
+      "name": "KH bis",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "KH bis 2",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "KH von",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "KH von 2",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Krankenhaus",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Land",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Land2",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Leiden",
+      "states": null,
+      "tooltip": "Wegen welcher Leiden ist Betreuung und Hilfe erforderlich bzw. hat sich Ihr Pflegebdarf erhöht?",
+      "type": "text"
+    },
+    {
+      "name": "Leiden2",
+      "states": null,
+      "tooltip": "Wegen welcher Leiden ist Betreuung und Hilfe erforderlich bzw. hat sich Ihr Pflegebdarf erhöht?",
+      "type": "text"
+    },
+    {
+      "name": "Medikamente",
+      "states": null,
+      "tooltip": "Welche Medikamente nehmen Sie regelmäßig ein?",
+      "type": "text"
+    },
+    {
+      "name": "Medikamente2",
+      "states": null,
+      "tooltip": "Welche Medikamente nehmen Sie regelmäßig ein?",
+      "type": "text"
+    },
+    {
+      "name": "Nachweis",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Name mobiler Dienst",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Name und Adresse Pflegeperson",
+      "states": null,
+      "tooltip": "Familienname(n) und Vorname(n) sowie Adresse der Pflegeperson",
+      "type": "text"
+    },
+    {
+      "name": "Name und Adresse Pflegeperson2",
+      "states": null,
+      "tooltip": "Familienname(n) und Vorname(n) sowie Adresse der Pflegeperson",
+      "type": "text"
+    },
+    {
+      "name": "Name und Adresse Pflegeperson3",
+      "states": null,
+      "tooltip": "Familienname(n) und Vorname(n) sowie Adresse der Pflegeperson",
+      "type": "text"
+    },
+    {
+      "name": "Name weitere Person",
+      "states": null,
+      "tooltip": "Familienname(n) und Vorname(n) sowie Adresse und Telefonnummer der weiteren Person, die noch verständigt werden soll.",
+      "type": "text"
+    },
+    {
+      "name": "Ort",
+      "states": null,
+      "tooltip": "Ort",
+      "type": "text"
+    },
+    {
+      "name": "Ort 1",
+      "states": null,
+      "tooltip": "Ort - ausfüllende Person",
+      "type": "text"
+    },
+    {
+      "name": "PLZ",
+      "states": null,
+      "tooltip": "Postleitzahl",
+      "type": "text"
+    },
+    {
+      "name": "PLZ 1",
+      "states": null,
+      "tooltip": "Postleitzahl - ausfüllende Person",
+      "type": "text"
+    },
+    {
+      "name": "Person Stelle Pflegeperson",
+      "states": [
+        "/Off",
+        "/ja"
+      ],
+      "tooltip": "Pflegeperson",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Person Stelle ambulant teilstationär",
+      "states": [
+        "/Off",
+        "/ja"
+      ],
+      "tooltip": "ambulante / teilstationäre Dienste (z.B. Behinderteneinrichtung, Tagesheimstätte, Tagespflege, Kindergarten, Hort)",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Personenstand",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Personenstand seit",
+      "states": null,
+      "tooltip": "Personenstand seit",
+      "type": "text"
+    },
+    {
+      "name": "Pflegeberatung",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Pflegekarenz bis",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Pflegekarenz seit",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Pflegekarenz/-teilzeit",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Pflegesachleistung",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Pflegesachleistung aus EU",
+      "states": null,
+      "tooltip": "Art der Pflegesachleistung, auszahlende Stelle und Aktenzeichen",
+      "type": "text"
+    },
+    {
+      "name": "Rollstuhlfahrer",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Sehbehinderung",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Spital",
+      "states": null,
+      "tooltip": "Krankenanstalt, Aufenthalt von bis, Kostenträger",
+      "type": "text"
+    },
+    {
+      "name": "Spital2",
+      "states": null,
+      "tooltip": "Krankenanstalt, Aufenthalt von bis, Kostenträger",
+      "type": "text"
+    },
+    {
+      "name": "Stabü",
+      "states": null,
+      "tooltip": "Stabü-Österreich",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Telefon",
+      "states": null,
+      "tooltip": "Telefonnummer",
+      "type": "text"
+    },
+    {
+      "name": "Telefon 1",
+      "states": null,
+      "tooltip": "Telefonnummer - ausfüllende Person",
+      "type": "text"
+    },
+    {
+      "name": "Titel",
+      "states": null,
+      "tooltip": "Titel",
+      "type": "text"
+    },
+    {
+      "name": "Titel2",
+      "states": null,
+      "tooltip": "Titel",
+      "type": "text"
+    },
+    {
+      "name": "Unfall",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Unfallanzeige",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Unfallhergang",
+      "states": null,
+      "tooltip": "Unfallhergang (stichwortartig)",
+      "type": "text"
+    },
+    {
+      "name": "Unfallhergang2",
+      "states": null,
+      "tooltip": "Unfallhergang (stichwortartig)",
+      "type": "text"
+    },
+    {
+      "name": "Unfallschuld",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Unterlagen",
+      "states": null,
+      "tooltip": "Beilage(n):",
+      "type": "text"
+    },
+    {
+      "name": "Unterlagen2",
+      "states": null,
+      "tooltip": "Beilage(n):",
+      "type": "text"
+    },
+    {
+      "name": "VSNR_1",
+      "states": null,
+      "tooltip": "Versicherungsnummer mit Geburtsdatum in der Form TTMMJJ",
+      "type": "text"
+    },
+    {
+      "name": "Vorname",
+      "states": null,
+      "tooltip": "Vorname",
+      "type": "text"
+    },
+    {
+      "name": "Vorname andere Person",
+      "states": null,
+      "tooltip": "Vorname andere Person",
+      "type": "text"
+    },
+    {
+      "name": "Wohnsituation",
+      "states": null,
+      "tooltip": "dauernde Unterbringung in einer stationären Einrichtung (z.B. Alten-, Pflege-, Wohn- oder Erziehungsheim, Krankenanstalt)",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "ambulante teilstationäre Einrichtung, Kostenträger",
+      "states": null,
+      "tooltip": "Einrichtung sowie Adresse ambulante / teilstationäre Dienste und Kostenträger",
+      "type": "text"
+    },
+    {
+      "name": "andere Leistung",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "andere Leistung beantragt",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "andere Staatsbürgerschaft",
+      "states": null,
+      "tooltip": "andere Staatsbürgerschaft",
+      "type": "text"
+    },
+    {
+      "name": "ausl",
+      "states": null,
+      "tooltip": null,
+      "type": "None"
+    },
+    {
+      "name": "ausl. Leistung Stelle",
+      "states": null,
+      "tooltip": "letzte Dienstelle",
+      "type": "text"
+    },
+    {
+      "name": "ausländische Pension",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "ausländische Pension benatragt",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "auszahlende Stelle",
+      "states": null,
+      "tooltip": "Art der ausländischen Leistung und zuständige Stelle",
+      "type": "text"
+    },
+    {
+      "name": "dauernde Einrichtung, Kostenträger",
+      "states": null,
+      "tooltip": "Einrichtung der dauernden Unterbringung sowie Adresse und Kostenträger",
+      "type": "text"
+    },
+    {
+      "name": "frühere Namen",
+      "states": null,
+      "tooltip": "frühere Namen",
+      "type": "text"
+    },
+    {
+      "name": "geistige Beeinträchtigung",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "körperl",
+      "states": null,
+      "tooltip": null,
+      "type": "None"
+    },
+    {
+      "name": "körperl. Einschränkung",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "mobile Dienste",
+      "states": [
+        "/Off",
+        "/ja"
+      ],
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "psychische Erkrankung",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "regelm",
+      "states": null,
+      "tooltip": null,
+      "type": "None"
+    },
+    {
+      "name": "regelm. Medikamente",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "voruebergehend",
+      "states": null,
+      "tooltip": "Bei einem vorübergehenden Aufenthalt in einem Heim, Krankenhaus, bie Familienangehörigen usw. geben Sie bitte die genaue Adresse bekannt. ",
+      "type": "text"
+    }
+  ],
+  "fillable": true,
+  "form_id": "pva_pflegegeld_pal080",
+  "page_text": [
+    "Pensionsversicherungsanstalt\nHauptstelle\nFriedrich-Hillegeist-Straße 1, 1020 Wien, Österreich\nPAL 080 (01. 2025)\nInformationen nach Art. 13 und 14 Datenschutz-Grundverordnung\nbetreﬀ  end die Verarbeitung Ihrer personenbezogenen Daten ﬁ  nden \nSie auf unserer Website unter www.pv.at/Datenschutz. \nANTRAG auf PFLEGEGELD nach dem Bundespflegegeldgesetz (BPGG)\n ZUERKENNUNG /  ERHÖHUNG \n WEITERGEWÄHRUNG nach BEFRISTUNG\nBitte in BLOCKSCHRIFT ausfüllen, Zutreffendes bitte ankreuzen \nWollen Sie mehr Angaben machen, ergänzen Sie die Daten bitte auf einem zusätzlichen Blatt Papier.\n1 PERSÖNLICHE ANGABEN\nVersicherungsnummer\nFamilienname\nVorname Titel\nFrühere Namen Geburtsdatum\nGeschlecht\nStaatsbürgerschaft\n Österreich\n andere:.............................................................................................................\n(Bitte geben Sie den Staat an und legen Sie einen Nachweis über die Aufenthaltsberechtigung bei.)\nPersonenstand\nseit  .......................\n ledig  verheiratet  verwitwet  geschieden\n eingetragene Partnerschaft  ehemalige eingetragene Partnerschaft\nStändiger\nAufenthaltsort\nStraße / Gasse / Platz Hausnr. / Stiege / Tür\nPostleitzahl Ort Land\nVorübergehender \nAufenthaltsort\nz.B. Heim, Krankenhaus, bei Familienangehörigen; Bitte geben Sie die genaue Adresse bekannt.\nTelefonnummer\n(mit Vorwahl) E-Mail\n2 ANTRAGSTELLUNG DURCH ANDERE PERSON\nIch bin\n mit der gesetzlichen Vertretung betraut  bevollmächtigt\n(Obsorge, Vorsorgebevollmächtigung, gewählte, \ngesetzliche oder gerichtliche Erwachsenenvertretung, Kuratorium)  .....................................\nNachweis  liegt bei  wird nachgereicht\nFamilienname\nVorname Titel\nAdresse\nStraße / Gasse / Platz Hausnr. / Stiege / Tür\nPostleitzahl Ort Land\nTelefonnummer\n(mit Vorwahl) E-Mail",
+    "2 von 4\nDVSV – PGA/0125\n3 Angaben zu Ihrem GESUNDHEITSZUSTANDBitte legen Sie vorhandene Befunde von Ihrem Arzt / Ihrer Ärztin oder Krankenhaus in Kopie bei.\nKrankheiten bzw. gesundheitliche Beeinträchtigungen:\n..................................................................................................................................................................\n..................................................................................................................................................................\nNeuerlicher Antrag innerhalb eines Jahres nach der letzten Entscheidung: Aktuelle medizinische Unterlagen \n(z.B. ärztliches Attest, Krankenhausbefunde) sind vorzulegen. Aus den Unterlagen muss hervorgehen, dass sich der \nGesundheitszustand verschlechtert hat oder eine neue Krankheit / Beeinträchtigung vorliegt.\nGründe Ihrer Pflegebedürftigkeit:\nkörperliche Einschränkung  ja  nein geistige Beeinträchtigung  ja  nein\nRollstuhlfahrer*in  ja  nein Gedächtnisstörung / Demenz  ja  nein\nSehbehinderung / Blindheit  ja  nein psychische Erkrankung  ja  nein\nNehmen Sie regelmäßig Medikamente?\n nein\n ja, welche:  ..........................................................................................................................................\n .............................................................................................................................................................\nSollen weitere Personen vom Termin eines Hausbesuches zur Feststellung des Pflegebedarfs \ninformiert werden?\n nein\n ja, ........................................................................................................................................................\n .............................................................................................................................................................\n(Familienname(n) und Vornamen(n), Adresse, Telefonnummer, E-Mail)\n4 Erfolgt die notwendige BETREUUNG UND HILFE von einer anderen Person / Stelle? nein  ja, bitte um weitere Angaben \n Pflegeperson(en) \nName(n) und Adresse(n)\n ..................................................\n ..................................................\n ..................................................\nFamilienhospizkarenz  nein\n ja, von  ................... bis  ......................\nPflegekarenz oder\nPflegeteilzeit  nein\n ja, von  ................... bis  ......................\nBesteht eine 24-Stunden-Betreuung?  nein  ja\n mobile Dienste\nz.B. mobile Hilfe und Betreuung, \nHauskrankenpflege, Essen auf Rädern\nDienste, Kostenträger\n ambulante / teilstationäre\nDienste\nz.B. Behinderteneinrichtung, \nTagesheimstätte, Tagespflege, \nKindergarten, Hort\nEinrichtung sowie Adresse, Kostenträger\n dauernde Unterbringung in \nstationärer Einrichtung\nz.B. Altenheim, Pflegeheim, \nErziehungsheim, Krankenanstalt\n betreutes Wohnen\nEinrichtung sowie Adresse, Kostenträger",
+    "3 von 4\nDVSV – PGA/0125\n5\nWaren Sie innerhalb der letzten Monate vor der Antragstellung in einer \nINLÄNDISCHEN oder AUSLÄNDISCHEN KRANKENANSTALT?\nz.B. Krankenhaus, Rehabilitationszentrum, Kur- oder Pflegeeinrichtung\n nein  ja, bitte um weitere Angaben \nAufenthaltsdauer  Krankenanstalt / Einrichtung\nvon  ......................... bis  ........................  in  ...........................................................................................\nvon  ......................... bis  ........................  in  ...........................................................................................\n6 Sind Sie durch einen UNFALL pflegebedürftig geworden? nein  ja, bitte um weitere Angaben  \nDatum des Unfalls: ...........................................\nWie ist der Unfall passiert? Bitte kurze Schilderung in Stichworten.\n...................................................................................................................................................................................\n...................................................................................................................................................................................\nWar eine andere Person am Unfall schuld?  nein  ja\nWar der Unfall ein Arbeitsunfall?  nein  ja\nWurde eine Unfallanzeige erstattet?  nein\n ja, bei der Stelle  .............................................................\nz.B. Arbeitsinspektorat, AUVA, Polizei\n7\nHaben Sie Anspruch auf eine dem Pflegegeld ÄHNLICHE INLÄNDISCHE oder \nAUSLÄNDISCHE LEISTUNG? z.B. Pflegezulage, Blindenzulage, Pflegesachleistungen\n nein  ja, bitte um weitere Angaben \nWenn nein, haben Sie eine solche Leistung beantragt?\n nein  ja, bitte um weitere Angaben \nArt der Leistung:  ............................................................................ seit:  ................................................\nAuszahlende Stelle und Aktenzeichen:  ...................................................................................................\n..................................................................................................................................................................\nBekommen Sie aus einem EU / EWR Staat oder der Schweiz eine Pﬂ  egesachleistung?\nz.B. Hilfe bei der Haushaltsführung, Hilfe bei der Körperpﬂ  ege\n nein\n ja,  .......................................................................................................................................................\n(Art der Leistung, auszahlende Stelle, Aktenzeichen)\n8\nHaben Sie Anspruch auf INLÄNDISCHE oder AUSLÄNDISCHE PENSIONSLEISTUNGEN?\nz.B. Pension, Rente, Ruhe- oder Versorgungsgenuss, ähnliche Leistung\n nein  ja, bitte um weitere Angaben \nWenn nein, haben Sie eine solche Leistung beantragt?\n nein  ja, bitte um weitere Angaben \nArt der Leistung:  .......................................................................  seit:  .................................................\nAuszahlende Stelle und Aktenzeichen:  ...................................................................................................\n..................................................................................................................................................................",
+    "4 von 4\nDVSV – PGA/0125\n9\nWünschen Sie eine KOSTENLOSE PFLEGEBERATUNG zu Hause durch eine \ndiplomierte Pflegefachkraft? \nSie erhalten dabei auch Informationen über das regionale Unterstützungsangebot.\n Nein\n Ja, ich stimme zu, dass meine personenbezogenen Daten (Name, Sozialversicherungsnummer, \nAnschrift, Telefonnummer) an das Kompetenzzentrum zur Qualitätssicherung in der häuslichen \nPflege für die kostenlose Pflegeberatung weitergeleitet werden.\nBei Antragstellung durch ein Familienmitglied oder eine dem Haushalt angehörende Person:\n Ja, ich habe bei der pflegebedürftigen Person die Zustimmung eingeholt, dass ihre\npersonenbezogenen Daten (Name, Sozialversicherungsnummer, Anschrift, Telefonnummer) an das \nKompetenzzentrum zur Qualitätssicherung in der häuslichen Pflege für die kostenlose \nPflegeberatung weitergeleitet werden dürfen.\n10 ANWEISUNG des Pflegegeldes\nLeistungsbezug mit Anweisung auf ein Konto:\nWenn Sie bereits eine Pension, eine Vollrente aus der Unfallversicherung oder einen Ruhe- oder \nVersorgungsgenuss beziehen, welche(r) auf ein Konto angewiesen wird, erhalten Sie auch das \nPflegegeld auf dieses Konto.\nLeistungsbezug mit Barzahlung:\nWenn Sie bereits eine Leistung von uns beziehen, die bar ausgezahlt wird, erhalten Sie auch das \nPflegegeld bar ausgezahlt.\nWenn Sie möchten, dass wir Ihre Leistung und das Pflegegeld auf ein Konto anweisen, wenden Sie \nsich bitte an ein Geldinstitut Ihrer Wahl (Bank, Sparkasse etc.). Lassen Sie bitte den „Antrag auf \nbargeldlose Pensionszahlung“ beim Geldinstitut ausstellen und senden diesen an uns. \nKEIN Leistungsbezug:\n Anweisung auf ein Konto wird gewünscht.\nWenn Sie möchten, dass wir das Pflegegeld auf ein Konto anweisen, wenden Sie sich bitte an ein \nGeldinstitut Ihrer Wahl (Bank, Sparkasse etc.). Lassen Sie bitte den „Antrag auf bargeldlose \nPensionszahlung“ beim Geldinstitut ausstellen und senden diesen an uns. \n Barzahlung wird ausdrücklich beantragt.\n11 ERKLÄRUNG\n● Ich habe alle Fragen richtig und vollständig beantwortet. \n● Ich habe die beiliegenden Meldepflichten als Bestandteil dieses Fragebogens gelesen und verstanden.\n● Ich verpflichte mich, dem Pflegegeld ähnliche ausländische Leistungen geltend zu machen. Wenn\nund solange ich ausländische Leistungen nicht geltend mache, kann das Pflegegeld abgelehnt, \ngemindert oder entzogen werden.\n● Ich weiß, dass unvollständige  und falsche Angaben sowie eine Verletzung der Meldepflichten \nzivil- und strafrechtliche Folgen haben können.\n● Ich weiß, dass ich Leistungen zurückzahlen muss, die wegen unrichtiger oder unvollständiger oder \nverspäteter Angaben erbracht werden.\nDatum Unterschrift\nFolgende Unterlagen liegen bei:\n...................................................................................................................................................................................\n...................................................................................................................................................................................",
+    "Pensionsversicherungsanstalt\nHauptstelle\nFriedrich-Hillegeist-Straße 1, 1020 Wien, Österreich\nMELDEPFLICHTEN\nWas ist die Meldepflicht?\nWenn Sie einen Antrag auf eine Leistung stellen oder eine Leistung beziehen, sind Sie gesetzlich verpflichtet, \nuns jede Änderung innerhalb der Meldefrist zu melden.\nDie Meldepflicht gilt bereits ab dem Tag, an dem Sie einen Antrag auf eine Leistung stellen.\nDie Meldepflicht gilt auch für Ihre gesetzliche und gerichtliche Vertretung.\nWelche Änderungen sind zu melden?\nDieses Informationsblatt gibt Ihnen einen Überblick, welche Änderungen Sie uns rasch und ohne Aufforderung \nmelden müssen.\nDas sind Änderungen, die Ihre Bezugsberechtigung oder die Höhe der Leistung betreffen.\nBei Bezug von \n– Ausgleichszulage – Übergangsgeld\n– Ausgleichszulagenbonus / Pensionsbonus – Angehörigenbonus\n– Kinderzuschuss \nmüssen Sie uns auch alle Änderungen melden, die Ihre Angehörigen betreffen.\nFolgen bei Verletzung der Meldepflicht: \nHaben Sie Leistungen \n– aufgrund bewusst falscher Angaben,\n– durch bewusstes Verschweigen wesentlicher Tatsachen oder\n– durch Verletzung der Meldepflicht\nzu Unrecht bezogen, müssen Sie diese Leistungen zurückzahlen.\nSie müssen auch Leistungen zurückzahlen, von denen Sie erkennen mussten, dass sie Ihnen nicht zustehen \noder nicht in dieser Höhe zustehen (z.B. eine erkennbar zu hohe Auszahlung).\nUnvollständige und falsche Angaben sowie die Verletzung der Meldepflicht können rechtliche Folgen haben. \nSIE MÜSSEN IMMER MELDEN:\nMeldefrist: 2 Wochen\n● Änderung des Namens\n● Änderung des Wohnsitzes\n● Änderung des Personenstandes (z.B. Heirat, \neingetragene Partnerschaft, Scheidung)\n● Geburt eines Kindes\n● Antragstellung / Anfall / Höhe / Änderung / W egfall \njeder weiteren inländischen oder ausländischen \nPension oder Rente\n● Änderungen beim inländischen oder \nausländischen Krankenversicherungsschutz\n● Verbüßung einer Freiheitsstrafe, einer \nUntersuchungshaft oder die Unterbringung in \neinem forensisch-therapeutischen Zentrum, in einer \nAnstalt für entwöhnungsbedürftige \nRechtsbrecher oder gefährliche Rückfallstäter \nMeldefrist: 7 Tage\nBeginn / Unterbrechung / Ende von TÄTIGKEITEN und Anfall / Höhe / Änderung von EINKÜNFTEN\n● Unselbständige oder selbständige Tätigkeit\n● Gewerbeberechtigung\n● Berufsbefugnis\n● Beteiligung an\n→ Personengesellschaften (OG, KG)\n→ Gesellschaften nach bürgerlichem Recht\n● Beteiligung als GmbH-Geschäftsführer*in am \nStammkapital\n● Bestellung als GmbH-Gesellschafter*in zum*r \nGeschäftsführer*in oder Prokurist*in\n● Beteiligung als stille*r Gesellschafter*in\n● Land- / Forstwirtschaft\n● öffentliches Mandat / politische Funktion (z.B. als \nBürgermeister*in, Gemeinderat*Gemeinderätin, \nFunktionär*in der Wirtschaftskammer)\n● Krankengeldanspruch\n● Ersatzleistung für Urlaubsentgelt \n(Urlaubsabfindung, Urlaubsentschädigung)\n● Kündigungsentschädigung\nMeldepflichten \nInformationen nach Art. 13 und 14 Datenschutz-Grundverordnung\nbetreffend die Verarbeitung Ihrer personenbezogenen Daten finden \nSie auf unserer Website unter www.pv.at/Datenschutz. ",
+    "2 von 4\nSIE MÜSSEN ZUSÄTZLICH MELDEN, WENN SIE FOLGENDE LEISTUNGEN BEANTRAGEN ODER \nBEZIEHEN:\nAusgleichszulage, Ausgleichszulagenbonus / Pensionsbonus - Meldefrist: 2 Wochen\nSie müssen auch alle Informationen für Ihre Angehörigen melden! \n● Änderung in den Familienverhältnissen\n● Änderung in den Wohnverhältnissen\n● Aufgabe des gemeinsamen Haushaltes mit dem*r \nEhepartner*in oder eingetragenen Partner*in\n● jede Änderung der Aufenthaltsberechtigung\n● Verlegung des Aufenthaltes ins Ausland (auch \nvorübergehende Aufenthalte)\n● jeden Auslandsaufenthalt, auch bevor stehende \nAuslandsreisen\n● Tod des*r Ehepartners*in, des*r \neingetragenen Partners*in, des Kindes\n● Erhalt von Zinsen aus z.B. Sparguthaben, \nWertpapieren\n● Anfall / Höhe / Änderung / Wegfall von \n→ allen Einkünften\n→ Einkünften jener Personen, die Ihnen Unterhalt \nzahlen oder zahlen müssten\n→ einem Wohnrecht, freier V erpflegung und von \nAnsprüchen auf Ausgedinge, Fruchtgenuss und \nNaturalleistungen\n→ Einkünften aus der Insolvenz-Entgeltsicherung \n(Kündigungsentschädigung, Ausfallgeld)\n→ Einheitswerten der land- und forstwirtschaftlichen \nFlächen\n→ sonstigen Einkünften aus Vermietung, \nVerpachtung oder Überlassung von Wohnungen, \nWirtschaftsgebäuden, Häusern oder von \nGrund stücken\nPflegegeld - Meldefrist: 4 Wochen \n● Aufenthalte in einer Krankenanstalt, einer \nKuranstalt oder einem Rehabilitationszentrum auf \nKosten eines inländischen oder ausländischen \nSozialversicherungsträgers, des Bundes oder einer \nKranken fürsorgeanstalt\n● jede Änderung der Aufenthaltsberechtigung\n● Verlegung des Aufenthaltes ins Ausland (auch \nvorübergehende Aufenthalte)\n● jeden Auslandsaufenthalt, auch bevorstehende \nAuslandsreisen\n● Aufnahme in ein Pflegeheim\n● Wesentliche Besserung des \nGesundheitszu standes\n● Anfall / Höhe / Änderung / Wegfall einer\n→ dem Pflegegeld ähnlichen inländischen oder \nausländischen Leistung (z.B. Pflege zulage, \nBlindenzulage, ausländische Geldleistung oder \nPflegesachleistung)\n→ inländischen oder ausländischen Pension, \nRente, eines Ruhegenusses oder \nVersorgungsgenusses \nWitwenpension*Witwerpension, Pension für hinterbliebene eingetragene Partner*innen -\nMeldefrist: 2 Wochen \n● Anfall / Höhe / Änderung / Wegfall\n→ einer Geldleistung aus der gesetzlichen Sozialversicherung (z.B. Unfallrente)\n→ einer Geldleistung aus der Arbeitslosenversicherung\n→ einer Beihilfe aus der Arbeitsmarktförderung\n→ eines inländischen oder ausländischen Ruhegenusses oder Versorgungsgenusses oder einer\nähnlichen Leistung aufgrund einer vertraglichen Pensionszusage eines*r Dienstgebers*in\nWaisenpension oder Kinderzuschuss - Meldefrist: 2 Wochen\n● Änderung des Personenstandes des Kindes (z.B. Heirat, eingetragene Partnerschaft, Scheidung)\n● Tod des Kindes\n● bei Weiterzahlung über das 18. Lebensjahr:\n→ Anfall / Wegfall eines Anspruches auf (erhöhte) Familienbeihilfe\n→ Ende oder Unterbrechung der Schulausbildung, Berufsausbildung oder des Studiums\n→ Ableistung des Präsenzdienstes oder Zivildienstes\n→ Aufnahme und Wegfall einer Erwerbstätigkeit\n→ Bezug einer Leistung aus der Arbeitslosenversicherung oder einer Beihilfe aus der Arbeitsmarktförderung\n→ Ende einer freiwilligen Tätigkeit\n→ Wegfall der Erwerbsunfähigkeit",
+    "3 von 4\nKorridorpension / Schwerarbeitspension / Langzeitversichertenpension als TEILPENSION - \nMeldefrist: 2 Wochen\n● jede Aufnahme einer selbständigen Erwerbstätigkeit\n● Überschreitung der maximal zulässigen Wochenstunden der unselbständigen Erwerbstätigkeit\nINFO: Die für Sie geltenden maximal zulässigen Wochenstunden finden Sie in Ihrem Zuerkennungsbescheid \nunter „Hinweise“.\nHeimopferrente - Meldefrist: 4 Wochen\n● Anfall / Höhe / Änderung / Wegfall eines Ersatzes an V erdienstentgang und der einkommensabhängigen\nZusatzleistung nach dem Verbrechensopfergesetz\nAngehörigenbonus - Meldefrist: 4 Wochen \n● Anfall / Höhe / Änderung / Wegfall des \nEinkommens des*r pflegenden Angehörigen\n● Beginn / Ende einer Selbst- oder \nWeiterversicherung für Zeiten der Pflege naher \nAngehöriger\n● Ende der Pflege in häuslicher Umgebung; \nAufnahme der zu pflegenden Person in ein \nPflegeheim\n● Ende der überwiegenden Pflege, d.h. Ende der \nErbringung des größten Teils der Pflegeleistungen \naus dem Kreis der nahen Angehörigen\n● Verminderung der Pflegegeldstufe oder \nEntziehung des Pflegegeldes der zu pflegenden \nPerson\n● Tod der zu pflegenden Person\nÜbergangsgeld - Meldefrist: 2 Wochen \n● Änderung in den Familienverhältnissen\n● Änderung in den Wohnverhältnissen\n● Aufgabe des gemeinsamen Haushaltes mit \nAngehörigen, die bei der Höhe des \nÜbergangsgeldes berücksichtigt wurden\n● Antrag / Anfall / Höhe / Änderung / Wegfall einer \nwiederkehrenden Geldleistung aus der \nArbeitslosenversicherung (z.B. Arbeitslosengeld, \nNotstandshilfe) und einer Beihilfe zur Deckung des \nLebensunterhaltes\n● jeden Umstand, der den Erfolg der \nRehabilitationsmaßnahmen beeinträchtigen \nkann (z.B. Nichtmitwirkung an aufgetragenen \nRehabilitations maßnahmen)\n● bei Vorliegen von Kindern über dem \n18. Lebensjahr\n→ Unterbrechung / Ende der Schul- oder\nBerufsausbildung\n→ Aufnahme einer Tätigkeit\n→ jede Änderung des Einkommens",
+    "4 von 4\nUNSERE ADRESSEN\nSie können uns erreichen:\n– telefonisch unter der T elefonnummer +43 (0)5 03 03\n– per Post\n– per Mail\n– per Telefax\n– persönlich nach telefonischer T erminvereinbarung\nLandesstelle Wien\nFriedrich-Hillegeist-Straße 1, 1020 Wien \nE-Mail: pva-lsw@pv.at\nFax: +43 (0)5 03 03-28 850\nTerminvereinbarung: +43 (0)5 03 03-27 170\nKundenzone: Ghegastraße 1, 1030 Wien\nLandesstelle Kärnten\nSüdbahngürtel 10, 9020 Klagenfurt am Wörthersee \nE-Mail: pva-lsk@pv.at\nFax: +43 (0)5 03 03-35 850\nTerminvereinbarung: +43 (0)5 03 03-35 170\nLandesstelle Niederösterreich\nKremser Landstraße 5, 3100 St. Pölten\nE-Mail: pva-lsn@pv.at\nFax: +43 (0)5 03 03-32 850\nTerminvereinbarung: +43 (0)5 03 03-32 170\nLandesstelle Salzburg\nSchallmooser Hauptstraße 11, 5020 Salzburg \nE-Mail: pva-lss@pv.at\nFax: +43 (0)5 03 03-37 850\nTerminvereinbarung: +43 (0)5 03 03-37 170\nLandesstelle Burgenland\nÖdenburger Straße 8, 7000 Eisenstadt \nE-Mail: pva-lsb@pv.at\nFax: +43 (0)5 03 03-33 850\nTerminvereinbarung: +43 (0)5 03 03-33 170\nLandesstelle Tirol\nIng.-Etzel-Straße 13, 6020 Innsbruck \nE-Mail: pva-lst@pv.at\nFax: +43 (0)5 03 03-38 850\nTerminvereinbarung: +43 (0)5 03 03-38 170\nLandesstelle Oberösterreich\nTerminal Tower, Bahnhofplatz 8, 4020 Linz \nE-Mail: pva-lso@pv.at\nFax: +43 (0)5 03 03-36 850\nTerminvereinbarung: +43 (0)5 03 03-36 170\nLandesstelle Vorarlberg\nZollgasse 6, 6850 Dornbirn \nE-Mail: pva-lsv@pv.at\nFax: +43 (0)5 03 03-39 850\nTerminvereinbarung: +43 (0)5 03 03-39 170\nLandesstelle Steiermark\nEggenberger Straße 3, 8020 Graz \nE-Mail: pva-lsg@pv.at\nFax: +43 (0)5 03 03-34 850\nTerminvereinbarung: +43 (0)5 03 03-34 170\nWollen Sie auf Ihre Post von uns und anderen Behörden von überall zugreifen und gleichzeitig die \nUmwelt schonen? Nutzen Sie hierfür das elektronische Postfach. Nähere Informationen zur elektronischen \nZustellung finden Sie auf unserer Website unter www.pv.at/e-Zustellung.\nDie Meldepflichten in anderen Sprachen und weitere ausführliche Informationen zu unterschiedlichen \nThemenbereichen (z.B. Pensionszahlungsbeleg, Angehörigenbonus) finden Sie in den Broschüren und \nInfoblättern auf unserer Website unter www.pv.at.\nQR-Code zu den Meldepflichten in anderen Sprachen:"
+  ],
+  "pages": 8,
+  "source_file": "Anträge und Formulare/PAL080_0125_Mpfl_052026.pdf"
+}

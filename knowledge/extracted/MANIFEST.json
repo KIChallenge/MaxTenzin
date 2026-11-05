@@ -1,0 +1,90 @@
+{
+  "eko_medications": {
+    "extracted_at": "2026-11-05",
+    "notes": "unit_price_raw semantics not documented in legend; kept raw",
+    "outputs": [
+      "knowledge/extracted/eko/legend.json",
+      "knowledge/extracted/eko/medications.jsonl"
+    ],
+    "rows": 6985,
+    "script_version": "1.0.0",
+    "sources": [
+      "docs/Medikamenten Erstattungskodex/Zeichenerklärungen und Abkürzungen.pdf",
+      "docs/Medikamenten Erstattungskodex/indtext.txt",
+      "docs/Medikamenten Erstattungskodex/medikament.txt",
+      "docs/Medikamenten Erstattungskodex/regeltext.txt"
+    ],
+    "sources_sha256": "1430b6bdd74cdba66e8ab5c758a1a4c2a50b8556fe6a22a11b14bdcff1baa791"
+  },
+  "form_templates": {
+    "extracted_at": "2026-11-05",
+    "notes": "blank official templates",
+    "outputs": [
+      "knowledge/forms/templates/fsw_einrichtungswunsch.fields.json",
+      "knowledge/forms/templates/fsw_einrichtungswunsch.pdf",
+      "knowledge/forms/templates/fsw_foerderung.fields.json",
+      "knowledge/forms/templates/fsw_foerderung.pdf",
+      "knowledge/forms/templates/fsw_senioren_wg.fields.json",
+      "knowledge/forms/templates/fsw_senioren_wg.pdf",
+      "knowledge/forms/templates/oegk_fahrtkosten_wien.fields.json",
+      "knowledge/forms/templates/oegk_fahrtkosten_wien.pdf",
+      "knowledge/forms/templates/pva_pflegegeld_pal080.fields.json",
+      "knowledge/forms/templates/pva_pflegegeld_pal080.pdf",
+      "knowledge/forms/templates/sv_kur_reha.fields.json",
+      "knowledge/forms/templates/sv_kur_reha.pdf",
+      "knowledge/forms/templates/sv_reha_nach_unfall.fields.json",
+      "knowledge/forms/templates/sv_reha_nach_unfall.pdf"
+    ],
+    "rows": 426,
+    "script_version": "1.0.0",
+    "sources": [
+      "docs/Anträge und Formulare/Antrag Kur und Reha.pdf",
+      "docs/Anträge und Formulare/Antrag-auf-Zuschuss-zu-Fahrtkosten_Wien.pdf",
+      "docs/Anträge und Formulare/Bedarfsmeldung-Senior_innen-Wohngemeinschaft_Basispaket.1736522017.pdf",
+      "docs/Anträge und Formulare/FSW-Antrag-Beilage-Einrichtungswunsch.1779345450.pdf",
+      "docs/Anträge und Formulare/PAL080_0125_Mpfl_052026.pdf",
+      "docs/Anträge und Formulare/Reha_n_Unfall_052026.pdf",
+      "docs/Anträge und Formulare/fsw-antrag-auf-foerderung-von-leistungen.1779095804.pdf"
+    ],
+    "sources_sha256": "5cc40a5d854e1c0ea75f95b56315a2b51178691edf5b1da6b6c5bd5d1027016e"
+  },
+  "legal_paragraphs": {
+    "extracted_at": "2026-11-05",
+    "notes": "allowlist=['ASVG', 'BPGG', 'FLAG', 'KBGG', 'KrankenO_OEGK_2025', 'MuKiPassV_2002', 'RBA', 'RBS_2005', 'RBZRehab_2005', 'RFG_2020', 'RGFP', 'RJU_2016', 'RPGG_2012', 'RRK_2021', 'RRZ_2008', 'RUF_2020', 'RVU', 'Satzung_OEGK_2025', 'VO-EKO']; laws_found=19",
+    "outputs": [
+      "knowledge/extracted/legal/paragraphs.jsonl"
+    ],
+    "rows": 1976,
+    "script_version": "1.0.0",
+    "sources": [
+      "1976 files under docs/Rechtstexte"
+    ],
+    "sources_sha256": "706a365470b61d7344c48120663fef4a883d7df4a431bf27a112d5a98801d8ed"
+  },
+  "serviceratgeber_pages": {
+    "extracted_at": "2026-11-05",
+    "notes": "printed page = 2*pdf_page-2 (left) / 2*pdf_page-1 (right)",
+    "outputs": [
+      "knowledge/extracted/serviceratgeber/pages.jsonl"
+    ],
+    "rows": 118,
+    "script_version": "1.0.0",
+    "sources": [
+      "docs/Leistungskataloge/Serviceratgeber-2026_Broschuere_A5_OEAM_99-19_klein_korr.pdf"
+    ],
+    "sources_sha256": "f8c4a38bffe4cab93412ed3263772b194224cc9d758e62136fda0604d34b75a9"
+  },
+  "veraendw_values": {
+    "extracted_at": "2026-11-05",
+    "notes": "mapped tables=['20', '25', '46', '53', '54']; raw tables=91",
+    "outputs": [
+      "knowledge/extracted/values/veraendw.json"
+    ],
+    "rows": 686,
+    "script_version": "1.0.0",
+    "sources": [
+      "91 files under docs/Rechtstexte"
+    ],
+    "sources_sha256": "783603100cd209be0f69362bb2f840f2db3887cbcce7293c7607b0c47847971c"
+  }
+}

@@ -1,0 +1,896 @@
+{
+  "fields": [
+    {
+      "name": "Aktuelle Befunde",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Ich habe einen aktuellen Befund über meinen Bedarf für Wohnen und Pflege. ",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Anmerkung Bedarf",
+      "states": null,
+      "tooltip": "Anmerkungen zum Bedarf",
+      "type": "text"
+    },
+    {
+      "name": "Anzahl volljaehrige Personen",
+      "states": null,
+      "tooltip": " Wie viele volljährige Personen leben in Ihrem Haushalt?",
+      "type": "text"
+    },
+    {
+      "name": "Begründung Zeugin/Zeuge 4",
+      "states": null,
+      "tooltip": "Begründung für die Unterschrift durch zwei Zeug:innen",
+      "type": "text"
+    },
+    {
+      "name": "Berufsintegration",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Berufsintegration",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Berufsqualifizierung",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Berufsqualifizierung",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Betreutes Wohnen",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Betreutes Wohnen",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Beziehung erste Zeugin / erster Zeuge 3",
+      "states": null,
+      "tooltip": "Beziehung der:des ersten Zeugin:Zeugen zur Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "Beziehung zweite ZeugIn 3",
+      "states": null,
+      "tooltip": "Beziehung der:des zweiten Zeugin:Zeugen zur Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "Bezirke Zeit",
+      "states": null,
+      "tooltip": "Ich möchte nur in folgende Bezirke oder Einrichtungen ziehen:",
+      "type": "text"
+    },
+    {
+      "name": "Bezirke dringend",
+      "states": null,
+      "tooltip": "Folgende Bezirke sind mir am liebsten:",
+      "type": "text"
+    },
+    {
+      "name": "Datum Unterschrift KundIn 4",
+      "states": null,
+      "tooltip": "Datum der Unterschriftszeichnung Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "Datum Unterschrift erste Zeugin / erster Zeuge 3",
+      "states": null,
+      "tooltip": "Datum der Unterschriftszeichnung erste:r Zeug:in",
+      "type": "text"
+    },
+    {
+      "name": "Datum Unterschrift zweite ZeugIn 3",
+      "states": null,
+      "tooltip": "Datum der Unterschriftszeichnung zweite:r Zeug:in",
+      "type": "text"
+    },
+    {
+      "name": "Dolmetschleistung",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Dolmetschleistungen",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Dringend",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Ich möchte dringend in eine Einrichtung einziehen. Der FSW soll in ganz Wien nach einem Wohn- und Pflegeplatz suchen. ",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "E-Mail Adresse Kontaktaufnahme 2",
+      "states": null,
+      "tooltip": "E-Mail-Adresse Kontaktperson",
+      "type": "text"
+    },
+    {
+      "name": "E-Mail Adresse KundIn",
+      "states": null,
+      "tooltip": "E-Mail-Adresse Kund:in (falls vorhanden)",
+      "type": "text"
+    },
+    {
+      "name": "E-Mail-Adresse Vertrauensperson",
+      "states": null,
+      "tooltip": "E-Mail-Adresse der Vertrauensperson",
+      "type": "text"
+    },
+    {
+      "name": "E-Mail-Adresse ZustellbevollmaechtigteR",
+      "states": null,
+      "tooltip": "E-Mail-Adresse Zustellbevollmächtige:r",
+      "type": "text"
+    },
+    {
+      "name": "E-Mail-Adresse vertretungsbefugte Person 3",
+      "states": null,
+      "tooltip": "E-Mail-Adresse vertretungsbefugte Person",
+      "type": "text"
+    },
+    {
+      "name": "E-Mail-Adresse weitere Vertrauensperson",
+      "states": null,
+      "tooltip": "E-Mail-Adresse der weiteren Vertrauensperson",
+      "type": "text"
+    },
+    {
+      "name": "Einkommen",
+      "states": null,
+      "tooltip": "Einkommen",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Entlastung Angehoeriger",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Betreutes Wohnen – Entlastung für Angehörige: \nDie Leistung ist mit maximal 35 Tagen befristet. ",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Fahrtbegleitung",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Fahrtbegleitung",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Fahrtendienst",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Fahrtendienst",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Fahrtendienst Start",
+      "states": null,
+      "tooltip": "Ich möchte hier abgeholt werden:",
+      "type": "text"
+    },
+    {
+      "name": "Fahrtendienst Ziel",
+      "states": null,
+      "tooltip": "Ich möchte hierhin fahren:",
+      "type": "text"
+    },
+    {
+      "name": "Fahrtkostenersatz",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Fahrtkostenersatz",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Familienname Kontaktaufnahme",
+      "states": null,
+      "tooltip": "Name der Kontaktperson",
+      "type": "text"
+    },
+    {
+      "name": "Familienname Titel KundIn",
+      "states": null,
+      "tooltip": "Familienname und Titel Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "Familienname Titel vertretungsbefugte Person 3",
+      "states": null,
+      "tooltip": "Familienname und Titel vertretungsbefugte Person",
+      "type": "text"
+    },
+    {
+      "name": "Familienname Vertrauensperson",
+      "states": null,
+      "tooltip": "Familienname und Titel der Vertrauensperson",
+      "type": "text"
+    },
+    {
+      "name": "Familienname ZustellbevollmaechtigteR",
+      "states": null,
+      "tooltip": "Familienname und Titel Zustellbevollmächtige:r",
+      "type": "text"
+    },
+    {
+      "name": "Familienname erste ZeugIn 3",
+      "states": null,
+      "tooltip": "Familienname erste:r Zeug:in",
+      "type": "text"
+    },
+    {
+      "name": "Familienname weitere Vertrauensperson",
+      "states": null,
+      "tooltip": "Familienname und Titel der weiteren Vertrauensperson",
+      "type": "text"
+    },
+    {
+      "name": "Familienname zweite ZeugIn 4",
+      "states": null,
+      "tooltip": "Familienname zweite:r Zeug:in",
+      "type": "text"
+    },
+    {
+      "name": "Familienstand ",
+      "states": null,
+      "tooltip": "Familienstand Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "Familienstand seit",
+      "states": null,
+      "tooltip": "Familienstand seit (im Format Tag.Monat.Jahr, zum Beispiel 31.01.1972)",
+      "type": "text"
+    },
+    {
+      "name": "Freizeitfahrtendienst",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Freizeitfahrtendienst für dauerhaft schwer gehbehinderte Menschen",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Geburtsdatum KundIn",
+      "states": null,
+      "tooltip": "Geburtsdatum Kund:in (im Format Tag.Monat.Jahr, zum Beispiel 31.01.1972)",
+      "type": "text"
+    },
+    {
+      "name": "Geburtsland KundIn",
+      "states": null,
+      "tooltip": "Geburtsland Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "Geschlecht KundIn",
+      "states": null,
+      "tooltip": "Geschlecht Kund:in",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Hausnr Lebensmittelpunkt",
+      "states": null,
+      "tooltip": "Hausnummer Lebensmittelpunkt Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "Hausnr ZustellbevollmaechtigteR 2",
+      "states": null,
+      "tooltip": "Hausnummer Adresse Zustellbevollmächtige:r",
+      "type": "text"
+    },
+    {
+      "name": "Hilfsmittel",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Hilfsmittel, PKW-Adaptierung oder Blindenführhund. Hilfsmittel sind zum Beispiel: Hörgeräte, Kommunikationshilfen",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Hilfsmittel Beantragnung",
+      "states": null,
+      "tooltip": "Für welches Hilfsmittel beantragen Sie die Förderung?",
+      "type": "text"
+    },
+    {
+      "name": "IBAN 3",
+      "states": null,
+      "tooltip": "IBAN (Internationale Kontonummer) ",
+      "type": "text"
+    },
+    {
+      "name": "IBAN 4",
+      "states": null,
+      "tooltip": "IBAN (Internationale Kontonummer) ",
+      "type": "text"
+    },
+    {
+      "name": "Keine Aktuellen Befunde",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Ich habe noch keinen aktuellen Befund über meinen Bedarf.",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Keine Unterhaltsverpflichtung Unterhaltsberechtigung BuI",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Ich habe keine unterhaltsverpflichteten oder unterhaltsberechtigten Angehörigen.",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Keine Unterhaltsverpflichtung Unterhaltsberechtigung PuB",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Ich habe keine unterhaltsverpflichteten oder unterhaltsberechtigten Angehörigen.",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Kontaktaufnahme folgende Person",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Sobald ein Wohnplatz oder Pflegeplatz für mich frei wird, soll das FSW-Kund:innenservice Kontakt mit folgender Person aufnehmen:",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Kontaktaufnahme mit mir",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Sobald ein Wohnplatz oder Pflegeplatz für mich frei wird, soll das FSW-Kund:innenservice mit mir Kontakt aufnehmen",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "KontoinhaberIn 3",
+      "states": null,
+      "tooltip": "Name Kontoinhaber:in",
+      "type": "text"
+    },
+    {
+      "name": "KontoinhaberIn 4",
+      "states": null,
+      "tooltip": "Name Kontoinhaber:in",
+      "type": "text"
+    },
+    {
+      "name": "Kurzzeitpflege",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Kurzzeitpflege – Remobilisation: Die Leistung ist mit maximal 92 Tagen befristet.",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Lehrlingsausbildung",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Lehrlingsausbildung",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Leistungen Behinderung und Inklusion",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Leistungen Behinderung und Inklusion",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Leistungen Obdach- und Wohnungslosenhilfe",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Leistungen Obdach- und Wohnungslosenhilfe",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Leistungen Obdach- und Wohnungslosenhilfe 2",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Leistungen Obdach- und Wohnungslosenhilfe",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Leistungen Pflege und Betreuung",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Leistungen Pflege und Betreuung",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Lohnkostenzuschuss",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Lohnkostenzuschuss",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "MentorInnenzuschuss",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Mentor:innenzuschuss",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Mobile Fruehfoerderung",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Mobile Frühförderung",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Mobilitaetstraining",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Mobilitätstraining",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Ort Lebensmittelpunkt",
+      "states": null,
+      "tooltip": "Ort Lebensmittelpunkt Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "Ort ZustellbevollmaechtigteR 2",
+      "states": null,
+      "tooltip": "Ort Adresse Zustellbevollmächtige:r",
+      "type": "text"
+    },
+    {
+      "name": "PLZ Lebensmittelpunkt",
+      "states": null,
+      "tooltip": "Postleitzahl Lebensmittelpunkt Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "PLZ ZustellbevollmaechtigteR 2",
+      "states": null,
+      "tooltip": "Postleitzahl Adresse Zustellbevollmächtige:r",
+      "type": "text"
+    },
+    {
+      "name": "Personengemeinschaft",
+      "states": null,
+      "tooltip": "Möchten Sie die Leistung gemeinsam mit Ihrem:Ihrer Partner:in und/oder Ihren Kindern nutzen",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Pflege und Betreuung zu Hause",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Pflege und Betreuung zu Hause",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Pflegegldergänzungsleistung",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Pflegegeldergänzungsleistung für Persönliche Assistenz",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Rollstuhl",
+      "states": null,
+      "tooltip": "Benutzen Sie einen Rollstuhl",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Schule",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Schule",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Schule Adresse",
+      "states": null,
+      "tooltip": "Adresse der Schule",
+      "type": "text"
+    },
+    {
+      "name": "Sonstige Leistung",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Sonstige Leistung",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Stiege Lebensmittelpunkt",
+      "states": null,
+      "tooltip": "Stiege Lebensmittelpunkt Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "Stiege ZustellbevollmaechtigteR 2",
+      "states": null,
+      "tooltip": "Stiege Adresse Zustellbevollmächtige:r",
+      "type": "text"
+    },
+    {
+      "name": "Strassennamen Lebensmittelpunkt",
+      "states": null,
+      "tooltip": "Lebensmittelpunkt Straßenname der Adresse Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "Strassennamen ZustellbevollmaechtigteR 2",
+      "states": null,
+      "tooltip": "Straßenname der Adresse Zustellbevollmächtige:r",
+      "type": "text"
+    },
+    {
+      "name": "Tagesbetreuung",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Tagesbetreuung (Tageszentrum, Tageshospiz)",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Tagesstruktur",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Tagesstruktur inklusive Mobilitätskonzept",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Teilbetreutes Wohnen",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Betreutes Wohnen: Teilbetreutes Wohnen",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Telefon erste Zeugin / erster Zeuge 3",
+      "states": null,
+      "tooltip": "Telefonnummer erste:r Zeug:in",
+      "type": "text"
+    },
+    {
+      "name": "Telefonnummer Kontaktaufnahme 2",
+      "states": null,
+      "tooltip": "Telefonnummer Kontaktperson",
+      "type": "text"
+    },
+    {
+      "name": "Telefonnummer KundIn",
+      "states": null,
+      "tooltip": "Telefonnummer Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "Telefonnummer Vertrauensperson",
+      "states": null,
+      "tooltip": "Telefonnummer der Vertrauensperson",
+      "type": "text"
+    },
+    {
+      "name": "Telefonnummer ZustellbevollmaechtigteR",
+      "states": null,
+      "tooltip": "Telefonnummer Zustellbevollmächtige:r",
+      "type": "text"
+    },
+    {
+      "name": "Telefonnummer vertretungsbefugte Person 3",
+      "states": null,
+      "tooltip": "Telefonnummer vertretungsbefugte Person",
+      "type": "text"
+    },
+    {
+      "name": "Telefonnummer weitere Vertrauensperson",
+      "states": null,
+      "tooltip": "Telefonnummer der weiteren Vertrauensperson",
+      "type": "text"
+    },
+    {
+      "name": "Telefonnummer zweite ZeugIn 3",
+      "states": null,
+      "tooltip": "Telefonnummer zweite:r Zeug:in",
+      "type": "text"
+    },
+    {
+      "name": "Tuernr Lebensmittelpunkt",
+      "states": null,
+      "tooltip": "Türnummer Lebensmittelpunkt Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "Tuernr ZustellbevollmaechtigteR 2",
+      "states": null,
+      "tooltip": "Türnummer Adresse Zustellbevollmächtige:r",
+      "type": "text"
+    },
+    {
+      "name": "Unfall",
+      "states": null,
+      "tooltip": "Ist der Bedarf durch einen Unfall oder ein anderes Schadensereignis entstanden",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Unfall 2",
+      "states": null,
+      "tooltip": "Ist der Bedarf durch einen Unfall oder ein anderes Schadensereignis entstanden",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Unterhaltsberechtigte Angehoerige BuI",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Ich habe unterhaltsberechtigte Angehörige. Das sind Angehörige, die ein Recht haben, von mir Unterhalt zu bekommen.",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Unterhaltsberechtigte Angehoerige PuB",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Ich habe unterhaltsberechtigte Angehörige. Das sind Angehörige, die ein Recht haben, von mir Unterhalt zu bekommen.",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Unterhaltsverpflichtete Angehoerige BuI",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Ich habe unterhaltsverpflichtete Angehörige. Das sind Angehörige, die zu meinem Unterhalt verpflichtet sind.",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Unterhaltsverpflichtete Angehoerige PuB",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Ich habe unterhaltsverpflichtete Angehörige. Das sind Angehörige, die zu meinem Unterhalt verpflichtet sind.",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Unterschriftsfeld KundIn",
+      "states": null,
+      "tooltip": " Unterschrift der:des Kundin:Kunden oder der vertretungsbefugten Person",
+      "type": "signature"
+    },
+    {
+      "name": "Unterschriftsfeld Zeuge 1",
+      "states": null,
+      "tooltip": "Unterschrift erste:r Zeug:in",
+      "type": "signature"
+    },
+    {
+      "name": "Unterschriftsfeld Zeuge 2",
+      "states": null,
+      "tooltip": "Unterschrift zweite:r Zeug:in",
+      "type": "signature"
+    },
+    {
+      "name": "Urlaubspflege",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Urlaubspflege – Allgemeine Pflege und Betreuung: \nDie Leistung ist mit maximal 35 Tagen befristet.",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Vermögen",
+      "states": null,
+      "tooltip": "Vermögen",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Vertretungsbefugte Person",
+      "states": null,
+      "tooltip": "Vertretungsbefugte Person vorhanden",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Vertretungsbefugte Person 2",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Die vertretungsbefugte Person, die ich in Punkt 3 angegeben habe, ist auch meine Vertrauensperson. \n(In diesem Fall müssen Sie die Daten nicht nochmals angeben).",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Vertretungsbefugte Person 3",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Ich benenne die unten genannte(n) Person(en) als Vertrauensperson(en).",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Vollbetreutes Wohnen",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Betreutes Wohnen: Vollbetreutes Wohnen",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Vorname KundIn",
+      "states": null,
+      "tooltip": "Vorname Kund:in",
+      "type": "text"
+    },
+    {
+      "name": "Vorname Vertrauensperson",
+      "states": null,
+      "tooltip": "Vorname der Vertrauensperson",
+      "type": "text"
+    },
+    {
+      "name": "Vorname ZustellbevollmaechtigteR",
+      "states": null,
+      "tooltip": "Vorname Zustellbevollmächtige:r",
+      "type": "text"
+    },
+    {
+      "name": "Vorname erste ZeugIn 3",
+      "states": null,
+      "tooltip": "Vorname erste:r Zeug:in",
+      "type": "text"
+    },
+    {
+      "name": "Vorname vertretungsbefugte Person 3",
+      "states": null,
+      "tooltip": "Vorname vertretungsbefugte Person",
+      "type": "text"
+    },
+    {
+      "name": "Vorname weitere Vertrauensperson",
+      "states": null,
+      "tooltip": "Vorname der weiteren Vertrauensperson",
+      "type": "text"
+    },
+    {
+      "name": "Vorname zweite ZeugIn 3",
+      "states": null,
+      "tooltip": "Vorname zweite:r Zeug:in",
+      "type": "text"
+    },
+    {
+      "name": "Welche sonstige Leistung",
+      "states": null,
+      "tooltip": "Bitte beschreiben Sie die sonstige Leistung:",
+      "type": "text"
+    },
+    {
+      "name": "Wohn und Pflegehäuser",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Wohn- und Pflegehäuser",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Wohn- und Pflegehäuser: befristet",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Wohn- und Pflegehäuser: befristet",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Wohn- und Pflegehäuser: unbefristet",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Wohn- und Pflegehäuser: unbefristet",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Wohngemeinschaft",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Senior:innen-Wohngemeinschaft – Basispaket (Unterstützung und Begleitung im Gemeinschaftsleben, \nfür Bewohner:innen von Betreuten Wohngemeinschaften)",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Zeit",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Ich habe Zeit, auf einen bestimmten Wohn- und Pflegeplatz zu warten. ",
+      "type": "checkbox_or_radio"
+    }
+  ],
+  "fillable": true,
+  "form_id": "fsw_foerderung",
+  "page_text": [
+    "Antrag auf Förderung von Leistungen, V8 03/2026 – Offen Seite 1 von 13\n Geburtsdatum (TT.MM.JJJJ)\n2. Persönliche Kund:innendaten\n1. Förderung\n Geschlecht\n Familienname und Titel  Vorname\nPersönliche Kund:innendaten\nIch beantrage eine Förderung für\ndivers/inter/offen keine Angabeweiblichmännlich\nLeistungen Pflege und Betreuung\nLeistungen Behinderung und Inklusion  \nLeistungen Obdach- und Wohnungslosenhilfe\n seit: (TT.MM.JJJJ)\n Familienstand\nFamilienstand\n Geburtsland\nAntrag auf Förderung von Leistungen\nFonds Soziales Wien – Kund:innenservice \nGuglgasse 7–9, 1030 Wien \nTel.: 01 24 5 24 \nFax: 01 24 5 24-89 10 100 \nE-Mail: kundinnenservice@fsw.at \nwww.fsw.at\n Telefonnummer  E-Mail-Adresse (falls vorhanden)\nKontakt\n Straße\n PLZ  Ort\n Hausnr.  Stiege  Türnr.\nLebensmittelpunkt: Wo leben/wohnen Sie?\nFüllen Sie bitte bei Punkt 10 den Abschnitt  \nFörderung für Leistungen Pflege und Betreuung aus.\nFüllen Sie bitte bei Punkt 10 den Abschnitt  \nFörderung für Leistungen Behinderung und Inklusion  aus.\nFüllen Sie bitte bei Punkt 10 den Abschnitt Förderung  \nfür Leistungen Obdach- und Wohnungslosenhilfe  aus.",
+    "Antrag auf Förderung von Leistungen, V8 03/2026 – Offen Seite 2 von 13\nEine vertretungsbefugte Person ist berechtigt, Sie in bestimmten Angelegenheiten zu vertreten. Dafür gibt es immer einen Nachweis. \nZum Beispiel: eine Vollmacht, eine Vorsorgevollmacht, einen Beschluss vom Gericht.  \nFür Minderjährige geben Sie hier eine obsorgeberechtigte Person an.\n Haben Sie eine vertretungsbefugte Person? \n3. Vertretungsbefugte Person\nVertretung\n Familienname und Titel\n Familienname und Titel\n Vorname\n Vorname\nDaten der vertretungsbefugten Person\nDaten der:des Zustellbevollmächtigten\nBerechtigung\n Telefonnummer\n Telefonnummer\n E-Mail-Adresse\n E-Mail-Adresse\n4. Zustellbevollmächtige:r\n5. Vertrauenspersonen\nWenn Sie möchten, können Sie hier eine:n Zustellbevollmächtigte:n benennen. Das kann ein:e Angehörige:r oder Freund:in sein.  \nBitte fragen Sie die Person vorher, ob sie einverstanden ist.\nWenn Sie niemanden benennen wollen, lassen Sie diesen Punkt leer.\nEin:e Zustellbevollmächtige:r bekommt an Ihrer Stelle alle Schreiben des Fonds Soziales Wien, abgekürzt FSW, zum Beispiel eine \nFörderbewilligung oder Ablehnung und die Kostenbeitragsvorschreibung. Sie können nur eine:n Zustellbevollmächtigte:n nennen.  \nDie Berechtigung „Zustellbevollmächtigte:r“ gilt unbefristet, bis zu einem Widerruf. Sie können die Berechtigung jederzeit widerrufen.\nWenn Sie möchten, können Sie hier Vertrauenspersonen benennen. Das können Angehörige oder Freund:innen sein. Bitte fragen Sie \ndie Person vorher, ob sie einverstanden ist.\nWenn Sie niemanden benennen wollen, lassen Sie diesen Punkt leer.\nEiner Vertrauensperson dürfen wir zu Ihrer Förderung Fragen stellen und Auskünfte geben. Auch sensible Daten dürfen wir an die \nVertrauensperson weitergeben. Eine Vertrauensperson darf Sie aber nicht vertreten. Zum Beispiel darf eine Vertrauensperson nicht \nIhren Antrag zurückziehen oder Schreiben bekommen. Die Berechtigung „Vertrauensperson“ gilt unbefristet, bis zu einem Widerruf. \nSie können die Berechtigung jederzeit widerrufen.\nJa Nein\n Straße  Hausnr.  Stiege  Türnr.\nBitte kreuzen Sie hier das Zutreffende an, wenn Sie eine Vertrauensperson benennen wollen.\nDie vertretungsbefugte Person, die ich in Punkt 3 angegeben habe, ist auch meine Vertrauensperson.  \n(In diesem Fall müssen Sie die Daten nicht nochmals angeben).\nIch benenne die unten genannte(n) Person(en) als Vertrauensperson(en).\nLegen Sie die schriftliche Bestätigung dafür bei, zum Beispiel Beschluss des \nGerichts über eine Erwachsenenvertretung, Nachweis über die Obsorge\n PLZ  Ort",
+    "Antrag auf Förderung von Leistungen, V8 03/2026 – Offen Seite 3 von 13\nDiesen Punkt müssen Sie ausfüllen, wenn Sie Förderungen für folgende Leistungen beantragen:\n• Leistungen Pflege und Betreuung\n• Leistungen Behinderung und Inklusion: \nVollbetreutes Wohnen, Pflegegeldergänzungsleistung für  \nPersönliche Assistenz, Dolmetschleistungen, Freizeitfahrtendienst\n• Leistungen Obdach- und Wohnungslosenhilfe\nSie müssen den FSW informieren, wenn sich wichtige Daten ändern. Zum Beispiel:\n – persönliche Daten\n – Familienstand\n – Einkommen, wenn Sie folgende Leistungen bekommen:  \nPflege und Betreuung, Vollbetreutes Wohnen, Pflegegeldergänzungsleistung für  \nPersönliche Assistenz, Dolmetschleistungen, Obdach- und Wohnungslosenhilfe\n – Miet- und Wohnkosten, wenn Sie Leistungen Pflege und Betreuung bekommen\n – Vermögen, wenn Sie Leistungen Obdach- und Wohnungslosenhilfe bekommen\n – Pflege- und Betreuungsbedarf\n – Pflegegeldstufe\nWenn Sie falsche Angaben machen oder den FSW über Änderungen nicht informieren, können wir die Förderung einstellen \noder widerrufen. Die Förderung endet dann. Bei einem Widerruf müssen Sie dem FSW die Förderung zurückzahlen.\nWenn Sie in oder von einer anerkannten Einrichtung betreut werden:\n – Sie bekommen die Förderung nur, wenn Sie mit dem:der Betreiber:in der anerkannten Einrichtung einen schriftlichen \nVertrag über die Beratung, Unterstützung, Betreuung oder Pflege abschließen.\n – Der FSW zahlt die Förderung direkt an die Einrichtung. Sie bekommen keine Rechnung über den geförderten Betrag.\nFür bestimmte Leistungen müssen Sie einen Kostenbeitrag zahlen. Der Kostenbeitrag kann sich ändern, wenn sich wichtige \nDaten ändern. Die Änderung kann auch rückwirkend sein.  \n \nMehr Informationen dazu finden Sie in Punkt 10, in den Förderrichtlinien und auf www.fsw.at.\n Familienname und Titel\n Familienname und Titel\n Vorname\n Vorname\nDaten der Vertrauensperson\nDaten der weiteren Vertrauensperson\n Telefonnummer\n Telefonnummer\n E-Mail-Adresse\n E-Mail-Adresse\n6. Einkommen\n7 . Regeln für die Förderung\nIch habe ein Einkommen, zum Beispiel \nPension, Gehalt, Geld vom AMS \nIch habe kein Einkommen\nLegen Sie Ihrem Antrag Nachweise in Kopie bei.  \nWelche Nachweise das sein können, steht bei den nötigen Unterlagen in Punkt 12.",
+    "Antrag auf Förderung von Leistungen, V8 03/2026 – Offen Seite 4 von 13\n Familienname\n Beziehung zum:zur Kund:in\n Datum  Unterschrift zweite:r Zeug:in \nZweite:r Zeug:in\n Vorname\n Telefonnummer\n Familienname\n Beziehung zum:zur Kund:in\n Datum  Unterschrift erste:r Zeug:in\nErste:r Zeug:in\n Vorname\n Telefonnummer\n \n9.  Wenn Sie wegen einer körperlichen Einschränkung nicht selbst unterschreiben können: \nBestätigung durch zwei Zeug:innen\nBegründung, warum der:die Kund:in nicht selbst unterschreiben kann:\n Begründung\nWir bestätigen, dass der:die Kund:in den Antrag und die Beilagen zur Kenntnis genommen hat und in allen Punkten zustimmt. \nMit meiner Unterschrift bestätige ich:\n• Meine Angaben im Antrag, in den Beilagen und bei der Bedarfserhebung entsprechen der Wahrheit.\n• Ich nehme die Regeln für die Förderung im Antrag und in den Beilagen zur Kenntnis und stimme diesen zu.\n• Ich nehme die für mich geltenden Allgemeinen und Spezifischen Förderrichtlinien sowie Ergänzenden Spezifischen Richtlinien  \ndes Fonds Soziales Wien, abgekürzt FSW, zur Kenntnis. Alle Förderrichtlinien sind in der jeweils geltenden Fassung  \nunter www.fsw.at abrufbar.\n8. Unterschrift\n Datum  Unterschrift der:des Kundin:Kunden oder der vertretungsbefugten Person",
+    "Antrag auf Förderung von Leistungen, V8 03/2026 – Offen Seite 5 von 13\n Ist der Bedarf durch einen Unfall oder ein anderes Schadensereignis entstanden?  \n Es ist vorerst egal, ob andere Personen beteiligt waren oder nicht. \nJa Nein\n10. Förderung für Leistungen Pflege und Betreuung\nPflege und Betreuung zu Hause / Tagesbetreuung\nWohnen und Pflege\nEinrichtungswunsch für Wohnen und Pflege\nGeben Sie an, in welche Bezirke oder Einrichtungen Sie befristet oder unbefristet ziehen wollen.  \nWenn der Einzug dringend notwendig ist, suchen wir in ganz Wien einen Wohn- und Pflegeplatz.\nMein Kostenbeitrag und meine Förderung hängen ab von\n – den genutzten Betreuungseinheiten \n – meinem Einkommen\n – meinen Unterhaltspflichten oder Unterhaltsberechtigungen \n – meinen Miet- und Wohn-Kosten\n – meinem Pflegegeld\nIch muss den Kostenbeitrag jeden Monat nachträglich zahlen.  \nNur genutzte oder vereinbarte Betreuungseinheiten werden \nberechnet.\nWichtige Regeln für die Förderung:\nWichtige Regeln für die Förderung:\nMein Kostenbeitrag hängt ab von\n – meinem Einkommen\n – meinen Unterhaltspflichten oder Unterhaltsberechtigungen \n – meinem Pflegegeld \nWenn die unterhaltspflichtige Person zu Hause wohnt und  \nMiete zahlt, berücksichtigen wir das bei der Berechnung.\nIch muss den Kostenbeitrag jeden Monat im Vorhinein zahlen.\nWohn- und Pflegehäuser\nbefristet unbefristet\nKurzzeitpflege – Remobilisation: \nDie Leistung ist mit maximal 92 Tagen befristet.\nBetreutes Wohnen – Entlastung für Angehörige:  \nDie Leistung ist mit maximal 35 Tagen befristet. \nIch möchte dringend in eine Einrichtung einziehen. Der FSW soll in ganz Wien nach \neinem Wohn- und Pflegeplatz suchen. \nIch habe Zeit, auf einen bestimmten Wohn- und Pflegeplatz zu warten. \nUrlaubspflege – Allgemeine Pflege und Betreuung: \nDie Leistung ist mit maximal 35 Tagen befristet.\nIch beantrage eine Förderung für:\nIch beantrage eine Förderung für:\nPflege und Betreuung zu Hause\nTagesbetreuung (Tageszentrum, Tageshospiz)\nSenior:innen-Wohngemeinschaft – Basispaket \n(Unterstützung und Begleitung im Gemeinschaftsleben,  \nfür Bewohner:innen von Betreuten Wohngemeinschaften)\n Folgende Bezirke sind mir am liebsten:\n Ich möchte nur in folgende Bezirke oder Einrichtungen ziehen:",
+    "Antrag auf Förderung von Leistungen, V8 03/2026 – Offen Seite 6 von 13\nZum Beispiel: Ehepartner:in oder eingetragene:r Partner:in im gemeinsamen oder getrennten Haushalt, Kinder,  \nehemalige:r Partner:in nach einer Scheidung oder Auflösung einer eingetragenen Partnerschaft\nIch habe keine unterhaltsverpflichteten oder unterhaltsberechtigten Angehörigen.\nIch habe unterhaltsberechtigte Angehörige. Das sind Angehörige, die ein Recht haben, von mir Unterhalt zu bekommen.\nIch habe unterhaltsverpflichtete Angehörige. Das sind Angehörige, die zu meinem Unterhalt verpflichtet sind.\nBitte geben Sie Ihren Namen und eventuell Titel genau so an \nwie auf Ihrer Bankkarte.\nSobald ein Wohnplatz oder Pflegeplatz für mich frei wird, soll das FSW-Kund:innenservice Kontakt aufnehmen\nmit mir\nmit folgender Person:\n Kontoinhaber:in\n Wie viele volljährige Personen leben in Ihrem Haushalt?\n IBAN (Internationale Kontonummer) \nKontodaten \nUnterhaltsverpflichtete oder unterhaltsberechtigte Angehörige\nPersonen im gemeinsamen Haushalt\nBefund Wohnen und Pflege\nIch habe einen aktuellen Befund über meinen Bedarf für Wohnen und Pflege. \nIch habe noch keinen aktuellen Befund über meinen Bedarf.\nLegen Sie Ihrem Antrag eine Kopie vom Befund bei.\nLassen Sie das Formular Befundbericht Wohnen und Pflege von \ndem:der Arzt:Ärztin ausfüllen und legen Sie es dem Antrag bei.\nFüllen Sie die Beilage Angehörige aus.  \nLegen Sie die Beilage und die nötigen Nachweise Ihrem Antrag bei.\nFüllen Sie die Beilage Angehörige aus.  \nLegen Sie die Beilage und die nötigen Nachweise Ihrem Antrag bei.\nWenn durch Ihre Zahlungen ein Guthaben entsteht, möchten wir dieses möglichst schnell zurück überweisen.  \nBitte geben Sie deshalb Ihre Kontodaten bekannt. \nKontaktaufnahme:\n Name\n Telefonnummer  E-Mail-Adresse",
+    "Antrag auf Förderung von Leistungen, V8 03/2026 – Offen Seite 7 von 13\n Ist der Bedarf durch einen Unfall oder ein anderes Schadensereignis entstanden?  \n Es ist vorerst egal, ob andere Personen beteiligt waren oder nicht. \n Benutzen Sie einen Rollstuhl?  \nJa\nJa\nNein\nNein\nIch beantrage eine Förderung für:\nIch muss einen Kostenbeitrag zahlen: 30 % vom Pflegegeld.\nIch muss einen Kostenbeitrag zahlen.  \nDer Kostenbeitrag hängt von meinem Einkommen und Pflege-\ngeld ab. Wenn ich Unterhalt zahlen muss oder einen Unter-\nhaltsanspruch habe, wird das berücksichtigt.\nTagesstruktur inklusive Mobilitätskonzept\n10. Förderung für Leistungen Behinderung und Inklusion\nBetreutes Wohnen\nMobile Frühförderung\nBerufsintegration\nBerufsqualifizierung\nLehrlingsausbildung\nSchule:\nHilfsmittel, PKW-Adaptierung oder Blindenführhund. Hilfsmittel sind zum Beispiel: Hörgeräte, Kommunikationshilfen\nTeilbetreutes Wohnen\nVollbetreutes Wohnen\nLegen Sie eine Stellungnahme von einer dieser Früh- \nförderstellen bei: Wiener Sozialdienste, ÖHTB, Contrast, \nTherapieinstitut Keil.\nFüllen Sie den Punkt Unterhaltsverpflichtete  \noder unterhaltsberechtigte Angehörige aus.\n Bitte geben Sie die Adresse an.\n Ich beantrage\nWichtige Regeln für die Förderung:\nFüllen Sie den Punkt Unterhaltsverpflichtete  \noder unterhaltsberechtigte Angehörige aus.\nAb einer bestimmten Einkommensgrenze wird von der Förder-\nsumme ein Selbstbehalt aus meinem Einkommen abgezogen.\nDolmetschleistungen\nFür diese Leistung muss ich ein Dienstverhältnis haben.Lohnkostenzuschuss\nFür diese Leistung muss ich ein Dienstverhältnis haben.Mentor:innenzuschuss\nAb einer bestimmten Einkommensgrenze wird von der Förder-\nsumme ein Selbstbehalt aus meinem Einkommen abgezogen, \ndarüber hinaus mein Pflegegeld.\nPflegegeldergänzungsleistung für Persönliche Assistenz",
+    "Antrag auf Förderung von Leistungen, V8 03/2026 – Offen Seite 8 von 13\nFahrtbegleitung\nFahrtkostenersatz\nMobilitätstraining\nSonstige Leistung:\n  Sonstige Leistung\n Anmerkungen zum Bedarf\nKontodaten \nZum Beispiel: Ehepartner:in oder eingetragene:r Partner:in im gemeinsamen oder getrennten Haushalt, Kinder, ehemalige:r Partner:in \nnach einer Scheidung oder Auflösung einer eingetragenen Partnerschaft\nDiesen Punkt müssen Sie für Vollbetreutes Wohnen und Pflegegeldergänzungsleistung für Persönliche Assistenz ausfüllen.\nIch habe keine unterhaltsverpflichteten oder unterhaltsberechtigten Angehörigen.\nIch habe unterhaltsberechtigte Angehörige. Das sind Angehörige, die ein Recht haben, von mir Unterhalt zu bekommen.\nIch habe unterhaltsverpflichtete Angehörige. Das sind Angehörige, die zu meinem Unterhalt verpflichtet sind.\nUnterhaltsverpflichtete oder unterhaltsberechtigte Angehörige\nDiesen Punkt müssen Sie für die Leistungen Tagesstruktur, Vollbetreutes Wohnen und Pflegegeldergänzungsleistung für Persönliche \nAssistenz ausfüllen. Wenn durch Ihre Zahlungen ein Guthaben entsteht, möchten wir dieses nämlich möglichst schnell zurück \nüberweisen. Bitte geben Sie deshalb Ihre Kontodaten bekannt.\nAußerdem brauchen wir Ihre Kontodaten, wenn Sie ein Hilfsmittel bereits bezahlt haben und dafür eine Förderung beantragen.\n IBAN (Internationale Kontonummer) \nBitte geben Sie Ihren Namen und eventuell Titel genau so an \nwie auf Ihrer Bankkarte.\n Kontoinhaber:in\nIch muss pro Fahrt einen Kostenbeitrag zahlen.  \nDer Kostenbeitrag entspricht den Tarifen der Wiener Linien  \nfür Einzelfahrscheine.\nFüllen Sie die Beilage Angehörige aus.  \nLegen Sie die Beilage und die nötigen Nachweise Ihrem Antrag bei.\nFüllen Sie die Beilage Angehörige aus.  \nLegen Sie die Beilage und die nötigen Nachweise Ihrem Antrag bei.\nLassen Sie die Beilage Freizeitfahrtendienst von dem:der \nArzt:Ärztin ausfüllen und legen Sie die Beilage dem  \nAntrag bei. \nFahrtendienst:\n Ich möchte hier abgeholt werden\n Ich möchte hierhin fahren\nFreizeitfahrtendienst für dauerhaft schwer gehbehinderte Menschen",
+    "Antrag auf Förderung von Leistungen, V8 03/2026 – Offen Seite 9 von 13\nIch beantrage eine Förderung für:\n10. Förderung für Leistungen Obdach- und Wohnungslosenhilfe\nMöchten Sie die Leistung gemeinsam mit Ihrem:Ihrer Partner:in und/oder Ihren Kindern nutzen?\nIch möchte die Leistung allein nutzen.\nIch möchte die Leistung gemeinsam mit Partner:in und/oder meinen Kindern nutzen.\nVermögen\nPersonengemeinschaft\nIch habe Vermögen\nIch habe kein Vermögen\nIn Wohneinrichtungen muss ich ein monatliches  \nNutzungsentgelt zahlen.\nLegen Sie Nachweise über Ihr Vermögen in Kopie bei.  \nWelche das sein können, steht bei den nötigen Unterlagen in Punkt 12.\nFüllen Sie die Beilage Personengemeinschaft aus. Der:die Partner:in muss \nzusätzlich einen eigenen Antrag auf Förderung von Leistungen stellen.\nWichtige Regeln für die Förderung:\nLeistungen Obdach- und Wohnungslosenhilfe",
+    "Antrag auf Förderung von Leistungen, V8 03/2026 – Offen Seite 10 von 13\n11. Erklärung zum Datenschutz\nDer Fonds Soziales Wien, abgekürzt FSW, sorgt dafür, dass Sie die Unterstützung bekommen, die Sie brauchen.  \nDafür braucht der FSW Ihre personenbezogenen Daten.\nA) Wozu werden Ihre Daten verarbeitet?\n• Förderung: Vorbereiten und Prüfen Ihres Förderantrags, Bearbeiten Ihrer Förderung\n• Qualitätssicherung, Planung von Leistungen, Statistik und Forschung\n• Erfüllen gesetzlicher Pflichten, zum Beispiel nach dem Wiener Archivgesetz, Wiener Fördertransparenzgesetz\nB) Welche Daten werden verarbeitet?\n• Daten zu Ihrer Person, zum Beispiel Name, Geburtsdatum, Familienstand, Adresse, Telefonnummer und Staatsbürgerschaft \n• Daten zu Ihrem Bedarf und wie dieser entstanden ist\n• Daten zu Ihrem Gesundheitszustand\n• Daten zur Förderung, zum Beispiel Förderart und Förderhöhe\n• Bankdaten und Daten zu Ihrem Einkommen und Vermögen\n• Daten zu anderen Förderungen\n• Daten zur Leistung, die Sie bekommen\n• Weitere Daten, die für Ihre Förderung nötig sind\n• Von Personen, die Sie vertreten oder unterstützen: Daten wie Name, Adresse und Telefonnummer\nOhne diese Daten ist eine Förderung nicht möglich.\nC) Woher bekommt der FSW Ihre Daten?\nDer FSW nimmt Ihre Daten aus dem ausgefüllten Förderantrag und Ihren Unterlagen. Wenn Daten fehlen, fragt der FSW bei anderen \nStellen nach, wenn es nötig ist. Diese Stellen stehen im Punkt D.\nDer FSW muss auch überprüfen, ob Ihre Daten richtig, aktuell und vollständig sind. Dafür fragt er die im Punkt D genannten Stellen \noder schaut in elektronischen Registern nach, zum Beispiel im Zentralen Melderegister oder in der Transparenzdatenbank. \nZusätzlich bekommt der FSW Daten von den Einrichtungen, die Sie betreuen. Das sind zum Beispiel Daten zu den Leistungen, die Sie \nbekommen. \nD) Werden Daten an andere Stellen weitergegeben?\nDer FSW gibt Ihre Daten nur dann an andere Stellen weiter, wenn es für die im Punkt A genannten Zwecke notwendig ist.  \nDas passiert zum Beispiel\n• wenn der FSW Daten bei anderen Stellen erfragen oder überprüfen muss, oder \n• wenn der FSW für Sie eine passende Betreuung sucht, oder\n• wenn der FSW geförderte Leistungen mit der Einrichtung abrechnet, die Sie betreut. \nBeispiele für andere Stellen:\n• vom FSW anerkannte oder geförderte Einrichtungen\n• sonstige Einrichtungen, die Leistungen erbringen\n• Gerichte (zum Beispiel, wenn Sie eine Erwachsenenvertretung haben oder wenn geklärt werden muss, ob der FSW zuständig ist)\n• Sozialversicherungsträger\n• Stellen, die Einkommen auszahlen\n• Krankenanstalten, Ärzt:innen, Therapeut:innen, Gutachter:innen\n• VertretungsNetz – Erwachsenenvertretung, Patient:innenanwaltschaft, Bewohner:innenvertretung\n• Magistrat der Stadt Wien (zum Beispiel MA 40 – Soziales, Sozial- und Gesundheitsrecht, MA 11 – Wiener Kinder- und Jugendhilfe,  \nMA 15 –Gesundheitsdienst der Stadt Wien, MA 35 – Einwanderung und Staatsbürgerschaft)\n• vertretungsbefugte Personen, Vertrauenspersonen, Zustellbevollmächtigte:r\n• andere Sozialhilfeträger\n• Sozialministeriumservice\n• Bundesamt für Fremdenwesen und Asyl\n• Arbeitsmarktservice\n• Bundesministerium für Finanzen (insbesondere Finanzämter)\n• Gebärdensprachdolmetscher:innen",
+    "Antrag auf Förderung von Leistungen, V8 03/2026 – Offen Seite 11 von 13\nName und Kontaktdaten des Verantwortlichen: \nFonds Soziales Wien, 1030 Wien, Guglgasse 7–9 \nwww.fsw.at/kontaktformular\nKontaktdaten der zuständigen Datenschutzbeauftragten  \ndes Fonds Soziales Wien: datenschutz@fsw.at\n• Auftragsverarbeiter:innen des FSW (zum Beispiel IT-Dienstleister, Befragungsinstitute): Diese dürfen Daten nur so verarbeiten, wie es \nder FSW erlaubt. Das steht im Vertrag zwischen dem FSW und diesen Unternehmen.\nZusätzlich muss der FSW Daten zu Ihrer Förderung an die Transparenzdatenbank (TDB) weitergeben. Das steht im Wiener Förder-\ntransparenzgesetz. Informationen zur Transparenzdatenbank finden Sie hier: https://transparenzportal.gv.at\nE) Was sind die Rechtsgrundlagen für das Verarbeiten Ihrer Daten nach der Datenschutz-Grundverordnung (DSGVO)?\n• Vertragserfüllung, Erfüllung vorvertraglicher Maßnahmen\n• Erfüllung von Aufgaben im (erheblichen) öffentlichen Interesse\n• Versorgung im Gesundheits- und Sozialbereich\n• Berechtigte Interessen des FSW\n – Kund:innen bestmöglich zu versorgen und\n – passende Leistungen anzubieten\n• Erfüllung gesetzlicher Pflichten\n• Geltendmachung oder Verteidigung von Rechtsansprüchen\n• Erfüllung von Archiv-, Forschungs- und statistischen Zwecken\nF) Ihre Rechte nach der DSGVO:\n• Sie können Auskunft über Ihre Daten verlangen. \n• Sie können Ihre Daten berichtigen oder löschen lassen. \n• Sie können die Verarbeitung einschränken oder der Verarbeitung widersprechen.\n• Sie können verlangen, dass der FSW Ihre Daten an eine andere Stelle überträgt. Das geht aber nur, wenn es technisch möglich ist.\nWenn Sie das wollen, schreiben Sie uns: www.fsw.at/kontaktformular\nZusätzlich haben Sie das Recht, sich bei der Datenschutzbehörde zu beschweren.\nG) Weitere Informationen:\n• Der FSW speichert Ihre Daten nur so lange wie nötig. Danach werden die Daten gelöscht. Manchmal müssen Daten länger gespei-\nchert werden. Das passiert, wenn Gesetze oder Verfahren es verlangen.\n• Der FSW schützt Ihre Daten durch technische und organisatorische Sicherheitsmaßnahmen.\n• Weitere Informationen zum Datenschutz und Aktualisierungen finden Sie unter www.fsw.at/datenschutz",
+    "Antrag auf Förderung von Leistungen, V8 03/2026 – Offen Seite 12 von 13\n• Amtlicher Lichtbildausweis. Zum Beispiel: Führerschein, Reisepass, Personalausweis\n• Nachweis der Staatsbürgerschaft. Zum Beispiel: Staatsbürgerschaftsnachweis, Reisepass, Personalausweis\n• Wenn Sie keine österreichische Staatsbürgerschaft haben: Nachweis über Ihren Aufenthaltsstatus\n• Wenn Sie von einer anderen Person vertreten werden: Nachweis der Vertretungsbefugnis. \nZum Beispiel: Vollmacht, Vorsorgevollmacht, Beschluss vom Gericht oder andere Bestätigung über die Erwachsenenvertretung\n• Wenn Sie verheiratet oder verpartnert sind: Heiratsurkunde oder Urkunde über die eingetragene Partnerschaft\n• Wenn Sie geschieden sind oder Ihre eingetragene Partnerschaft aufgelöst wurde: Scheidungsurteil oder Scheidungsbeschluss  \nmit Scheidungsvergleich oder Nachweis, dass Ihre eingetragene Partnerschaft aufgelöst wurde\n• Wenn Ihr:e Partner:in gestorben ist: Sterbeurkunde von dem:der Ehepartner:in oder eingetragenen Partner:in\n• Wenn für Sie eine Verpflichtungserklärung oder Haftungserklärung abgegeben wurde: diese Verpflichtungserklärung  \noder Haftungserklärung\n12. Nötige Unterlagen\nLegen Sie bitte folgende Unterlagen in Kopie bei:\nPersonaldokumente:\nEinkommen:\nEinkommensnachweise müssen Sie für die Förderung von folgenden Leistungen beilegen:\n• Leistungen Pflege und Betreuung\n• Leistungen Behinderung und Inklusion: \nVollbetreutes Wohnen, Pflegegeldergänzungsleistung für  \nPersönliche Assistenz, Dolmetschleistungen, Freizeitfahrtendienst\n• Leistungen Obdach- und Wohnungslosenhilfe\n• Aktuelle Nachweise über Ihr Einkommen. Zum Beispiel:\n – Lohnzettel oder Gehaltszettel; wenn Sie selbständig sind: Einkommensteuernachweis\n – Nachweis über Pension oder Rente, auch Unfallrente aus privater Unfallversicherung\n – Nachweis über Geld vom AMS\n – Nachweis über Mindestsicherung\n – Nachweis über Kinderbetreuungsgeld\n – Nachweis über Wochengeld\n – Nachweis über Unterhaltsansprüche und Unterhaltsverpflichtungen\n – Nachweis über andere Einkommen, zum Beispiel aus Kapitalvermögen, Vermietung, Verpachtung, Leibrente\nAchtung: Wenn Sie Einkommen aus dem Ausland haben, brauchen wir auch dafür Nachweise.\nUnterhalt:\nUnterlagen zum Unterhalt müssen Sie für die Förderung von folgenden Leistungen beilegen:\n• Leistungen Pflege und Betreuung\n• Leistungen Behinderung und Inklusion: \nVollbetreutes Wohnen, Pflegegeldergänzungsleistung für Persönliche Assistenz\n• Wenn Sie unterhaltsverpflichtete oder unterhaltsberechtigte Angehörige haben:  \nausgefülltes Formular Beilage Angehörige und die nötigen Nachweise",
+    "Seite 13 von 13Antrag auf Förderung von Leistungen, V8 03/2026 – Offen\nWeitere Unterlagen bei Minderjährigen:\nBei Minderjährigen müssen Sie zusätzlich folgende Unterlagen beilegen:\n• Geburtsurkunde\n• Nachweise über die Geburtsdaten von beiden Eltern\n• Nachweis der Obsorge, wenn es einen Nachweis gibt.  \nZum Beispiel: Heiratsurkunde der Eltern oder Scheidungsdokumente mit Vergleich oder Beschluss über die Obsorge\nWeitere Unterlagen für Leistungen Pflege und Betreuung:\nWeitere Unterlagen für Leistungen Behinderung und Inklusion:\nWeitere Unterlagen für Leistungen Obdach- und Wohnungslosenhilfe:\nFür Wohnen und Pflege müssen Sie folgende Unterlagen beilegen:\n• Aktuelle Befunde oder ausgefülltes Formular Befundbericht Wohnen und Pflege\nFür Freizeitfahrtendienst müssen Sie außerdem beilegen:\n• ausgefüllte Beilage Freizeitfahrtendienst\nFür Leistungen Behinderung und Inklusion müssen Sie folgende Unterlagen beilegen:\n• Aktuelle Befunde\n• Behindertenpass, wenn vorhanden\nFür Leistungen Obdach- und Wohnungslosenhilfe müssen Sie folgende Unterlagen beilegen:\n• Nachweise über Ihr Vermögen. Zum Beispiel:\n – Konto-Auszüge von allen Ihren Konten\n – Sparbücher\n – Wertpapiere\n – Bausparvertrag\n – Nachweise über Lebensversicherungen\n – Nachweise über Liegenschaften. Zum Beispiel: Grundbuch-Auszug\n – Nachweis über ein eigenes Fahrzeug. Zum Beispiel: Zulassung\nFür Mobile Frühförderung müssen Sie außerdem beilegen:\n• Stellungnahme von einer dieser Frühförderstellen: Wiener Sozialdienste, ÖHTB, Contrast, Therapieinstitut Keil\n• Wenn Sie die Leistung gemeinsam mit Partner:in und/oder Kindern nutzen wollen:\n – ausgefüllte Beilage Personengemeinschaft\n – wenn Sie keine österreichische Staatsbürgerschaft haben: Nachweise über den Aufenthaltsstatus Ihrer Kinder\n – Nachweis der Obsorge für Ihre Kinder, wenn es einen Nachweis gibt: zum Beispiel Heiratsurkunde der Eltern  \noder Scheidungsdokumente mit Vergleich oder Beschluss über die Obsorge.\nFür Pflege und Betreuung zu Hause legen Sie bitte außerdem folgende Unterlagen bei:\n• Nachweise über pflegebezogene Ausgaben, zum Beispiel Pflegebett, Notrufsystem.  \nDiese Ausgaben berücksichtigen wir beim Berechnen Ihres Kostenbeitrags.\nFür Pflege und Betreuung zu Hause und für Wohnen und Pflege legen Sie bitte folgende Unterlagen bei:\n• aufgeschlüsselten Nachweis über Hauptmietzins und Betriebskosten von Ihrer Wohnung oder Ihrem Haus.  \nDiese Ausgaben berücksichtigen wir in bestimmten Fällen beim Berechnen Ihres Kostenbeitrags.  \nWir berücksichtigen keine Kosten für Energie, Warmwasser, Telefon, Internet und Parkplatz."
+  ],
+  "pages": 13,
+  "source_file": "Anträge und Formulare/fsw-antrag-auf-foerderung-von-leistungen.1779095804.pdf"
+}

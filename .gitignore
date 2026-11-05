@@ -1,0 +1,32 @@
+# Provided raw challenge data (SV-Box) — never commit
+docs/
+*.docx
+
+# Secrets
+.env
+.env.local
+
+# Tooling state
+.omc/
+floorplan/
+.claude/settings.local.json
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+.next/
+
+# Runtime artefacts
+*.db
+*.sqlite
+var/
+knowledge/extracted/legal/*.fts.db
+generated/
+
+.DS_Store

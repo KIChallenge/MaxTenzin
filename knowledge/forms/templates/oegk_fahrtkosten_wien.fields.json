@@ -1,0 +1,97 @@
+{
+  "fields": [
+    {
+      "name": "Adresse",
+      "states": null,
+      "tooltip": "Adresse",
+      "type": "text"
+    },
+    {
+      "name": "Art der Behandlung",
+      "states": null,
+      "tooltip": "Art der Behandlung",
+      "type": "text"
+    },
+    {
+      "name": "Begleitperson",
+      "states": [
+        "/Auswahl1",
+        "/Auswahl2"
+      ],
+      "tooltip": "Nein",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Behandler/in",
+      "states": null,
+      "tooltip": "Behandler/in",
+      "type": "text"
+    },
+    {
+      "name": "Grund",
+      "states": null,
+      "tooltip": "Grund für eine Begleitung",
+      "type": "text"
+    },
+    {
+      "name": "IBAN",
+      "states": null,
+      "tooltip": "IBAN",
+      "type": "text"
+    },
+    {
+      "name": "Ort/Datum",
+      "states": null,
+      "tooltip": "Ort/Datum",
+      "type": "text"
+    },
+    {
+      "name": "Patient/in",
+      "states": null,
+      "tooltip": "Patient/in",
+      "type": "text"
+    },
+    {
+      "name": "Tatsächliche Kosten",
+      "states": null,
+      "tooltip": "Tatsächliche Kosten",
+      "type": "text"
+    },
+    {
+      "name": "Transportmittel",
+      "states": [
+        "/Auswahl1",
+        "/Auswahl3",
+        "/Auswahl2"
+      ],
+      "tooltip": "Privater PKW",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Versicherte/r",
+      "states": null,
+      "tooltip": "Versicherte/r",
+      "type": "text"
+    },
+    {
+      "name": "Versicherungsnummer1",
+      "states": null,
+      "tooltip": "Versicherungsnummer",
+      "type": "text"
+    },
+    {
+      "name": "Versicherungsnummer2",
+      "states": null,
+      "tooltip": "Versicherungsnummer",
+      "type": "text"
+    }
+  ],
+  "fillable": true,
+  "form_id": "oegk_fahrtkosten_wien",
+  "page_text": [
+    "Informationen nach Art. 13 und 14 Datenschutz-Grundverordnung betreffend die Verarbeitung Ihrer personenbezogenen Daten \nfinden Sie auf unserer Website unter www.oegk.at/datenschutz. \nSeite 1/2 \nAntrag auf Zuschuss zu Fahrtkosten \nfür Versicherte mit Rezeptgebührenbefreiung \nBitte füllen Sie die Tabelle vollständig aus. \nPATIENT/IN Versicherungsnummer \nAdresse (Straße, Postleitzahl, Ort) \nVersicherte/r Versicherungsnummer \nBei wem fand die Behandlung statt? (Name, Adresse) \nArt der Behandlung bzw. Reha-Maßnahme (Bitte legen Sie vorhandene Unterlagen in Kopie bei.) \nWelches Transportmittel haben sie genommen? \n Öffentliches Verkehrsmittel  Taxi \n Privater PKW \nTatsächliche Kosten \n(Bitte legen Sie vorhandene Belege in Kopie bei.) \n Euro \nBegleitperson  Ja Warum wurden Sie begleitet? \n Nein \nAuf welches Bankkonto soll der Zuschuss überwiesen werden? \nIBAN:  \nVON DER EINRICHTUNG/VOM BEHANDLER AUSZUFÜLLEN \nIch bestätige die Behandlung(en) für den Patienten/die Patientin (pro Fahrt ein Stempel): \nDatum, Stempel und Unterschrift Datum, Stempel und Unterschrift Datum, Stempel und Unterschrift \nDatum, Stempel und Unterschrift Datum, Stempel und Unterschrift Datum, Stempel und Unterschrift \nDatum, Stempel und Unterschrift Datum, Stempel und Unterschrift Datum, Stempel und Unterschrift \nIch bestätige, dass die Angaben richtig sind, und dass ich von der Rezeptgebühr befreit bin. \nOrt/Datum: Unterschrift: \n1100 Wien, Wienerbergstraße 15-19 \nTel. +43 5 0766-0\nwww.oegk.at \nUID-Nr. ATU74552637 \nÖGK-VM2/0023-11/V01 ",
+    "Seite 2/2 \nInformationen zum Fahrtkosten-Zuschuss ab 1. Jänner 2024\nFÜR WEN: \n• Für rezeptgebührenbefreite Personen (ausschließlich Rezeptgebührenbefreiung – NICHT\nPersonen, die unter die Rezeptgebühren-Obergrenze fallen!) Ausnahme: Für Fahrten zur\nDurchführung einer Dialyse, Chemo- oder Strahlentherapie und ausgewählte Fahrten im\nZusammenhang mit Maßnahmen der medizinischen Rehabilitation werden die Kosten ohne\nBedachtnahme auf die Rezeptgebührenbefreiung ersetzt.\nWELCHE FAHRTKOSTEN: \n• Fahrten zum Arzt, zum Zahnarzt oder zum Therapeuten\n• Fahrten zum nächstgelegenen geeigneten Krankenhaus\n• Fahrten in Zusammenhang mit der Anpassung von Heilbehelfen oder Hilfsmitteln\n(wie z.B. Hörgeräten, Gehhilfen).\n• Fahrten in Zusammenhang mit Rehabilitationsmaßnahmen\n• Die vollständige Liste aller Arten von Fahrtkosten finden Sie hier: www.oegk.at\nUNTER WELCHEN BEDINGUNGEN WERDEN FAHRTKOSTEN ERSETZT? \n• Fahrten außerhalb des Ortsgebiets, wenn die Entfernung zwischen Wohnort und\nnächstgelegenem Vertragspartner über 20 Kilometer beträgt\n• Es muss der nächstgelegene geeignete Vertragspartner (Kassenvertrag) aufgesucht werden\n• Es werden höchstens die tatsächlich entstandenen Kosten ersetzt\nIN WELCHER HÖHE WERDEN FAHRTKOSTEN ERSETZT: \n• Bei einer Entfernung von mehr als 20 bis zu 50 Kilometer:\npauschal 7,20 Euro pro Strecke\n• Mit Begleitperson bei einer Entfernung von mehr als 20 bis zu 50 Kilometer:\npauschal 10,80 Euro pro Strecke\n• Bei einer Entfernung von über 50 Kilometer:\npro zurückgelegtem Kilometer: 0,13 Euro\n• Mit Begleitperson bei einer Entfernung von über 50 Kilometer:\npro zurückgelegtem Kilometer: 0,22 Euro\n• Der Kostenersatz ist unabhängig vom gewählten Verkehrsmittel\nWANN WERDEN KOSTEN FÜR BEGLEITPERSONEN ERSETZT? \n• Für Kinder unter 15 Jahren\n• Wenn die versicherte Person aufgrund ihres körperlichen oder geistigen Zustandes eine\nBegleitperson benötigt und dies ärztlich bestätigt wird\nMUSS ICH FÜR JEDE EINZELNE THERAPIE-EINHEIT EINEN ANTRAG AUF \nFAHRTKOSTENZUSCHUSS STELLEN? \n• Nein\n• Sollten mehrere Sitzungen notwendig sein, reicht es aus, wenn nach jeder Sitzung eines der\ndafür vorgesehenen Felder auf dem Antragsformular abgestempelt wurde\n• Am Ende der Therapie kann der Antrag für alle absolvierten Sitzungen eingereicht werden"
+  ],
+  "pages": 2,
+  "source_file": "Anträge und Formulare/Antrag-auf-Zuschuss-zu-Fahrtkosten_Wien.pdf"
+}

@@ -1,0 +1,102 @@
+{
+  "fields": [
+    {
+      "name": "Bezirke Zeit 4",
+      "states": null,
+      "tooltip": "Ich möchte nur in folgende Bezirke oder Einrichtungen ziehen:",
+      "type": "text"
+    },
+    {
+      "name": "Bezirke dringend 4",
+      "states": null,
+      "tooltip": "Folgende Bezirke sind mir am liebsten:",
+      "type": "text"
+    },
+    {
+      "name": "Datum 3",
+      "states": null,
+      "tooltip": "aktuelles Datum",
+      "type": "text"
+    },
+    {
+      "name": "Dringend 4",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Ich möchte dringend in eine Einrichtung einziehen. Der FSW soll in ganz Wien nach einem Wohn- und Pflegeplatz suchen. ",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "E-Mail Adresse Kontaktaufnahme 4",
+      "states": null,
+      "tooltip": "E-Mail-Adresse Kontaktperson",
+      "type": "text"
+    },
+    {
+      "name": "Familienname KundIn",
+      "states": null,
+      "tooltip": "Familienname des:der Kunden:Kundin",
+      "type": "text"
+    },
+    {
+      "name": "Geburtsdatum KundIn 3",
+      "states": null,
+      "tooltip": "Geburtsdatum des:der Kunden:Kundin (Bitte geben Sie Tag, Monat und Jahr an) Beispiel 31.01.1972",
+      "type": "text"
+    },
+    {
+      "name": "Kontaktaufnahme folgende Person 3",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Sobald ein Wohnplatz oder Pflegeplatz für mich frei wird, soll das FSW-Kund:innenservice Kontakt mit folgender Person aufnehmen:",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Kontaktaufnahme mit mir 3",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Sobald ein Wohnplatz oder Pflegeplatz für mich frei wird, soll das FSW-Kund:innenservice mit mir Kontakt aufnehmen",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Name Kontaktaufnahme 3",
+      "states": null,
+      "tooltip": "Name der Kontaktperson",
+      "type": "text"
+    },
+    {
+      "name": "Telefonnummer Kontaktaufnahme 4",
+      "states": null,
+      "tooltip": "Telefonnummer Kontaktperson",
+      "type": "text"
+    },
+    {
+      "name": "Vorname KundIn",
+      "states": null,
+      "tooltip": "Vorname des:der Kunden:Kundin",
+      "type": "text"
+    },
+    {
+      "name": "Zeit 4",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Ich habe Zeit, auf einen bestimmten Wohn- und Pflegeplatz zu warten. ",
+      "type": "checkbox_or_radio"
+    }
+  ],
+  "fillable": true,
+  "form_id": "fsw_einrichtungswunsch",
+  "page_text": [
+    "Seite 1 von 2Einrichtungswunsch für Wohn- und Pflegehäuser, V5 05/2026 – Offen\nEinrichtungswunsch für Wohn- und Pflegehäuser\n Familienname  Vorname\nName und Geburtsdatum des:der Kunden:Kundin\n Geburtsdatum (TT.MM.JJJJ)\n1. Wohn- und Pflegehaus\nEinrichtungswunsch für Wohnen und Pflege\nGeben Sie an, in welche Bezirke oder Einrichtungen Sie befristet oder unbefristet ziehen wollen.  \nWenn der Einzug dringend notwendig ist, suchen wir in ganz Wien einen Wohn- und Pflegeplatz.\nIch möchte dringend in eine Einrichtung einziehen. Der FSW soll in ganz Wien nach \neinem Wohn- und Pflegeplatz suchen. \nIch habe Zeit, auf einen bestimmten Wohn- und Pflegeplatz zu warten. \n Folgende Bezirke sind mir am liebsten:\n Ich möchte nur in folgende Bezirke oder Einrichtungen ziehen:\nFonds Soziales Wien – Kund:innenservice \nGuglgasse 7–9, 1030 Wien \nTel.: 01 24 5 24 \nFax: 01 24 5 24-89 10 100 \nE-Mail: kundinnenservice@fsw.at \nwww.fsw.at",
+    "Seite 2 von 2Einrich tungswunsch für Wohn- und Pflegehäuser, V5 05/2026 – Offen\nInformationen zur Verarbeitung von personenbezogenen Daten im Fonds Soziales Wien sowie Aktualisierungen finden sich unter  \nwww.fsw.at/datenschutz.\n2. Kontaktaufnahme\n aktuelles Datum\nDatum\nSobald ein Wohnplatz oder Pflegeplatz für mich frei wird, soll das FSW-Kund:innenservice Kontakt aufnehmen\nmit mir\nmit folgender Person:\nKontaktaufnahme:\n Name\n Telefonnummer  E-Mail-Adresse"
+  ],
+  "pages": 2,
+  "source_file": "Anträge und Formulare/FSW-Antrag-Beilage-Einrichtungswunsch.1779345450.pdf"
+}

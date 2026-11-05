@@ -1,0 +1,366 @@
+{
+  "fields": [
+    {
+      "name": "Anreise",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Anschrift",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Antrag Pension",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Antrag Pflegegeld",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Antritt Reha",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Arbeitsunfall",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Arzt",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Aufnahme im Krankenhaus",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Befunde",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Begleitperson",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Begleitperson für Aufenthalt",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Datum_1",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Diagnose",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Entlassungstag",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Erkrankungen",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Familienname",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Fax Arzt",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Gehen mit Hilfsmittel",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Gehen ohne Hilfsmittel",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Geschlecht",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Harninkontinenz",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Krankheitsbeginn",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Körperpflege",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Medikamente einnehmen",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Orientierungsstörungen",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "PKW, Taxi",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Patienteneinverständnis",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Pflegegeld",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Rehab-Einrichtung",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Rehabilitationsziel",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Rollstuhlbenutzer",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Stelle Pensionsleistung",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Stelle Pflegegeld",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Stufe",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Stuhlinkontinenz",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Telefonnummer",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Telefonnummer Arzt",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Therapien",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Transfer/Rollstuhl",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Transport",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Treppe",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Unfalltag",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "VSNR_1",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Vorname",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "Weitere Maßnahmen",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "aus- und anziehen",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "baden/duschen",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "e-mail",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "e-mail Arzt",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "liegend",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "mit Sanitäter",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "ohne Sanitäter",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "ohne fremde Hilfe",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "selbständig gehen",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "sitzend",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "sonstige Transportmittel",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "welche Stelle",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "zuständiger SV-träger",
+      "states": null,
+      "tooltip": null,
+      "type": "text"
+    },
+    {
+      "name": "öffentliche Verkehrsmittel",
+      "states": null,
+      "tooltip": null,
+      "type": "checkbox_or_radio"
+    }
+  ],
+  "fillable": true,
+  "form_id": "sv_reha_nach_unfall",
+  "page_text": [
+    "Eingangsstempel des VersicherungsträgersAntrag \nauf Anschlussheilverfahren oder\nRehabilitation nach Unfall\nVom antragstellenden Krankenhaus auszufüllen! Zutreffendes bitte ankreuzen Q\nZuständiger Kranken- bzw. Pensionsversicherungsträger: ....................................................................................................\nVersicherungsnummer\nFamilienname\nVorname Geschlecht\n£  weibl. £  männl.\nTelefon/Fax\nAnschrift (Int. KFZ-K., PLZ, Ort, Straße, Nr.) e-mail\nAngaben des Krankenhauses:\nUnfalltag: £  Arbeitsunfall £  Privatunfall £  Berufskrankeit\nAufnahme im Krankenhaus: Vorgeschlagene Rehab-Einrichtung:\nVoraussichtlicher Entlassungstag:\nOptimaler Antrittstermin\nd. Rehab-Aufenthaltes:\nPatientIn\nja nein\nkann ohne fremde Hilfe essen/trinken £ £\nalleine die Körperpflege durchführen £ £\nalleine baden/duschen £ £\nsich alleine aus- und anziehen £ £\nseine/ihre Medikamente einnehmen £ £\nselbständig gehen (mindestens 50 m) £ £\nmit Hilfsmittel £ £\nohne Hilfsmittel £ £\nselbständig die Treppe auf- bzw. absteigen £ £\nToilette benutzen\nleidet an Orientierungsstörungen £ £\nHarninkontinenz £ £\nStuhlinkontinenz £ £\nist selbständig Rollstuhlbenutzer £ £\nbenötigt Transfer in/aus Rollstuhl £ £\nbenötigt Begleitperson für Aufenthalt £ £\nkann mit öffentlichen Verkehrsmitteln anreisen £ £\nfalls nein, wird für die Anreise benötigt £ £\nBegleitperson £ £\nTransport £ £\nsitzend £ £\nliegend £ £\nmit Sanitäter £ £\nohne Sanitäter £ £\nSonstige Transportmittel (PKW, Taxi) £ £  .............................................................\nName des zuständigen Arztes/der zuständigen Ärztin:\nDatum Unterschrift und Stempel der Krankenanstalt\nTelefon/DW:\nFax:\ne-mail:\nAHV – 8.10\n5551_15_Antrag-Anschlussheil_fsch.indd   1 02.12.15   12:08\n",
+    "AHV – 8.10\nÄrztlicher Befundbericht:\nName: Vorname: Versicherungsnummer\nAntragsrelevante Diagnose(n) für das AHV unter Angabe der Funktionseinschränkungen und des Zeitpunktes des \nAkutereignisses bzw. der Operation:\nZusätzliche Erkrankungen und Behinderungen mit Angabe der Funktionseinschränkung:\nKrankheitsbeginn und -verlauf, Komplikationen:\nBisherige Therapien (medikamentös, physikalisch):\nErforderliche weitere diagnostische Maßnahmen:\nWesentliche klinische und med. techn. Befunde:\nAngaben zum Rehabilitationsziel:\nPatienteneinverständnis zum Antrag £ \nErledigung des Versicherungsträgers:\nPatientenbezogene Angaben zum Leistungsbezug:\nnein ja\nbeziehen Sie Pflegegeld £ £ welche Stufe:  ........\nvon welcher Stelle: .................................................................\nhaben Sie einen Antrag gestellt\nauf Pensionsleistung £\t £\t von welcher Stelle: .................................................................\nauf Pflegegeld £\t £\t von welcher Stelle: .................................................................\n£\t Patientenunterschrift ..............................................................\nBewilligt: Abgelehnt:\nRehabilitation: Gesundheitsvorsorge:\nRZ/SKA: ICD-10:\nDatum:\nUnterschrift des Chefarztes/der Chefärztin:\n5551_15_Antrag-Anschlussheil_fsch.indd   2 02.12.15   12:08\n"
+  ],
+  "pages": 2,
+  "source_file": "Anträge und Formulare/Reha_n_Unfall_052026.pdf"
+}

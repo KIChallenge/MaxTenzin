@@ -1,0 +1,18 @@
+{
+  "box": {
+    "G": "Grüner Bereich – frei verschreibbar (keine Bewilligung durch den chef-/kontrollärztlichen Dienst nötig)",
+    "Y": "Gelber Bereich – nur mit Bewilligung bzw. nachfolgender Kontrolle (siehe RE1/RE2)"
+  },
+  "divisibility": "T2/T3/T4: Tablette in 2/3/4 gleiche Teile teilbar",
+  "max_packs": "Höchstanzahl der Originalpackungen pro Rezept",
+  "restriction": {
+    "F14": "Grüner Bereich nur bis zum vollendeten 14. Lebensjahr",
+    "F2J": "Grüner Bereich nur bis zum vollendeten 2. Lebensjahr",
+    "F6J": "Grüner Bereich nur bis zum vollendeten 6. Lebensjahr",
+    "IND": "Nur für die angeführten Indikationen; Ärztin/Arzt vermerkt 'IND' auf dem Rezept",
+    "RE1": "Abgabe nur nach vorheriger Bewilligung durch den chef-/kontrollärztlichen Dienst",
+    "RE2": "Bewilligung ersetzt durch nachfolgende Kontrolle, wenn die angegebene Verwendung vorliegt und dokumentiert ist",
+    "SPECIALIST": "Grüner Bereich nur bei Erstverordnung durch die angeführte Fachrichtung (Folgeverordnung durch Allgemeinmedizin möglich)"
+  },
+  "source": "Zeichenerklärungen und Abkürzungen.pdf (EKO 1/2024, S. 20–24)"
+}
