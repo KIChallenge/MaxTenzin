@@ -112,8 +112,66 @@ def _screening(rule: dict, age: int, birth: date) -> tuple[PreventionStatus, dat
     return PreventionStatus.due, None, f"{rec} {hint}"
 
 
-def evaluate(person: Person, vaccinations: list[VaccinationEntry], as_of: date) -> tuple[list[PreventionItem], list[str]]:
-    """Returns (items, rule_ids applied)."""
+FAMILY_PREFIX = "Besonders relevant wegen Ihrer Familiengeschichte ({label})"
+
+
+def _fold(s: str) -> str:
+    s = s.strip().lower()
+    for a, b in (("ä", "ae"), ("ö", "oe"), ("ü", "ue"), ("ß", "ss")):
+        s = s.replace(a, b)
+    return " ".join(s.replace("_", " ").split())
+
+
+def family_history_rules(family_history: list[str] | None) -> list[dict]:
+    """Rules from knowledge/prevention.yaml#family_history matching the stated conditions (in knowledge order)."""
+    if not family_history:
+        return []
+    stated = {_fold(x) for x in family_history if isinstance(x, str)}
+    fh = knowledge().get("family_history") or {}
+    return [r for r in fh.get("rules", []) if stated & {_fold(m) for m in r["match"]}]
+
+
+def _apply_family_history(items: list[PreventionItem], applied: list[str], person: Person, birth: date, age: int,
+                          family_history: list[str] | None) -> None:
+    """Mark programme items as 'besonders relevant' (explanation cites the official programme; never a risk
+    assessment) and add an info item if the programme is not shown yet because of the person's age."""
+    rules = family_history_rules(family_history)
+    if not rules:
+        return
+    note = knowledge()["family_history"]["doctor_note_de"]
+    by_id = {i.id: i for i in items}
+    for fr in rules:
+        target = fr.get("add_if_absent")
+        if target and target not in by_id:
+            rule = next(r for r in knowledge()["rules"] if r["id"] == target)
+            if (not rule.get("sex") or rule["sex"] == person.sex) and age < rule.get("min_age", 0):
+                start = _add_years(birth, rule["min_age"])
+                item = PreventionItem(
+                    id=rule["id"], kind=rule["kind"], title_de=rule["title_de"], status=PreventionStatus.upcoming,
+                    due_date=start.isoformat(), cost_de=rule.get("cost_de", ""),
+                    explanation_de=(f"{rule['recommendation_de']} Das Programm ist für Sie laut Alter ab "
+                                    f"{de(start)} vorgesehen."),
+                    sources=[source_ref(s) for s in rule["sources"]])
+                items.append(item)
+                by_id[item.id] = item
+        for iid in fr["items"]:
+            item = by_id.get(iid)
+            if item is None:
+                continue
+            prefix = FAMILY_PREFIX.format(label=fr["label_de"])
+            if item.explanation_de.startswith("Besonders relevant"):      # several family rules hit the same item
+                body = item.explanation_de.removesuffix(" " + note)
+                item.explanation_de = f"{body} {fr['explanation_de']} {note}"
+            else:
+                item.explanation_de = f"{prefix}: {fr['explanation_de']} {item.explanation_de} {note}"
+            have = {(s.label, s.quote) for s in item.sources}
+            item.sources += [s for s in (source_ref(k) for k in fr["sources"]) if (s.label, s.quote) not in have]
+        applied.append(f"prevention.family_history.{fr['id']}.v1")
+
+
+def evaluate(person: Person, vaccinations: list[VaccinationEntry], as_of: date,
+             family_history: list[str] | None = None) -> tuple[list[PreventionItem], list[str]]:
+    """Returns (items, rule_ids applied). `family_history` (optional): conditions stated for the family."""
     birth = date.fromisoformat(person.birth_date)
     age = age_at(birth, as_of)
     items: list[PreventionItem] = []
@@ -139,4 +197,5 @@ def evaluate(person: Person, vaccinations: list[VaccinationEntry], as_of: date) 
             explanation_de=text, cost_de=rule.get("cost_de", ""), sources=[source_ref(s) for s in rule["sources"]],
         ))
         applied.append(f"prevention.{rule['id']}.v1")
+    _apply_family_history(items, applied, person, birth, age, family_history)
     return items, applied
