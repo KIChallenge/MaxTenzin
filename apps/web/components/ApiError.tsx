@@ -3,7 +3,7 @@ import { SCOPE_LABELS } from "@/lib/labels";
 
 /** API details name scopes by key ("Fehlende Berechtigung 'view_health_prevention'") – show the German name instead. */
 function humanize(detail: string) {
-  return detail.replace(/'?\b(read_documents|prepare_applications|manage_appointments|view_health_prevention|manage_case)\b'?/g, (_, k: keyof typeof SCOPE_LABELS) => `„${SCOPE_LABELS[k]}“`);
+  return detail.replace(/'?\b(read_documents|prepare_applications|manage_appointments|view_health_prevention|manage_case|manage_situation)\b'?/g, (_, k: keyof typeof SCOPE_LABELS) => `„${SCOPE_LABELS[k]}“`);
 }
 
 /** Friendly rendering of an API error. 403 explains the missing delegation. */
