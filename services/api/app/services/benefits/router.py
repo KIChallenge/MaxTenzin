@@ -113,3 +113,18 @@ def eligibility(req: EligibilityRequest, ctx: Context = Depends(require())):
     res = evaluate(build_input(ctx, req), req.benefit_ids)
     _audit(ctx, res)
     return res
+
+
+
+# ---- Situation bundles ("Bündel") — STUB, owner: WS-K2 ------------------------------------------------------
+from app.contracts.benefits import Bundle, BundleRequest
+
+
+@router.get("/bundles/catalog", response_model=list[Bundle], summary="All situation bundles (Pflege, nach dem Spital, …)")
+def bundle_catalog(ctx: Context = Depends(require())):
+    return []  # STUB
+
+
+@router.post("/bundles/match", response_model=Bundle | None, summary="Bundle for a situation (id or free text) + facts")
+def bundle_match(body: BundleRequest, ctx: Context = Depends(require())):
+    return None  # STUB

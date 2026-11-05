@@ -1354,6 +1354,198 @@
         }
       }
     },
+    "/api/benefits/bundles/catalog": {
+      "get": {
+        "tags": [
+          "benefits"
+        ],
+        "summary": "All situation bundles (Pflege, nach dem Spital, …)",
+        "operationId": "bundle_catalog_api_benefits_bundles_catalog_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Bundle"
+                  },
+                  "title": "Response Bundle Catalog Api Benefits Bundles Catalog Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/benefits/bundles/match": {
+      "post": {
+        "tags": [
+          "benefits"
+        ],
+        "summary": "Bundle for a situation (id or free text) + facts",
+        "operationId": "bundle_match_api_benefits_bundles_match_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BundleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Bundle"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Bundle Match Api Benefits Bundles Match Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/prevention/overview": {
       "get": {
         "tags": [
@@ -2721,6 +2913,594 @@
                 "schema": {
                   "$ref": "#/components/schemas/Case"
                 }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appointments/providers": {
+      "get": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Providers by topic/kind/postcode",
+        "operationId": "providers_api_appointments_providers_get",
+        "parameters": [
+          {
+            "name": "topic",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Topic"
+            }
+          },
+          {
+            "name": "zip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Zip"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Provider"
+                  },
+                  "title": "Response Providers Api Appointments Providers Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appointments/slots/search": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Free slots matching preferences (near, daypart …)",
+        "operationId": "search_api_appointments_slots_search_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SlotSearch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Slot"
+                  },
+                  "title": "Response Search Api Appointments Slots Search Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appointments": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Book a slot (demo) – links to Mein Fall",
+        "operationId": "book_api_appointments_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Appointment"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Appointments of the current subject",
+        "operationId": "list_appointments_api_appointments_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Appointment"
+                  },
+                  "title": "Response List Appointments Api Appointments Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appointments/{appointment_id}/cancel": {
+      "post": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Cancel an appointment",
+        "operationId": "cancel_api_appointments__appointment_id__cancel_post",
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Appointment Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Appointment"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appointments/{appointment_id}/ics": {
+      "get": {
+        "tags": [
+          "appointments"
+        ],
+        "summary": "Calendar file (.ics)",
+        "operationId": "ics_api_appointments__appointment_id__ics_get",
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Appointment Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           },
@@ -4142,6 +4922,95 @@
         ],
         "title": "Address"
       },
+      "Appointment": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "subject_id": {
+            "type": "string",
+            "title": "Subject Id"
+          },
+          "booked_by": {
+            "type": "string",
+            "title": "Booked By"
+          },
+          "slot": {
+            "$ref": "#/components/schemas/Slot"
+          },
+          "purpose_de": {
+            "type": "string",
+            "title": "Purpose De"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AppointmentStatus",
+            "default": "booked"
+          },
+          "bring_documents_de": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Bring Documents De",
+            "default": []
+          },
+          "case_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case Id"
+          },
+          "step_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step Id"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "ics_url": {
+            "type": "string",
+            "title": "Ics Url"
+          },
+          "notice_de": {
+            "type": "string",
+            "title": "Notice De",
+            "default": "Demo-Termin: wird nicht an eine echte Ordination übermittelt."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "subject_id",
+          "booked_by",
+          "slot",
+          "purpose_de",
+          "created_at",
+          "ics_url"
+        ],
+        "title": "Appointment"
+      },
+      "AppointmentStatus": {
+        "type": "string",
+        "enum": [
+          "booked",
+          "cancelled"
+        ],
+        "title": "AppointmentStatus"
+      },
       "AuditEvent": {
         "properties": {
           "id": {
@@ -4331,6 +5200,190 @@
           "file"
         ],
         "title": "Body_upload_api_documents_post"
+      },
+      "BookingRequest": {
+        "properties": {
+          "slot_id": {
+            "type": "string",
+            "title": "Slot Id"
+          },
+          "purpose_de": {
+            "type": "string",
+            "title": "Purpose De",
+            "description": "Anlass in eigenen Worten (kein medizinischer Befund)"
+          },
+          "case_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case Id"
+          },
+          "step_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step Id"
+          },
+          "bring_documents_de": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Bring Documents De",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "slot_id",
+          "purpose_de"
+        ],
+        "title": "BookingRequest"
+      },
+      "Bundle": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title_de": {
+            "type": "string",
+            "title": "Title De"
+          },
+          "situation_de": {
+            "type": "string",
+            "title": "Situation De"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/BundleItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "questions_de": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Questions De",
+            "default": []
+          },
+          "next_step_de": {
+            "type": "string",
+            "title": "Next Step De",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title_de",
+          "situation_de",
+          "items"
+        ],
+        "title": "Bundle",
+        "description": "'Bündel' for a life situation: everything relevant, ordered, with the next concrete step."
+      },
+      "BundleItem": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "ref_id": {
+            "type": "string",
+            "title": "Ref Id"
+          },
+          "title_de": {
+            "type": "string",
+            "title": "Title De"
+          },
+          "why_de": {
+            "type": "string",
+            "title": "Why De"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EligibilityStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "ref_id",
+          "title_de",
+          "why_de"
+        ],
+        "title": "BundleItem"
+      },
+      "BundleRequest": {
+        "properties": {
+          "situation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Situation"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          },
+          "facts": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Facts",
+            "default": {}
+          },
+          "document_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Document Ids",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "BundleRequest"
       },
       "Case": {
         "properties": {
@@ -4761,6 +5814,15 @@
           "explanation_de"
         ],
         "title": "CriterionResult"
+      },
+      "Daypart": {
+        "type": "string",
+        "enum": [
+          "morning",
+          "afternoon",
+          "any"
+        ],
+        "title": "Daypart"
       },
       "Delegation": {
         "properties": {
@@ -6084,6 +7146,104 @@
         ],
         "title": "PreviewItem"
       },
+      "Provider": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ProviderKind"
+          },
+          "specialty": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Specialty"
+          },
+          "topics": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Topics",
+            "default": []
+          },
+          "address": {
+            "type": "string",
+            "title": "Address"
+          },
+          "zip": {
+            "type": "string",
+            "title": "Zip"
+          },
+          "city": {
+            "type": "string",
+            "title": "City",
+            "default": "Wien"
+          },
+          "phone": {
+            "type": "string",
+            "title": "Phone",
+            "default": ""
+          },
+          "contract": {
+            "type": "string",
+            "title": "Contract",
+            "default": "ÖGK"
+          },
+          "accessible": {
+            "type": "boolean",
+            "title": "Accessible",
+            "default": true
+          },
+          "demo": {
+            "type": "boolean",
+            "title": "Demo",
+            "default": true
+          },
+          "source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "address",
+          "zip"
+        ],
+        "title": "Provider"
+      },
+      "ProviderKind": {
+        "type": "string",
+        "enum": [
+          "gp",
+          "specialist",
+          "health_center",
+          "counselling",
+          "vaccination",
+          "rehab"
+        ],
+        "title": "ProviderKind"
+      },
       "Recommendation": {
         "properties": {
           "id": {
@@ -6189,6 +7349,122 @@
         ],
         "title": "Session",
         "description": "Who is logged in (actor) and for whom they currently act (subject)."
+      },
+      "Slot": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/Provider"
+          },
+          "start": {
+            "type": "string",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "title": "End"
+          },
+          "distance_hint_de": {
+            "type": "string",
+            "title": "Distance Hint De",
+            "default": ""
+          },
+          "demo": {
+            "type": "boolean",
+            "title": "Demo",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "provider",
+          "start",
+          "end"
+        ],
+        "title": "Slot"
+      },
+      "SlotSearch": {
+        "properties": {
+          "topic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topic"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProviderKind"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "specialty": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Specialty"
+          },
+          "zip": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zip"
+          },
+          "near": {
+            "type": "boolean",
+            "title": "Near",
+            "default": true
+          },
+          "daypart": {
+            "$ref": "#/components/schemas/Daypart",
+            "default": "any"
+          },
+          "from_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Date"
+          },
+          "accessible_only": {
+            "type": "boolean",
+            "title": "Accessible Only",
+            "default": false
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit",
+            "default": 6
+          }
+        },
+        "type": "object",
+        "title": "SlotSearch"
       },
       "SourceKind": {
         "type": "string",

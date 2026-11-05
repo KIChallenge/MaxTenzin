@@ -48,3 +48,29 @@ class EligibilityRequest(BaseModel):
     facts: dict = {}                  # known facts (e.g. {"care_need_months": 6, "net_income_monthly": 1200})
     document_ids: list[str] = []      # use recommendations from these documents
     benefit_ids: list[str] | None = None
+
+
+class BundleItem(BaseModel):
+    kind: str                         # benefit | offer | prevention | appointment | office | form | case
+    ref_id: str                       # benefit id / prevention item id / provider topic / form id …
+    title_de: str
+    why_de: str                       # why this is relevant here (administrative, never medical)
+    status: EligibilityStatus | None = None
+    source: SourceRef | None = None
+
+
+class Bundle(BaseModel):
+    """'Bündel' for a life situation: everything relevant, ordered, with the next concrete step."""
+    id: str                           # pflege_zuhause | nach_spital | gesundheit_foerdern | kind | finanzielle_unterstuetzung
+    title_de: str
+    situation_de: str
+    items: list[BundleItem]
+    questions_de: list[str] = []      # targeted follow-up questions that unlock more items (max 2–3)
+    next_step_de: str = ""
+
+
+class BundleRequest(BaseModel):
+    situation: str | None = None      # bundle id, or None = detect from text
+    text: str | None = None           # free text ("Meine Mutter braucht jetzt Hilfe …") for deterministic matching
+    facts: dict = {}
+    document_ids: list[str] = []

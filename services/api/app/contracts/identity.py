@@ -61,3 +61,20 @@ class LoginRequest(BaseModel):
 
 class ActAsRequest(BaseModel):
     subject_id: str
+
+
+class DetailLevel(StrEnum):
+    short = "short"
+    normal = "normal"
+    detailed = "detailed"
+
+
+class Preferences(BaseModel):
+    """Personal communication & organisation preferences (per acting person). Used by Lotsi and the cockpit."""
+    language: str = "de"
+    plain_language: bool = False
+    detail: DetailLevel = DetailLevel.normal
+    daypart: str = "any"              # morning | afternoon | any (appointments)
+    near_home: bool = True
+    accessible: bool = False          # barrierefreie Einrichtungen bevorzugen
+    voice: bool = False               # Sprachsteuerung im Cockpit

@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.agent.router import router as agent
 from app.core.audit import AuditMiddleware
 from app.core.config import get_settings
+from app.services.appointments.router import router as appointments
 from app.services.audit.router import router as audit
 from app.services.benefits.router import router as benefits
 from app.services.cases.router import router as cases
@@ -28,7 +29,7 @@ app.add_middleware(AuditMiddleware)
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:3000"], allow_credentials=True,
                    allow_methods=["*"], allow_headers=["*"])
 
-for r in (identity, documents, benefits, prevention, forms, cases, notifications, directory, medications, legal, values, audit, agent):
+for r in (identity, documents, benefits, prevention, forms, cases, appointments, notifications, directory, medications, legal, values, audit, agent):
     app.include_router(r)
 
 

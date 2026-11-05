@@ -243,6 +243,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/benefits/bundles/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** All situation bundles (Pflege, nach dem Spital, …) */
+        get: operations["bundle_catalog_api_benefits_bundles_catalog_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/benefits/bundles/match": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bundle for a situation (id or free text) + facts */
+        post: operations["bundle_match_api_benefits_bundles_match_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/prevention/overview": {
         parameters: {
             query?: never;
@@ -447,6 +481,92 @@ export interface paths {
         head?: never;
         /** Update step status and/or link a form session */
         patch: operations["update_step_api_cases__case_id__steps__step_id__patch"];
+        trace?: never;
+    };
+    "/api/appointments/providers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Providers by topic/kind/postcode */
+        get: operations["providers_api_appointments_providers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/appointments/slots/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Free slots matching preferences (near, daypart …) */
+        post: operations["search_api_appointments_slots_search_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/appointments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Appointments of the current subject */
+        get: operations["list_appointments_api_appointments_get"];
+        put?: never;
+        /** Book a slot (demo) – links to Mein Fall */
+        post: operations["book_api_appointments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/appointments/{appointment_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel an appointment */
+        post: operations["cancel_api_appointments__appointment_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/appointments/{appointment_id}/ics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Calendar file (.ics) */
+        get: operations["ics_api_appointments__appointment_id__ics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/notifications": {
@@ -710,6 +830,43 @@ export interface components {
              */
             country: string;
         };
+        /** Appointment */
+        Appointment: {
+            /** Id */
+            id: string;
+            /** Subject Id */
+            subject_id: string;
+            /** Booked By */
+            booked_by: string;
+            slot: components["schemas"]["Slot"];
+            /** Purpose De */
+            purpose_de: string;
+            /** @default booked */
+            status: components["schemas"]["AppointmentStatus"];
+            /**
+             * Bring Documents De
+             * @default []
+             */
+            bring_documents_de: string[];
+            /** Case Id */
+            case_id?: string | null;
+            /** Step Id */
+            step_id?: string | null;
+            /** Created At */
+            created_at: string;
+            /** Ics Url */
+            ics_url: string;
+            /**
+             * Notice De
+             * @default Demo-Termin: wird nicht an eine echte Ordination übermittelt.
+             */
+            notice_de: string;
+        };
+        /**
+         * AppointmentStatus
+         * @enum {string}
+         */
+        AppointmentStatus: "booked" | "cancelled";
         /** AuditEvent */
         AuditEvent: {
             /** Id */
@@ -790,6 +947,81 @@ export interface components {
         Body_upload_api_documents_post: {
             /** File */
             file: string;
+        };
+        /** BookingRequest */
+        BookingRequest: {
+            /** Slot Id */
+            slot_id: string;
+            /**
+             * Purpose De
+             * @description Anlass in eigenen Worten (kein medizinischer Befund)
+             */
+            purpose_de: string;
+            /** Case Id */
+            case_id?: string | null;
+            /** Step Id */
+            step_id?: string | null;
+            /**
+             * Bring Documents De
+             * @default []
+             */
+            bring_documents_de: string[];
+        };
+        /**
+         * Bundle
+         * @description 'Bündel' for a life situation: everything relevant, ordered, with the next concrete step.
+         */
+        Bundle: {
+            /** Id */
+            id: string;
+            /** Title De */
+            title_de: string;
+            /** Situation De */
+            situation_de: string;
+            /** Items */
+            items: components["schemas"]["BundleItem"][];
+            /**
+             * Questions De
+             * @default []
+             */
+            questions_de: string[];
+            /**
+             * Next Step De
+             * @default
+             */
+            next_step_de: string;
+        };
+        /** BundleItem */
+        BundleItem: {
+            /** Kind */
+            kind: string;
+            /** Ref Id */
+            ref_id: string;
+            /** Title De */
+            title_de: string;
+            /** Why De */
+            why_de: string;
+            status?: components["schemas"]["EligibilityStatus"] | null;
+            source?: components["schemas"]["SourceRef"] | null;
+        };
+        /** BundleRequest */
+        BundleRequest: {
+            /** Situation */
+            situation?: string | null;
+            /** Text */
+            text?: string | null;
+            /**
+             * Facts
+             * @default {}
+             */
+            facts: {
+                [key: string]: unknown;
+            };
+            /**
+             * Document Ids
+             * @default []
+             */
+            document_ids: string[];
         };
         /** Case */
         Case: {
@@ -962,6 +1194,11 @@ export interface components {
             explanation_de: string;
             source?: components["schemas"]["SourceRef"] | null;
         };
+        /**
+         * Daypart
+         * @enum {string}
+         */
+        Daypart: "morning" | "afternoon" | "any";
         /** Delegation */
         Delegation: {
             /** Id */
@@ -1507,6 +1744,56 @@ export interface components {
             /** Readonly Reason De */
             readonly_reason_de?: string | null;
         };
+        /** Provider */
+        Provider: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            kind: components["schemas"]["ProviderKind"];
+            /** Specialty */
+            specialty?: string | null;
+            /**
+             * Topics
+             * @default []
+             */
+            topics: string[];
+            /** Address */
+            address: string;
+            /** Zip */
+            zip: string;
+            /**
+             * City
+             * @default Wien
+             */
+            city: string;
+            /**
+             * Phone
+             * @default
+             */
+            phone: string;
+            /**
+             * Contract
+             * @default ÖGK
+             */
+            contract: string;
+            /**
+             * Accessible
+             * @default true
+             */
+            accessible: boolean;
+            /**
+             * Demo
+             * @default true
+             */
+            demo: boolean;
+            source?: components["schemas"]["SourceRef"] | null;
+        };
+        /**
+         * ProviderKind
+         * @enum {string}
+         */
+        ProviderKind: "gp" | "specialist" | "health_center" | "counselling" | "vaccination" | "rehab";
         /**
          * Recommendation
          * @description An EXPLICITLY documented recommendation. Never inferred, never interpreted.
@@ -1559,6 +1846,55 @@ export interface components {
              * @default []
              */
             delegations: components["schemas"]["Delegation"][];
+        };
+        /** Slot */
+        Slot: {
+            /** Id */
+            id: string;
+            provider: components["schemas"]["Provider"];
+            /** Start */
+            start: string;
+            /** End */
+            end: string;
+            /**
+             * Distance Hint De
+             * @default
+             */
+            distance_hint_de: string;
+            /**
+             * Demo
+             * @default true
+             */
+            demo: boolean;
+        };
+        /** SlotSearch */
+        SlotSearch: {
+            /** Topic */
+            topic?: string | null;
+            kind?: components["schemas"]["ProviderKind"] | null;
+            /** Specialty */
+            specialty?: string | null;
+            /** Zip */
+            zip?: string | null;
+            /**
+             * Near
+             * @default true
+             */
+            near: boolean;
+            /** @default any */
+            daypart: components["schemas"]["Daypart"];
+            /** From Date */
+            from_date?: string | null;
+            /**
+             * Accessible Only
+             * @default false
+             */
+            accessible_only: boolean;
+            /**
+             * Limit
+             * @default 6
+             */
+            limit: number;
         };
         /**
          * SourceKind
@@ -2206,6 +2542,78 @@ export interface operations {
             };
         };
     };
+    bundle_catalog_api_benefits_bundles_catalog_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Bundle"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    bundle_match_api_benefits_bundles_match_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BundleRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Bundle"] | null;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     overview_api_prevention_overview_get: {
         parameters: {
             query?: {
@@ -2713,6 +3121,225 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Case"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    providers_api_appointments_providers_get: {
+        parameters: {
+            query?: {
+                topic?: string | null;
+                zip?: string | null;
+            };
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Provider"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_api_appointments_slots_search_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SlotSearch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Slot"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_appointments_api_appointments_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Appointment"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    book_api_appointments_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookingRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Appointment"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_api_appointments__appointment_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                appointment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Appointment"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ics_api_appointments__appointment_id__ics_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                appointment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
