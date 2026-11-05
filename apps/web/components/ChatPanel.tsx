@@ -1,5 +1,5 @@
 "use client";
-import { FileText, History, LoaderCircle, Paperclip, SquarePen, TriangleAlert, X } from "lucide-react";
+import { FileText, History, LoaderCircle, Mic, MicOff, Paperclip, SquarePen, TriangleAlert, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { bff } from "@/lib/client";
@@ -19,7 +19,25 @@ type Msg =
 
 const STARTERS = ["Was steht im Entlassungsbrief?", "Welche Leistungen kommen in Frage?", "Hilf mir beim Pflegegeld-Antrag"];
 
-export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string; subjectName: string; plain: boolean }) {
+// Minimal typing for the browser speech API (not in lib.dom for all targets).
+type Recognition = {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  start: () => void;
+  stop: () => void;
+  onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal: boolean }> }) => void) | null;
+  onend: (() => void) | null;
+  onerror: ((e: { error: string }) => void) | null;
+};
+function createRecognition(): Recognition | null {
+  if (typeof window === "undefined") return null;
+  const w = window as unknown as { SpeechRecognition?: new () => Recognition; webkitSpeechRecognition?: new () => Recognition };
+  const Ctor = w.SpeechRecognition ?? w.webkitSpeechRecognition;
+  return Ctor ? new Ctor() : null;
+}
+
+export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { subjectId: string; subjectName: string; plain: boolean; voice?: boolean }) {
   const storeKey = `lotse-chat-${subjectId}`;
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<"chat" | "history">("chat");
@@ -32,6 +50,35 @@ export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string
   const [history, setHistory] = useState<Conversation[] | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
+  const recognition = useRef<Recognition | null>(null);
+  const [listening, setListening] = useState(false);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+
+  /** Speech → text field (de-AT). The person still presses "Senden" – nothing is sent unseen. */
+  function toggleVoice() {
+    if (listening) {
+      recognition.current?.stop();
+      return;
+    }
+    const r = createRecognition();
+    if (!r) return setVoiceError("Spracheingabe wird von diesem Browser nicht unterstützt.");
+    r.lang = "de-AT";
+    r.interimResults = true;
+    r.continuous = false;
+    const base = input ? `${input.trim()} ` : "";
+    r.onresult = (e) => {
+      const text = Array.from(e.results)
+        .map((res) => res[0]?.transcript ?? "")
+        .join("");
+      setInput(base + text);
+    };
+    r.onerror = (e) => setVoiceError(e.error === "not-allowed" ? "Bitte erlauben Sie den Zugriff auf das Mikrofon." : "Spracheingabe hat nicht geklappt.");
+    r.onend = () => setListening(false);
+    recognition.current = r;
+    setVoiceError(null);
+    setListening(true);
+    r.start();
+  }
   const router = useRouter();
   const pathname = usePathname();
 
@@ -307,6 +354,7 @@ export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string
             send(input);
           }}
         >
+          {voiceError && <p className="mb-2 text-sm text-danger">{voiceError}</p>}
           {files.length > 0 && (
             <ul className="mb-2 flex flex-wrap gap-2">
               {files.map((f) => (
@@ -358,6 +406,18 @@ export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string
                 e.target.value = "";
               }}
             />
+            {voice && (
+              <button
+                type="button"
+                onClick={toggleVoice}
+                aria-pressed={listening}
+                className={`btn-ghost p-2 ${listening ? "animate-pulse bg-danger-soft text-danger" : ""}`}
+                title={listening ? "Aufnahme beenden" : "Sprechen statt tippen"}
+                aria-label={listening ? "Aufnahme beenden" : "Spracheingabe starten"}
+              >
+                {listening ? <MicOff className="h-5 w-5" aria-hidden /> : <Mic className="h-5 w-5" aria-hidden />}
+              </button>
+            )}
             <label htmlFor="chat-input" className="sr-only">
               Nachricht an Lotsi
             </label>
@@ -373,7 +433,7 @@ export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string
                   attach(images);
                 }
               }}
-              placeholder={files.length ? "Frage zum Dokument (optional) …" : "Ihre Frage …"}
+              placeholder={listening ? "Ich höre zu …" : files.length ? "Frage zum Dokument (optional) …" : "Ihre Frage …"}
               autoComplete="off"
             />
             <button className="btn-primary" disabled={!canSend}>

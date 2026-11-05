@@ -9,16 +9,18 @@ import { COOKIE_TEXT } from "@/lib/session";
 import type { Delegation, Person } from "@/lib/types";
 import { ScopeToggles } from "./ScopeToggles";
 import { CareTeamSettings } from "./CareTeamSettings";
-import type { CareTeam, Provider } from "@/lib/care";
+import { PreferencesForm } from "./PreferencesForm";
+import type { CareTeam, Preferences, Provider } from "@/lib/care";
 
 export default async function SettingsPage() {
-  const [me, dels, personas, plain, jar, team] = await Promise.all([
+  const [me, dels, personas, plain, jar, team, prefs] = await Promise.all([
     getMe(),
     api<Delegation[]>("/api/identity/delegations"),
     api<Person[]>("/api/identity/personas"),
     isPlain(),
     cookies(),
     api<CareTeam>("/api/identity/care-team"),
+    api<Preferences>("/api/identity/preferences"),
   ]);
   const zip = me.ok ? me.data.subject.address.zip : "";
   const providers = team.ok ? await api<Provider[]>(`/api/appointments/providers?zip=${encodeURIComponent(zip)}`) : null;
@@ -45,6 +47,8 @@ export default async function SettingsPage() {
           <LargeTextToggle on={large} />
         </div>
       </section>
+
+      {prefs.ok && <PreferencesForm initial={prefs.data} actorFirstName={actor.first_name} />}
 
       {team.ok && (
         <section id="behandlungsteam" aria-labelledby="team-h" className="mb-8 scroll-mt-28">
