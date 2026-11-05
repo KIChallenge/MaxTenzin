@@ -1,4 +1,4 @@
-"""medications — EKO administrative lookup (never dosing/therapy advice). REAL (owner: WS-B)."""
+"""medications — EKO administrative lookup (never dosing/therapy advice). (owner: WS-B)."""
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 

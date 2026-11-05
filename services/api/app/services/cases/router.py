@@ -1,4 +1,4 @@
-"""cases — 'Mein Fall': steps from documented open tasks + chosen benefits, status tracking. REAL (WS-C)."""
+"""cases — 'Mein Fall': steps from documented open tasks + chosen benefits, status tracking (owner: WS-C)."""
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -26,7 +26,7 @@ def _analysis_for(document_id: str | None) -> DocumentAnalysis | None:
     data = store.get("document_analyses", document_id)
     if data:
         return DocumentAnalysis(**data)
-    from app.fixtures import ANNA_ANALYSIS  # demo document until WS-D persists analyses
+    from app.fixtures import ANNA_ANALYSIS  # golden fallback: demo document not analysed yet
     return ANNA_ANALYSIS if document_id == ANNA_ANALYSIS.document_id else None
 
 

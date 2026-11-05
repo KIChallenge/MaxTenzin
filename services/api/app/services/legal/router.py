@@ -1,4 +1,4 @@
-"""legal — Rechtsgrundlagen from the SozDok corpus: exact lookup + SQLite FTS5/BM25 search. REAL (owner: WS-B)."""
+"""legal — Rechtsgrundlagen from the SozDok corpus: exact lookup + SQLite FTS5/BM25 search. (owner: WS-B)."""
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 

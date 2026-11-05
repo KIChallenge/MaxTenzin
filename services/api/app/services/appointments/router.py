@@ -1,4 +1,4 @@
-"""appointments — providers, slot search by preferences, booking (demo slots). REAL (owner: WS-T).
+"""appointments — providers, slot search by preferences, booking (demo slots). (owner: WS-T).
 
 Deterministic: providers from knowledge/providers.yaml, synthetic reproducible slots (service.py). Case steps are
 updated via the cases HTTP API with the user's own token (scopes apply transitively), never via cases internals.

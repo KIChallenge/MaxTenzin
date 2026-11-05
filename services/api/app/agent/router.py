@@ -1,4 +1,4 @@
-"""agent — AI top layer: tool calling over the service APIs with the user's own token. REAL (WS-A).
+"""agent — AI top layer: tool calling over the service APIs with the user's own token. (owner: WS-A).
 
 The agent has no special rights: it forwards the caller's Authorization + X-Subject-Id to every tool call.
 """

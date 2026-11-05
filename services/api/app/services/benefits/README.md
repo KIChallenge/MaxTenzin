@@ -53,6 +53,17 @@ in their Obsorge (delegations with relation "Obsorge"). Carer benefits (Ersatzpf
 Selbstversicherung) are evaluated in the context of the person cared for; facts about the caring relative are passed
 explicitly.
 
+### Shared known facts (`/api/benefits/facts`, store collection `known_facts`)
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/api/benefits/facts` | facts answered so far for the subject + provenance per key |
+| PATCH | `/api/benefits/facts` | `{"facts": {key: value}}` merge; `null` deletes; `recommendations`, `as_of`, `document_filename` are never stored |
+
+Provenance label "Angabe von <Actor>, <TT.MM.JJJJ> (Cockpit|Lotsi)" (Lotsi = `X-Via: agent`). Every eligibility and
+bundle evaluation merges them: request facts win over known facts, known facts win over Lebenslage facts
+(`situation_facts`, only with `manage_situation`); audit rules `benefits.facts_known:<keys>` /
+`benefits.facts_from_situation:<keys>`. Lotsi saves answers here and never asks a known fact again.
+
 ## Rules & knowledge
 - `knowledge/benefits.yaml` (schema `knowledge/schema/benefits.schema.json`, generated from `catalog.py`):
   20 benefits + 13 offers (`kind: offer`), areas A Vorsorge · B Gesund werden · C Reha · D Pflege · E Kosten · F Familie.

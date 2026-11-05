@@ -58,12 +58,18 @@ Episodes of another subject → 404. Create/confirm/patch add Mein-Fall steps (s
   "Frühere Aufenthalte" and ÖGK Fahrtkosten "Art der Behandlung"/"Behandler/in".
 - **Case steps** (deterministic ids `sit-<episode>-<rule>`, added once to the subject's most recent case):
   "Spitalsaufenthalt an die PVA melden (bis …)", "Reha antreten", "Nach der Reha: Pflegebedarf neu einschätzen lassen".
-  The case list is read via `GET /api/cases` with the user's token (so `manage_case` applies); the append is a
-  store write until cases offers `POST /api/cases/{id}/steps` (contract request).
+  The case list is read via `GET /api/cases` and new steps are added via `POST /api/cases/{id}/steps` (idempotent by
+  step id), both with the user's own token (`X-Via: service:situation`), so `manage_case` applies; without it nothing
+  is added. No direct writes to the cases store.
 
 ## Integration (pure functions in `service.py`)
 `situation_facts(subject_id, today=None) -> dict` · `situation_reminders(subject_id, today=None, facts=None) -> list[Effect]`
 · `prefill_keys(subject_id, today=None)` · `overview(subject_id, today=None)`.
+Consumers: benefits eligibility (`situation_facts`, only if the caller has `manage_situation`), forms prefill
+(`prefill_keys`, same scope check), the notifications inbox (reads `GET /api/situation` over HTTP with the user's
+token and shows effects of kind `reminder`), and Lotsi (tools `get_situation`, `add_episode`, `update_episode`,
+`suggest_situation_from_document`, `confirm_situation_suggestion` — the last one only with explicit consent in the
+same message, deterministic 422 otherwise).
 
 ## Sources
 Every episode has a `SourceRef` (document quote + page, or "Angabe von <Name>, <Datum>"); every effect carries one
@@ -75,7 +81,10 @@ Every episode has a `SourceRef` (document quote + page, or "Angabe von <Name>, <
 - "Pflegegeld involved" is inferred from Mein Fall / form sessions; whether a stay is at SV cost is not checked
   (stated in the reminder text). Case steps are idempotent per episode + rule; re-dating an episode later does not
   update an existing step (its title keeps the original due date).
-- Suggestion ids are per document (`sug-<document_id>-<rule>`).
+- Suggestion ids are per document (`sug-<document_id>-<rule>`). A second copy of the same letter (e.g. photo + PDF)
+  does not create a twin: if an episode of the same type/subtype with the same start and end already exists (any
+  state), that episode is returned instead. Copies whose dates differ (e.g. one read without a discharge date) can
+  still produce a second suggestion.
 
 ## Tests
 `tests/test_situation.py` (suggestions with quotes, no effect before confirm, confirm → facts/reminders/prefill/case

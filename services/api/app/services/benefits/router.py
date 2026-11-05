@@ -1,4 +1,4 @@
-"""benefits — catalog (knowledge/benefits.yaml) + deterministic eligibility. REAL (owner: WS-B)."""
+"""benefits — catalog (knowledge/benefits.yaml) + deterministic eligibility. (owner: WS-B)."""
 
 from __future__ import annotations
 

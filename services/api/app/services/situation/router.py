@@ -2,7 +2,7 @@
 
 Episodes are set by the person/representative. Documents only create SUGGESTIONS that take effect after /confirm.
 Confirmed episodes drive deterministic effects (reminders, eligibility facts, form prefill, Mein-Fall steps).
-REAL (WS-S).
+Owner: WS-S.
 """
 
 from __future__ import annotations
