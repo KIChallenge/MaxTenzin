@@ -72,3 +72,22 @@ export function fmtAmount(value: number, unit: string) {
   if (unit === "EUR") return value.toLocaleString("de-AT", { style: "currency", currency: "EUR" });
   return `${value.toLocaleString("de-AT")} ${unit}`;
 }
+
+/** API links (service names, English) → cockpit routes (German). Unknown links pass through unchanged. */
+const ROUTES: Record<string, string> = {
+  "/case": "/fall",
+  "/cases": "/fall",
+  "/prevention": "/vorsorge",
+  "/benefits": "/leistungen",
+  "/documents": "/dokumente",
+  "/forms": "/leistungen",
+  "/audit": "/transparenz",
+  "/directory": "/stellen",
+  "/medications": "/medikamente",
+  "/legal": "/recht",
+};
+export function cockpitRoute(link: string) {
+  const [path, rest = ""] = link.split(/(?=[?#])/);
+  if (/^\/forms\/[^/]+$/.test(path)) return link;
+  return (ROUTES[path] ?? path) + rest;
+}

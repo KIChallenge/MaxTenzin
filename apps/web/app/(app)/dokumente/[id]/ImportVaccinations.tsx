@@ -12,7 +12,7 @@ export function ImportVaccinations({ documentId, subjectName }: { documentId: st
   return (
     <div className="card mt-6 flex flex-wrap items-center gap-4 border-accent/30 bg-accent-soft">
       <div className="flex-1">
-        <p className="text-lg font-bold">Impfungen in „Vorsorge“ übernehmen</p>
+        <p className="font-semibold">Impfungen in „Vorsorge“ übernehmen</p>
         <p className="text-muted">Wir übernehmen nur die dokumentierten Einträge und vergleichen sie mit dem Österreichischen Impfplan.</p>
         {err && (
           <p role="alert" className="mt-2 text-danger">

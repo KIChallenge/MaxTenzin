@@ -1,14 +1,15 @@
+import { BookOpen, Coins, FileText, Link2, Paperclip, Pill, Scale, type LucideIcon } from "lucide-react";
 import type { SourceRef } from "@/lib/types";
 import { fmtDate } from "@/lib/labels";
 
-const KIND_ICON: Record<string, string> = {
-  law: "§",
-  value: "€",
-  brochure: "📘",
-  form: "📄",
-  document: "📎",
-  eko: "💊",
-  external: "🔗",
+const KIND_ICON: Record<string, LucideIcon> = {
+  law: Scale,
+  value: Coins,
+  brochure: BookOpen,
+  form: FileText,
+  document: Paperclip,
+  eko: Pill,
+  external: Link2,
 };
 const KIND_LABEL: Record<string, string> = {
   law: "Gesetz",
@@ -22,6 +23,7 @@ const KIND_LABEL: Record<string, string> = {
 
 /** Small source badge. Quote + Fassung shown on hover and keyboard focus. */
 export function SourceChip({ source }: { source: SourceRef }) {
+  const Icon = KIND_ICON[source.kind];
   const detail = [
     KIND_LABEL[source.kind] ?? source.kind,
     source.in_force ? `Fassung in Kraft seit ${fmtDate(source.in_force)}` : null,
@@ -31,10 +33,10 @@ export function SourceChip({ source }: { source: SourceRef }) {
     <span className="group/chip relative inline-flex align-middle">
       <span
         tabIndex={0}
-        className="inline-flex items-center gap-1 rounded-full border border-accent/30 bg-accent-soft px-2 py-0.5 text-xs font-bold text-accent-strong"
+        className="inline-flex items-center gap-1 rounded-full border border-accent/30 bg-accent-soft px-2 py-0.5 text-xs font-semibold text-accent-strong"
         aria-label={`Quelle: ${source.label}. ${detail.join(". ")}`}
       >
-        {!(source.kind === "law" && source.label.trim().startsWith("§")) && <span aria-hidden>{KIND_ICON[source.kind] ?? "•"}</span>}
+        {Icon && !(source.kind === "law" && source.label.trim().startsWith("§")) && <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />}
         {source.label}
       </span>
       <span

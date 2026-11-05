@@ -27,7 +27,7 @@ documents → recommendations → benefits → form wizard → PDF draft → Mei
 | `/fall` | `GET/POST /api/cases`, `PATCH …/steps/{id}` |
 | `/vorsorge` | `GET /api/prevention/overview` (wording per CLAUDE.md §8) |
 | `/transparenz` | `GET /api/audit` — who · for whom · UI/KI · tool · scope · result · sources; denied rows red; repeated polling collapsed (×N) |
-| `/vertretung` | delegations; toggles via `PUT /api/identity/delegations/{id}/scopes` (only grantor can edit) |
+| `/einstellungen` | Darstellung (Einfache Sprache, Größere Schrift) + Vollmachten (scope toggles via `PUT /api/identity/delegations/{id}/scopes`, only the grantor can edit; note that real delegation runs via ID Austria). `/vertretung` redirects here |
 | `/stellen`, `/medikamente`, `/recht` | directory, EKO search, legal search/paragraph (Fassung + „keine Rechtsberatung“) |
 | chat panel („Lotsi“) | `POST /api/agent/chat` with page context (`form_session_id` on `/forms/<id>`, `document_ids` on `/dokumente/<id>`) so the agent works on the open form; tool trace collapsible, boundary replies highlighted, action buttons (open form, download draft, open case), minimal safe Markdown; refreshes server data after tool calls |
 | autocomplete | Medikamente + Rechtsgrundlagen: debounced (250 ms, ≥ 3 chars) typeahead over the search APIs (each lookup is audited) |
@@ -42,9 +42,6 @@ Shows only what the API returns — no amounts, eligibility or medical statement
 None of its own; all from the services' `SourceRef`s.
 
 ## Limitations
-- Conditional form fields: until `FormField.when` is in the contract, the wizard hides empty required fields the server doesn't list as missing; optional conditional fields stay visible.
-- Eligibility is called only with analysed documents (newest copy per file name) – the API rejects the whole request otherwise.
-- Screenshots in `documentation/screenshots/` predate the polish pass (refresh pending).
 - No automated UI tests in repo; hero flow verified with a Playwright script (screenshots in `documentation/screenshots/`).
 
 ## Tests

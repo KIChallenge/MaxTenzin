@@ -24,15 +24,15 @@ export function ScopeToggles({ delegation, editable }: { delegation: Delegation;
 
   return (
     <div>
-      <ul className="mt-3 space-y-2">
+      <ul className="mt-3 divide-y divide-line rounded-lg border border-line">
         {ALL_SCOPES.map((s) => {
           const on = scopes.includes(s);
           return (
             <li key={s}>
-              <label className={`flex items-center gap-3 rounded-lg border px-3 py-2 ${on ? "border-ok/40 bg-ok-soft" : "border-line"}`}>
+              <label className="flex items-center gap-3 px-3 py-2">
                 <input type="checkbox" className="h-5 w-5 accent-accent" checked={on} disabled={!editable || busy} onChange={() => toggle(s)} />
-                <span className="font-bold">{SCOPE_LABELS[s]}</span>
-                <span className="ml-auto text-sm">{on ? "erlaubt" : "nicht erlaubt"}</span>
+                <span>{SCOPE_LABELS[s]}</span>
+                <span className={`ml-auto text-sm ${on ? "font-semibold text-ok" : "text-muted"}`}>{on ? "erlaubt" : "nicht erlaubt"}</span>
               </label>
             </li>
           );

@@ -1,55 +1,63 @@
+import { LogOut, Sailboat, Settings } from "lucide-react";
 import Link from "next/link";
 import { logout } from "@/app/actions";
 import { fullName, SCOPE_LABELS } from "@/lib/labels";
 import type { Person, Session } from "@/lib/types";
-import { PlainToggle, SubjectSwitcher } from "./HeaderControls";
+import { SubjectSwitcher } from "./HeaderControls";
+import { NavBar } from "./NavBar";
 
-export function Header({ me, represented, plain }: { me: Session; represented: Person[]; plain: boolean }) {
+/** One translucent, sticky bar: brand · navigation · (person switch) · settings · sign-out.
+ *  The person switch and the permission line only exist when the user may act for someone else. */
+export function Header({ me, represented }: { me: Session; represented: Person[] }) {
   const actingForOther = me.actor.id !== me.subject.id;
+  const canRepresent = represented.some((p) => p.id !== me.actor.id);
   return (
-    <header className="border-b border-line bg-surface">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-2 px-5 py-3">
-        <Link href="/" className="flex items-center gap-2 text-xl font-bold text-accent-strong">
-          <span aria-hidden className="grid h-9 w-9 place-items-center rounded-lg bg-accent text-white">
-            ⛵
-          </span>
-          KI-Lotse
-        </Link>
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span>
-            <span className="sr-only">Angemeldet als </span>
-            <strong>{fullName(me.actor)}</strong>
-          </span>
-          <span aria-hidden className="text-line">
-            ·
-          </span>
-          <SubjectSwitcher
-            current={me.subject.id}
-            options={represented.map((p) => ({ id: p.id, name: p.id === me.actor.id ? `${fullName(p)} (ich)` : fullName(p) }))}
-          />
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          <PlainToggle on={plain} />
-          <form action={logout}>
-            <button className="btn-ghost">Abmelden</button>
-          </form>
-        </div>
-      </div>
-      <div className={`border-t border-line ${actingForOther ? "bg-accent-soft" : "bg-paper"}`}>
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-2 gap-y-1 px-5 py-1.5 text-sm">
-          <span className="font-bold text-ink">
-            {actingForOther ? `${me.subject.first_name} erlaubt Ihnen:` : "Ihre Berechtigungen:"}
-          </span>
-          {me.scopes.map((s) => (
-            <span key={s} className="rounded-full border border-accent/30 bg-surface px-2 py-px font-bold text-accent-strong">
-              ✓ {SCOPE_LABELS[s]}
+    <header className="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur-xl backdrop-saturate-150">
+      <div className="@container mx-auto max-w-7xl px-5">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1 py-2">
+          <Link href="/" className="flex items-center gap-2 text-[1.0625rem] font-semibold tracking-[-0.01em] text-ink">
+            <span aria-hidden className="grid h-7 w-7 place-items-center rounded-md bg-accent text-white">
+              <Sailboat className="h-4 w-4" />
             </span>
-          ))}
-          <Link href="/vertretung" className="link ml-auto">
-            Vertretung
+            KI-Lotse
           </Link>
+          <div className="order-last w-full @5xl:order-none @5xl:w-auto">
+            <NavBar />
+          </div>
+          <div className="ml-auto flex items-center gap-3 text-[0.9375rem]">
+            {canRepresent ? (
+              <SubjectSwitcher
+                current={me.subject.id}
+                options={represented.map((p) => ({ id: p.id, name: p.id === me.actor.id ? "mich selbst" : fullName(p) }))}
+              />
+            ) : (
+              <span className="text-muted">{fullName(me.actor)}</span>
+            )}
+            <Link href="/einstellungen" className="rounded-md p-1.5 text-muted hover:bg-neutral-soft hover:text-ink" title="Einstellungen">
+              <Settings className="h-5 w-5" aria-hidden />
+              <span className="sr-only">Einstellungen</span>
+            </Link>
+            <form action={logout}>
+              <button className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-muted hover:bg-neutral-soft hover:text-ink">
+                <LogOut className="h-4 w-4" aria-hidden />
+                Abmelden
+              </button>
+            </form>
+          </div>
         </div>
       </div>
+      {actingForOther && (
+        <div className="border-t border-accent/15 bg-accent-soft/70">
+          <p className="mx-auto max-w-7xl px-5 py-1 text-sm">
+            <strong className="font-semibold">{fullName(me.actor)}</strong> handelt für{" "}
+            <strong className="font-semibold">{fullName(me.subject)}</strong>
+            <span className="text-muted"> · erlaubt: {me.scopes.map((s) => SCOPE_LABELS[s]).join(", ")} · </span>
+            <Link href="/einstellungen#vollmachten" className="link">
+              Vollmacht ansehen
+            </Link>
+          </p>
+        </div>
+      )}
     </header>
   );
 }

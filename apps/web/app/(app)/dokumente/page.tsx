@@ -1,3 +1,4 @@
+import { FileText } from "lucide-react";
 import Link from "next/link";
 import { ApiError } from "@/components/ApiError";
 import { PageTitle } from "@/components/PageTitle";
@@ -18,7 +19,7 @@ export default async function DocumentsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <UploadForm subjectName={name} />
         <section aria-labelledby="docs-h">
-          <h2 id="docs-h" className="mb-3 text-xl font-bold">
+          <h2 id="docs-h" className="mb-3 text-lg font-semibold">
             Bisher hochgeladen
           </h2>
           {!docs.ok ? (
@@ -30,11 +31,9 @@ export default async function DocumentsPage() {
               {docs.data.map((d) => (
                 <li key={d.document_id}>
                   <Link href={`/dokumente/${d.document_id}`} className="card flex items-center gap-4 hover:border-accent">
-                    <span aria-hidden className="text-2xl">
-                      📎
-                    </span>
+                    <FileText className="h-6 w-6 shrink-0 text-accent" aria-hidden />
                     <span className="flex-1">
-                      <span className="block font-bold">{d.filename}</span>
+                      <span className="block font-semibold">{d.filename}</span>
                       <span className="text-sm text-muted">
                         {DOC_TYPE[d.doc_type]} · hochgeladen {fmtDate(d.uploaded_at)}
                       </span>

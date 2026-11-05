@@ -1,4 +1,6 @@
 "use client";
+import { Download } from "lucide-react";
+import { Check, ClipboardCheck, Lock } from "lucide-react";
 // Schema-driven form wizard. Polls the session every 2 s so changes made by the chat agent
 // (same session, PATCH via X-Via: agent) appear live; fields being edited are never overwritten.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -28,6 +30,9 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
   // Server truth for "missing": respects conditional fields (e.g. other citizenship only if "andere").
   const [missingIds, setMissingIds] = useState<Set<string> | null>(null);
   const [serverProgress, setServerProgress] = useState<number | null>(null);
+  // Fields that just became required because of another answer (e.g. consent after "Pflegeberatung = Ja").
+  const [newlyRequired, setNewlyRequired] = useState<string[]>([]);
+  const prevMissing = useRef<Set<string> | null>(null);
   const editing = useRef(new Set<string>());
   const lastValues = useRef(initial.values);
 
@@ -40,7 +45,14 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
   const refreshMissing = useCallback(async () => {
     const r = await bff<NextQuestions>(`/api/forms/sessions/${initial.id}/next-questions`);
     if (r.ok) {
-      setMissingIds(new Set(r.data.questions.map((q) => q.id)));
+      const next = new Set(r.data.questions.map((q) => q.id));
+      const prev = prevMissing.current;
+      if (prev) {
+        const added = [...next].filter((id) => !prev.has(id));
+        setNewlyRequired((cur) => [...cur.filter((id) => next.has(id)), ...added.filter((id) => !cur.includes(id))]);
+      }
+      prevMissing.current = next;
+      setMissingIds(next);
       setServerProgress(r.data.progress);
     }
   }, [initial.id]);
@@ -48,11 +60,19 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
     refreshMissing();
   }, [refreshMissing, session.updated_at]);
 
-  // Until FormField exposes its condition (contract request): an empty required field the server does not
-  // report as missing is currently irrelevant → hide it.
-  const isHidden = (f: FormField) =>
-    missingIds !== null && f.required && !f.readonly_reason_de && !isFilled(session.values[f.id]?.value) && !missingIds.has(f.id);
-  const visible = (f: FormField) => !isHidden(f);
+  // Conditional fields (FormField.when), evaluated like the forms service does – on the live values incl. unsaved
+  // clicks, so a dependent field appears immediately.
+  const currentValue = (id: string): Val => (id in drafts ? drafts[id] : (session.values[id]?.value ?? null));
+  const visible = (f: FormField) => {
+    const c = f.when;
+    if (!c) return true;
+    if (c.proxy !== undefined && c.proxy !== null) return (session.actor_id !== session.subject_id) === c.proxy;
+    if (!c.field) return true;
+    const v = currentValue(c.field);
+    if (c.one_of && c.one_of.length) return c.one_of.includes(v as string);
+    if (c.equals === undefined || c.equals === null) return isFilled(v) && v !== false;
+    return v === c.equals;
+  };
   const missing = definition.fields.filter((f) => missingIds?.has(f.id));
   const progress = serverProgress ?? 0;
 
@@ -129,14 +149,29 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
 
   if (lost) return <ApiError status={lost.status} detail={lost.detail} subjectName={subjectName} />;
 
+  const jumpTo = (fieldId: string) => {
+    const f = definition.fields.find((x) => x.id === fieldId);
+    if (!f) return;
+    setStep(steps.indexOf(f.section));
+    setTimeout(() => {
+      const el = document.getElementById(`f-${fieldId}`);
+      el?.scrollIntoView({ block: "center", behavior: "smooth" });
+      el?.focus();
+    }, 50);
+  };
+  // Only point to fields outside the current step – a field that appears right under the click needs no banner.
+  const newlyRequiredFields = newlyRequired
+    .map((id) => definition.fields.find((f) => f.id === id))
+    .filter((f): f is FormField => !!f && f.section !== current);
+
   return (
     <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
       <aside>
         <p className="eyebrow">{definition.provider}</p>
-        <h1 className="text-2xl font-bold">{definition.title_de}</h1>
+        <h1 className="text-xl font-semibold">{definition.title_de}</h1>
         <p className="text-muted">für {subjectName}</p>
         <div className="mt-4" aria-label="Fortschritt">
-          <div className="flex justify-between text-sm font-bold">
+          <div className="flex justify-between text-sm font-semibold">
             <span>Pflichtangaben</span>
             <span>{Math.round(progress * 100)} %</span>
           </div>
@@ -155,10 +190,10 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
                   aria-current={i === step ? "step" : undefined}
                   className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left ${i === step ? "bg-accent text-white" : "hover:bg-accent-soft"}`}
                 >
-                  <span className="w-6 text-center font-bold">{s === REVIEW ? "✓" : (sectionNumber(s) ?? "•")}</span>
+                  <span className="w-6 text-center font-semibold">{s === REVIEW ? <ClipboardCheck className="mx-auto h-4 w-4" aria-hidden /> : (sectionNumber(s) ?? "•")}</span>
                   <span className="flex-1">{s === REVIEW ? "Überprüfen & PDF" : sectionTitle(s)}</span>
                   {sMissing > 0 && (
-                    <span className={`rounded-full px-2 text-sm font-bold ${i === step ? "bg-white text-warn" : "bg-warn-soft text-warn"}`}>{sMissing}</span>
+                    <span className={`rounded-full px-2 text-sm font-semibold ${i === step ? "bg-white text-warn" : "bg-warn-soft text-warn"}`}>{sMissing}</span>
                   )}
                 </button>
               </li>
@@ -172,6 +207,23 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
       </aside>
 
       <section>
+        {newlyRequiredFields.length > 0 && (
+          <div role="status" className="mb-4 rounded-lg border-l-4 border-warn bg-warn-soft p-3">
+            <p className="font-semibold">Durch Ihre Angabe ist jetzt zusätzlich nötig:</p>
+            <ul className="mt-1 space-y-1">
+              {newlyRequiredFields.map((f) => (
+                <li key={f.id} className="flex flex-wrap items-center gap-x-3">
+                  <span>
+                    {f.label_de} <span className="text-muted">({sectionTitle(f.section)})</span>
+                  </span>
+                  <button type="button" className="link" onClick={() => jumpTo(f.id)}>
+                    Zum Feld
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         {error && (
           <p role="alert" className="mb-4 rounded-lg bg-danger-soft p-3 text-danger">
             {error}
@@ -179,7 +231,7 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
         )}
         {!isReview ? (
           <>
-            <h2 className="mb-3 text-2xl font-bold">{current}</h2>
+            <h2 className="mb-3 text-xl font-semibold">{current}</h2>
             <div className="@container divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
               {(fieldsBySection.get(current) ?? []).filter(visible).map((f) => (
                 <FieldRow
@@ -238,7 +290,9 @@ function FieldRow(props: {
   const value = draft !== undefined ? draft : (fv?.value ?? null);
   const filled = isFilled(fv?.value);
   const missingReq = props.isMissing;
-  const dirty = draft !== undefined && draft !== (fv?.value ?? null);
+  // Choice/checkbox save on click – they never need a "Speichern" button (it would only flash while saving).
+  const instant = f.type === "choice" || f.type === "checkbox";
+  const dirty = !instant && draft !== undefined && draft !== (fv?.value ?? null);
   const id = `f-${f.id}`;
 
   const rowBase = "grid gap-x-6 gap-y-2 px-5 py-4 @2xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]";
@@ -247,8 +301,8 @@ function FieldRow(props: {
   if (f.readonly_reason_de) {
     return (
       <div className={`${rowBase} bg-neutral-soft/60`}>
-        <p className="font-bold">{f.label_de}</p>
-        <p className="text-sm text-muted">🔒 {f.readonly_reason_de}</p>
+        <p className="font-semibold">{f.label_de}</p>
+        <p className="flex items-start gap-1.5 text-sm text-muted"><Lock className="mt-0.5 h-4 w-4 shrink-0" aria-hidden /> {f.readonly_reason_de}</p>
       </div>
     );
   }
@@ -259,7 +313,7 @@ function FieldRow(props: {
       className={`${rowBase} border-l-4 ${missingReq ? "border-l-warn bg-warn-soft/30" : "border-l-transparent"} ${flashAt ? "flash" : ""}`}
     >
       <div>
-        <label htmlFor={id} className="font-bold">
+        <label htmlFor={id} className="font-semibold">
           {f.label_de}
           {f.required && (
             <span className="text-warn" aria-label="Pflichtangabe">
@@ -274,10 +328,10 @@ function FieldRow(props: {
         <Input field={f} id={id} value={value} onChange={props.onDraft} onFocus={props.onFocus} onBlur={props.onBlur} onCommit={props.onSave} />
         {(missingReq || flashAt || filled || dirty) && (
         <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-          {missingReq && <span className="font-bold text-warn">Fehlt noch</span>}
-          {flashAt && <span className="font-bold text-info">Gerade über den Chat aktualisiert</span>}
+          {missingReq && <span className="font-semibold text-warn">Fehlt noch</span>}
+          {flashAt && <span className="font-semibold text-info">Gerade über den Chat aktualisiert</span>}
           {fv?.source && filled && <SourceChip source={fv.source} />}
-          {filled && fv?.confirmed && !dirty && <span className="font-bold text-ok">✓ Bestätigt</span>}
+          {filled && fv?.confirmed && !dirty && <span className="inline-flex items-center gap-1 font-semibold text-ok"><Check className="h-4 w-4" aria-hidden /> Bestätigt</span>}
           <span className="ml-auto flex gap-2">
             {dirty && (
               <button type="button" className="btn-primary px-3 py-1 text-sm" onClick={() => props.onSave(draft ?? null)}>
@@ -338,7 +392,7 @@ function Input({
         {f.options.map((o) => (
           <label
             key={o}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-line px-3 py-1.5 has-[:checked]:border-accent has-[:checked]:bg-accent-soft has-[:checked]:font-bold"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-line px-3 py-1.5 has-[:checked]:border-accent has-[:checked]:bg-accent-soft has-[:checked]:font-semibold"
           >
             <input type="radio" name={id} className="accent-accent" checked={value === o} onChange={() => {
                 onChange(o);
@@ -381,10 +435,10 @@ function Review({
 }) {
   return (
     <>
-      <h2 className="mb-4 text-2xl font-bold">Überprüfen</h2>
+      <h2 className="mb-4 text-xl font-semibold">Überprüfen</h2>
       {missing.length > 0 && (
         <div role="alert" className="card mb-4 border-2 border-warn bg-warn-soft">
-          <p className="font-bold">Es fehlen noch {missing.length} Pflichtangabe(n):</p>
+          <p className="font-semibold">Es fehlen noch {missing.length} Pflichtangabe(n):</p>
           <ul className="mt-1 list-disc pl-5">
             {missing.map((f) => (
               <li key={f.id}>
@@ -399,7 +453,7 @@ function Review({
       {definition.sections.map((sec) => (
         <section key={sec} className="card mb-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold">{sec}</h3>
+            <h3 className="font-semibold">{sec}</h3>
             <button type="button" className="btn-ghost py-1" onClick={() => onJump(sec)}>
               Bearbeiten
             </button>
@@ -415,9 +469,9 @@ function Review({
                     <dt className="text-muted">{f.label_de}</dt>
                     <dd>
                       {f.readonly_reason_de ? (
-                        <span className="text-muted">🔒 {f.readonly_reason_de}</span>
+                        <span className="inline-flex items-start gap-1.5 text-muted"><Lock className="mt-0.5 h-4 w-4 shrink-0" aria-hidden /> {f.readonly_reason_de}</span>
                       ) : isFilled(v) ? (
-                        <span className="font-bold">{v === true ? "Ja" : v === false ? "Nein" : String(v)}</span>
+                        <span className="font-semibold">{v === true ? "Ja" : v === false ? "Nein" : String(v)}</span>
                       ) : (
                         <span className="text-muted">– leer –</span>
                       )}{" "}
@@ -430,16 +484,17 @@ function Review({
         </section>
       ))}
       <div className="card border-accent/40 bg-accent-soft">
-        <p className="text-lg font-bold">Entwurf – wird nicht automatisch gesendet</p>
+        <p className="font-semibold">Entwurf – wird nicht automatisch gesendet</p>
         <p className="mt-1">{definition.submit_info_de}</p>
         <p className="mt-1 text-muted">Bitte prüfen Sie das PDF, unterschreiben Sie es und senden Sie es selbst ab. Ärztliche Abschnitte bleiben leer.</p>
         <div className="mt-4 flex flex-wrap gap-3">
           <button type="button" className={missing.length > 0 ? "btn-secondary" : "btn-primary"} onClick={onPdf} disabled={pdfBusy}>
+            <Download className="h-4 w-4" aria-hidden />
             {pdfBusy
               ? "PDF wird erstellt …"
               : missing.length > 0
-                ? `⬇ Unvollständigen Entwurf herunterladen (${missing.length} Pflichtangaben fehlen)`
-                : "⬇ Entwurf als PDF"}
+                ? `Unvollständigen Entwurf herunterladen (${missing.length} Pflichtangaben fehlen)`
+                : "Entwurf als PDF herunterladen"}
           </button>
           <Link href="/fall" className="btn-secondary">
             Weiter zu „Mein Fall“
