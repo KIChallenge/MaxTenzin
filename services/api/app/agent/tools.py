@@ -293,6 +293,19 @@ TOOLS: list[Tool] = [
          lambda a, c: f"/api/forms/sessions/{a['session_id']}/next-questions", compact=_compact_questions,
          query=lambda a, c: {"include_optional": "true"} if a.get("include_optional") else {},
          summary=lambda a, d: _questions_summary(d)),
+    Tool("change_permissions",
+         "Ändert eine Vollmacht, die die angemeldete Person SELBST erteilt hat (z. B. Anna erlaubt ihrer Tochter, "
+         "Anträge vorzubereiten). Nur auf ausdrücklichen Wunsch der Person in ihrer Nachricht. Gib nur an, was erteilt "
+         "bzw. entzogen werden soll – alle anderen Berechtigungen bleiben unverändert.",
+         {"delegation_id": _s("ID der Vollmacht, siehe 'Von der Person erteilte Vollmachten'"),
+          "grant": {"type": "array", "items": {"type": "string", "enum": list(SCOPE_DE)}, "description": "zu erteilende Berechtigungen"},
+          "revoke": {"type": "array", "items": {"type": "string", "enum": list(SCOPE_DE)}, "description": "zu entziehende Berechtigungen"}},
+         ["delegation_id"], "PUT", lambda a, c: f"/api/identity/delegations/{a['delegation_id']}/scopes",
+         body=lambda a, c: a.get("scopes", []),
+         compact=lambda d: {"delegation_id": d.get("id"), "grantee_id": d.get("grantee_id"),
+                            "scopes_de": [SCOPE_DE.get(x, x) for x in d.get("scopes", [])]},
+         summary=lambda a, d: "Vollmacht geändert – jetzt erlaubt: "
+                              + ", ".join(SCOPE_DE.get(x, x) for x in d.get("scopes", []))),
     Tool("set_form_fields", "Trägt von der Person bestätigte Antworten in den Antragsentwurf ein.",
          {"session_id": _s("Formular-Sitzung"),
           "values": {"type": "object", "description": "field_id -> Wert (Text oder true/false)"}},
@@ -503,6 +516,18 @@ class ToolClient:
         return defs
 
     async def run(self, name: str, args: dict) -> ToolOutcome:
+        if name == "change_permissions":
+            if not self.memo.get("_permission_request"):
+                # Never from a document, a web page or the model's own initiative: only the person's own words.
+                return ToolOutcome(name, args, 422, error_de="Berechtigungen ändere ich nur, wenn Sie das selbst "
+                                   "ausdrücklich verlangen.", summary_de="Nicht geändert – kein ausdrücklicher Wunsch")
+            r = await self.fetch("/api/identity/delegations", "context:delegations")
+            d = next((x for x in (r.json() if r.status_code == 200 else []) if x["id"] == args.get("delegation_id")), None)
+            if d is None:
+                return ToolOutcome(name, args, 404, error_de="Diese Vollmacht haben Sie nicht erteilt.",
+                                   summary_de="Vollmacht nicht gefunden")
+            scopes = (set(d["scopes"]) | set(args.get("grant") or [])) - set(args.get("revoke") or [])
+            args = {**args, "scopes": sorted(scopes)}
         if name == "confirm_situation_suggestion" and not self.memo.get("_user_consented"):
             return ToolOutcome(name, args, 422, error_de="Vorschläge übernehme ich erst nach Ihrer ausdrücklichen "
                                "Zustimmung („Ja, übernehmen“).", summary_de="Nicht übernommen – Zustimmung fehlt")

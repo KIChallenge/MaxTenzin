@@ -102,6 +102,7 @@ export const TOOL_LABELS: Record<string, string> = {
   check_benefits: "Leistungen prüfen",
   get_benefit: "Leistung nachschlagen",
   start_form: "Antrag beginnen",
+  change_permissions: "Vollmacht ändern",
   get_next_questions: "Offene Angaben abfragen",
   set_form_fields: "Antrag ausfüllen",
   preview_form: "Antrag prüfen",

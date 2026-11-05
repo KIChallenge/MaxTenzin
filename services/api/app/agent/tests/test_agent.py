@@ -462,3 +462,37 @@ def test_scope_parsed_from_german_403_detail():
     d = "Fehlende Freigabe: „Anträge vorbereiten“ – Anna Berger kann sie unter Einstellungen → Vollmachten erteilen."
     assert _scope_from_detail(d) == "prepare_applications"
     assert _scope_from_detail("Fehlende Berechtigung 'read_documents' für X.") == "read_documents"
+
+
+def test_change_permissions_only_on_explicit_request_and_merges(client):
+    """Anna may grant via Lotsi – but only when her own message asks for it; other scopes stay untouched."""
+    import asyncio
+
+    from app.agent.tools import ToolClient
+    from app.seed.loader import reset_delegations
+
+    reset_delegations()
+    h = {"Authorization": "Bearer demo-anna"}
+    try:
+        before = next(d for d in client.get("/api/identity/delegations", headers=h).json() if d["id"] == "del-anna-maria")
+        tc = ToolClient(h, "anna", "Anna Berger", memo={})
+        out = asyncio.run(tc.run("change_permissions", {"delegation_id": "del-anna-maria", "revoke": ["manage_case"]}))
+        assert out.status == 422                                              # no explicit request (e.g. from a document)
+        tc.memo["_permission_request"] = True
+        out = asyncio.run(tc.run("change_permissions", {"delegation_id": "del-anna-maria", "revoke": ["manage_case"]}))
+        assert out.ok and set(out.arguments["scopes"]) == set(before["scopes"]) - {"manage_case"}
+        # a representative can never widen her own rights through Lotsi
+        tm = ToolClient({"Authorization": "Bearer demo-maria", "X-Subject-Id": "anna"}, "anna", "Anna Berger",
+                        memo={"_permission_request": True})
+        out = asyncio.run(tm.run("change_permissions", {"delegation_id": "del-anna-maria", "grant": ["view_health_prevention"]}))
+        assert not out.ok
+    finally:
+        reset_delegations()
+
+
+def test_permission_request_regex():
+    from app.agent.orchestrator import _PERMISSION_REQ
+
+    assert _PERMISSION_REQ.search("Bitte erlaube Maria, Anträge vorzubereiten und Dokumente zu lesen.")
+    assert _PERMISSION_REQ.search("Gib Maria das Recht, Dokumente zu lesen")
+    assert not _PERMISSION_REQ.search("Was steht im Entlassungsbrief?")

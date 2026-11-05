@@ -53,7 +53,8 @@ def _prefs_text(prefs: dict) -> str:
     daypart = {"morning": "vormittags", "afternoon": "nachmittags"}.get(prefs.get("daypart"), "keine Tageszeit-Präferenz")
     return (f"Sprache {prefs.get('language', 'de')}, Detailtiefe {prefs.get('detail', 'normal')}, Termine {daypart}, "
             f"{'möglichst in der Nähe' if prefs.get('near_home', True) else 'Entfernung egal'}"
-            f"{', barrierefrei' if prefs.get('accessible') else ''}. Behandlungsteam: {team}")
+            f"{', barrierefrei' if prefs.get('accessible') else ''}. Behandlungsteam: {team}"
+            + (f". Von der Person erteilte Vollmachten: {'; '.join(prefs['_granted'])}" if prefs.get("_granted") else ""))
 
 
 def system_prompt(ctx: Context, memo: dict, plain: bool, lang: str = "de", prefs: dict | None = None) -> str:
@@ -140,6 +141,11 @@ async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, p
     if ct.status_code == 200:
         prefs = {**prefs, "_care_team": [f"{m['role_de']}: {m['name']} (provider_id {m['provider_id']}, {m['address']})"
                                          for m in ct.json().get("members", [])]}
+    if ctx.actor.id == ctx.subject.id:   # the person may change the Vollmachten THEY granted
+        dl = await client.fetch("/api/identity/delegations", "context:delegations")
+        if dl.status_code == 200 and dl.json():
+            prefs = {**prefs, "_granted": [f"{d['id']} → {d['grantee_id']} ({d.get('relation') or 'Vertretung'}): "
+                                           + ", ".join(SCOPE_DE.get(x, x) for x in d["scopes"]) for d in dl.json()]}
     if lang == "de" and prefs.get("language") and prefs["language"] != "de":
         lang = prefs["language"]
     messages = [{"role": "system", "content": system_prompt(ctx, memo, plain, lang, prefs)}, *state.history_messages(conv)]
@@ -260,6 +266,7 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
         memo["last_document_id"] = req.document_ids[0]
     # Explicit consent in THIS message (deterministic): required to apply document-based situation suggestions.
     memo["_user_consented"] = bool(_CONSENT_YES.search(req.message or ""))
+    memo["_permission_request"] = bool(_PERMISSION_REQ.search(req.message or ""))
 
     hit = guard.check_boundary(req.message)
     if hit:
@@ -431,7 +438,7 @@ async def _form_write_reply(client: ToolClient, writes: list[ToolOutcome], model
     return "\n".join(lines) + ("\n\n" + rest if rest else "")
 
 
-_TOOL_DE = {"search_slots": "Terminsuche", "book_appointment": "Terminbuchung", "check_benefits": "Anspruchsprüfung",
+_TOOL_DE = {"change_permissions": "Vollmacht", "search_slots": "Terminsuche", "book_appointment": "Terminbuchung", "check_benefits": "Anspruchsprüfung",
             "analyze_document": "Dokumentanalyse", "get_next_questions": "Antragsentwurf", "set_form_fields": "Antragsentwurf",
             "start_form": "Antragsentwurf", "render_form": "PDF-Entwurf", "get_prevention": "Vorsorge-Hinweise",
             "match_bundle": "Lebenssituation", "get_situation": "Lebenslage", "find_office": "Zuständige Stellen",
@@ -470,6 +477,9 @@ def _sanitize(reply: str, lang: str = "de") -> str:
     return out.strip()
 
 
+# The person's own message asks to grant/revoke a permission (change_permissions is only executed then).
+_PERMISSION_REQ = re.compile(r"\b(erlaub|freigeb|gib\b.{0,40}\b(recht|berechtigung)|berechtig|vollmacht|entzieh|"
+                             r"nimm\b.{0,40}\b(recht|berechtigung)|allow|grant|permission|revoke)", re.IGNORECASE)
 _CONSENT_YES = re.compile(r"\b(ja|jawohl|passt|stimmt|einverstanden|übernehmen|übernimm|bestätige|yes|evet)\b", re.IGNORECASE)
 
 
