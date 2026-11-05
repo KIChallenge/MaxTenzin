@@ -29,7 +29,16 @@ BENEFIT_TITLES = {
     "fahrtkostenzuschuss": "Fahrtkostenzuschuss prüfen",
     "rezeptgebuehrenbefreiung": "Rezeptgebührenbefreiung beantragen",
     "pflegeberatung": "Kostenlose Pflegeberatung zu Hause anfragen",
+    "hauskrankenpflege": "Medizinische Hauskrankenpflege klären",
 }
+
+
+def _benefit_name(benefit_id: str) -> str:
+    """German catalog name instead of the internal id (never show ids to the person)."""
+    from app.services.benefits.catalog import entries
+
+    e = entries().get(benefit_id)
+    return getattr(e, "name_de", None) or benefit_id
 
 
 def _match(task: str) -> tuple[str | None, str]:
@@ -53,7 +62,7 @@ def build_case(subject_id: str, title_de: str, analysis: DocumentAnalysis | None
                                   benefit_id=benefit_id, source=src))
     for b in benefit_ids:
         if b not in covered:
-            steps.append(CaseStep(id=f"s{len(steps) + 1}", title_de=BENEFIT_TITLES.get(b, f"Leistung prüfen: {b}"),
+            steps.append(CaseStep(id=f"s{len(steps) + 1}", title_de=BENEFIT_TITLES.get(b) or f"Leistung prüfen: {_benefit_name(b)}",
                                   responsible_de="Sie bzw. Ihre Vertrauensperson", benefit_id=b))
     return Case(id=f"case-{uuid.uuid4().hex[:8]}", subject_id=subject_id, title_de=title_de, created_at=now_iso(), steps=steps)
 

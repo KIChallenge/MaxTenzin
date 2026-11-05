@@ -40,12 +40,30 @@ def get_case(case_id: str, ctx: Context = Depends(require(Scope.manage_case))):
     return _load(case_id, ctx)
 
 
+def _with_situation_steps(case: Case, subject_id: str) -> Case:
+    """A case created AFTER the Lebenslage was confirmed must still get its steps (Meldepflicht, Reha …);
+    the situation service only adds steps to cases that exist when an episode changes."""
+    from datetime import date
+
+    from app.services.situation import service as sit
+
+    today = date.today()
+    d = case.model_dump()
+    probe = {"steps": [{**s, "status": str(s["status"])} for s in d["steps"]]}
+    if not sit.add_case_steps(probe, sit.case_steps_from(sit.confirmed(subject_id, today), today,
+                                                         sit.pflegegeld_involved(subject_id) or "pflegegeld" in
+                                                         {s.benefit_id for s in case.steps})):
+        return case
+    return Case.model_validate({**d, "steps": probe["steps"]})
+
+
 @router.post("", response_model=Case, summary="Create case from a document's open tasks + selected benefits")
 def create(body: CaseCreate, ctx: Context = Depends(require(Scope.manage_case))):
     analysis = _analysis_for(body.document_id)
     if body.document_id and analysis is None:
         raise HTTPException(404, "Dokumentanalyse nicht gefunden")
     case = build_case(ctx.subject.id, body.title_de, analysis, body.benefit_ids)
+    case = _with_situation_steps(case, ctx.subject.id)
     if analysis:
         ctx.cite(f"{analysis.filename} – offene Aufgaben")
     store.put(COLL, case.id, case.model_dump(), subject_id=ctx.subject.id)
