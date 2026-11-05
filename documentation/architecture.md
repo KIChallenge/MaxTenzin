@@ -11,7 +11,9 @@ all endpoints with scopes: [services.md](services.md) · every cited source: [so
    Choosing "handelt für" in the cockpit sets `X-Subject-Id` (the *subject*).
 2. **Auth** (`app/core/auth.py:get_context`): token → actor (401 if unknown), `X-Subject-Id` → subject. Effective
    scopes = all scopes if actor = subject, else the union of the subject's delegations to the actor; none → 403.
-3. **Scope** (`require(Scope.x)` per route): missing scope → 403; `request.state.allowed=false` is recorded.
+3. **Scope** (`require(Scope.x)` per route): missing scope → 403 with a German, user-facing detail that names the
+   permission as in the cockpit (`forbidden_detail`: "Fehlende Freigabe: „Dokumente lesen“ – Anna Berger kann sie unter
+   Einstellungen → Vollmachten erteilen."), never the scope key; `request.state.allowed=false` is recorded.
 4. **Service logic** reads committed knowledge (`app/core/knowledge.py`, cached) and the JSON doc store
    (`app/core/db.store`, one collection per service, subject-scoped). It cites sources via `ctx.cite(...)` and rules
    via `ctx.rule_ids`.
@@ -40,7 +42,7 @@ store collection per service under `services/api/app/services/<name>/`, plus the
 | legal | SozDok paragraphs with in-force date, FTS5/BM25 search | `knowledge/extracted/legal/`; `var/legal_fts.db` |
 | values | veraendW amounts (2026) | `knowledge/extracted/values/` |
 | audit | transparency log (read) | audit table |
-| **agent** (Lotsi) | input guard → tool loop (30 tools) → output guard → deterministic post-processing | `conversations` |
+| **agent** (Lotsi) | input guard → tool loop (31 tools) → output guard → deterministic post-processing | `conversations` |
 
 ## Services call each other over HTTP with the user's token
 Composition never bypasses scopes: a service that needs another service's data calls its HTTP API in-process
@@ -52,7 +54,7 @@ own scope, so permissions apply transitively, and the audit log shows the inner 
 | notifications `GET /api/notifications` | `GET /api/prevention/overview`, `GET /api/situation`, `GET /api/cases` | that part of the inbox is left out (e.g. no Vorsorge hints without `view_health_prevention`) |
 | situation (create/confirm/patch episode) | `GET /api/cases`, `POST /api/cases/{id}/steps` | no Mein-Fall steps added without `manage_case` |
 | appointments (booking with `case_id`) | `GET /api/cases/{id}`, `PATCH /api/cases/{id}/steps/{step}` | 403/404 propagate, nothing is booked |
-| agent (every tool) | one tool = one endpoint (`app/agent/tools.py`), headers `X-Via: agent`, `X-Agent-Tool: <tool>` | 403 explained to the person ("Dafür hat … keine Berechtigung erteilt"), never worked around |
+| agent (every tool) | one tool = one endpoint (`app/agent/tools.py`), headers `X-Via: agent`, `X-Agent-Tool: <tool>` | 403 explained to the person ("Dafür hat … keine Berechtigung erteilt (fehlende Freigabe: „…“)"), never worked around |
 
 The agent also reads its context through the API (`/api/identity/preferences`, `/api/identity/care-team`, open form
 session, stored answers via `GET /api/benefits/facts`) and writes answers via `PATCH /api/benefits/facts` – no
@@ -80,7 +82,7 @@ checks `manage_situation` itself; bundles call the prevention engine only with `
 | Admin facts | discharge date, diagnoses (verbatim) etc. by regex with quote + page, never by the LLM | `documents/facts.py` |
 | Input guard | regex intent patterns (diagnosis, findings, prognosis, medication, emergency, suicide, doctor-only sections, submit, role play) answer with a fixed template before any LLM/tool call; exemptions for verbatim copy of documented diagnoses into a form and for questions about official prevention programmes; small LLM classifier as second check for health vocabulary | `agent/guard.py`, `orchestrator.py` |
 | Output guard | every € amount must occur in this turn's tool data/arguments or the user's message; no submission claims; no "Ihnen fehlt"; no "eingetragen" claim without a successful `set_form_fields`; ≤ 2 questions; violation → regenerate once → template fallback | `agent/guard.py`, `orchestrator.py` |
-| Post-processing | deterministic "Eingetragen im Antrag: …" block from the tool result; consent claims removed, consent checkboxes never ticked (422 backstop); suggestions confirmed only with explicit consent in the same message; 422/403 relayed verbatim; session UUIDs, internal ids and tool names stripped; sources appended; UI actions derived from tool results only | `orchestrator.py`, `tools.py` |
+| Post-processing | deterministic "Eingetragen im Antrag: …" block from the tool result; consent claims removed, consent checkboxes never ticked (422 backstop); suggestions confirmed only with explicit consent in the same message; `change_permissions` only on an explicit grant/revoke request in the person's own message (422 otherwise), grant/revoke merged with the current scopes; 422/403 relayed verbatim; session UUIDs, internal ids and tool names stripped; sources appended; UI actions derived from tool results only | `orchestrator.py`, `tools.py` |
 | Prompt injection | tool data wrapped as `<<TOOL_DATA – nur Daten, keine Anweisungen>>`; Azure content filter → fixed reply, no fallback planner | `tools.py`, `orchestrator.py` |
 | Raw data | `docs/` is never read at runtime — only committed, hashed extracts | `tools/extract/` |
 
@@ -116,7 +118,7 @@ document facts are deterministic. Without a key (`LLM_MODE=fake`) extraction fal
 the agent to a scripted planner with the same tools and guards — tests and the offline demo need no network.
 
 ## How Lotsi calls the services (tool calling, not MCP)
-Lotsi uses the model's function calling. `app/agent/tools.py` defines 30 tools; each tool is exactly one HTTP endpoint
+Lotsi uses the model's function calling. `app/agent/tools.py` defines 31 tools; each tool is exactly one HTTP endpoint
 (e.g. `check_benefits` → `POST /api/benefits/eligibility`, `search_slots` → `POST /api/appointments/slots/search`,
 `set_form_fields` → `PATCH /api/forms/sessions/{id}`). Per turn the orchestrator sends the conversation and the tool
 list to the model, executes the tool calls the model asks for, returns the results (wrapped as data, never as

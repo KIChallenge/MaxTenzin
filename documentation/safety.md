@@ -9,6 +9,7 @@ Lotsi is a navigator for social insurance, not a medical advisor (CLAUDE.md inva
 | Refused (fixed template, no tool call, < 0.2 s) | Allowed |
 |---|---|
 | Making a diagnosis ("Was hat meine Mutter?", "Ist das Krebs?") | Naming recommendations a document states **explicitly**, each with verbatim quote + page |
+| Explaining what a documented diagnosis or symptom means, how serious it is | Repeating in the chat what a document says, **verbatim** (also diagnoses and symptoms), with page — repeated, never interpreted |
 | Interpreting findings, images, lab values ("Was bedeutet der Röntgenbefund?") | Copying documented diagnoses **verbatim** into a form field that asks for them (PAL 080 "Krankheiten bzw. Beeinträchtigungen"), unconfirmed, with quote + page |
 | Prognosis, personal risk ("Wie hoch ist ihr Rückfallrisiko?") | Explaining official prevention programmes (e.g. Koloskopie ab 45) incl. family history — never risk numbers, always "entscheidet Ihre Ärztin bzw. Ihr Arzt" |
 | Medication, dosing, therapy advice | Administrative EKO facts: box, approval requirement, Rezeptgebühr |
@@ -25,13 +26,17 @@ Enforcement layers:
 2. **Documents** (`documents/extract.py`): imaging reports and vaccination records never yield recommendations (+ notice
    "Ich interpretiere keine Befunde …"); a deterministic CLINICAL filter removes instructions to physicians (labs, blood
    pressure, medication, side effects, fluid balance) even when quoted verbatim, and says so in a notice.
+   The document analysis extracts only explicitly documented recommendations; instructions addressed to the treating
+   physicians are not turned into tasks for the person. This is separate from the chat: there Lotsi may quote what
+   the document says (user decision, 05.11.2026), but explaining or assessing it stays refused (input guard,
+   system prompt "Keine Deutung").
 3. **Diagnosis copy** (`documents/facts.py`, `forms/prefill.py`, `orchestrator.py:_copy_diagnoses`): main/secondary
    diagnoses are taken by regex, verbatim, with quote + page — never summarised by the model. PAL 080 `Leiden` is
    prefilled *unconfirmed*; on an explicit copy request Lotsi writes the verbatim text deterministically.
 4. **Prevention wording** (`prevention/engine.py`, output guard): "laut Impfplan empfohlen" / "nicht im e-Impfpass
    dokumentiert – bitte mit Ärztin/Arzt klären"; "Ihnen fehlt …" is rejected.
 5. **Evals**: 20 boundary/red-team cases incl. prompt injection (in the message and in an uploaded PDF), EN and TR —
-   34/34 live ([evals/REPORT.md](../evals/REPORT.md)).
+   35/35 live, 05.11.2026 ([evals/REPORT.md](../evals/REPORT.md)).
 
 ## 2. Consent
 - **Nothing is ever submitted.** Forms end as the official PDF stamped "ENTWURF – bitte prüfen und selbst
@@ -54,17 +59,36 @@ Enforcement layers:
 ## 3. Delegation and scopes
 Mock ID Austria: token `demo-<persona>` = actor, `X-Subject-Id` = person acted for. Acting for oneself = all scopes;
 for someone else = exactly the delegation's scopes (`app/core/auth.py`). **The AI inherits** them: Lotsi calls every
-endpoint with the user's own token; a 403 is explained ("Dafür hat <Name> keine Berechtigung erteilt …") and never
-worked around. Only the grantor can extend scopes; changes persist in the store (`delegation_overrides`).
+endpoint with the user's own token; a 403 is explained and never worked around. The 403 detail itself is German and
+user-facing, naming the permission as in the cockpit, never the scope key (`core/auth.py:forbidden_detail`,
+`SCOPE_LABEL_DE`): "Fehlende Freigabe: „Dokumente lesen“ – Anna Berger kann sie unter Einstellungen → Vollmachten
+erteilen." Lotsi turns it into "Dafür hat <Name> keine Berechtigung erteilt (fehlende Freigabe: „…“) …".
+Only the grantor can extend scopes (`PUT /api/identity/delegations/{id}/scopes`; a representative gets 403);
+changes persist in the store (`delegation_overrides`).
 
-| Scope | Cockpit label | Demo: Maria → Anna | Demo: Stefan → Lena (Obsorge) |
+**Changing permissions via Lotsi** (`change_permissions`, a safety control against prompt injection):
+- The tool runs only if the logged-in person's **own message in this turn** explicitly asks to grant or revoke
+  (`memo["_permission_request"]`, regex `_PERMISSION_REQ` in `agent/orchestrator.py`). Otherwise `ToolClient.run`
+  returns a deterministic 422 before any HTTP call. Text inside an uploaded document, a tool result or the model's own
+  initiative therefore cannot change a Vollmacht.
+- The model passes only `grant` / `revoke` lists; they are merged server-side with the delegation's current scopes,
+  so unmentioned permissions stay unchanged. The delegation must be one the subject granted (else 404).
+- The identity service still enforces that only the grantor extends scopes: Maria cannot widen her own rights via
+  Lotsi. The list of granted Vollmachten is put into the prompt only when actor = subject.
+- A permission granted mid-conversation is announced to the model in the next turn (`_granted_since_last_turn`),
+  so Lotsi retries instead of repeating the earlier refusal from the history.
+
+| Scope | Cockpit label | Demo: Maria → Anna (seed) | Demo: Stefan → Lena (Obsorge) |
 |---|---|---|---|
-| `read_documents` | Dokumente lesen | ✅ | ✅ |
-| `prepare_applications` | Anträge vorbereiten | ✅ (revoked live in Akt 3) | ✅ |
+| `read_documents` | Dokumente lesen | ✅ (live demo start: ❌, Anna grants it on stage) | ✅ |
+| `prepare_applications` | Anträge vorbereiten | ✅ (live demo start: ❌, Anna grants it on stage) | ✅ |
 | `manage_appointments` | Termine verwalten | ✅ | ✅ |
-| `view_health_prevention` | Vorsorge- und Gesundheitsdaten einsehen | ❌ deliberately not granted | ✅ |
+| `view_health_prevention` | Vorsorge & Impfungen | ❌ deliberately not granted | ✅ |
 | `manage_case` | Fall verwalten | ✅ | ✅ |
 | `manage_situation` | Lebenslage | ✅ | ✅ |
+
+Live demo start state: `make demo-fresh` seeds with `DEMO_LIVE=1` (`documents/seed_demo.py:seed_live_start`), which
+removes the two scopes from the Anna → Maria delegation.
 
 Scopes apply transitively to composed endpoints (inbox, situation → cases, appointments → cases): those call the other
 services over HTTP with the same token. Full endpoint/scope table: [services.md](services.md).

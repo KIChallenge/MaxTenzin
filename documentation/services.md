@@ -30,7 +30,8 @@ Checks that live in helper functions (not visible in the tables):
 - Bundles: prevention items only with `view_health_prevention` (else skipped, audit `bundles.prevention_skipped_no_scope`).
 - Eligibility (`benefits`) and form prefill (`forms/prefill.py`) use Lebenslage facts only if the caller has
   `manage_situation` for the subject.
-- `PUT /api/identity/delegations/{id}/scopes`: only the grantor may extend scopes; the grantee may only reduce them.
+- `PUT /api/identity/delegations/{id}/scopes`: only the grantor may extend scopes; the grantee may only reduce them (when
+  acting as themselves). Lotsi's `change_permissions` tool uses this endpoint (only on the person's explicit request).
 - Composed endpoints (`GET /api/notifications`, situation → cases, appointments → cases) call the other services over
   HTTP with the caller's token, so those services' scopes apply transitively (see `architecture.md`).
 - Every subject-owned record (document, session, case, episode, appointment, conversation) of another subject → 404.
