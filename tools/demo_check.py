@@ -1,25 +1,33 @@
-"""Preflight for the live demo: runs the demo-script chat lines against the RUNNING API (make api-demo).
+"""Preflight for the live demo: checks the demo-script scenes against the RUNNING API (make api-demo).
 
-Read-only for the demo state: new conversation + new draft session, no permission changes.
-Usage: make demo-check   (API must run on http://localhost:8000)
+Does NOT change the demo state the jury will see: no booking, no Lebenslage confirmation, no permission changes.
+(It creates a draft form session and conversations, which the demo never shows.)
+Usage: make demo-check            (API on http://localhost:8000)
+       DEMO_API=http://localhost:8001 make demo-check
 """
 
 from __future__ import annotations
 
+import os
 import sys
 import time
+from pathlib import Path
 
 import httpx
 
-API = "http://localhost:8000"
+API = os.environ.get("DEMO_API", "http://localhost:8000")
+ROOT = Path(__file__).resolve().parents[1]
 MARIA_ANNA = {"Authorization": "Bearer demo-maria", "X-Subject-Id": "anna"}
+ANNA = {"Authorization": "Bearer demo-anna"}
 STEFAN = {"Authorization": "Bearer demo-stefan"}
-results: list[tuple[bool, str, float]] = []
+results: list[tuple[bool, str]] = []
 
 
-def check(ok: bool, label: str, t0: float) -> None:
-    results.append((ok, label, time.perf_counter() - t0))
-    print(f"{'✅' if ok else '❌'} {label} ({time.perf_counter() - t0:.1f}s)", flush=True)
+def check(ok: bool, label: str, t0: float, hint: str = "") -> bool:
+    results.append((ok, label))
+    print(f"{'✅' if ok else '❌'} {label} ({time.perf_counter() - t0:.1f}s)" + (f"\n   → {hint}" if not ok and hint else ""),
+          flush=True)
+    return ok
 
 
 def chat(c: httpx.Client, h: dict, msg: str, cid: str | None = None, **extra) -> dict:
@@ -32,59 +40,89 @@ def tools(r: dict) -> list[str]:
     return [t["tool"] for t in r["tool_trace"]]
 
 
-def main() -> int:
-    with httpx.Client(base_url=API, timeout=90) as c:
+def main() -> int:  # noqa: PLR0915 – linear checklist on purpose
+    with httpx.Client(base_url=API, timeout=120) as c:
         t0 = time.perf_counter()
         try:
             health = c.get("/api/health").json()
         except httpx.HTTPError as e:
             print(f"❌ API not reachable at {API}: {e}")
             return 1
-        check(health.get("llm") == "live", f"API up, LLM mode = {health.get('llm')}", t0)
+        check(health.get("llm") == "live", f"API up, LLM mode = {health.get('llm')}", t0, "AZURE_API_KEY in .env prüfen")
+
+        # ---------------- state: fresh demo data, nothing left over from rehearsals
+        t0 = time.perf_counter()
+        photos = sorted((ROOT / "var" / "demo").glob("entlassungsbrief-foto-*.jpg"))
+        check(len(photos) == 4, f"Demo-Fotos vorhanden ({len(photos)}/4)", t0, "make demo-assets")
+        t0 = time.perf_counter()
+        scopes = set(c.get("/api/identity/me", headers=MARIA_ANNA).json()["scopes"])
+        need = {"prepare_applications", "manage_situation", "manage_appointments", "read_documents"}
+        check(need <= scopes and "view_health_prevention" not in scopes,
+              "Vollmacht Anna→Maria im Seed-Zustand (ohne Vorsorge)", t0, "make reset && make seed")
+        t0 = time.perf_counter()
+        sit = c.get("/api/situation", headers=MARIA_ANNA).json()
+        check(not (sit["current"] or sit["upcoming"] or sit["past"]), "Lebenslage von Anna leer (Szene: Vorschläge übernehmen)",
+              t0, "make reset && make seed")
+        t0 = time.perf_counter()
+        appts = [a for a in c.get("/api/appointments", headers=MARIA_ANNA).json() if a["status"] == "booked"]
+        check(not appts, "keine gebuchten Termine von der Probe übrig", t0, "make reset && make seed")
+
+        # ---------------- Akt 1
+        t0 = time.perf_counter()
+        team = c.get("/api/identity/care-team", headers=MARIA_ANNA).json()["members"]
+        gp = next((m for m in team if m["role"] == "hausarzt"), None)
+        check(gp is not None, f"Behandlungsteam: Hausärztin = {gp and gp['name']}", t0)
+        t0 = time.perf_counter()
+        analysis = c.get("/api/documents/doc-anna-entlassung/analysis", headers=MARIA_ANNA)
+        facts = {f["key"] for f in analysis.json().get("facts", [])} if analysis.status_code == 200 else set()
+        check({"discharge_date", "main_diagnosis"} <= facts, "Demo-Brief analysiert (Entlassungsdatum, Hauptdiagnose)", t0,
+              "make seed (Analysen aktualisieren)")
+        t0 = time.perf_counter()
+        el = c.post("/api/benefits/eligibility", headers=MARIA_ANNA,
+                    json={"subject_id": "anna", "document_ids": ["doc-anna-entlassung"], "benefit_ids": ["pflegegeld"]}).json()
+        amount = (el[0].get("amounts") or [{}])[0].get("value") if el else None
+        check(amount == 206.2, f"Leistungen: Pflegegeld Stufe 1 2026 = {amount} € (veraendW)", t0)
 
         t0 = time.perf_counter()
-        scopes = c.get("/api/identity/me", headers=MARIA_ANNA).json()["scopes"]
-        check("prepare_applications" in scopes, "Maria may prepare applications for Anna (no leftover revoke)", t0)
-
-        t0 = time.perf_counter()
-        r1 = chat(c, MARIA_ANNA, "Meine Mutter Anna wurde letzte Woche aus dem Spital entlassen. Bitte schau dir ihren "
-                                 "Entlassungsbrief an – welche Leistungen kommen für sie in Frage?")
-        check({"analyze_document", "check_benefits"} <= set(tools(r1)) and "Pflegegeld" in r1["reply"],
-              "Akt 1: Brief → Leistungen", t0)
-        cid = r1["conversation_id"]
-
-        t0 = time.perf_counter()
-        r2 = chat(c, MARIA_ANNA, "Sie braucht ungefähr 90 Stunden Hilfe im Monat, und das sicher länger als ein halbes "
-                                 "Jahr.", cid)
-        check("check_benefits" in tools(r2) and "Pflegegeld" in r2["reply"], "Akt 1: Fakten → Pflegegeld", t0)
-
-        t0 = time.perf_counter()
-        r3 = chat(c, MARIA_ANNA, "Bitte bereite den Pflegegeld-Antrag als Entwurf vor.", cid)
-        form = next((a["url"].removeprefix("/forms/") for a in r3["actions"] if a["kind"] == "open_form"), None)
-        check(form is not None, "Akt 1: Antrag gestartet, Button 'Assistent öffnen'", t0)
-
+        r1 = chat(c, MARIA_ANNA, "Bitte bereite den Pflegegeld-Antrag als Entwurf vor.", document_ids=["doc-anna-entlassung"])
+        form = next((a["url"].removeprefix("/forms/") for a in r1["actions"] if a["kind"] == "open_form"), None)
+        check(form is not None, "Akt 1: Antrag per Chat gestartet, Button 'Assistent öffnen'", t0)
         if form:
+            v = c.get(f"/api/forms/sessions/{form}", headers=MARIA_ANNA).json()["values"]
             t0 = time.perf_counter()
-            r4 = chat(c, MARIA_ANNA, "Trag beim Pflegegeld-Antrag ein, dass wir die kostenlose Pflegeberatung möchten. "
+            check(bool((v.get("Leiden") or {}).get("value")), "Akt 1: 'Krankheiten' wörtlich aus dem Brief vorausgefüllt", t0)
+            t0 = time.perf_counter()
+            r2 = chat(c, MARIA_ANNA, "Trag beim Pflegegeld-Antrag ein, dass wir die kostenlose Pflegeberatung möchten. "
                                      "Meine Mutter hat zugestimmt.", form_session_id=form)
             v = c.get(f"/api/forms/sessions/{form}", headers=MARIA_ANNA).json()["values"]
             check(v["Pflegeberatung"]["value"] == "Ja" and not v["Antragstellung andere Person"]["value"]
-                  and "start_form" not in tools(r4), "Akt 1: Chat → Assistent (Pflegeberatung = Ja, Zustimmung offen)", t0)
+                  and "start_form" not in tools(r2) and r2["reply"].startswith("**Eingetragen im Antrag:**"),
+                  "Akt 1: Chat → Assistent (Pflegeberatung = Ja, Zustimmung offen)", t0)
             t0 = time.perf_counter()
             pdf = c.post(f"/api/forms/sessions/{form}/render", headers=MARIA_ANNA)
             check(pdf.status_code == 200 and pdf.content[:4] == b"%PDF", "Akt 1: PDF-Entwurf", t0)
 
         t0 = time.perf_counter()
+        slots = c.post("/api/appointments/slots/search", headers=MARIA_ANNA,
+                       json={"provider_id": gp["provider_id"] if gp else None, "daypart": "morning", "limit": 5}).json()
+        check(len(slots) >= 3, f"Akt 1: freie Vormittagstermine bei der Hausärztin ({len(slots)})", t0)
+
+        # ---------------- Akt 2
+        t0 = time.perf_counter()
         rb = chat(c, MARIA_ANNA, "Ist ihr Tumor jetzt weg?")
         check(rb["boundary_triggered"] and not rb["tool_trace"], "Akt 2: Grenze (keine Befundinterpretation)", t0)
 
+        # ---------------- Akt 4
+        t0 = time.perf_counter()
+        rg = chat(c, STEFAN, "Ich möchte etwas für meine Gesundheit tun.")
+        check(bool({"match_bundle", "get_prevention"} & set(tools(rg))), "Akt 4: Stefan – Gesundheits-Bündel", t0)
         t0 = time.perf_counter()
         prev = c.get("/api/prevention/overview", headers=STEFAN).json()
         flu = next((i for i in prev["items"] if i["id"] == "influenza"), {})
-        check(flu.get("status") == "due", "Akt 4: Stefan – Grippeimpfung fällig (Impfpass importiert)", t0)
+        check(flu.get("status") == "due", "Akt 4: Stefan – Grippeimpfung fällig (Impfpass importiert)", t0, "make seed")
 
     failed = [r for r in results if not r[0]]
-    print(f"\n{len(results) - len(failed)}/{len(results)} ok" + ("" if not failed else " – siehe Fallbacks im Drehbuch"))
+    print(f"\n{len(results) - len(failed)}/{len(results)} ok" + ("" if not failed else " – siehe Hinweise / Fallbacks im Drehbuch"))
     return 1 if failed else 0
 
 
