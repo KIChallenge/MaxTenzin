@@ -1,4 +1,4 @@
-import { CalendarPlus, Check, ScanText, TriangleAlert } from "lucide-react";
+import { CalendarPlus, Check, ChevronRight, ScanText, TriangleAlert } from "lucide-react";
 import { createCase } from "@/app/actions";
 import Link from "next/link";
 import { ApiError } from "@/components/ApiError";
@@ -127,20 +127,29 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
           ) : (
             <div className="overflow-hidden rounded-xl border border-line bg-surface">
               {[...byCategory.entries()].map(([cat, recs]) => (
-                <div key={cat} className="border-t border-line first:border-t-0">
-                  <h3 className="bg-paper/60 px-4 py-1.5 text-sm font-semibold text-muted">{REC_CATEGORY[cat] ?? cat}</h3>
+                // Collapsible per category; categories that lead to a benefit (e.g. Pflege) start open.
+                <details
+                  key={cat}
+                  open={recs.some((r) => (r.related_benefit_ids ?? []).length > 0)}
+                  className="group border-t border-line first:border-t-0"
+                >
+                  <summary className="flex cursor-pointer list-none items-center gap-2 bg-paper/60 px-4 py-2 text-sm font-semibold text-muted hover:text-ink [&::-webkit-details-marker]:hidden">
+                    <ChevronRight className="h-4 w-4 shrink-0 transition-transform group-open:rotate-90" aria-hidden />
+                    {REC_CATEGORY[cat] ?? cat}
+                    <span className="font-normal">({recs.length})</span>
+                  </summary>
                   <ul className="divide-y divide-line">
                     {recs.map((rec) => (
                       <li key={rec.id} className="px-4 py-2.5">
-                        <p className="font-semibold">{rec.text_de}</p>
-                        <p className="mt-0.5 text-sm text-muted">
+                        {/* the verbatim quote IS the recommendation – no paraphrase around it */}
+                        <p className="font-semibold">
                           „{displayQuote(rec.quote)}“{" "}
                           <SourceChip source={{ kind: "document", label: `S. ${rec.page}`, quote: rec.quote, ref: `document:${a.document_id}#page=${rec.page}` }} />
                         </p>
                       </li>
                     ))}
                   </ul>
-                </div>
+                </details>
               ))}
             </div>
           )}
