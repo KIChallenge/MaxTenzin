@@ -2,11 +2,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { bff } from "@/lib/client";
-import type { ChatResponse, ToolTrace } from "@/lib/types";
+import type { ChatAction, ChatResponse, ToolTrace } from "@/lib/types";
 
 type Msg =
   | { role: "user"; text: string }
-  | { role: "assistant"; text: string; trace: ToolTrace[]; boundary: boolean; suggestions: string[] }
+  | { role: "assistant"; text: string; trace: ToolTrace[]; boundary: boolean; suggestions: string[]; actions?: ChatAction[] }
   | { role: "error"; text: string };
 
 const STARTERS = ["Was steht im Entlassungsbrief?", "Welche Leistungen kommen in Frage?", "Hilf mir beim Pflegegeld-Antrag"];
@@ -87,6 +87,7 @@ export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string
         trace: r.data.tool_trace ?? [],
         boundary: !!r.data.boundary_triggered,
         suggestions: r.data.suggestions_de ?? [],
+        actions: r.data.actions ?? [],
       },
     ]);
     // The agent may have changed data (case steps, form values) — refresh server views.
@@ -205,6 +206,13 @@ function ChatMessage({ msg, onSuggest }: { msg: Msg; onSuggest: (s: string) => v
         {msg.boundary && <p className="mb-1 text-sm font-bold text-warn">⚠ Medizinische Grenze – bitte mit Ärztin/Arzt klären</p>}
         {msg.text}
       </div>
+      {msg.actions && msg.actions.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {msg.actions.map((a) => (
+            <ActionButton key={a.kind + a.url} action={a} />
+          ))}
+        </div>
+      )}
       {msg.suggestions.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {msg.suggestions.map((s) => (
@@ -215,5 +223,34 @@ function ChatMessage({ msg, onSuggest }: { msg: Msg; onSuggest: (s: string) => v
         </div>
       )}
     </div>
+  );
+}
+
+/** Buttons the agent attaches (draft download, open wizard, open case). Navigation is decided by kind, not trusted URLs. */
+function ActionButton({ action }: { action: ChatAction }) {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  async function run() {
+    if (action.kind === "open_form" && action.url.startsWith("/forms/")) return router.push(action.url);
+    if (action.kind === "open_case") return router.push("/fall");
+    if (action.kind === "download_pdf" && action.url.startsWith("/api/forms/sessions/")) {
+      setBusy(true);
+      const res = await fetch(`/bff${action.url}`, { method: action.method || "POST" }).catch(() => null);
+      setBusy(false);
+      if (!res?.ok) return;
+      const blob = await res.blob();
+      const name = /filename="?([^"]+)"?/.exec(res.headers.get("content-disposition") ?? "")?.[1] ?? "Antrag_ENTWURF.pdf";
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = name;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+  }
+  return (
+    <button type="button" className="btn-primary py-1 text-sm" onClick={run} disabled={busy}>
+      {busy ? "Wird erstellt …" : action.label_de}
+    </button>
   );
 }

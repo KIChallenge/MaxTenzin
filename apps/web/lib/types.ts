@@ -28,6 +28,7 @@ export type PreventionStatus = S["PreventionStatus"];
 export type AuditEvent = S["AuditEvent"];
 export type ChatResponse = S["ChatResponse"];
 export type ToolTrace = S["ToolTrace"];
+export type ChatAction = S["ChatAction"];
 export type Office = S["Office"];
 export type Medication = S["Medication"];
 export type LegalHit = S["LegalHit"];

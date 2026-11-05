@@ -1,4 +1,5 @@
 import { ApiError } from "@/components/ApiError";
+import { Autocomplete } from "@/components/Autocomplete";
 import { PageTitle } from "@/components/PageTitle";
 import { SourceChip } from "@/components/SourceChip";
 import { api } from "@/lib/api";
@@ -15,10 +16,7 @@ export default async function MedicationsPage({ searchParams }: { searchParams: 
         Angaben laut Erstattungskodex (EKO). Keine Empfehlung zu Medikamenten oder Dosierung – fragen Sie dazu Ihre Ärztin bzw. Ihren Arzt.
       </PageTitle>
       <form className="card mb-6 flex flex-wrap items-end gap-4" role="search">
-        <label className="flex flex-1 flex-col gap-1">
-          <span className="font-bold">Produktname</span>
-          <input name="q" defaultValue={q} className="input" placeholder="z. B. Letrozol" />
-        </label>
+        <Autocomplete source="medications" name="q" label="Produktname" defaultValue={q} placeholder="z. B. Letrozol" />
         <button className="btn-primary">Suchen</button>
       </form>
       {r && !r.ok && <ApiError status={r.status} detail={r.detail} />}

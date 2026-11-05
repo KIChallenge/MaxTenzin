@@ -1,4 +1,5 @@
 import { ApiError } from "@/components/ApiError";
+import { Autocomplete } from "@/components/Autocomplete";
 import { PageTitle } from "@/components/PageTitle";
 import { api } from "@/lib/api";
 import { fmtDate } from "@/lib/labels";
@@ -15,10 +16,7 @@ export default async function LegalPage({ searchParams }: { searchParams: Promis
       </PageTitle>
       <div className="mb-6 grid gap-4 md:grid-cols-2">
         <form className="card flex flex-wrap items-end gap-3" role="search">
-          <label className="flex flex-1 flex-col gap-1">
-            <span className="font-bold">Stichwort</span>
-            <input name="q" defaultValue={sp.q} className="input" placeholder="z. B. Pflegegeld" />
-          </label>
+          <Autocomplete source="legal" name="q" label="Stichwort" defaultValue={sp.q} placeholder="z. B. Pflegegeld" />
           <button className="btn-primary">Suchen</button>
         </form>
         <form className="card flex flex-wrap items-end gap-3">
