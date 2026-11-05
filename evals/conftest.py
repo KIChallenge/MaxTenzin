@@ -25,6 +25,17 @@ def client():
     return TestClient(app)
 
 
+def _is_full_run(config) -> bool:
+    """REPORT.md documents the FULL suite: a filtered run (-k/-m) or single test ids must never overwrite it."""
+    if config.getoption("keyword") or config.getoption("markexpr"):
+        return False
+    return not any("::" in str(a) for a in config.args)
+
+
 def pytest_sessionfinish(session, exitstatus):
-    if eval_harness.RESULTS:
+    if not eval_harness.RESULTS:
+        return
+    if _is_full_run(session.config):
         eval_harness.write_report(Path(__file__).parent / "REPORT.md")
+    else:
+        print("\n[evals] partial run – evals/REPORT.md not updated (run `make eval` for the full report)")
