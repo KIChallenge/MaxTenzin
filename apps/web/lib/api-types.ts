@@ -106,6 +106,145 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/identity/preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Preferences of the acting person */
+        get: operations["get_preferences_api_identity_preferences_get"];
+        /** Save preferences (language, detail, daypart …) */
+        put: operations["put_preferences_api_identity_preferences_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/care-team": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Behandlungsteam (Hausärztin u. a.) of the subject */
+        get: operations["care_team_api_identity_care_team_get"];
+        /** Set/change e.g. the Hausärztin (person's own choice) */
+        put: operations["set_care_team_api_identity_care_team_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/situation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Current Lebenslage: episodes, suggestions, effects */
+        get: operations["overview_api_situation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/situation/episodes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add an episode (set by the person/representative) */
+        post: operations["add_api_situation_episodes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/situation/episodes/{episode_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove an episode entered by mistake */
+        delete: operations["delete_api_situation_episodes__episode_id__delete"];
+        options?: never;
+        head?: never;
+        /** Change dates/status (e.g. end an episode) */
+        patch: operations["update_api_situation_episodes__episode_id__patch"];
+        trace?: never;
+    };
+    "/api/situation/suggestions/from-document/{document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Suggest episodes from an analysed document (NOT applied until confirmed) */
+        post: operations["suggest_api_situation_suggestions_from_document__document_id__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/situation/suggestions/{episode_id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Consent: apply a suggestion */
+        post: operations["confirm_api_situation_suggestions__episode_id__confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/situation/suggestions/{episode_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decline a suggestion */
+        post: operations["reject_api_situation_suggestions__episode_id__reject_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/documents": {
         parameters: {
             query?: never;
@@ -116,7 +255,7 @@ export interface paths {
         /** Documents of the current subject */
         get: operations["list_docs_api_documents_get"];
         put?: never;
-        /** Upload a PDF for the current subject */
+        /** Upload a PDF or photos (JPG/PNG) of a document for the current subject */
         post: operations["upload_api_documents_post"];
         delete?: never;
         options?: never;
@@ -165,8 +304,25 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Download the uploaded PDF */
+        /** Download the uploaded PDF (or photo page ?page=N) */
         get: operations["get_file_api_documents__document_id__file_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/documents/{document_id}/transcript": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Text read from the document, per page (photo transcription or PDF text layer) */
+        get: operations["get_transcript_api_documents__document_id__transcript_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -945,8 +1101,16 @@ export interface components {
         };
         /** Body_upload_api_documents_post */
         Body_upload_api_documents_post: {
-            /** File */
-            file: string;
+            /**
+             * File
+             * @description One PDF or one photo (JPG/PNG)
+             */
+            file?: string | null;
+            /**
+             * Files
+             * @description Several photos (JPG/PNG), one per page, in page order
+             */
+            files?: string[] | null;
         };
         /** BookingRequest */
         BookingRequest: {
@@ -1022,6 +1186,48 @@ export interface components {
              * @default []
              */
             document_ids: string[];
+        };
+        /** CareTeam */
+        CareTeam: {
+            /** Subject Id */
+            subject_id: string;
+            /**
+             * Members
+             * @default []
+             */
+            members: components["schemas"]["CareTeamMember"][];
+            /**
+             * Notice De
+             * @default In Österreich gibt es keine formale Hausarzt-Registrierung. Im Echtbetrieb stammt diese Angabe aus e-card-Konsultationen (zuletzt besucht) oder aus Ihrer eigenen Angabe – Sie können sie jederzeit ändern.
+             */
+            notice_de: string;
+        };
+        /**
+         * CareTeamMember
+         * @description A regular contact in the person's care (Hausärztin, Fachambulanz …), linked to the appointments directory.
+         */
+        CareTeamMember: {
+            /** Role */
+            role: string;
+            /** Role De */
+            role_de: string;
+            /** Provider Id */
+            provider_id?: string | null;
+            /** Name */
+            name: string;
+            /**
+             * Address
+             * @default
+             */
+            address: string;
+            /**
+             * Phone
+             * @default
+             */
+            phone: string;
+            /** Since */
+            since?: string | null;
+            source: components["schemas"]["SourceRef"];
         };
         /** Case */
         Case: {
@@ -1222,6 +1428,11 @@ export interface components {
              */
             consent_note: string;
         };
+        /**
+         * DetailLevel
+         * @enum {string}
+         */
+        DetailLevel: "short" | "normal" | "detailed";
         /** DocumentAnalysis */
         DocumentAnalysis: {
             /** Document Id */
@@ -1290,10 +1501,54 @@ export interface components {
             owner_id: string;
         };
         /**
+         * DocumentTranscript
+         * @description What was read from the document, per page — so the user can check the basis of every quote.
+         */
+        DocumentTranscript: {
+            /** Document Id */
+            document_id: string;
+            /** Source */
+            source: string;
+            /** Mode */
+            mode: string;
+            /** Pages */
+            pages: components["schemas"]["TranscriptPage"][];
+            /**
+             * Notice De
+             * @default
+             */
+            notice_de: string;
+        };
+        /**
          * DocumentType
          * @enum {string}
          */
         DocumentType: "discharge_letter" | "imaging_report" | "vaccination_record" | "other";
+        /** Effect */
+        Effect: {
+            kind: components["schemas"]["EffectKind"];
+            /** Episode Id */
+            episode_id?: string | null;
+            /** Title De */
+            title_de: string;
+            /**
+             * Detail De
+             * @default
+             */
+            detail_de: string;
+            /** Due Date */
+            due_date?: string | null;
+            /** Key */
+            key?: string | null;
+            /** Value */
+            value?: string | boolean | number | null;
+            source?: components["schemas"]["SourceRef"] | null;
+        };
+        /**
+         * EffectKind
+         * @enum {string}
+         */
+        EffectKind: "reminder" | "fact" | "prefill" | "case_step" | "hint";
         /** EligibilityRequest */
         EligibilityRequest: {
             /** Subject Id */
@@ -1347,6 +1602,78 @@ export interface components {
          * @enum {string}
          */
         EligibilityStatus: "likely" | "possible" | "needs_info" | "not_applicable";
+        /** Episode */
+        Episode: {
+            /** Id */
+            id: string;
+            /** Subject Id */
+            subject_id: string;
+            type: components["schemas"]["EpisodeType"];
+            /** Subtype */
+            subtype?: string | null;
+            /** Title De */
+            title_de: string;
+            /** Start */
+            start?: string | null;
+            /** End */
+            end?: string | null;
+            /** End Estimate De */
+            end_estimate_de?: string | null;
+            /** Institution */
+            institution?: string | null;
+            status: components["schemas"]["EpisodeStatus"];
+            source: components["schemas"]["SourceRef"];
+            /** Created By */
+            created_by: string;
+            /** Confirmed By */
+            confirmed_by?: string | null;
+            /** Confirmed At */
+            confirmed_at?: string | null;
+            /** Note De */
+            note_de?: string | null;
+        };
+        /** EpisodeCreate */
+        EpisodeCreate: {
+            type: components["schemas"]["EpisodeType"];
+            /** Subtype */
+            subtype?: string | null;
+            /** Title De */
+            title_de?: string | null;
+            /** Start */
+            start?: string | null;
+            /** End */
+            end?: string | null;
+            /** End Estimate De */
+            end_estimate_de?: string | null;
+            /** Institution */
+            institution?: string | null;
+            /** Note De */
+            note_de?: string | null;
+        };
+        /**
+         * EpisodeStatus
+         * @enum {string}
+         */
+        EpisodeStatus: "suggested" | "planned" | "active" | "ended" | "rejected";
+        /**
+         * EpisodeType
+         * @enum {string}
+         */
+        EpisodeType: "hospital" | "rehab_inpatient" | "rehab_outpatient" | "therapy" | "home_care" | "nursing_home" | "sick_leave" | "cure";
+        /** EpisodeUpdate */
+        EpisodeUpdate: {
+            /** Start */
+            start?: string | null;
+            /** End */
+            end?: string | null;
+            /** End Estimate De */
+            end_estimate_de?: string | null;
+            /** Institution */
+            institution?: string | null;
+            /** Note De */
+            note_de?: string | null;
+            status?: components["schemas"]["EpisodeStatus"] | null;
+        };
         /** ExtractedPerson */
         ExtractedPerson: {
             /** First Name */
@@ -1668,6 +1995,44 @@ export interface components {
              */
             plain_language: boolean;
         };
+        /**
+         * Preferences
+         * @description Personal communication & organisation preferences (per acting person). Used by Lotsi and the cockpit.
+         */
+        Preferences: {
+            /**
+             * Language
+             * @default de
+             */
+            language: string;
+            /**
+             * Plain Language
+             * @default false
+             */
+            plain_language: boolean;
+            /** @default normal */
+            detail: components["schemas"]["DetailLevel"];
+            /**
+             * Daypart
+             * @default any
+             */
+            daypart: string;
+            /**
+             * Near Home
+             * @default true
+             */
+            near_home: boolean;
+            /**
+             * Accessible
+             * @default false
+             */
+            accessible: boolean;
+            /**
+             * Voice
+             * @default false
+             */
+            voice: boolean;
+        };
         /** PreventionItem */
         PreventionItem: {
             /** Id */
@@ -1829,7 +2194,7 @@ export interface components {
          * Scope
          * @enum {string}
          */
-        Scope: "read_documents" | "prepare_applications" | "manage_appointments" | "view_health_prevention" | "manage_case";
+        Scope: "read_documents" | "prepare_applications" | "manage_appointments" | "view_health_prevention" | "manage_case" | "manage_situation";
         /**
          * Session
          * @description Who is logged in (actor) and for whom they currently act (subject).
@@ -1846,6 +2211,61 @@ export interface components {
              * @default []
              */
             delegations: components["schemas"]["Delegation"][];
+        };
+        /** SetCareTeamMember */
+        SetCareTeamMember: {
+            /**
+             * Role
+             * @default hausarzt
+             */
+            role: string;
+            /** Provider Id */
+            provider_id: string;
+        };
+        /** SituationOverview */
+        SituationOverview: {
+            /** Subject Id */
+            subject_id: string;
+            /** As Of */
+            as_of: string;
+            /**
+             * Current
+             * @default []
+             */
+            current: components["schemas"]["Episode"][];
+            /**
+             * Upcoming
+             * @default []
+             */
+            upcoming: components["schemas"]["Episode"][];
+            /**
+             * Past
+             * @default []
+             */
+            past: components["schemas"]["Episode"][];
+            /**
+             * Suggestions
+             * @default []
+             */
+            suggestions: components["schemas"]["Episode"][];
+            /**
+             * Effects
+             * @default []
+             */
+            effects: components["schemas"]["Effect"][];
+            /**
+             * Facts
+             * @description Eligibility facts derived from confirmed episodes
+             * @default {}
+             */
+            facts: {
+                [key: string]: unknown;
+            };
+            /**
+             * Summary De
+             * @default
+             */
+            summary_de: string;
         };
         /** Slot */
         Slot: {
@@ -1874,6 +2294,8 @@ export interface components {
             kind?: components["schemas"]["ProviderKind"] | null;
             /** Specialty */
             specialty?: string | null;
+            /** Provider Id */
+            provider_id?: string | null;
             /** Zip */
             zip?: string | null;
             /**
@@ -1959,6 +2381,23 @@ export interface components {
              * @default []
              */
             sources: string[];
+        };
+        /** TranscriptPage */
+        TranscriptPage: {
+            /** Page */
+            page: number;
+            /** Text */
+            text: string;
+            /**
+             * Unreadable
+             * @default 0
+             */
+            unreadable: number;
+            /**
+             * Low Resolution
+             * @default false
+             */
+            low_resolution: boolean;
         };
         /** VaccinationEntry */
         VaccinationEntry: {
@@ -2212,6 +2651,406 @@ export interface operations {
             };
         };
     };
+    get_preferences_api_identity_preferences_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Preferences"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    put_preferences_api_identity_preferences_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Preferences"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Preferences"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    care_team_api_identity_care_team_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CareTeam"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_care_team_api_identity_care_team_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetCareTeamMember"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CareTeam"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    overview_api_situation_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SituationOverview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_api_situation_episodes_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EpisodeCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Episode"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_api_situation_episodes__episode_id__delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                episode_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_api_situation_episodes__episode_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                episode_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EpisodeUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Episode"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    suggest_api_situation_suggestions_from_document__document_id__post: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Episode"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    confirm_api_situation_suggestions__episode_id__confirm_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                episode_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Episode"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reject_api_situation_suggestions__episode_id__reject_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                episode_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Episode"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_docs_api_documents_get: {
         parameters: {
             query?: never;
@@ -2258,7 +3097,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody: {
+        requestBody?: {
             content: {
                 "multipart/form-data": components["schemas"]["Body_upload_api_documents_post"];
             };
@@ -2358,7 +3197,10 @@ export interface operations {
     };
     get_file_api_documents__document_id__file_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Photo uploads: page number */
+                page?: number;
+            };
             header?: {
                 Authorization?: string;
                 "X-Subject-Id"?: string | null;
@@ -2379,6 +3221,44 @@ export interface operations {
                 };
                 content: {
                     "application/pdf": unknown;
+                    "image/jpeg": unknown;
+                    "image/png": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_transcript_api_documents__document_id__transcript_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentTranscript"];
                 };
             };
             /** @description Validation Error */

@@ -20,6 +20,7 @@ SCOPE_DE = {
     "manage_appointments": "Termine verwalten",
     "view_health_prevention": "Vorsorge- und Gesundheitsdaten einsehen",
     "manage_case": "Fall verwalten",
+    "manage_situation": "Lebenslage",
 }
 
 STATUS_DE = {
@@ -327,6 +328,100 @@ TOOLS: list[Tool] = [
          query=lambda a, c: {k: a[k] for k in ("topic", "zip") if a.get(k)},
          compact=lambda d: [_compact_office(o) for o in d[:4]],
          summary=lambda a, d: f"{len(d)} zuständige Stelle(n) für „{a.get('topic')}“"),
+    Tool("get_situation", "Lebenslage der vertretenen Person: aktuelle/geplante Episoden (Krankenhaus, Reha, Therapie, "
+         "zu Hause …), Vorschläge aus Dokumenten, Folgen (Meldepflichten, Fakten, Fall-Schritte).", {}, [], "GET",
+         lambda a, c: "/api/situation",
+         compact=lambda d: {"summary": d.get("summary_de"), "facts": d.get("facts"),
+                            "current": [_compact_episode(e) for e in d.get("current", [])],
+                            "upcoming": [_compact_episode(e) for e in d.get("upcoming", [])],
+                            "suggestions": [_compact_episode(e) for e in d.get("suggestions", [])],
+                            "effects": [{k: x.get(k) for k in ("kind", "title_de", "due_date")} for x in d.get("effects", [])][:8]},
+         summary=lambda a, d: f"Lebenslage: {d.get('summary_de') or 'keine Einträge'}"),
+    Tool("add_episode", "Trägt eine Episode der Lebenslage ein, die die Person selbst nennt (z. B. „ab Montag auf Reha“). "
+         "Datum als ISO, unbekanntes weglassen.",
+         {"type": _s("hospital | rehab_inpatient | rehab_outpatient | therapy | home_care | nursing_home | sick_leave | cure"),
+          "subtype": _s("optional, bei therapy: strahlentherapie | chemotherapie | physiotherapie | dialyse | sonstige"),
+          "start": _s("ISO-Datum, optional"), "end": _s("ISO-Datum, optional"),
+          "end_estimate_de": _s("optional, z. B. Mitte November"), "institution": _s("optional")},
+         ["type"], "POST", lambda a, c: "/api/situation/episodes",
+         body=lambda a, c: {k: a.get(k) for k in ("type", "subtype", "start", "end", "end_estimate_de", "institution")
+                            if a.get(k) not in (None, "")},
+         compact=lambda d: _compact_episode(d), summary=lambda a, d: f"Lebenslage ergänzt: {d.get('title_de')}"),
+    Tool("update_episode", "Ändert eine Episode (z. B. Ende eintragen, wenn die Person sagt, der Aufenthalt ist vorbei).",
+         {"episode_id": _s("Episode"), "start": _s("optional"), "end": _s("optional"), "institution": _s("optional"),
+          "status": _s("optional: ended")},
+         ["episode_id"], "PATCH", lambda a, c: f"/api/situation/episodes/{a['episode_id']}",
+         body=lambda a, c: {k: a.get(k) for k in ("start", "end", "institution", "status") if a.get(k) not in (None, "")},
+         compact=lambda d: _compact_episode(d), summary=lambda a, d: f"Lebenslage geändert: {d.get('title_de')}"),
+    Tool("suggest_situation_from_document", "Schlägt Episoden aus einem analysierten Dokument vor (z. B. Spitalsaufenthalt "
+         "laut Entlassungsbrief). Vorschläge gelten erst nach Zustimmung der Person.",
+         {"document_id": _s("Dokument")}, ["document_id"], "POST",
+         lambda a, c: f"/api/situation/suggestions/from-document/{a['document_id']}",
+         compact=lambda d: [_compact_episode(e) for e in d], summary=lambda a, d: f"{len(d)} Vorschlag/Vorschläge zur Lebenslage"),
+    Tool("confirm_situation_suggestion", "Übernimmt einen Vorschlag in die Lebenslage – NUR wenn die Person in ihrer "
+         "letzten Nachricht ausdrücklich zugestimmt hat („ja, übernehmen“).",
+         {"episode_id": _s("Vorschlag")}, ["episode_id"], "POST",
+         lambda a, c: f"/api/situation/suggestions/{a['episode_id']}/confirm",
+         compact=lambda d: _compact_episode(d), summary=lambda a, d: f"Vorschlag übernommen: {d.get('title_de')}"),
+    Tool("match_bundle", "Bündel für eine Lebenssituation (z. B. „Mutter braucht Hilfe“, „etwas für die Gesundheit tun“, "
+         "„Kind“, „nach dem Spital“): passende Leistungen, Angebote, Vorsorge, Termine und gezielte Rückfragen. "
+         "Nutze das bei allgemeinen Anliegen ohne konkrete Leistung.",
+         {"text": _s("Anliegen in den Worten der Person"), "situation": _s("optional: Bündel-ID"),
+          "facts": {"type": "object", "description": "bekannte Fakten (wie bei check_benefits)"},
+          "document_ids": {"type": "array", "items": {"type": "string"}}},
+         [], "POST", lambda a, c: "/api/benefits/bundles/match",
+         body=lambda a, c: {"text": a.get("text"), "situation": a.get("situation"), "facts": a.get("facts") or {},
+                            "document_ids": a.get("document_ids") or []},
+         compact=lambda d: d and {"id": d.get("id"), "title_de": d.get("title_de"), "next_step_de": d.get("next_step_de"),
+                                  "questions_de": d.get("questions_de"),
+                                  "items": [{k: i.get(k) for k in ("kind", "ref_id", "title_de", "why_de", "status")}
+                                            for i in d.get("items", [])[:10]]},
+         summary=lambda a, d: f"Bündel „{(d or {}).get('title_de', '–')}“ mit {len((d or {}).get('items', []))} Punkt(en)"),
+    Tool("get_care_team", "Behandlungsteam der vertretenen Person (Hausärztin, Fachambulanz) mit Adresse und provider_id.",
+         {}, [], "GET", lambda a, c: "/api/identity/care-team",
+         compact=lambda d: [{k: m.get(k) for k in ("role_de", "name", "provider_id", "address", "phone")}
+                            for m in d.get("members", [])],
+         summary=lambda a, d: "Behandlungsteam: " + (", ".join(f"{m['role_de']}: {m['name']}" for m in d.get("members", []))
+                                                    or "keine Einträge")),
+    Tool("set_care_team", "Ändert z. B. die Hausärztin, wenn die Person das ausdrücklich sagt (Ordination per provider_id "
+         "aus search_slots/Behandlungsteam).", {"role": _s("hausarzt | kinderarzt | ambulanz"), "provider_id": _s("Ordination")},
+         ["provider_id"], "PUT", lambda a, c: "/api/identity/care-team",
+         body=lambda a, c: {"role": a.get("role") or "hausarzt", "provider_id": a["provider_id"]},
+         summary=lambda a, d: "Behandlungsteam aktualisiert"),
+    Tool("search_slots", "Freie Termine suchen (Demo-Termine). Frage vorher nur, was fehlt: Anlass, Nähe, vormittags/"
+         "nachmittags – nutze gespeicherte Präferenzen, wenn vorhanden.",
+         {"topic": _s("Anlass, z. B. hausarzt_kontrolle, vorsorgeuntersuchung, pflegeberatung, influenza, reha_onko"),
+          "kind": _s("optional: gp | specialist | health_center | counselling | vaccination | rehab"),
+          "specialty": _s("optional, z. B. Gastroenterologie"), "zip": _s("optional PLZ (Standard: Wohnadresse)"),
+          "provider_id": _s("optional: nur bei dieser Ordination, z. B. der eigenen Hausärztin aus dem Behandlungsteam"),
+          "near": {"type": "boolean"}, "daypart": _s("morning | afternoon | any"),
+          "from_date": _s("optional ISO-Datum"), "accessible_only": {"type": "boolean"}},
+         [], "POST", lambda a, c: "/api/appointments/slots/search",
+         body=lambda a, c: {k: v for k, v in a.items() if v not in (None, "")} | {"limit": 5},
+         compact=lambda d: [{"slot_id": x["id"], "start": x["start"], "provider": x["provider"]["name"],
+                             "address": f"{x['provider']['address']}, {x['provider']['zip']}",
+                             "distance": x.get("distance_hint_de"), "demo": x.get("demo")} for x in d[:5]],
+         summary=lambda a, d: f"{len(d)} freie(r) Termin(e) gefunden"),
+    Tool("book_appointment", "Bucht einen gefundenen Demo-Termin, nachdem die Person ihn ausdrücklich gewählt hat.",
+         {"slot_id": _s("aus search_slots"), "purpose_de": _s("Anlass in den Worten der Person (nichts Medizinisches "
+                                                             "hinzufügen)"),
+          "case_id": _s("optional"), "step_id": _s("optional"),
+          "bring_documents_de": {"type": "array", "items": {"type": "string"}}},
+         ["slot_id", "purpose_de"], "POST", lambda a, c: "/api/appointments",
+         body=lambda a, c: {k: a.get(k) for k in ("slot_id", "purpose_de", "case_id", "step_id", "bring_documents_de")
+                            if a.get(k) is not None},
+         compact=lambda d: {"appointment_id": d.get("id"), "start": d["slot"]["start"],
+                            "provider": d["slot"]["provider"]["name"], "bring": d.get("bring_documents_de"),
+                            "ics_url": d.get("ics_url"), "notice": d.get("notice_de")},
+         summary=lambda a, d: f"Termin gebucht: {d['slot']['start'][:16].replace('T', ' ')} – {d['slot']['provider']['name']}"),
+    Tool("list_appointments", "Gebuchte Termine der vertretenen Person.", {}, [], "GET", lambda a, c: "/api/appointments",
+         compact=lambda d: [{"appointment_id": x["id"], "start": x["slot"]["start"], "provider": x["slot"]["provider"]["name"],
+                             "status": x["status"], "purpose": x["purpose_de"]} for x in d],
+         summary=lambda a, d: f"{len(d)} Termin(e)"),
+    Tool("cancel_appointment", "Storniert einen Termin (nur auf ausdrücklichen Wunsch).",
+         {"appointment_id": _s("Termin-ID")}, ["appointment_id"], "POST",
+         lambda a, c: f"/api/appointments/{a['appointment_id']}/cancel",
+         summary=lambda a, d: "Termin storniert"),
     Tool("search_medication", "Erstattungskodex: Box, Preis, Bewilligungspflicht (nur administrativ, keine Therapie).",
          {"name": _s("Produktname")}, ["name"], "GET", lambda a, c: "/api/medications/search",
          query=lambda a, c: {"q": a.get("name", ""), "limit": 5}, compact=lambda d: [_compact_med(m) for m in d[:5]],
@@ -386,6 +481,9 @@ class ToolClient:
         return defs
 
     async def run(self, name: str, args: dict) -> ToolOutcome:
+        if name == "confirm_situation_suggestion" and not self.memo.get("_user_consented"):
+            return ToolOutcome(name, args, 422, error_de="Vorschläge übernehme ich erst nach Ihrer ausdrücklichen "
+                               "Zustimmung („Ja, übernehmen“).", summary_de="Nicht übernommen – Zustimmung fehlt")
         if name == "set_form_fields" and args.get("session_id") and isinstance(args.get("values"), dict):
             defs = await self._field_defs(args["session_id"])
             values = normalize_form_values(args["values"], defs)
@@ -444,6 +542,11 @@ class ToolClient:
             summary = "erledigt"
         return ToolOutcome(tool.name, args, st, data=tool.compact(raw), summary_de=summary,
                            sources=collect_sources(raw)[:12])
+
+
+def _compact_episode(e: dict) -> dict:
+    return {k: e.get(k) for k in ("id", "type", "subtype", "title_de", "start", "end", "end_estimate_de", "institution",
+                                  "status")} | {"source": (e.get("source") or {}).get("label")}
 
 
 def _detail(resp: httpx.Response) -> str:

@@ -42,6 +42,7 @@ class SlotSearch(BaseModel):
     topic: str | None = None          # what for: e.g. "vorsorgeuntersuchung", "pflegeberatung", "hausarzt_kontrolle"
     kind: ProviderKind | None = None
     specialty: str | None = None
+    provider_id: str | None = None    # only this provider (e.g. the person's own Hausärztin) – more slots, no topic filter
     zip: str | None = None            # default: subject's address
     near: bool = True                 # prefer same/neighbouring district
     daypart: Daypart = Daypart.any

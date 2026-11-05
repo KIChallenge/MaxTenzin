@@ -41,7 +41,22 @@ def _full_name(p) -> str:
     return f"{p.first_name} {p.last_name}"
 
 
-def system_prompt(ctx: Context, memo: dict, plain: bool, lang: str = "de") -> str:
+DETAIL_DE = {"short": "DETAILTIEFE KURZ: höchstens 4 Sätze oder 4 Aufzählungspunkte, nur das Nötigste.",
+             "normal": "Detailtiefe normal.",
+             "detailed": "DETAILTIEFE AUSFÜHRLICH: erkläre Hintergründe, Voraussetzungen und Schritte ausführlicher."}
+
+
+def _prefs_text(prefs: dict) -> str:
+    if not prefs:
+        return "keine gespeichert"
+    team = "; ".join(prefs.get("_care_team") or []) or "unbekannt"
+    daypart = {"morning": "vormittags", "afternoon": "nachmittags"}.get(prefs.get("daypart"), "keine Tageszeit-Präferenz")
+    return (f"Sprache {prefs.get('language', 'de')}, Detailtiefe {prefs.get('detail', 'normal')}, Termine {daypart}, "
+            f"{'möglichst in der Nähe' if prefs.get('near_home', True) else 'Entfernung egal'}"
+            f"{', barrierefrei' if prefs.get('accessible') else ''}. Behandlungsteam: {team}")
+
+
+def system_prompt(ctx: Context, memo: dict, plain: bool, lang: str = "de", prefs: dict | None = None) -> str:
     s = ctx.subject
     relation = ""
     if ctx.actor.id != s.id:
@@ -57,7 +72,8 @@ def system_prompt(ctx: Context, memo: dict, plain: bool, lang: str = "de") -> st
     return _prompt_template().format(
         plain_language=plain_txt, reply_language=LANG_NAMES.get(lang, "Deutsch"), today=date.today().isoformat(), actor_name=_full_name(ctx.actor),
         subject_name=_full_name(s), subject_birth=s.birth_date, subject_zip=s.address.zip, subject_insurer=s.insurer,
-        relation=relation, scopes=scopes, documents=doc_txt, memo=state.memo_text(memo))
+        relation=relation, scopes=scopes, documents=doc_txt, memo=state.memo_text(memo),
+        preferences=_prefs_text(prefs or {}), detail=DETAIL_DE.get((prefs or {}).get("detail", "normal"), ""))
 
 
 def _trace(o: ToolOutcome) -> ToolTrace:
@@ -97,7 +113,16 @@ def _assistant_msg(msg) -> dict:
 async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, plain: bool, lang: str,
                    outcomes: list[ToolOutcome]) -> str:
     memo = conv["memo"]
-    messages = [{"role": "system", "content": system_prompt(ctx, memo, plain, lang)}, *state.history_messages(conv),
+    r = await client.fetch("/api/identity/preferences", "context:preferences")
+    prefs = r.json() if r.status_code == 200 else {}
+    plain = plain or bool(prefs.get("plain_language"))
+    ct = await client.fetch("/api/identity/care-team", "context:care_team")
+    if ct.status_code == 200:
+        prefs = {**prefs, "_care_team": [f"{m['role_de']}: {m['name']} (provider_id {m['provider_id']}, {m['address']})"
+                                         for m in ct.json().get("members", [])]}
+    if lang == "de" and prefs.get("language") and prefs["language"] != "de":
+        lang = prefs["language"]
+    messages = [{"role": "system", "content": system_prompt(ctx, memo, plain, lang, prefs)}, *state.history_messages(conv),
                 {"role": "user", "content": message}]
     reply = await _tool_loop(client, memo, messages, outcomes, MAX_TOOL_ROUNDS)
 
@@ -204,6 +229,8 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
     mode = "live" if get_llm().live else "scripted"
     if req.document_ids:
         memo["last_document_id"] = req.document_ids[0]
+    # Explicit consent in THIS message (deterministic): required to apply document-based situation suggestions.
+    memo["_user_consented"] = bool(_CONSENT_YES.search(req.message or ""))
 
     hit = guard.check_boundary(req.message)
     category = hit.category if hit else await _llm_boundary_check(req.message)
@@ -293,6 +320,9 @@ def _actions(outcomes) -> list[ChatAction]:
                                           url=f"/api/forms/sessions/{sid}/render")
         elif o.tool in ("start_form", "set_form_fields", "get_next_questions") and sid:
             acts["form"] = ChatAction(kind="open_form", label_de="Antrag im Assistenten öffnen", url=f"/forms/{sid}")
+        elif o.tool == "book_appointment" and isinstance(o.data, dict) and o.data.get("ics_url"):
+            acts["ics"] = ChatAction(kind="download_ics", label_de="Termin in den Kalender (.ics)", url=o.data["ics_url"])
+            acts["appointments"] = ChatAction(kind="open_appointments", label_de="Meine Termine", url="/termine")
         elif o.tool in ("create_case", "update_case_step"):
             acts["case"] = ChatAction(kind="open_case", label_de="Mein Fall öffnen", url="/fall")
     return list(acts.values())
@@ -343,6 +373,20 @@ async def _form_write_reply(client: ToolClient, writes: list[ToolOutcome], model
     return "\n".join(lines) + ("\n\n" + rest if rest else "")
 
 
+_TOOL_DE = {"search_slots": "Terminsuche", "book_appointment": "Terminbuchung", "check_benefits": "Anspruchsprüfung",
+            "analyze_document": "Dokumentanalyse", "get_next_questions": "Antragsentwurf", "set_form_fields": "Antragsentwurf",
+            "start_form": "Antragsentwurf", "render_form": "PDF-Entwurf", "get_prevention": "Vorsorge-Hinweise",
+            "match_bundle": "Lebenssituation", "get_situation": "Lebenslage", "find_office": "Zuständige Stellen",
+            "search_law": "Rechtsgrundlagen", "get_value": "Werte-Tabelle", "get_benefit": "Leistungsbeschreibung",
+            "list_appointments": "Termine", "preview_form": "Antragsentwurf", "list_documents": "Dokumente"}
+_TOOL_RE = re.compile(r"`?\b(" + "|".join(_TOOL_DE) + r")\b`?")
+
+
 def _sanitize(reply: str) -> str:
-    """Never show internal ids (session UUIDs) to the person."""
-    return _UUID.sub("", reply)
+    """Never show internal ids (session UUIDs) or internal tool names to the person."""
+    out = _TOOL_RE.sub(lambda m: _TOOL_DE[m.group(1)], _UUID.sub("", reply))
+    out = re.sub(r"\n*\**Quellen:?\**:?\s*(keine|keine angegeben|keine Tool-Ergebnisse)[^\n]*", "", out, flags=re.IGNORECASE)
+    return out.strip()
+
+
+_CONSENT_YES = re.compile(r"\b(ja|jawohl|passt|stimmt|einverstanden|übernehmen|übernimm|bestätige|yes|evet)\b", re.IGNORECASE)

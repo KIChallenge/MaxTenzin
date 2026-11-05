@@ -443,13 +443,96 @@
         }
       }
     },
-    "/api/documents": {
-      "post": {
+    "/api/identity/preferences": {
+      "get": {
         "tags": [
-          "documents"
+          "identity"
         ],
-        "summary": "Upload a PDF for the current subject",
-        "operationId": "upload_api_documents_post",
+        "summary": "Preferences of the acting person",
+        "operationId": "get_preferences_api_identity_preferences_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Preferences"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "identity"
+        ],
+        "summary": "Save preferences (language, detail, daypart …)",
+        "operationId": "put_preferences_api_identity_preferences_put",
         "parameters": [
           {
             "name": "Authorization",
@@ -506,6 +589,938 @@
         ],
         "requestBody": {
           "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Preferences"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Preferences"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/care-team": {
+      "get": {
+        "tags": [
+          "identity"
+        ],
+        "summary": "Behandlungsteam (Hausärztin u. a.) of the subject",
+        "operationId": "care_team_api_identity_care_team_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareTeam"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "identity"
+        ],
+        "summary": "Set/change e.g. the Hausärztin (person's own choice)",
+        "operationId": "set_care_team_api_identity_care_team_put",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCareTeamMember"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareTeam"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/situation": {
+      "get": {
+        "tags": [
+          "situation"
+        ],
+        "summary": "Current Lebenslage: episodes, suggestions, effects",
+        "operationId": "overview_api_situation_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SituationOverview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/situation/episodes": {
+      "post": {
+        "tags": [
+          "situation"
+        ],
+        "summary": "Add an episode (set by the person/representative)",
+        "operationId": "add_api_situation_episodes_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EpisodeCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Episode"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/situation/episodes/{episode_id}": {
+      "patch": {
+        "tags": [
+          "situation"
+        ],
+        "summary": "Change dates/status (e.g. end an episode)",
+        "operationId": "update_api_situation_episodes__episode_id__patch",
+        "parameters": [
+          {
+            "name": "episode_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Episode Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EpisodeUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Episode"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "situation"
+        ],
+        "summary": "Remove an episode entered by mistake",
+        "operationId": "delete_api_situation_episodes__episode_id__delete",
+        "parameters": [
+          {
+            "name": "episode_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Episode Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/situation/suggestions/from-document/{document_id}": {
+      "post": {
+        "tags": [
+          "situation"
+        ],
+        "summary": "Suggest episodes from an analysed document (NOT applied until confirmed)",
+        "operationId": "suggest_api_situation_suggestions_from_document__document_id__post",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Episode"
+                  },
+                  "title": "Response Suggest Api Situation Suggestions From Document  Document Id  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/situation/suggestions/{episode_id}/confirm": {
+      "post": {
+        "tags": [
+          "situation"
+        ],
+        "summary": "Consent: apply a suggestion",
+        "operationId": "confirm_api_situation_suggestions__episode_id__confirm_post",
+        "parameters": [
+          {
+            "name": "episode_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Episode Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Episode"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/situation/suggestions/{episode_id}/reject": {
+      "post": {
+        "tags": [
+          "situation"
+        ],
+        "summary": "Decline a suggestion",
+        "operationId": "reject_api_situation_suggestions__episode_id__reject_post",
+        "parameters": [
+          {
+            "name": "episode_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Episode Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Episode"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/documents": {
+      "post": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "Upload a PDF or photos (JPG/PNG) of a document for the current subject",
+        "operationId": "upload_api_documents_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "requestBody": {
           "content": {
             "multipart/form-data": {
               "schema": {
@@ -818,8 +1833,113 @@
         "tags": [
           "documents"
         ],
-        "summary": "Download the uploaded PDF",
+        "summary": "Download the uploaded PDF (or photo page ?page=N)",
         "operationId": "get_file_api_documents__document_id__file_get",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Photo uploads: page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Photo uploads: page number"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/pdf": {},
+              "image/jpeg": {},
+              "image/png": {}
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/documents/{document_id}/transcript": {
+      "get": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "Text read from the document, per page (photo transcription or PDF text layer)",
+        "operationId": "get_transcript_api_documents__document_id__transcript_get",
         "parameters": [
           {
             "name": "document_id",
@@ -887,7 +2007,11 @@
           "200": {
             "description": "Successful Response",
             "content": {
-              "application/pdf": {}
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentTranscript"
+                }
+              }
             }
           },
           "422": {
@@ -5190,15 +6314,36 @@
       "Body_upload_api_documents_post": {
         "properties": {
           "file": {
-            "type": "string",
-            "contentMediaType": "application/octet-stream",
-            "title": "File"
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File",
+            "description": "One PDF or one photo (JPG/PNG)"
+          },
+          "files": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "contentMediaType": "application/octet-stream"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Files",
+            "description": "Several photos (JPG/PNG), one per page, in page order"
           }
         },
         "type": "object",
-        "required": [
-          "file"
-        ],
         "title": "Body_upload_api_documents_post"
       },
       "BookingRequest": {
@@ -5384,6 +6529,92 @@
         },
         "type": "object",
         "title": "BundleRequest"
+      },
+      "CareTeam": {
+        "properties": {
+          "subject_id": {
+            "type": "string",
+            "title": "Subject Id"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/CareTeamMember"
+            },
+            "type": "array",
+            "title": "Members",
+            "default": []
+          },
+          "notice_de": {
+            "type": "string",
+            "title": "Notice De",
+            "default": "In Österreich gibt es keine formale Hausarzt-Registrierung. Im Echtbetrieb stammt diese Angabe aus e-card-Konsultationen (zuletzt besucht) oder aus Ihrer eigenen Angabe – Sie können sie jederzeit ändern."
+          }
+        },
+        "type": "object",
+        "required": [
+          "subject_id"
+        ],
+        "title": "CareTeam"
+      },
+      "CareTeamMember": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "role_de": {
+            "type": "string",
+            "title": "Role De"
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address",
+            "default": ""
+          },
+          "phone": {
+            "type": "string",
+            "title": "Phone",
+            "default": ""
+          },
+          "since": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Since"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceRef"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "role_de",
+          "name",
+          "source"
+        ],
+        "title": "CareTeamMember",
+        "description": "A regular contact in the person's care (Hausärztin, Fachambulanz …), linked to the appointments directory."
       },
       "Case": {
         "properties": {
@@ -5876,6 +7107,15 @@
         ],
         "title": "Delegation"
       },
+      "DetailLevel": {
+        "type": "string",
+        "enum": [
+          "short",
+          "normal",
+          "detailed"
+        ],
+        "title": "DetailLevel"
+      },
       "DocumentAnalysis": {
         "properties": {
           "document_id": {
@@ -6010,6 +7250,43 @@
         ],
         "title": "DocumentSummary"
       },
+      "DocumentTranscript": {
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "title": "Document Id"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode"
+          },
+          "pages": {
+            "items": {
+              "$ref": "#/components/schemas/TranscriptPage"
+            },
+            "type": "array",
+            "title": "Pages"
+          },
+          "notice_de": {
+            "type": "string",
+            "title": "Notice De",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "document_id",
+          "source",
+          "mode",
+          "pages"
+        ],
+        "title": "DocumentTranscript",
+        "description": "What was read from the document, per page — so the user can check the basis of every quote."
+      },
       "DocumentType": {
         "type": "string",
         "enum": [
@@ -6019,6 +7296,99 @@
           "other"
         ],
         "title": "DocumentType"
+      },
+      "Effect": {
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/EffectKind"
+          },
+          "episode_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Episode Id"
+          },
+          "title_de": {
+            "type": "string",
+            "title": "Title De"
+          },
+          "detail_de": {
+            "type": "string",
+            "title": "Detail De",
+            "default": ""
+          },
+          "due_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due Date"
+          },
+          "key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "title_de"
+        ],
+        "title": "Effect"
+      },
+      "EffectKind": {
+        "type": "string",
+        "enum": [
+          "reminder",
+          "fact",
+          "prefill",
+          "case_step",
+          "hint"
+        ],
+        "title": "EffectKind"
       },
       "EligibilityRequest": {
         "properties": {
@@ -6127,6 +7497,319 @@
           "not_applicable"
         ],
         "title": "EligibilityStatus"
+      },
+      "Episode": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "subject_id": {
+            "type": "string",
+            "title": "Subject Id"
+          },
+          "type": {
+            "$ref": "#/components/schemas/EpisodeType"
+          },
+          "subtype": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subtype"
+          },
+          "title_de": {
+            "type": "string",
+            "title": "Title De"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "end_estimate_de": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Estimate De"
+          },
+          "institution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EpisodeStatus"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceRef"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "confirmed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmed By"
+          },
+          "confirmed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmed At"
+          },
+          "note_de": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note De"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "subject_id",
+          "type",
+          "title_de",
+          "status",
+          "source",
+          "created_by"
+        ],
+        "title": "Episode"
+      },
+      "EpisodeCreate": {
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/EpisodeType"
+          },
+          "subtype": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subtype"
+          },
+          "title_de": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title De"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "end_estimate_de": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Estimate De"
+          },
+          "institution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution"
+          },
+          "note_de": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note De"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "title": "EpisodeCreate"
+      },
+      "EpisodeStatus": {
+        "type": "string",
+        "enum": [
+          "suggested",
+          "planned",
+          "active",
+          "ended",
+          "rejected"
+        ],
+        "title": "EpisodeStatus"
+      },
+      "EpisodeType": {
+        "type": "string",
+        "enum": [
+          "hospital",
+          "rehab_inpatient",
+          "rehab_outpatient",
+          "therapy",
+          "home_care",
+          "nursing_home",
+          "sick_leave",
+          "cure"
+        ],
+        "title": "EpisodeType"
+      },
+      "EpisodeUpdate": {
+        "properties": {
+          "start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "end_estimate_de": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Estimate De"
+          },
+          "institution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution"
+          },
+          "note_de": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note De"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EpisodeStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "EpisodeUpdate"
       },
       "ExtractedPerson": {
         "properties": {
@@ -6956,6 +8639,47 @@
         ],
         "title": "Person"
       },
+      "Preferences": {
+        "properties": {
+          "language": {
+            "type": "string",
+            "title": "Language",
+            "default": "de"
+          },
+          "plain_language": {
+            "type": "boolean",
+            "title": "Plain Language",
+            "default": false
+          },
+          "detail": {
+            "$ref": "#/components/schemas/DetailLevel",
+            "default": "normal"
+          },
+          "daypart": {
+            "type": "string",
+            "title": "Daypart",
+            "default": "any"
+          },
+          "near_home": {
+            "type": "boolean",
+            "title": "Near Home",
+            "default": true
+          },
+          "accessible": {
+            "type": "boolean",
+            "title": "Accessible",
+            "default": false
+          },
+          "voice": {
+            "type": "boolean",
+            "title": "Voice",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "Preferences",
+        "description": "Personal communication & organisation preferences (per acting person). Used by Lotsi and the cockpit."
+      },
       "PreventionItem": {
         "properties": {
           "id": {
@@ -7308,7 +9032,8 @@
           "prepare_applications",
           "manage_appointments",
           "view_health_prevention",
-          "manage_case"
+          "manage_case",
+          "manage_situation"
         ],
         "title": "Scope"
       },
@@ -7349,6 +9074,94 @@
         ],
         "title": "Session",
         "description": "Who is logged in (actor) and for whom they currently act (subject)."
+      },
+      "SetCareTeamMember": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "default": "hausarzt"
+          },
+          "provider_id": {
+            "type": "string",
+            "title": "Provider Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider_id"
+        ],
+        "title": "SetCareTeamMember"
+      },
+      "SituationOverview": {
+        "properties": {
+          "subject_id": {
+            "type": "string",
+            "title": "Subject Id"
+          },
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "current": {
+            "items": {
+              "$ref": "#/components/schemas/Episode"
+            },
+            "type": "array",
+            "title": "Current",
+            "default": []
+          },
+          "upcoming": {
+            "items": {
+              "$ref": "#/components/schemas/Episode"
+            },
+            "type": "array",
+            "title": "Upcoming",
+            "default": []
+          },
+          "past": {
+            "items": {
+              "$ref": "#/components/schemas/Episode"
+            },
+            "type": "array",
+            "title": "Past",
+            "default": []
+          },
+          "suggestions": {
+            "items": {
+              "$ref": "#/components/schemas/Episode"
+            },
+            "type": "array",
+            "title": "Suggestions",
+            "default": []
+          },
+          "effects": {
+            "items": {
+              "$ref": "#/components/schemas/Effect"
+            },
+            "type": "array",
+            "title": "Effects",
+            "default": []
+          },
+          "facts": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Facts",
+            "description": "Eligibility facts derived from confirmed episodes",
+            "default": {}
+          },
+          "summary_de": {
+            "type": "string",
+            "title": "Summary De",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "subject_id",
+          "as_of"
+        ],
+        "title": "SituationOverview"
       },
       "Slot": {
         "properties": {
@@ -7420,6 +9233,17 @@
               }
             ],
             "title": "Specialty"
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Id"
           },
           "zip": {
             "anyOf": [
@@ -7612,6 +9436,34 @@
           "summary_de"
         ],
         "title": "ToolTrace"
+      },
+      "TranscriptPage": {
+        "properties": {
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "unreadable": {
+            "type": "integer",
+            "title": "Unreadable",
+            "default": 0
+          },
+          "low_resolution": {
+            "type": "boolean",
+            "title": "Low Resolution",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "page",
+          "text"
+        ],
+        "title": "TranscriptPage"
       },
       "VaccinationEntry": {
         "properties": {

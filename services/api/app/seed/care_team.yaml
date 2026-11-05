@@ -1,0 +1,11 @@
+# Demo care teams (Behandlungsteam). Real system: derived from e-card consultations or the person's own entry.
+anna:
+  - {role: hausarzt, role_de: Hausärztin/Hausarzt, provider_id: demo-gp-1030-muster, since: "2019-04-01",
+     note: "Im Entlassungsbrief als weiterbetreuende Hausärztin genannt (S. 1: Weiterbetreuung Hausärztin)"}
+  - {role: ambulanz, role_de: Onkologische Nachsorge, provider_id: demo-onko-1030, since: "2026-09-15",
+     note: "Im Entlassungsbrief als weiterbetreuende onkologische Ambulanz genannt (S. 1)"}
+stefan:
+  - {role: hausarzt, role_de: Hausärztin/Hausarzt, provider_id: demo-gp-1120-vorlage, since: "2021-02-10"}
+lena:
+  - {role: kinderarzt, role_de: Kinderärztin/Kinderarzt, provider_id: demo-gp-1120-vorlage, since: "2024-09-20",
+     note: "Demo: Allgemeinmedizin, betreut die Familie"}

@@ -82,6 +82,13 @@ def update_memo(memo: dict, o: ToolOutcome) -> None:
         memo["open_questions"] = [{"field_id": q["field_id"], "label_de": q["label_de"], "type": q["type"],
                                    "ask_hint_de": q.get("ask_hint_de"), "options": q.get("options")}
                                   for q in d.get("questions", [])]
+    elif o.tool == "search_slots" and isinstance(d, list):
+        # Keep the offered slots with their exact ids: "den ersten" in the next turn must map to a real slot.
+        memo["offered_slots"] = [{"nr": i + 1, "slot_id": x.get("slot_id"), "start": x.get("start"),
+                                  "provider": x.get("provider")} for i, x in enumerate(d[:5])]
+    elif o.tool == "book_appointment":
+        memo["last_appointment"] = {k: d.get(k) for k in ("appointment_id", "start", "provider")}
+        memo.pop("offered_slots", None)
     elif o.tool == "render_form":
         memo["form_rendered"] = True
         memo["draft_pdf_url"] = d.get("draft_pdf_url")

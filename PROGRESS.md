@@ -22,6 +22,10 @@ Single source of truth for all sessions. Update your row at start and at Definit
 | WS-W | web cockpit | human session | ws/W-web | review → 2nd merge requested (UI pass, settings, icons) | H11 | — |
 | WS-A | agent orchestrator + guardrails + evals | bg agent | ws/A-agent | merged | H7 | evals 28/28 live (REPORT.md) |
 | WS-C | cases + notifications | integrator | main | merged | H3 | — |
+| WS-T | appointments (providers, slots by preferences, booking, ics) | bg agent | ws/T-appointments | merged | — | providers outside Wien not covered |
+| WS-V | photo upload (vision transcription → same pipeline) | bg agent | ws/V-vision | merged | — | quotes verified against model transcription (notice shown) |
+| WS-K2 | catalog: offers (Gesundheitsförderung), Heilbehelfe, Angehörige, Sozialhilfe, bundles, family history | bg agent | ws/K2-catalog | doing | — | — |
+| WS-S | Lebenslage (episodes, suggestions w/ consent, effects) | bg agent | ws/S-situation | doing | — | — |
 
 ## Task checklists
 - WS-W: login, header/subject switch + scopes, cockpit + inbox, Dokumente, Leistungen, Antrag-Wizard (2 s poll, PDF), Chat panel, Mein Fall, Vorsorge, Transparenz, Vertretung, 403 handling, Stellen/Medikamente/Recht — build + lint green, screenshots in `documentation/screenshots/`.
@@ -59,6 +63,8 @@ See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished it
 - (integrator, done — WS-W open items) Lotsi persona in prompt/templates; consent: choice the person asks for is entered, consent-confirmation checkboxes never ticked by the agent (prompt + deterministic 422 backstop) + reply asks to confirm; `FormField.when` (FieldCondition) in contract; honest prefill source labels (ID Austria = name/birth; ZMR = address; e-card = SVNR/insurer; rest "Profilangaben – bitte prüfen"); attachment "Kopie des Entlassungsbefunds"; eligibility skips unanalysed/foreign documents (rule id `benefits.document_skipped:<id>` in audit) instead of 404; live extraction cached per (prompt version, file hash) → same file = same analysis (`extraction_mode=live-cached`). PAL 080 §5: "ja" + KH bis prefilled from the letter, KH von/Spital asked (letter has no admission date / hospital name). Live evals 28/28.
 
 - (integrator, done — WS-W consent bug) After successful set_form_fields the reply starts with a deterministic block from the tool result + form definition: "Eingetragen im Antrag: <Label> = <Wert>", "Noch offen – bitte im Antrag selbst ankreuzen: <Zustimmung>", open required count; model sentences claiming a consent was set are removed; internal session UUIDs are stripped from all replies. PAL 080 "Pflegeberatung" relabelled (no "Zustimmung" in the choice label → model no longer refuses). Live 4/4, evals 28/28.
+
+- (integrator, done) Lotsi: offered slots kept in memo (exact slot ids → "den ersten" books the right slot), calendar + "Meine Termine" chat actions, internal tool names translated / empty "Quellen" lines stripped; Lebenslage tools with deterministic consent backstop. Live: appointment dialogue from the use case (Anlass → Nähe → vormittags → buchen) works; photo upload (2 JPG pages) → 8 verified recommendations + Entlassungsdatum.
 
 ## Decisions log
 - D1 Modular monolith (FastAPI routers per service) instead of microservices — same boundaries, 1/10 ops cost.

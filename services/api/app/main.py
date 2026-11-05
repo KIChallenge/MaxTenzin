@@ -18,6 +18,7 @@ from app.services.legal.router import router as legal
 from app.services.medications.router import router as medications
 from app.services.notifications.router import router as notifications
 from app.services.prevention.router import router as prevention
+from app.services.situation.router import router as situation
 from app.services.values.router import router as values
 
 app = FastAPI(
@@ -29,7 +30,7 @@ app.add_middleware(AuditMiddleware)
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:3000"], allow_credentials=True,
                    allow_methods=["*"], allow_headers=["*"])
 
-for r in (identity, documents, benefits, prevention, forms, cases, appointments, notifications, directory, medications, legal, values, audit, agent):
+for r in (identity, situation, documents, benefits, prevention, forms, cases, appointments, notifications, directory, medications, legal, values, audit, agent):
     app.include_router(r)
 
 
