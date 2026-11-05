@@ -3,9 +3,12 @@
 // Debounced (250 ms, ≥ 3 chars): every lookup is a real, audited API call.
 import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Search } from "lucide-react";
 import type { LegalHit, Medication } from "@/lib/types";
 
-type Option = { key: string; label: string; sub: string; href: string };
+type Option = { key: string; label: string; sub: string; href: string; all?: boolean };
+
+const SEARCH_PAGE = { medications: "/medikamente", legal: "/recht" } as const;
 
 const SOURCES = {
   medications: async (q: string, signal: AbortSignal): Promise<Option[]> => {
@@ -68,7 +71,11 @@ export function Autocomplete({
       setLoading(true);
       try {
         const opts = await SOURCES[source](q, ctrl.signal);
-        setOptions(opts);
+        // First entry: show every match on the results page – picking a single product is optional.
+        setOptions([
+          { key: "__all", label: `Alle Treffer für „${q}“ anzeigen`, sub: "", href: `${SEARCH_PAGE[source]}?q=${encodeURIComponent(q)}`, all: true },
+          ...opts,
+        ]);
         setOpen(true);
         setActive(-1);
       } catch {
@@ -134,7 +141,7 @@ export function Autocomplete({
           role="listbox"
           className="absolute top-full right-0 left-0 z-30 mt-1 max-h-80 overflow-y-auto rounded-lg border border-line bg-surface shadow-lg"
         >
-          {options.length === 0 && !loading && <li className="px-3 py-2 text-muted">Keine Treffer.</li>}
+          {options.length <= 1 && !loading && <li className="px-3 py-2 text-muted">Keine einzelnen Vorschläge – „Suchen“ zeigt alle Treffer.</li>}
           {options.map((o, i) => (
             <li
               key={o.key}
@@ -146,16 +153,25 @@ export function Autocomplete({
                 choose(o);
               }}
               onMouseEnter={() => setActive(i)}
-              className={`cursor-pointer px-3 py-2 ${i === active ? "bg-accent-soft" : ""}`}
+              className={`cursor-pointer px-3 py-2 ${o.all ? "border-b border-line" : ""} ${i === active ? "bg-accent-soft" : ""}`}
             >
-              <span className="block font-semibold">{o.label}</span>
-              <span className="block text-sm text-muted">{o.sub}</span>
+              {o.all ? (
+                <span className="flex items-center gap-2 font-semibold text-accent">
+                  <Search className="h-4 w-4" aria-hidden />
+                  {o.label}
+                </span>
+              ) : (
+                <>
+                  <span className="block font-semibold">{o.label}</span>
+                  <span className="block text-sm text-muted">{o.sub}</span>
+                </>
+              )}
             </li>
           ))}
         </ul>
       )}
       <span aria-live="polite" className="sr-only">
-        {open ? `${options.length} Vorschläge` : ""}
+        {open ? `${Math.max(0, options.length - 1)} Vorschläge. Eingabetaste zeigt alle Treffer.` : ""}
       </span>
     </div>
   );

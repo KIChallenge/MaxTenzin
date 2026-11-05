@@ -28,7 +28,17 @@ export function Header({ me, represented }: { me: Session; represented: Person[]
             {canRepresent ? (
               <SubjectSwitcher
                 current={me.subject.id}
-                options={represented.map((p) => ({ id: p.id, name: p.id === me.actor.id ? "mich selbst" : fullName(p) }))}
+                options={[...represented]
+                  .sort((a, b) => (a.id === me.actor.id ? -1 : b.id === me.actor.id ? 1 : 0))
+                  .map((p) => {
+                    const relation = me.delegations?.find((d) => d.grantor_id === p.id && d.grantee_id === me.actor.id)?.relation;
+                    return {
+                      id: p.id,
+                      name: fullName(p),
+                      initials: `${p.first_name[0] ?? ""}${p.last_name[0] ?? ""}`,
+                      sub: p.id === me.actor.id ? "Sie selbst" : relation ? `Vertretung: ${relation}` : "Vertretung",
+                    };
+                  })}
               />
             ) : (
               <span className="text-muted">{fullName(me.actor)}</span>

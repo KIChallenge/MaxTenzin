@@ -1,3 +1,4 @@
+import { ChevronRight } from "lucide-react";
 import { ApiError } from "@/components/ApiError";
 import { Autocomplete } from "@/components/Autocomplete";
 import { PageTitle } from "@/components/PageTitle";
@@ -5,38 +6,131 @@ import { SourceChip } from "@/components/SourceChip";
 import { api } from "@/lib/api";
 import type { Medication } from "@/lib/types";
 
-const BOX: Record<string, string> = { G: "Grüner Bereich", Y: "Gelber Bereich", R: "Roter Bereich" };
+const BOX: Record<string, { label: string; meaning: string; cls: string }> = {
+  G: { label: "Grün", meaning: "frei verschreibbar", cls: "border-ok/30 bg-ok-soft text-ok" },
+  Y: { label: "Gelb", meaning: "Bewilligung durch den chef-/kontrollärztlichen Dienst", cls: "border-warn/30 bg-warn-soft text-warn" },
+  R: { label: "Rot", meaning: "nur in begründeten Einzelfällen, Bewilligung nötig", cls: "border-danger/30 bg-danger-soft text-danger" },
+};
+const RESTRICTION: Record<string, string> = {
+  IND: "nur für bestimmte Anwendungsgebiete",
+  RE1: "Bewilligung vor Abgabe nötig",
+  RE2: "Bewilligung oder Dokumentation nötig",
+  L: "Mengenbegrenzung",
+};
+// Shown once at the top instead of in every row (display only – the API text itself is unchanged).
+const SHARED_HINT = /\s*Fragen zu Wirkung, Einnahme oder Dosierung[^.]*\./;
+
+const eur = (v: number | null | undefined) => (v == null ? "–" : v.toLocaleString("de-AT", { style: "currency", currency: "EUR" }));
 
 export default async function MedicationsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q = "" } = await searchParams;
-  const r = q ? await api<Medication[]>(`/api/medications/search?q=${encodeURIComponent(q)}&limit=20`) : null;
+  const r = q ? await api<Medication[]>(`/api/medications/search?q=${encodeURIComponent(q)}&limit=40`) : null;
+
+  // Same product (name) → one group, packs as rows.
+  const groups = new Map<string, Medication[]>();
+  for (const m of r?.ok ? r.data : []) groups.set(m.name, [...(groups.get(m.name) ?? []), m]);
+  const boxesUsed = [...new Set((r?.ok ? r.data : []).map((m) => m.box))].filter((b) => BOX[b]);
+  const source = r?.ok ? r.data[0]?.source : undefined;
+
   return (
     <>
-      <PageTitle eyebrow="Medikamente" title="Kosten & Bewilligung">
-        Angaben laut Erstattungskodex (EKO). Keine Empfehlung zu Medikamenten oder Dosierung – fragen Sie dazu Ihre Ärztin bzw. Ihren Arzt.
+      <PageTitle title="Medikamente: Kosten & Bewilligung">
+        Angaben laut Erstattungskodex (EKO). Keine Empfehlung zu Medikamenten oder Dosierung – Fragen zu Wirkung, Einnahme oder
+        Dosierung klären Sie bitte mit Ihrer Ärztin, Ihrem Arzt oder in der Apotheke.
       </PageTitle>
-      <form className="card mb-6 flex flex-wrap items-end gap-4" role="search">
-        <Autocomplete source="medications" name="q" label="Produktname" defaultValue={q} placeholder="z. B. Letrozol" />
+      <form className="mb-5 flex max-w-3xl items-end gap-3" role="search">
+        <Autocomplete source="medications" name="q" label="Produktname oder Wirkstoff" defaultValue={q} placeholder="z. B. Letrozol" />
         <button className="btn-primary">Suchen</button>
       </form>
+
       {r && !r.ok && <ApiError status={r.status} detail={r.detail} />}
-      {r?.ok && r.data.length === 0 && <p className="card text-muted">Nichts gefunden.</p>}
+      {r?.ok && r.data.length === 0 && <p className="card text-muted">Keine Treffer für „{q}“.</p>}
       {r?.ok && r.data.length > 0 && (
-        <ul className="space-y-3">
-          {r.data.map((m) => (
-            <li key={m.pharma_nr} className="card">
-              <div className="flex flex-wrap items-start gap-3">
-                <h2 className="flex-1 font-semibold">{m.name}</h2>
-                <span className="rounded-full border border-line px-2 text-sm font-semibold">{BOX[m.box] ?? m.box}</span>
-              </div>
-              <p className="text-muted">Packung: {m.pack}</p>
-              <p className="mt-1">{m.approval_needed_de}</p>
-              <p>{m.patient_cost_note_de}</p>
-              {m.restriction && <p className="text-muted">Einschränkung: {m.restriction}</p>}
-              <p className="mt-2"><SourceChip source={m.source} /></p>
-            </li>
-          ))}
-        </ul>
+        <>
+          <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+            <span className="text-muted">
+              {r.data.length} Packungen in {groups.size} {groups.size === 1 ? "Produkt" : "Produkten"}
+            </span>
+            {boxesUsed.map((b) => (
+              <span key={b} className="inline-flex items-center gap-1.5">
+                <span className={`rounded-full border px-2 py-px text-xs font-semibold ${BOX[b].cls}`}>{BOX[b].label}</span>
+                <span className="text-muted">{BOX[b].meaning}</span>
+              </span>
+            ))}
+            {source && <SourceChip source={source} />}
+          </div>
+
+          <div className="space-y-4">
+            {[...groups.entries()].map(([name, packs]) => (
+              <section key={name} className="overflow-hidden rounded-xl border border-line bg-surface">
+                <h2 className="border-b border-line px-4 py-2.5 font-semibold">{name}</h2>
+                <div role="table" aria-label={`Packungen von ${name}`} className="text-sm">
+                  <div role="row" className="hidden grid-cols-[6rem_8rem_minmax(0,1fr)_7rem_1.5rem] gap-3 px-4 py-1.5 text-xs font-semibold text-muted sm:grid">
+                    <span role="columnheader">Packung</span>
+                    <span role="columnheader">EKO-Bereich</span>
+                    <span role="columnheader">Hinweis</span>
+                    <span role="columnheader" className="text-right">Kassenpreis</span>
+                    <span />
+                  </div>
+                  {packs.map((m) => (
+                    <details key={m.pharma_nr} className="group border-t border-line first-of-type:border-t-0">
+                      <summary
+                        role="row"
+                        className="grid cursor-pointer list-none grid-cols-[1fr_auto] gap-x-3 gap-y-1 px-4 py-2.5 hover:bg-neutral-soft/60 sm:grid-cols-[6rem_8rem_minmax(0,1fr)_7rem_1.5rem] sm:items-center [&::-webkit-details-marker]:hidden"
+                      >
+                        <span role="cell" className="font-semibold">
+                          {m.pack.replace(/^(\d+)\s*St$/, "$1 Stk.")}
+                        </span>
+                        <span role="cell" className="sm:order-none">
+                          {BOX[m.box] ? (
+                            <span className={`rounded-full border px-2 py-px text-xs font-semibold ${BOX[m.box].cls}`}>{BOX[m.box].label}</span>
+                          ) : (
+                            m.box
+                          )}
+                        </span>
+                        <span role="cell" className="col-span-2 text-muted sm:col-span-1">
+                          {m.restriction ? (
+                            <>
+                              <span className="font-semibold text-ink">{m.restriction}</span> · {RESTRICTION[m.restriction] ?? "Einschränkung laut EKO"}
+                            </>
+                          ) : (
+                            "keine Einschränkung"
+                          )}
+                        </span>
+                        <span role="cell" className="text-right font-semibold tabular-nums">
+                          {eur(m.price_eur)}
+                        </span>
+                        <ChevronRight className="hidden h-4 w-4 text-muted transition-transform group-open:rotate-90 sm:block" aria-hidden />
+                      </summary>
+                      <dl className="grid gap-x-6 gap-y-2 bg-paper/60 px-4 py-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
+                        <dt className="text-muted">Verschreibung</dt>
+                        <dd>{m.approval_needed_de.replace(SHARED_HINT, "")}</dd>
+                        <dt className="text-muted">Ihre Kosten</dt>
+                        <dd>{m.patient_cost_note_de}</dd>
+                        {m.indication_text && (
+                          <>
+                            <dt className="text-muted">Anwendungsgebiet (EKO)</dt>
+                            <dd>{m.indication_text}</dd>
+                          </>
+                        )}
+                        {m.rule_text && (
+                          <>
+                            <dt className="text-muted">Regel (EKO)</dt>
+                            <dd>{m.rule_text}</dd>
+                          </>
+                        )}
+                        <dt className="text-muted">Pharmanummer</dt>
+                        <dd className="flex flex-wrap items-center gap-2 tabular-nums">
+                          {m.pharma_nr} <SourceChip source={m.source} />
+                        </dd>
+                      </dl>
+                    </details>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </>
       )}
     </>
   );
