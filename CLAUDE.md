@@ -33,6 +33,8 @@ Run `make test-api` (and `make lint`) before every commit that touches `services
 8. Prevention wording: "laut Impfplan empfohlen" / "nicht im e-Impfpass dokumentiert – bitte mit Ärztin/Arzt klären". Never "Ihnen fehlt …".
 9. Legal information is "unverbindliche Information, keine Rechtsberatung"; always show the Fassung / in-force date.
 
+- New agent tool → also add its German label to `TOOL_LABELS` in `apps/web/lib/labels.ts` (test enforces it).
+
 ## Ownership (final state; all workstreams merged)
 | Path | Owner |
 |---|---|

@@ -376,3 +376,18 @@ def test_choose_slot_actions_carry_exact_slot_ids():
     acts = [a for a in _actions([o]) if a.kind == "choose_slot"]
     assert acts[0].url == "demo-gp-1030-muster@2026-11-06T08:40+01:00"
     assert acts[0].label_de == "Fr. 6.11., 08:40 · Ordination Dr. Muster (Demo)"
+
+
+def test_every_agent_tool_has_a_german_label_in_the_cockpit():
+    """Transparenz/chat trace show German tool names (apps/web/lib/labels.ts TOOL_LABELS)."""
+    import re
+    from pathlib import Path
+
+    from app.agent.tools import TOOLS
+
+    labels = Path(__file__).resolve().parents[5] / "apps" / "web" / "lib" / "labels.ts"
+    if not labels.exists():  # backend-only checkout
+        return
+    text = labels.read_text(encoding="utf-8")
+    missing = [t.name for t in TOOLS if not re.search(rf"\b{t.name}\b", text)]
+    assert not missing, f"add German labels to TOOL_LABELS for: {missing}"
