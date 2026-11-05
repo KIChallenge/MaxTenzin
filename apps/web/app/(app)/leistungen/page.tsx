@@ -20,7 +20,7 @@ const ORDER: Record<EligibilityStatus, number> = { likely: 0, possible: 1, needs
 
 export default async function BenefitsPage({ searchParams }: { searchParams: Promise<{ error?: string; status?: string; doc?: string }> }) {
   const sp = await searchParams;
-  const [me, plain, facts] = await Promise.all([getMe(), isPlain(), getFacts()]);
+  const [me, plain, known] = await Promise.all([getMe(), isPlain(), getFacts()]);
   if (!me.ok) return <ApiError status={me.status} detail={me.detail} />;
   const subject = me.data.subject;
   const name = fullName(subject);
@@ -49,7 +49,7 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
   const [elig, forms] = await Promise.all([
     api<EligibilityResult[]>("/api/benefits/eligibility", {
       method: "POST",
-      body: { subject_id: subject.id, facts, document_ids: documentIds },
+      body: { subject_id: subject.id, facts: {}, document_ids: documentIds }, // stored facts are merged by the service
     }),
     api<FormDefinition[]>("/api/forms"),
   ]);
@@ -66,7 +66,7 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
         {used.length ? ` – auf Basis von: ${used.map((d) => d.filename).join(", ")}` : ""}. Die Entscheidung trifft immer
         der zuständige Träger.
       </PageTitle>
-      <FactAnswers facts={facts} name={subject.first_name} />
+      <FactAnswers facts={known.facts} sources={known.sources} name={subject.first_name} />
       {sp.error && (
         <div className="mb-6">
           <ApiError status={Number(sp.status ?? 0)} detail={sp.error} subjectName={name} />
