@@ -1,5 +1,7 @@
 # WS-W — Web cockpit (human-driven session)
 
+> **Historical brief** — the task as handed to the workstream at the start. Current behaviour: the service READMEs, `documentation/architecture.md` and `documentation/services.md`.
+
 **Worktree:** `../MaxTenzin-web` · **Branch:** `ws/W-web` · **Owned paths:** `apps/web/` only.
 Read `CLAUDE.md` first. API runs at http://localhost:8000 (`make api` from the main checkout or your worktree); OpenAPI types in `apps/web/lib/api-types.ts` (regenerate: `make openapi`).
 

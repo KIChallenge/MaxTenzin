@@ -3,15 +3,20 @@
 Rules for every Claude Code session in this repo. Workstream details live in `documentation/briefs/WS-*.md`.
 
 ## Project in 5 lines
-- 24h challenge (DVSV, Use Case 1): a personal AI navigator ("KI-Lotse") for Austrian social insurance.
+- 24h challenge (DVSV, Use Case 1): a personal AI navigator ("KI-Lotse", persona **Lotsi**) for Austrian social insurance.
 - Thesis: **"KI funktioniert nur gut und vor allem sicher, wenn Prozesse definiert sind. Wir bauen sie als Top Layer auf unsere anderen Services."**
 - Deterministic, source-cited services decide; the LLM only understands, routes, extracts and explains. The agent uses the same APIs and the user's delegated scopes — no special rights.
 - Demo scenarios: (1) Maria acts for her mother Anna after hospital discharge (Pflegegeld, Reha, mobile Pflege, Fahrten, Rezeptgebühr); (2) Stefan's proactive prevention (e-Impfpass, Vorsorge) + child Lena; (3) boundary: imaging report → no interpretation.
 - Runs locally only: `make dev` → API http://localhost:8000/docs, cockpit http://localhost:3000.
 
 ## Commands (run from repo root)
-`make setup | dev | api | web | test | test-api | test-extract | eval | lint | extract | openapi | reset | smoke-llm`
-Run `make test-api` (and `make lint`) before every commit that touches `services/`. Run `make openapi` after any API change.
+`make setup | dev | api | api-demo | web | test | test-api | test-extract | eval | lint | extract | openapi | sources | seed | demo-assets | demo-check | reset | smoke-llm`
+- `api-demo` = API without `--reload` (stable demo state). `seed` loads demo documents + Stefan's e-Impfpass (needs `docs/`).
+  `demo-assets` renders 4 JPG photos of the discharge letter into `var/demo/` (needs Ghostscript). `demo-check` runs the
+  demo-script scenes against the running API without changing demo state. `sources` regenerates `documentation/sources.md`.
+- `reset` empties the DB in place (safe while the API runs) and deletes uploads; then **restart the API** (it caches
+  delegations in memory) and run `make seed`.
+Run `make test-api` (and `make lint`) before every commit that touches `services/`. Run `make openapi` after any API change, `make sources` after any `knowledge/*.yaml` change.
 
 ## Language
 - English: code, identifiers, comments, commits, docs in `documentation/` (except pitch + demo script).
@@ -28,20 +33,19 @@ Run `make test-api` (and `make lint`) before every commit that touches `services
 8. Prevention wording: "laut Impfplan empfohlen" / "nicht im e-Impfpass dokumentiert – bitte mit Ärztin/Arzt klären". Never "Ihnen fehlt …".
 9. Legal information is "unverbindliche Information, keine Rechtsberatung"; always show the Fassung / in-force date.
 
-## Ownership
+## Ownership (final state; all workstreams merged)
 | Path | Owner |
 |---|---|
-| `services/api/app/contracts/`, `app/core/`, `app/main.py`, `app/seed/`, `app/fixtures.py`, `CLAUDE.md`, `Makefile`, `knowledge/extracted/`, `tools/extract/` | integrator (main session) |
-| `services/api/app/services/{benefits,directory,legal,medications,values}/`, `knowledge/benefits.yaml`, `knowledge/offices.yaml` | WS-B |
-| `services/api/app/services/{documents,prevention}/`, `knowledge/prevention.yaml`, `evals/goldens/` | WS-D |
-| `services/api/app/services/forms/`, `knowledge/forms/*.yaml` | WS-F |
-| `services/api/app/agent/`, `evals/` (except goldens) | WS-A |
-| `services/api/app/services/{cases,notifications}/` | WS-C |
+| `services/api/app/contracts/`, `app/core/`, `app/main.py`, `app/seed/`, `app/fixtures.py`, `app/services/{identity,audit,cases,notifications}/`, `CLAUDE.md`, `Makefile`, `knowledge/extracted/`, `tools/extract/`, `tools/demo_check.py` | integrator (main session; cases/notifications were WS-C) |
+| `services/api/app/services/{benefits,directory,legal,medications,values}/`, `knowledge/offices.yaml` | WS-B |
+| `knowledge/benefits.yaml` (offers, Heilbehelfe, Angehörige, Sozialhilfe), `knowledge/bundles.yaml` + `benefits/bundles.py`, family-history rules in `knowledge/prevention.yaml` | WS-K2 (catalog & bundles) |
+| `services/api/app/services/{documents,prevention}/`, `knowledge/prevention.yaml`, `evals/goldens/` | WS-D (photo upload / `documents/vision.py`: WS-V) |
+| `services/api/app/services/forms/`, `knowledge/forms/*.yaml` | WS-F (situation prefill rules: WS-S) |
+| `services/api/app/services/situation/`, `knowledge/situation.yaml` | WS-S (Lebenslage) |
 | `services/api/app/services/appointments/`, `knowledge/providers.yaml` | WS-T (appointments) |
-| `knowledge/benefits.yaml` + bundles/offers in `app/services/benefits/`, `knowledge/bundles.yaml`, `knowledge/prevention.yaml` (family-history rules) | WS-K2 (catalog & bundles) |
-| `services/api/app/services/documents/` (image/photo upload, vision) | WS-V (vision) |
-| `services/api/app/services/situation/`, `knowledge/situation.yaml`, situation prefill in `app/services/forms/prefill.py` + `knowledge/forms/*.yaml` | WS-S (Lebenslage) |
-| `apps/web/` | WS-W |
+| `services/api/app/agent/`, `evals/` (except goldens) | WS-A |
+| `apps/web/`, `documentation/screenshots/` | WS-W |
+| `README.md`, `documentation/**` (except `demo-script.md`: integrator), `tools/sources.py` | WS-DOC |
 Do not edit outside your paths. Need a contract/core change? Add it under **Contract requests** in `PROGRESS.md`, work around it locally, and tell the integrator.
 
 ## Conventions
@@ -61,4 +65,4 @@ Do not edit outside your paths. Need a contract/core change? Add it under **Cont
 Tests green (`make test-api`), lint clean, per-service `README.md` updated (Purpose · Endpoints · Rules & knowledge · Sources · Limitations · Tests), row in `PROGRESS.md` updated, no secrets.
 
 ## Pointers
-`README.md` · `PROGRESS.md` · `documentation/architecture.md` · `documentation/briefs/` · OpenAPI http://localhost:8000/docs
+`README.md` · `PROGRESS.md` · `documentation/{architecture,safety,services,sources,roadmap,demo-script}.md` · `documentation/decisions/` (ADRs) · `documentation/briefs/` (historical) · OpenAPI http://localhost:8000/docs

@@ -1,5 +1,7 @@
 # WS-F — Forms: one schema, two clients (wizard + chat), real PDF fill
 
+> **Historical brief** — the task as handed to the workstream at the start. Current behaviour: the service READMEs, `documentation/architecture.md` and `documentation/services.md`.
+
 **Branch:** `ws/F-forms` · **Owned paths:** `services/api/app/services/forms/`, `knowledge/forms/*.yaml`, `knowledge/schema/form.schema.json`
 Read `CLAUDE.md` first. Contract: `app/contracts/forms.py` — don't change (Contract requests in PROGRESS.md).
 
