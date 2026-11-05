@@ -6,7 +6,7 @@ Single source of truth for all sessions. Update your row at start and at Definit
 
 ## Gates (go / no-go)
 - [x] **G0 (H2)** skeleton, contracts, stub API (33 paths), auth/scopes/audit, extraction, `make test` green
-- [ ] **G0b** Azure LLM reachable (`make smoke-llm`) — **BLOCKED: key returns 401** (user checks key/endpoint pairing)
+- [x] **G0b** Azure LLM reachable (`make smoke-llm`) — live extraction of Entlassungsbrief: 12/12 quotes verified, 5.6 s
 - [ ] **G1 (H8)** hero flow clickable in cockpit on stubs; WS-B/D/F real services merged
 - [ ] **G2 (H13)** hero flow on real API incl. agent (chat + wizard share form session)
 - [ ] **G3 (H19) FREEZE** evals green, Floorplan health check clean, demo script run 3×, backup video recorded
@@ -20,7 +20,7 @@ Single source of truth for all sessions. Update your row at start and at Definit
 | WS-D | documents extraction (+golden), prevention (Impfpass) | bg agent | ws/D-documents | merged | H4 | live LLM path untested (key 401) |
 | WS-F | forms: schemas, sessions, prefill, real PDF fill | bg agent | ws/F-forms | doing | — | — |
 | WS-W | web cockpit | human session | ws/W-web | todo | — | — |
-| WS-A | agent orchestrator + guardrails + evals | Wave 2 | ws/A-agent | todo | — | needs B/D/F merged |
+| WS-A | agent orchestrator + guardrails + evals | bg agent | ws/A-agent | doing | H5 | builds against contracts; B/F stubs until merged |
 | WS-C | cases + notifications | integrator | main | merged | H3 | — |
 
 ## Task checklists
