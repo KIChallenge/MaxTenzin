@@ -1,0 +1,297 @@
+{
+  "$defs": {
+    "Condition": {
+      "additionalProperties": false,
+      "description": "A field is only relevant when the condition holds. `proxy`: actor acts for somebody else (Vertretung).",
+      "properties": {
+        "field": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Field"
+        },
+        "equals": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Equals"
+        },
+        "one_of": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "One Of",
+          "type": "array"
+        },
+        "proxy": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proxy"
+        }
+      },
+      "title": "Condition",
+      "type": "object"
+    },
+    "FieldSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "label_de": {
+          "title": "Label De",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/FieldType"
+        },
+        "section": {
+          "title": "Section",
+          "type": "string"
+        },
+        "required": {
+          "default": false,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "recommended": {
+          "default": false,
+          "description": "Not required by the form, but worth asking (next-questions?include_optional)",
+          "title": "Recommended",
+          "type": "boolean"
+        },
+        "ask_hint_de": {
+          "default": "",
+          "title": "Ask Hint De",
+          "type": "string"
+        },
+        "options": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Options",
+          "type": "array"
+        },
+        "pdf_field": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "AcroForm field name; defaults to id; null for unmapped virtual fields",
+          "title": "Pdf Field"
+        },
+        "pdf_on_value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "checkbox: export value when ticked, e.g. '/ja'",
+          "title": "Pdf On Value"
+        },
+        "pdf_options": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "description": "choice: option label -> export value of the radio kid",
+          "title": "Pdf Options",
+          "type": "object"
+        },
+        "pdf_overflow": {
+          "default": [],
+          "description": "continuation lines for long text (filled in order)",
+          "items": {
+            "type": "string"
+          },
+          "title": "Pdf Overflow",
+          "type": "array"
+        },
+        "max_chars": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "characters per line before continuing in pdf_overflow",
+          "title": "Max Chars"
+        },
+        "when": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Condition"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "prefill": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "profile.<key> | actor.<key> | delegation.<key> | document.<key> | system.<key> | const:<value>",
+          "title": "Prefill"
+        },
+        "doctor_only": {
+          "default": false,
+          "title": "Doctor Only",
+          "type": "boolean"
+        },
+        "readonly_reason_de": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Readonly Reason De"
+        }
+      },
+      "required": [
+        "id",
+        "label_de",
+        "type",
+        "section"
+      ],
+      "title": "FieldSpec",
+      "type": "object"
+    },
+    "FieldType": {
+      "enum": [
+        "text",
+        "date",
+        "checkbox",
+        "choice",
+        "textarea"
+      ],
+      "title": "FieldType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "form_id": {
+      "title": "Form Id",
+      "type": "string"
+    },
+    "title_de": {
+      "title": "Title De",
+      "type": "string"
+    },
+    "provider": {
+      "title": "Provider",
+      "type": "string"
+    },
+    "form_version": {
+      "description": "Version printed on the official form, e.g. 'PAL 080 (01. 2025)'",
+      "title": "Form Version",
+      "type": "string"
+    },
+    "submit_info_de": {
+      "title": "Submit Info De",
+      "type": "string"
+    },
+    "sections": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Sections",
+      "type": "array"
+    },
+    "doctor_only_pages": {
+      "default": [],
+      "description": "1-based pages filled only by doctors; never written",
+      "items": {
+        "type": "integer"
+      },
+      "title": "Doctor Only Pages",
+      "type": "array"
+    },
+    "unmapped_pdf_fields": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "default": {},
+      "description": "AcroForm fields deliberately not mapped -> reason",
+      "title": "Unmapped Pdf Fields",
+      "type": "object"
+    },
+    "stamp": {
+      "default": "top",
+      "enum": [
+        "top",
+        "bottom"
+      ],
+      "title": "Stamp",
+      "type": "string"
+    },
+    "fields": {
+      "items": {
+        "$ref": "#/$defs/FieldSpec"
+      },
+      "title": "Fields",
+      "type": "array"
+    }
+  },
+  "required": [
+    "form_id",
+    "title_de",
+    "provider",
+    "form_version",
+    "submit_info_de",
+    "sections",
+    "fields"
+  ],
+  "title": "SV KI-Lotse form schema (knowledge/forms/<form_id>.yaml)",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}
