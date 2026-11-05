@@ -44,40 +44,41 @@ class BoundaryHit:
 # Order matters: emergencies first. Patterns are intent patterns, not disease names, so that people may still
 # state facts ("Diagnose laut Entlassungsbrief: …") while filling a form.
 _PATTERNS: list[tuple[str, str]] = [
-    ("suicide", r"(umbringen|suizid|selbstmord|nicht mehr leben|das leben nehmen|kill myself|suicid|"
-                r"intihar|kendimi öldür)"),
-    ("emergency", r"(notfall|notarzt|keine luft|atemnot|bekomm\w* kaum luft|brustschmerz|schmerzen in der brust|"
+    ("suicide", (r"(umbringen|suizid|selbstmord|nicht mehr leben|das leben nehmen|kill myself|suicid|"
+                r"intihar|kendimi öldür)")),
+    ("emergency", (r"(notfall|notarzt|keine luft|atemnot|bekomm\w* kaum luft|brustschmerz|schmerzen in der brust|"
                   r"bewusstlos|ohnmächtig|krampfanfall|starke blutung|blutet stark|schlaganfall|herzinfarkt|"
                   r"lähmung|gesicht hängt|vergiftung|emergency|can'?t breathe|chest pain|unconscious|acil durum|"
-                  r"nefes alamıyor)"),
-    ("role_play", r"(tu so,? als (ob )?(du|wärst)|stell dir vor,? du (bist|wärst)|du bist (jetzt )?(ein|eine|mein|"
+                  r"nefes alamıyor)")),
+    ("role_play", (r"(tu so,? als (ob )?(du|wärst)|stell dir vor,? du (bist|wärst)|du bist (jetzt )?(ein|eine|mein|"
                   r"meine) ?(arzt|ärztin|doktor|onkolog|radiolog)|als (arzt|ärztin|doktor) (antworten|sprechen|"
                   r"beurteilen)|antworte (wie|als) (ein |eine )?(arzt|ärztin)|pretend (to be|you are) a doctor|"
-                  r"act as a doctor|doktor gibi davran)"),
-    ("doctor_section", r"((arzt|ärzt|medizinisch)\w*\s*(teil|abschnitt|bereich|stellungnahme|gutachten|befundbericht)"
+                  r"act as a doctor|doktor gibi davran)")),
+    ("doctor_section", (r"((arzt|ärzt|medizinisch)\w*\s*(teil|abschnitt|bereich|stellungnahme|gutachten|befundbericht)"
                        r"[^.?!]{0,40}(aus|füll|ergänz|schreib|übernehm)|"
                        r"(füll|ergänz|schreib|übernimm|mach)\w*[^.?!]{0,40}(ärztlich|arztteil|arzt-teil|"
-                       r"ärzteteil|medizinischen teil|stellungnahme des arztes)|fill (in|out) the doctor)"),
-    ("submit", r"((reich|schick|send|übermittel|stell)\w*[^.?!]{0,40}\b(antrag|anträge|formular|ansuchen)\b[^.?!]{0,30}"
+                       r"ärzteteil|medizinischen teil|stellungnahme des arztes)|fill (in|out) the doctor)")),
+    ("submit", (r"((reich|schick|send|übermittel|stell)\w*[^.?!]{0,40}\b(antrag|anträge|formular|ansuchen)\b[^.?!]{0,30}"
                r"\b(ein|ab|weg|für mich|direkt)\b|\b(antrag|anträge|formular)\b[^.?!]{0,40}\b(einreichen|abschicken|"
-               r"absenden|übermitteln|abgeben)\b|submit (the|my) (application|form)|başvuruyu gönder)"),
-    ("diagnosis", r"(was (habe|hab|hat) (ich|sie|er|meine mutter|mein vater|mein kind)\b[^.?!]{0,30}\?|"
+               r"absenden|übermitteln|abgeben)\b|submit (the|my) (application|form)|başvuruyu gönder)")),
+    ("diagnosis", (r"(was (habe|hab|hat) (ich|sie|er|meine mutter|mein vater|mein kind)\b[^.?!]{0,30}\?|"
                   r"(stell|stelle|gib|mach)\w*[^.?!]{0,20}diagnose|welche (krankheit|erkrankung|diagnose) "
                   r"(habe|hat|könnte)|habe ich (wohl |vielleicht |etwa )?(krebs|einen tumor|corona|covid|diabetes)|"
                   r"(ist|sind) (das|es|der knoten|die werte)\b[^.?!]{0,20}(krebs|bösartig|gutartig|gefährlich|schlimm|"
-                  r"ernst)|könnte (das|es) (krebs|ein tumor|bösartig)|what do i have|diagnose me|teşhis)"),
-    ("findings", r"((was|wie) (bedeutet|heißt|heisst|sagt|zeigt)\w*[^.?!]{0,60}(befund|röntgen|mrt|ct|ultraschall|"
+                  r"ernst)|könnte (das|es) (krebs|ein tumor|bösartig)|what do i have|diagnose me|teşhis)")),
+    ("findings", (r"((was|wie) (bedeutet|heißt|heisst|sagt|zeigt)\w*[^.?!]{0,60}(befund|röntgen|mrt|ct|ultraschall|"
                  r"laborwert|blutwert|werte\b|aufnahme|histolog|befundergebnis)|"
                  r"(befund|röntgen\w*|mrt|laborwerte?|blutwerte?)[^.?!]{0,40}(erklär|deut|interpretier|"
                  r"übersetz|bewert|beurteil|verständlich)|(erklär|deut|interpretier|bewert|beurteil)\w*[^.?!]{0,40}"
                  r"(befund|röntgen|mrt|laborwert|blutwert|werte)|is (my|the) (result|report|x-?ray|scan) "
-                 r"(bad|normal|serious)|what does (my|the) (report|result|x-?ray|scan|finding)\w* mean|"
-                 r"explain (my|the) (report|result|finding|x-?ray|scan)|sonuç(lar)?ım ne anlama)"),
-    ("prognosis", r"(prognose|heilungschance|überlebens(chance|rate|zeit)|wie lange (habe|hat|bleibt)\w*[^.?!]{0,30}"
+                 r"(bad|normal|serious)|what do(es)? (my|the) [^?.]{0,30}(report|result|x-?ray|scan|finding)s? mean|"
+                 r"explain (my|the) [^?.]{0,30}(report|result|finding|x-?ray|scan)|sonuç(lar)?ım ne anlama)")),
+    ("prognosis", (r"(prognose|heilungschance|überlebens(chance|rate|zeit)|wie lange (habe|hat|bleibt)\w*[^.?!]{0,30}"
                   r"(zu leben|noch)|lebenserwartung|wird (sie|er|ich|meine mutter|mein vater) wieder gesund|"
                   r"(wie hoch|wie groß|wie gross) ist (das|mein|ihr|sein) risiko|risiko[^.?!]{0,30}(rückfall|"
-                  r"metastase|krebs|sterben|tod)|rückfallrisiko|how long (do|does) .* (live|have left)|prognosis)"),
-    ("medication", r"((absetzen|abzusetzen|weglassen|dosis|dosier\w*|überdosis|halbieren|"
+                  r"metastase|krebs|sterben|tod)|rückfallrisiko|how long (do|does) .* (live|have left)|prognosis)")),
+    ("medication", (r"(wie ?viel\w* (mg|milligramm|tabletten|tropfen|pillen|einheiten|hub)|"
+                   r"(absetzen|abzusetzen|weglassen|dosis|dosier\w*|überdosis|halbieren|"
                    r"verdoppeln|erhöhen)[^.?!]{0,40}\b(medikament\w*|tablette\w*|mg|tropfen|pille\w*|"
                    r"chemo\w*|antibiotik\w*|schmerzmittel|cortison|kortison|insulin)\b|"
                    r"\b(medikament\w*|tablette\w*|mg|pille\w*|chemo\w*|schmerzmittel|cortison|kortison|insulin)\b"
@@ -89,7 +90,7 @@ _PATTERNS: list[tuple[str, str]] = [
                    r"(soll|sollte) (ich|sie|er|meine mutter)[^.?!]{0,40}(therapie|behandlung|bestrahlung|chemo|"
                    r"operation)[^.?!]{0,30}(machen|abbrechen|ablehnen|beginnen)|"
                    r"(stop|stopp|reduce|double) (taking )?(my|the) (medication|pills|dose)|how much .* should i take|"
-                   r"ilacı bırak|ilaç dozu)"),
+                   r"ilacı bırak|ilaç dozu)")),
 ]
 _COMPILED = [(c, re.compile(p)) for c, p in _PATTERNS]
 

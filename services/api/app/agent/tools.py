@@ -265,9 +265,13 @@ TOOLS: list[Tool] = [
          {"benefit_id": _s("z. B. pflegegeld")}, ["benefit_id"], "GET",
          lambda a, c: f"/api/benefits/{a['benefit_id']}", compact=_compact_benefit,
          summary=lambda a, d: f"Leistung „{d.get('name_de')}“ nachgeschlagen (Träger {d.get('provider')})"),
-    Tool("start_form", "Startet einen vorausgefüllten ANTRAGS-ENTWURF (wird nie eingereicht).",
-         {"form_id": _s("Formular-ID aus form_ids, z. B. pva_pflegegeld_pal080")}, ["form_id"], "POST",
-         lambda a, c: f"/api/forms/definitions/{a['form_id']}/sessions", compact=_compact_session,
+    Tool("start_form", "Startet einen vorausgefüllten ANTRAGS-ENTWURF (wird nie eingereicht). Mit document_id "
+         "werden Angaben aus dem analysierten Dokument vorausgefüllt.",
+         {"form_id": _s("Formular-ID aus form_ids, z. B. pva_pflegegeld_pal080"),
+          "document_id": _s("optional: analysiertes Dokument für die Vorausfüllung")}, ["form_id"], "POST",
+         lambda a, c: f"/api/forms/definitions/{a['form_id']}/sessions",
+         query=lambda a, c: {"document_id": a["document_id"]} if a.get("document_id") else {},
+         compact=_compact_session,
          summary=lambda a, d: f"Antragsentwurf {d.get('form_id')} gestartet, "
                               f"{sum(1 for v in d.get('values', {}).values() if v.get('value') not in (None, ''))} "
                               "Felder vorausgefüllt"),
@@ -282,6 +286,10 @@ TOOLS: list[Tool] = [
          ["session_id", "values"], "PATCH", lambda a, c: f"/api/forms/sessions/{a['session_id']}",
          body=lambda a, c: {"values": a.get("values") or {}, "confirm": True}, compact=_compact_session,
          summary=lambda a, d: f"{len(a.get('values') or {})} Feld(er) im Entwurf eingetragen"),
+    Tool("preview_form", "Kontrollansicht eines Entwurfs: jedes ausgefüllte Feld mit Bezeichnung, Wert und Quelle.",
+         {"session_id": _s("Formular-Sitzung")}, ["session_id"], "GET",
+         lambda a, c: f"/api/forms/sessions/{a['session_id']}/preview",
+         summary=lambda a, d: "Kontrollansicht des Entwurfs geladen"),
     Tool("render_form", "Erzeugt das ausgefüllte PDF als ENTWURF zum Prüfen, Unterschreiben und selbst Einreichen.",
          {"session_id": _s("Formular-Sitzung")}, ["session_id"], "POST",
          lambda a, c: f"/api/forms/sessions/{a['session_id']}/render", binary=True,
