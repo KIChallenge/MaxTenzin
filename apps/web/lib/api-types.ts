@@ -183,7 +183,24 @@ export interface paths {
             cookie?: never;
         };
         /** Benefit catalog */
-        get: operations["catalog_api_benefits_get"];
+        get: operations["list_catalog_api_benefits_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/benefits/rezeptgebuehr/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Rezeptgebühr calculator: befreit / Obergrenze 2 % / nicht befreit */
+        get: operations["rezeptgebuehr_check_api_benefits_rezeptgebuehr_check_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -483,6 +500,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/medications/{pharma_nr}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One EKO pack by Pharmazentralnummer */
+        get: operations["get_medication_api_medications__pharma_nr__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/legal/paragraphs/{law_key}/{nr}": {
         parameters: {
             query?: never;
@@ -507,7 +541,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Keyword search (naive; WS-L replaces with FTS5) */
+        /** Full-text search (SQLite FTS5, BM25, core-law boost) */
         get: operations["search_api_legal_search_get"];
         put?: never;
         post?: never;
@@ -1808,9 +1842,11 @@ export interface operations {
             };
         };
     };
-    catalog_api_benefits_get: {
+    list_catalog_api_benefits_get: {
         parameters: {
-            query?: never;
+            query?: {
+                area?: string | null;
+            };
             header?: {
                 Authorization?: string;
                 "X-Subject-Id"?: string | null;
@@ -1829,6 +1865,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Benefit"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rezeptgebuehr_check_api_benefits_rezeptgebuehr_check_get: {
+        parameters: {
+            query: {
+                net_income_monthly: number;
+                household?: string;
+                children_count?: number;
+                chronic_illness_expenses?: boolean | null;
+                receives_ausgleichszulage?: boolean | null;
+            };
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EligibilityResult"][];
                 };
             };
             /** @description Validation Error */
@@ -2470,6 +2546,8 @@ export interface operations {
             query?: {
                 topic?: string | null;
                 zip?: string | null;
+                provider?: string | null;
+                limit?: number | null;
             };
             header?: {
                 Authorization?: string;
@@ -2526,6 +2604,42 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Medication"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_medication_api_medications__pharma_nr__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                pharma_nr: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Medication"];
                 };
             };
             /** @description Validation Error */

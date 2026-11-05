@@ -20,7 +20,7 @@ Run `make test-api` (and `make lint`) before every commit that touches `services
 ## Architecture invariants (never violate)
 1. Eligibility, prevention, amounts and costs are computed ONLY by deterministic services reading `knowledge/`. The LLM never decides or invents them.
 2. Every fact shown to a user carries a `SourceRef` (law § + in-force date, value table + year, brochure page, form, or document quote + page). No source → don't show it.
-3. Amounts come from the `values` service (veraendW), never from law text (e.g. § 5 BPGG still shows 2020 amounts) and never from model memory.
+3. Amounts come from the `values` service (veraendW) whenever a value table exists — never from law text that a table supersedes (e.g. § 5 BPGG still shows 2020 amounts) and never from model memory. Amounts/parameters that exist only in a current statute or guideline (e.g. Fahrtkosten in Satzung ÖGK 2025 § 46, 2 % cap in RRZ § 13) are cited from that paragraph via the `legal` service.
 4. The agent calls services only via HTTP with the user's token + `X-Via: agent` + `X-Agent-Tool: <name>`. No direct DB/knowledge access from the agent.
 5. Every endpoint uses `require(Scope...)` from `app/core/auth.py`; audit middleware logs everything automatically. Cite sources via `ctx.cite(...)`, rules via `ctx.rule_ids`.
 6. Medical boundary: no diagnosis, no interpretation of findings, no risk assessment, no therapy/medication advice or dosing. From documents extract ONLY explicitly documented recommendations, each with verbatim quote + page.

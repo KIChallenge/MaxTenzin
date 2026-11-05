@@ -16,7 +16,7 @@ Single source of truth for all sessions. Update your row at start and at Definit
 | WS | Scope | Owner (session) | Branch | Status | Last update | Blockers |
 |---|---|---|---|---|---|---|
 | P0 | extraction, skeleton, contracts, docs | integrator | main | merged | H2 | — |
-| WS-B | benefits catalog + eligibility, directory, legal FTS5, medications | bg agent | ws/B-benefits | doing | — | — |
+| WS-B | benefits catalog + eligibility, directory, legal FTS5, medications | bg agent | ws/B-benefits | merged | H5 | offices outside Wien not curated |
 | WS-D | documents extraction (+golden), prevention (Impfpass) | bg agent | ws/D-documents | merged | H4 | live LLM path untested (key 401) |
 | WS-F | forms: schemas, sessions, prefill, real PDF fill | bg agent | ws/F-forms | doing | — | — |
 | WS-W | web cockpit | human session | ws/W-web | todo | — | — |
@@ -32,12 +32,15 @@ See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished it
 - (integrator, done) WS-D: `SourceRef.retrieved` added; `DocumentAnalysis.dropped_unverified` added + wired. Declined: enum for `extraction_mode`.
 - Shared store collections: `document_analyses` (key doc id), `vaccinations` (key subject id). Demo doc ids without upload: `doc-anna-entlassung`, `doc-stefan-impfpass`, `doc-stefan-roentgen-1/-2`, `doc-stefan-bildgebung`. `make seed` loads demo PDFs + imports Stefan's Impfpass.
 
+- WS-B: facts the eligibility engine reads (walking_unable_confirmed, treatment_type, net_income_monthly, household …) are listed in `services/api/app/services/benefits/README.md` — the agent must pass medical facts explicitly, the engine never parses quotes. New: `GET /api/benefits/rezeptgebuehr/check`, `GET /api/medications/{pharma_nr}`.
+
 ## Decisions log
 - D1 Modular monolith (FastAPI routers per service) instead of microservices — same boundaries, 1/10 ops cost.
 - D2 Raw data in `docs/` gitignored; deterministic extraction into committed `knowledge/extracted/` (`make extract`).
 - D3 All 7 official form PDFs are AcroForms → fill official PDFs directly (no self-made layout).
 - D4 Amounts only from veraendW value tables (law text can be outdated, e.g. § 5 BPGG).
 - D5 Mock ID Austria: stateless token `demo-<persona>` + `X-Subject-Id`; scopes from delegations; AI inherits user's scopes.
+- D7 Statute-only amounts (Satzung ÖGK § 46 Fahrtkosten, RRZ § 13 2 %-cap) are cited from the paragraph; veraendW stays primary where a table exists.
 - D6 LLM: Azure AI Foundry OpenAI-v1 endpoint, model `gpt-5-4-mini`, fake mode for tests/offline.
 
 ## Cut list (→ roadmap slide)
