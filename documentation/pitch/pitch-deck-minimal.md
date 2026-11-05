@@ -1,9 +1,9 @@
-# Pitch-Deck minimal – 3 Folien, der Rest ist Demo
+# Pitch-Deck minimal – 4 Folien, der Rest ist Demo
 
-Deutsch, Fachjury, 7 Minuten. Folie 1 vor der Demo, Folie 2 und 3 danach. Dazwischen (0:30–6:50) nur das Cockpit – Drehbuch `documentation/demo-script.md`.
+Deutsch, Fachjury, 7 Minuten. Folie 1 vor der Demo, Folie 2 bis 4 danach. Dazwischen (0:30–6:50) nur das Cockpit – Drehbuch `documentation/demo-script.md`.
 Die drei Kernbotschaften aus `kernbotschaft.md` stehen je einmal auf einer Folie und werden sonst nur gesprochen.
 Zahlen vor dem Pitch mit `make test` und `evals/REPORT.md` prüfen. Das ausführliche 11-Folien-Deck (`pitch-deck.md`) bleibt als Reserve für Q&A.
-Gebaut als Slide-Deck: https://claude.ai/artifact/RkjTdgdGPBaSBzZGfkXUTn – Folien 1–3 sind der Pitch, ab Folie 4 („Reserve für Q&A“) folgt das alte 12-Folien-Deck.
+Gebaut als Slide-Deck: https://claude.ai/artifact/RkjTdgdGPBaSBzZGfkXUTn – Folien 1–4 sind der Pitch, ab Folie 5 („Reserve für Q&A“) folgt das alte 12-Folien-Deck.
 
 ---
 
@@ -43,11 +43,19 @@ Die Botschaft wird im Cockpit gesagt, nicht gezeigt. Je ein Satz pro Moment:
 
 Schlusszeile: **Lotsi entscheidet nichts. Er formuliert, was die Dienste entschieden haben. Und die Formulierung wird geprüft.**
 
-> Sprechtext (30 s): „Was Sie gerade gesehen haben, läuft auf fünf Schichten. Unten die Daten der Challenge, mit Herkunft. Darauf 14 Dienste, die entscheiden, jede Aussage mit Quelle. Erinnern Sie sich an die 206,20 Euro: Im Gesetz steht noch 157,30, Stand 2020. Ein Modell aus dem Gedächtnis zitiert das Gesetz und liegt falsch. Darüber die API mit Login, Rechten und Protokoll, daraus 30 Werkzeuge, und erst ganz oben Lotsi. Das Modell ist austauschbar, die Schichten darunter nicht. Halluzinationen verhindert kein besserer Prompt, sondern dieser Aufbau. Der schwierige Teil war nicht die KI, es waren die Daten und Prozesse.“
+> Sprechtext (30 s): „Was Sie gerade gesehen haben, läuft auf fünf Schichten. Unten die Daten der Challenge, mit Herkunft. Darauf 14 Dienste, die entscheiden, jede Aussage mit Quelle. Darüber die API mit Login, Rechten und Protokoll, daraus 30 Werkzeuge, und erst ganz oben Lotsi. Das Modell ist austauschbar, die Schichten darunter nicht. Halluzinationen verhindert kein besserer Prompt, sondern dieser Aufbau. Der schwierige Teil war nicht die KI, es waren die Daten und Prozesse.“
 
-Die Zahl 157,30 € gegen 206,20 € wird in der Demo um 2:25 gesagt (Drehbuch, Leistungen) und hier nur als Rückgriff erwähnt.
+Die Zahl 157,30 € gegen 206,20 € ist nur noch Nice-to-have: optional in der Demo um 2:30 und als Q&A-Antwort auf „Halluziniert das nicht?“.
 
-## Folie 3 – Schluss (7:20–7:40, bei Zeitdruck nur sprechen)
+## Folie 3 – Das Architekturbild (7:20–7:35)
+**Ein Weg für alle: Cockpit und Lotsi nutzen dieselben Dienste.**
+Links zwei Sätze, rechts das Mermaid-Diagramm aus der `README.md` (gerendert als Bild).
+
+> Sprechtext (15 s): „Vom Cockpit gehen zwei Wege nach unten, direkt oder über Lotsi. Beide landen an derselben Stelle: dieselben Schnittstellen, derselbe Token, dasselbe Protokoll. Lotsi hat keinen eigenen Weg an den Diensten vorbei. Ganz unten das Wissen: versioniert, quellenbelegt.“
+
+Bild neu erzeugen nach Änderung des Diagramms: `npx -y @mermaid-js/mermaid-cli -i architecture.mmd -o architecture.png -s 3 -b "#f6f8f6"` (Mermaid-Block aus der README in `architecture.mmd` kopieren), dann als Bild in die Folie laden.
+
+## Folie 4 – Schluss (7:35–7:50, bei Zeitdruck nur sprechen)
 **Bausteine tauschen, nicht neu bauen**
 
 - ID Austria statt Demo-Login · ELGA statt Upload · meinSV statt Entwurf. Abgeschickt wird immer von der Person.
@@ -64,12 +72,12 @@ Die Zahl 157,30 € gegen 206,20 € wird in der Demo um 2:25 gesagt (Drehbuch, 
 | 1 Titel, 3 These | Folie 1 |
 | Infrastruktur (altes Artifact-Deck, Folie 2) | Folie 2 |
 | 2 Problem (Brief) | ein Satz im Sprechtext von Folie 1, dann Demo |
-| 4 Keine Sonderrechte, 7 Grenzen | Demo-Sätze (Protokoll, Vollmacht, Röntgen) |
+| 4 Keine Sonderrechte, 7 Grenzen | Demo-Sätze (Protokoll, Vollmacht, Röntgen); Architekturbild Folie 3 |
 | 5 Live-Demo | die Demo selbst |
-| 6 Schlüsselsatz | Demo (2:25), Rückgriff im Sprechtext von Folie 2 |
+| 6 Schlüsselsatz | Nice-to-have: Demo 2:30 (optional) und Q&A |
 | 8 Vier Szenarien | Demo (Akt 1 + Akt 4), Rest Q&A |
-| 9 Daten | Folie 2 (Daten-Zeile) und Folie 3 (Kacheln) |
-| 10 Betrieb, 11 Warum | Folie 3 |
+| 9 Daten | Folie 2 (Daten-Zeile) und Folie 4 (Kacheln) |
+| 10 Betrieb, 11 Warum | Folie 4 |
 
 ## Nicht sagen
 „Lotsi halluziniert nicht.“ Ein Jurymitglied testet das live. Stattdessen die fette Zeile auf Folie 2.
