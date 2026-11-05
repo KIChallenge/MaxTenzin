@@ -1,4 +1,5 @@
-import { TriangleAlert } from "lucide-react";
+import { CalendarPlus, Check, ScanText, TriangleAlert } from "lucide-react";
+import { createCase } from "@/app/actions";
 import Link from "next/link";
 import { ApiError } from "@/components/ApiError";
 import { PageTitle } from "@/components/PageTitle";
@@ -6,9 +7,8 @@ import { SourceChip } from "@/components/SourceChip";
 import { api } from "@/lib/api";
 import { DOC_TYPE, fmtDate, fullName, REC_CATEGORY } from "@/lib/labels";
 import { getMe } from "@/lib/me";
-import type { DocumentAnalysis } from "@/lib/types";
+import type { Case, DocumentAnalysis } from "@/lib/types";
 import { ImportVaccinations } from "./ImportVaccinations";
-import { ScanText } from "lucide-react";
 import type { components } from "@/lib/api-types";
 import { SituationSuggestions } from "./SituationSuggestions";
 import type { SituationOverview } from "@/lib/situation";
@@ -30,73 +30,127 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
     ? (situation.data.suggestions ?? []).filter((e) => (e.source.ref ?? "").includes(a.document_id) || e.source.label.startsWith(a.filename))
     : [];
   const isImaging = a.doc_type === "imaging_report";
+  // Already taken over: confirmed episodes whose source is this document.
+  const fromDoc = (e: { source: { ref?: string | null; label: string } }) => (e.source.ref ?? "").includes(a.document_id) || e.source.label.startsWith(a.filename);
+  const confirmedFromDoc = situation?.ok ? [...(situation.data.current ?? []), ...(situation.data.upcoming ?? []), ...(situation.data.past ?? [])].filter(fromDoc).length : 0;
+
+  // Mein Fall: is there a case built from this document already?
+  const cases = a.open_tasks?.length ? await api<Case[]>("/api/cases") : null;
+  const hasCase = cases?.ok && cases.data.length > 0;
+  const firstName = me.ok ? me.data.subject.first_name : "";
+  const byCategory = new Map<string, DocumentAnalysis["recommendations"]>();
+  for (const rec of a.recommendations) byCategory.set(rec.category, [...(byCategory.get(rec.category) ?? []), rec]);
 
   return (
     <>
-      <p className="mb-2">
+      <p className="mb-2 text-sm">
         <Link href="/dokumente" className="link">
-          ← Alle Dokumente
+          Alle Dokumente
         </Link>
       </p>
       <PageTitle title={a.filename}>
-        {DOC_TYPE[a.doc_type]}, {a.pages} Seiten
+        {DOC_TYPE[a.doc_type]}, {a.pages} {a.pages === 1 ? "Seite" : "Seiten"}
+        {fromPhoto && " · aus Foto gelesen"}
       </PageTitle>
 
-      <div role="note" className="card mb-6 border-l-4 border-l-info bg-info-soft">
-        <h2 className="font-semibold">Was steht drin – und was nicht</h2>
-        <p className="mt-1">{a.notice_de}</p>
-        <p className="mt-1 text-muted">
-          Wir übernehmen nur ausdrücklich dokumentierte Empfehlungen. Wir deuten keine Befunde und geben keine
-          medizinische Einschätzung.
-        </p>
-      </div>
-
-      {isImaging && a.recommendations.length === 0 && (
-        <div className="card mb-6 border-2 border-warn bg-warn-soft">
-          <p className="flex items-center gap-2 font-semibold"><TriangleAlert className="h-5 w-5 shrink-0 text-warn" aria-hidden /> Befunde besprechen Sie bitte mit Ihrer Ärztin bzw. Ihrem Arzt.</p>
-          <p>Lotsi interpretiert keine Bildgebungsbefunde.</p>
-        </div>
-      )}
-
-      <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
-        <section aria-labelledby="rec-h">
-          <h2 id="rec-h" className="mb-3 text-lg font-semibold">
-            Empfehlungen im Dokument ({a.recommendations.length})
+      <div className="max-w-4xl space-y-6">
+        {/* 1 · Was jetzt zu tun ist */}
+        <section aria-labelledby="todo-h" className="rounded-xl border border-accent/25 bg-accent-soft/50 p-4">
+          <h2 id="todo-h" className="font-semibold">
+            Was jetzt zu tun ist
           </h2>
-          {a.recommendations.length === 0 && (
-            <p className="card text-muted">
+          {isImaging ? (
+            <div className="mt-2 space-y-2">
+              <p className="flex items-center gap-2 font-semibold">
+                <TriangleAlert className="h-5 w-5 shrink-0 text-warn" aria-hidden /> Befunde besprechen Sie bitte mit Ihrer Ärztin bzw. Ihrem Arzt.
+              </p>
+              <p className="text-sm text-muted">Lotsi interpretiert keine Bildgebungsbefunde.</p>
+              <Link href="/termine?wo=provider&suche=1" className="btn-secondary py-1 text-sm">
+                <CalendarPlus className="h-4 w-4" aria-hidden /> Termin bei der Hausärztin suchen
+              </Link>
+            </div>
+          ) : (
+            <ol className="mt-2 space-y-2">
+              {situation?.ok && (
+                <Todo n={1} done={fromThisDoc.length === 0 && confirmedFromDoc > 0} title={`Lebenslage von ${firstName} übernehmen`}>
+                  {fromThisDoc.length > 0
+                    ? `${fromThisDoc.length} Vorschläge – unten bestätigen oder ablehnen`
+                    : confirmedFromDoc > 0
+                      ? `${confirmedFromDoc} übernommen`
+                      : "Vorschläge unten erstellen"}
+                </Todo>
+              )}
+              {benefitIds.length > 0 && (
+                <Todo n={situation?.ok ? 2 : 1} title={`Passende Leistungen prüfen (${benefitIds.length})`}>
+                  <Link href={`/leistungen?doc=${encodeURIComponent(a.document_id)}`} className="btn-primary py-1 text-sm">
+                    Leistungen prüfen
+                  </Link>
+                </Todo>
+              )}
+              {a.open_tasks?.length ? (
+                <Todo n={(situation?.ok ? 1 : 0) + (benefitIds.length ? 1 : 0) + 1} title={`Offene Aufgaben aus dem Brief (${a.open_tasks.length}) im Blick behalten`}>
+                  {hasCase ? (
+                    <Link href="/fall" className="btn-secondary py-1 text-sm">
+                      Mein Fall öffnen
+                    </Link>
+                  ) : (
+                    <form action={createCase}>
+                      <button className="btn-secondary py-1 text-sm">Als „Mein Fall“ anlegen</button>
+                    </form>
+                  )}
+                </Todo>
+              ) : null}
+              {a.doc_type === "vaccination_record" && (
+                <li>
+                  <ImportVaccinations documentId={a.document_id} subjectName={name} />
+                </li>
+              )}
+            </ol>
+          )}
+        </section>
+
+        {/* Consent cards (labels used in the demo script: "Ja, übernehmen") */}
+        {situation?.ok && (fromThisDoc.length > 0 || confirmedFromDoc === 0) && <SituationSuggestions documentId={a.document_id} initial={fromThisDoc} firstName={firstName} />}
+
+        {/* 2 · Was im Dokument empfohlen wird */}
+        <section aria-labelledby="rec-h">
+          <h2 id="rec-h" className="font-semibold">
+            Im Dokument ausdrücklich empfohlen ({a.recommendations.length})
+          </h2>
+          <p className="mb-2 text-sm text-muted">{a.notice_de} Wir deuten keine Befunde und geben keine medizinische Einschätzung.</p>
+          {a.recommendations.length === 0 ? (
+            <p className="card text-sm text-muted">
               {a.doc_type === "vaccination_record"
                 ? "Ein e-Impfpass enthält keine Empfehlungen – die dokumentierten Impfungen können Sie in „Vorsorge“ übernehmen."
                 : "In diesem Dokument stehen keine ausdrücklichen Empfehlungen, die wir übernehmen können."}
             </p>
-          )}
-          <ul className="space-y-4">
-            {a.recommendations.map((rec) => (
-              <li key={rec.id} className="card">
-                <p className="eyebrow">{REC_CATEGORY[rec.category] ?? rec.category}</p>
-                <p className="mt-1 font-semibold">{rec.text_de}</p>
-                <blockquote className="mt-3 border-l-4 border-accent/50 pl-3 text-muted italic">„{displayQuote(rec.quote)}“</blockquote>
-                <p className="mt-2">
-                  <SourceChip source={{ kind: "document", label: `${a.filename}, S. ${rec.page}`, quote: rec.quote, ref: a.document_id }} />
-                </p>
-              </li>
-            ))}
-          </ul>
-          {a.doc_type === "vaccination_record" && <ImportVaccinations documentId={a.document_id} subjectName={name} />}
-          {situation?.ok && <SituationSuggestions documentId={a.document_id} initial={fromThisDoc} firstName={me.ok ? me.data.subject.first_name : ""} />}
-          {benefitIds.length > 0 && (
-            <div className="card mt-6 flex flex-wrap items-center gap-4 border-accent/30 bg-accent-soft">
-              <p className="flex-1 font-semibold">Passende Leistungen jetzt prüfen</p>
-              <Link href={`/leistungen?doc=${encodeURIComponent(a.document_id)}`} className="btn-primary">
-                Leistungen prüfen →
-              </Link>
+          ) : (
+            <div className="overflow-hidden rounded-xl border border-line bg-surface">
+              {[...byCategory.entries()].map(([cat, recs]) => (
+                <div key={cat} className="border-t border-line first:border-t-0">
+                  <h3 className="bg-paper/60 px-4 py-1.5 text-sm font-semibold text-muted">{REC_CATEGORY[cat] ?? cat}</h3>
+                  <ul className="divide-y divide-line">
+                    {recs.map((rec) => (
+                      <li key={rec.id} className="px-4 py-2.5">
+                        <p className="font-semibold">{rec.text_de}</p>
+                        <p className="mt-0.5 text-sm text-muted">
+                          „{displayQuote(rec.quote)}“{" "}
+                          <SourceChip source={{ kind: "document", label: `S. ${rec.page}`, quote: rec.quote, ref: `document:${a.document_id}#page=${rec.page}` }} />
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           )}
         </section>
-        <aside className="space-y-6">
-          <section className="card">
+
+        {/* 3 · Details */}
+        <section aria-label="Details" className="grid gap-4 md:grid-cols-2">
+          <div className="card">
             <h2 className="font-semibold">Erkannte Angaben</h2>
-            <dl className="mt-2 space-y-1">
+            <dl className="mt-1.5 grid grid-cols-[8rem_1fr] gap-x-3 gap-y-1 text-sm">
               {(
                 [
                   ["Name", [a.person.first_name, a.person.last_name].filter(Boolean).join(" ")],
@@ -108,29 +162,26 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
               )
                 .filter(([, v]) => v)
                 .map(([k, v]) => (
-                  <div key={k}>
-                    <dt className="text-sm text-muted">{k}</dt>
+                  <div key={k} className="contents">
+                    <dt className="text-muted">{k}</dt>
                     <dd className="font-semibold">{v}</dd>
                   </div>
                 ))}
             </dl>
-          </section>
+            {a.extraction_mode && <p className="mt-2 text-xs text-muted">Auslesemodus: {a.extraction_mode}</p>}
+          </div>
           {a.open_tasks?.length ? (
-            <section className="card">
+            <div className="card">
               <h2 className="font-semibold">Offene Aufgaben laut Dokument</h2>
-              <ul className="mt-2 list-disc space-y-1 pl-5">
+              <ul className="mt-1.5 list-disc space-y-0.5 pl-5 text-sm">
                 {a.open_tasks.map((t) => (
                   <li key={t}>{t}</li>
                 ))}
               </ul>
-              <Link href="/fall" className="link mt-3 inline-block">
-                In „Mein Fall“ ansehen →
-              </Link>
-            </section>
+            </div>
           ) : null}
-          {a.extraction_mode && <p className="text-sm text-muted">Auslesemodus: {a.extraction_mode}</p>}
           {transcript.ok && transcript.data.pages.length > 0 && (
-            <details open={fromPhoto} className="card">
+            <details open={fromPhoto} className="card md:col-span-2">
               <summary className="flex cursor-pointer items-center gap-2 font-semibold">
                 <ScanText className="h-4 w-4 text-accent" aria-hidden /> Was Lotsi gelesen hat
               </summary>
@@ -149,9 +200,24 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
               </ol>
             </details>
           )}
-        </aside>
+        </section>
       </div>
     </>
+  );
+}
+
+function Todo({ n, title, done = false, children }: { n: number; title: string; done?: boolean; children?: React.ReactNode }) {
+  return (
+    <li className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+      <span
+        aria-hidden
+        className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-semibold ${done ? "bg-ok text-white" : "bg-accent text-white"}`}
+      >
+        {done ? <Check className="h-3.5 w-3.5" /> : n}
+      </span>
+      <span className={`min-w-0 flex-1 font-semibold ${done ? "text-muted" : ""}`}>{title}</span>
+      {children && <span className="text-sm text-muted">{children}</span>}
+    </li>
   );
 }
 
