@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { api } from "@/lib/api";
-import { COOKIE_PLAIN, COOKIE_SUBJECT, COOKIE_TEXT, COOKIE_TOKEN, factsCookie } from "@/lib/session";
+import { COOKIE_PLAIN, COOKIE_SUBJECT, COOKIE_TEXT, COOKIE_TOKEN } from "@/lib/session";
 import type { Case, DocumentAnalysis, DocumentSummary, FormSession, Session } from "@/lib/types";
 
 const cookieOpts = { httpOnly: true, sameSite: "lax" as const, path: "/" };
@@ -93,18 +93,10 @@ export async function createCase() {
   redirect("/fall");
 }
 
-/** Answers to "Was Sie vorab klären können" – sent as facts with every eligibility check for this person. */
+/** Answers to open eligibility questions – stored per person in the benefits service (Lotsi reads them too). */
 export async function saveFact(key: string, value: string | number | boolean | null) {
-  const jar = await cookies();
-  const subject = jar.get(COOKIE_SUBJECT)?.value;
-  if (!subject || !/^[a-z0-9_]+$/.test(key)) return;
-  let facts: Record<string, unknown> = {};
-  try {
-    facts = JSON.parse(jar.get(factsCookie(subject))?.value ?? "{}");
-  } catch {}
-  if (value === null || value === "") delete facts[key];
-  else facts[key] = value;
-  jar.set(factsCookie(subject), JSON.stringify(facts), { ...cookieOpts, maxAge: 60 * 60 * 24 * 30 });
+  if (!/^[a-z0-9_]+$/.test(key)) return;
+  await api("/api/benefits/facts", { method: "PATCH", body: { facts: { [key]: value === "" ? null : value } } });
   revalidatePath("/leistungen");
   revalidatePath("/");
 }
