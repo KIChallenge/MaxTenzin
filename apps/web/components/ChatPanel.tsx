@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { bff } from "@/lib/client";
 import type { ChatAction, ChatResponse, ToolTrace } from "@/lib/types";
 
@@ -20,6 +20,7 @@ export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string
   const [busy, setBusy] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   // Restore conversation per represented person (survives reloads within the tab).
   useEffect(() => {
@@ -62,7 +63,7 @@ export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string
     setMsgs((m) => [...m, { role: "user", text: message }]);
     setBusy(true);
     const r = await bff<ChatResponse>("/api/agent/chat", {
-      body: { message, conversation_id: conv, language: "de", plain_language: plain },
+      body: { message, conversation_id: conv, language: "de", plain_language: plain, ...pageContext(pathname) },
     });
     setBusy(false);
     if (!r.ok) {
@@ -253,4 +254,14 @@ function ActionButton({ action }: { action: ChatAction }) {
       {busy ? "Wird erstellt …" : action.label_de}
     </button>
   );
+}
+
+/** What the user is looking at, so the Lotse works on the same form/document instead of starting a new one.
+ *  `document_ids` is in ChatRequest; `form_session_id` is requested from WS-A (ignored by the API until then). */
+function pageContext(pathname: string): { document_ids?: string[]; form_session_id?: string } {
+  const form = /^\/forms\/([^/]+)/.exec(pathname);
+  if (form) return { form_session_id: form[1] };
+  const doc = /^\/dokumente\/([^/]+)/.exec(pathname);
+  if (doc) return { document_ids: [doc[1]] };
+  return {};
 }

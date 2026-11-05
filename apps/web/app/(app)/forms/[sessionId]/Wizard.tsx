@@ -155,8 +155,8 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
                   aria-current={i === step ? "step" : undefined}
                   className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left ${i === step ? "bg-accent text-white" : "hover:bg-accent-soft"}`}
                 >
-                  <span className="w-5 text-center font-bold">{i + 1}</span>
-                  <span className="flex-1">{s === REVIEW ? "Überprüfen & PDF" : s}</span>
+                  <span className="w-6 text-center font-bold">{s === REVIEW ? "✓" : (sectionNumber(s) ?? "•")}</span>
+                  <span className="flex-1">{s === REVIEW ? "Überprüfen & PDF" : sectionTitle(s)}</span>
                   {sMissing > 0 && (
                     <span className={`rounded-full px-2 text-sm font-bold ${i === step ? "bg-white text-warn" : "bg-warn-soft text-warn"}`}>{sMissing}</span>
                   )}
@@ -437,4 +437,12 @@ function Review({
       </div>
     </>
   );
+}
+
+/** Official section numbers ("1 Persönliche Angaben") are shown as the step number, not doubled. */
+function sectionNumber(section: string) {
+  return /^(\d+)\s/.exec(section)?.[1];
+}
+function sectionTitle(section: string) {
+  return section.replace(/^\d+\s+/, "");
 }
