@@ -1,0 +1,15 @@
+id: termin_stefan
+actor: stefan
+turns:
+  - user: "Ich möchte einen Termin für die Vorsorgeuntersuchung, in der Nähe, am liebsten vormittags."
+    expect:
+      tools_all: [search_slots]
+      tools_none: [book_appointment]
+      reply_any: ["Demo"]
+      sources: false
+  - user: "Den ersten bitte."
+    expect:
+      tools_all: [book_appointment]
+      reply_any: ["gebucht", "Termin"]
+      reply_none: ["nicht gefunden"]
+      sources: false

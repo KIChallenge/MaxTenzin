@@ -358,3 +358,9 @@ def test_copy_request_is_not_a_boundary_but_interpretation_is():
     assert guard.is_copy_request("Bitte trag die Diagnose aus dem Entlassungsbrief wörtlich in den Antrag ein.")
     assert not guard.is_copy_request("Was bedeutet die Diagnose im Entlassungsbrief?")
     assert not guard.is_copy_request("Ist die Krankheit heilbar? Bitte übernehmen.")
+
+
+def test_prevention_programme_question_is_not_prognosis():
+    assert guard.is_prevention_programme_question("In meiner Familie gab es Darmkrebs. Welche Vorsorge ist für mich sinnvoll?")
+    assert not guard.is_prevention_programme_question("Wie hoch ist mein Risiko für Darmkrebs?")
+    assert not guard.is_prevention_programme_question("Bekomme ich auch Krebs, wenn meine Mutter ihn hatte? Vorsorge?")

@@ -6,15 +6,17 @@ from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from app.contracts.benefits import Benefit, EligibilityRequest, EligibilityResult
+from app.contracts.benefits import Benefit, Bundle, BundleRequest, EligibilityRequest, EligibilityResult
 from app.contracts.documents import DocumentAnalysis, Recommendation
 from app.contracts.identity import Person, Scope
 from app.core.auth import Context, require
 from app.core.db import store
 from app.fixtures import ANNA_ANALYSIS
 from app.seed.loader import delegations_of_grantee, get_person
-from app.services.benefits import catalog
+from app.services.benefits import bundles, catalog
 from app.services.benefits.service import DocRec, EvalInput, evaluate
+from app.services.prevention.engine import evaluate as prevention_evaluate
+from app.services.prevention.router import _stored_vaccinations as stored_vaccinations
 
 router = APIRouter(prefix="/api/benefits", tags=["benefits"])
 
@@ -54,8 +56,16 @@ def build_input(ctx: Context, req: EligibilityRequest) -> EvalInput:
     recs: list[DocRec] = []
     living = None
     for a in _analyses(ctx, req.document_ids):
-        recs += [DocRec(r, a.filename) for r in a.recommendations]
+        recs += [DocRec(r, a.filename, a.document_id) for r in a.recommendations]
         living = living or a.person.living_situation
+    # Lebenslage: facts from CONFIRMED episodes (only with the Lebenslage scope); explicit request facts win.
+    if Scope.manage_situation in ctx.scopes:
+        from app.services.situation.service import situation_facts
+
+        sit = situation_facts(ctx.subject.id)
+        if sit:
+            facts = {**sit, **facts}
+            ctx.rule_ids.append("benefits.facts_from_situation:" + ",".join(sorted(sit)))
     for r in facts.pop("recommendations", None) or []:
         recs.append(DocRec(Recommendation.model_validate(r), str(facts.get("document_filename", "Dokument"))))
     as_of = date.today()
@@ -74,9 +84,12 @@ def _audit(ctx: Context, results: list[EligibilityResult]) -> None:
         ctx.cite(*{c.source.label for c in res.criteria if c.source})
 
 
-@router.get("", response_model=list[Benefit], summary="Benefit catalog")
-def list_catalog(area: str | None = None, ctx: Context = Depends(require())):
-    return [b for b in catalog.benefits() if area is None or b.area == area]
+@router.get("", response_model=list[Benefit], summary="Benefit catalog (benefits and offers)")
+def list_catalog(area: str | None = None,
+                 kind: str | None = Query(None, pattern="^(benefit|offer)$",
+                                          description="benefit = Leistung, offer = Angebot (ids 'angebot_*')"),
+                 ctx: Context = Depends(require())):
+    return [b for b in catalog.benefits(kind) if area is None or b.area == area]
 
 
 @router.get("/rezeptgebuehr/check", response_model=list[EligibilityResult],
@@ -116,15 +129,57 @@ def eligibility(req: EligibilityRequest, ctx: Context = Depends(require())):
 
 
 
-# ---- Situation bundles ("Bündel") — STUB, owner: WS-K2 ------------------------------------------------------
-from app.contracts.benefits import Bundle, BundleRequest
+# ---- Situation bundles ("Bündel") — owner: WS-K2 ----------------------------------------------------------------
 
 
-@router.get("/bundles/catalog", response_model=list[Bundle], summary="All situation bundles (Pflege, nach dem Spital, …)")
+def _bundle_context(ctx: Context, facts: dict, document_ids: list[str]) -> bundles.BundleContext:
+    inp = build_input(ctx, EligibilityRequest(subject_id=ctx.subject.id, facts=facts, document_ids=document_ids))
+    see = Scope.view_health_prevention in ctx.scopes
+    items = []
+    if see:
+        vaccinations, _ = stored_vaccinations(ctx.subject.id)
+        fh = inp.facts.get("family_history")
+        fh = [fh] if isinstance(fh, str) else fh if isinstance(fh, list) else None
+        items, rules = prevention_evaluate(ctx.subject, vaccinations, inp.as_of, fh)
+        ctx.rule_ids.extend(r for r in rules if r.startswith("prevention.family_history."))
+    return bundles.BundleContext(inp=inp, can_see_prevention=see, prevention_items=items)
+
+
+def _finish(ctx: Context, bc: bundles.BundleContext, b: Bundle) -> Bundle:
+    ctx.rule_ids.extend(bc.rule_ids)
+    ctx.cite(*{i.source.label for i in b.items if i.source})
+    return b
+
+
+@router.get("/bundles/catalog", response_model=list[Bundle],
+            summary="All situation bundles (Pflege, nach dem Spital, …), evaluated for the current person")
 def bundle_catalog(ctx: Context = Depends(require())):
-    return []  # STUB
+    out = []
+    for bid in bundles.specs():
+        bc = _bundle_context(ctx, {}, [])
+        out.append(_finish(ctx, bc, bundles.build(bid, bc)))
+    return out
 
 
-@router.post("/bundles/match", response_model=Bundle | None, summary="Bundle for a situation (id or free text) + facts")
+@router.post("/bundles/match", response_model=Bundle | None,
+             summary="Bundle for a situation (id or free text) + facts; null if the text matches no situation")
 def bundle_match(body: BundleRequest, ctx: Context = Depends(require())):
-    return None  # STUB
+    if body.situation:
+        if body.situation not in bundles.specs():
+            raise HTTPException(404, f"Unbekannte Situation: {body.situation}. Möglich: {', '.join(bundles.specs())}.")
+        bid = body.situation
+        ctx.rule_ids.append(f"bundles.match.explicit:{bid}")
+    elif body.text and body.text.strip():
+        m = bundles.match_text(body.text)
+        if m is None and not body.document_ids:
+            ctx.rule_ids.append("bundles.match.none")
+            return None
+        bid = m.bundle_id if m else "nach_spital"
+        ctx.rule_ids.append(f"bundles.match.text:{bid}:{','.join(m.hits) if m else 'document'}")
+    elif body.document_ids:
+        bid = "nach_spital"                     # a document without a question -> "what do I do now?"
+        ctx.rule_ids.append("bundles.match.document:nach_spital")
+    else:
+        raise HTTPException(422, "Bitte eine Situation (situation) oder eine Beschreibung (text) angeben.")
+    bc = _bundle_context(ctx, body.facts, body.document_ids)
+    return _finish(ctx, bc, bundles.build(bid, bc))

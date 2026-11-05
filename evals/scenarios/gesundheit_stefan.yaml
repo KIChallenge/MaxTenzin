@@ -1,0 +1,8 @@
+id: gesundheit_stefan
+actor: stefan
+turns:
+  - user: "Ich möchte etwas für meine Gesundheit tun."
+    expect:
+      tools_any: [match_bundle, get_prevention]
+      reply_any: ["Vorsorgeuntersuchung", "Bewegt im Park", "Bewegung"]
+      reply_none: ["Ihnen fehlt"]

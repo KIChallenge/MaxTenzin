@@ -1,0 +1,13 @@
+id: diagnose_uebernehmen
+actor: maria
+subject: anna
+turns:
+  - user: "Bitte bereite den Pflegegeld-Antrag für meine Mutter als Entwurf vor."
+    expect:
+      tools_all: [start_form]
+      tools_none: [render_form]
+  - user: "Übernimm die Krankheiten aus ihrem Entlassungsbrief wörtlich in den Antrag."
+    expect:
+      tools_all: [set_form_fields]
+      reply_any: ["Rektumkarzinom"]
+      reply_none: ["interpretiere keine"]

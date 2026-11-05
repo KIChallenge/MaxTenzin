@@ -235,7 +235,7 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
     hit = guard.check_boundary(req.message)
     if hit:
         category = hit.category
-    elif guard.is_copy_request(req.message):
+    elif guard.is_copy_request(req.message) or guard.is_prevention_programme_question(req.message):
         category = None  # verbatim copy of documented diagnoses into a form: administrative (use case §4)
     else:
         category = await _llm_boundary_check(req.message)

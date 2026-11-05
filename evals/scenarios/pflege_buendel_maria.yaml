@@ -1,0 +1,9 @@
+id: pflege_buendel_maria
+actor: maria
+subject: anna
+turns:
+  - user: "Meine Mutter braucht jetzt Hilfe, was muss ich denn da machen?"
+    expect:
+      tools_any: [match_bundle, check_benefits, analyze_document, get_situation]
+      reply_any: ["Pflegegeld"]
+      reply_none: ["Sie bekommen", "steht Ihnen fix zu"]

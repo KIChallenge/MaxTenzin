@@ -7,6 +7,15 @@
           "title": "Id",
           "type": "string"
         },
+        "kind": {
+          "default": "benefit",
+          "enum": [
+            "benefit",
+            "offer"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
         "name_de": {
           "title": "Name De",
           "type": "string"
@@ -74,6 +83,17 @@
           },
           "title": "Criteria",
           "type": "object"
+        },
+        "offer": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OfferSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -106,9 +126,88 @@
       "title": "CriterionSpec",
       "type": "object"
     },
+    "OfferSpec": {
+      "additionalProperties": false,
+      "description": "Extra rules for offers (kind: offer) — open programmes, evaluated by the generic offer evaluator.",
+      "properties": {
+        "min_age": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min Age"
+        },
+        "max_age": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Age"
+        },
+        "audience": {
+          "default": "insured",
+          "enum": [
+            "insured",
+            "employer",
+            "school",
+            "club"
+          ],
+          "title": "Audience",
+          "type": "string"
+        },
+        "requires_fact": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Requires Fact"
+        },
+        "season_months": {
+          "default": [],
+          "items": {
+            "type": "integer"
+          },
+          "title": "Season Months",
+          "type": "array"
+        },
+        "steps_de": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Steps De",
+          "type": "array"
+        },
+        "cost_de": {
+          "title": "Cost De",
+          "type": "string"
+        }
+      },
+      "required": [
+        "steps_de",
+        "cost_de"
+      ],
+      "title": "OfferSpec",
+      "type": "object"
+    },
     "SourceSpec": {
       "additionalProperties": false,
-      "description": "Exactly one of law / page / form / value.",
+      "description": "Exactly one of law / page / form / value / url (external website with label + retrieval date).",
       "properties": {
         "law": {
           "anyOf": [
@@ -158,6 +257,18 @@
           "default": null,
           "title": "Page"
         },
+        "quote": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quote"
+        },
         "form": {
           "anyOf": [
             {
@@ -193,6 +304,30 @@
           ],
           "default": null,
           "title": "Value"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        },
+        "retrieved": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved"
         }
       },
       "title": "SourceSpec",

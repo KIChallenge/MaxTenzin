@@ -41,6 +41,26 @@ sources:
     label: "ÖGK Serviceratgeber 2026, S. 25"
     page: 25
     quote: "Frauen zwischen 40 und 44 sowie ab 75 Jahren können sich bei der kostenlosen Service-line 0800 500 181 oder auf www. frueh-erkennen.at zum Programm anmelden."
+  sr23_fragebogen:
+    kind: brochure
+    label: "ÖGK Serviceratgeber 2026, S. 23"
+    page: 23
+    quote: "Zuerst füllen Sie einen Fragebogen zu unterschiedlichen Themen aus (z.B. zu eigenen Vorerkrankungen, erblicher Vorbelastung, Bewegung, Alkoholkonsum)."
+  sr23_stoffwechsel:
+    kind: brochure
+    label: "ÖGK Serviceratgeber 2026, S. 23"
+    page: 23
+    quote: "Stoffwechselerkrankungen (z.B. Diabetes)"
+  sr24_risiken:
+    kind: brochure
+    label: "ÖGK Serviceratgeber 2026, S. 24"
+    page: 24
+    quote: "Bei der Vorsorgeuntersuchung werden die häufigsten beeinflussbaren Gesundheitsrisiken wie Übergewicht, Bluthochdruck, Rauchen und Bewegungsmangel abgeklärt."
+  sr25_familiaer:
+    kind: brochure
+    label: "ÖGK Serviceratgeber 2026, S. 25"
+    page: 25
+    quote: "wenn ein familiär erhöhtes Risiko besteht, ist eine Zuweisung zur diagnostischen Mammografie unabhängig vom Alter durch eine Ärztin oder einen Arzt jederzeit möglich."
   sr32_free:
     kind: brochure
     label: "ÖGK Serviceratgeber 2026, S. 32"
@@ -160,3 +180,41 @@ rules:
     optin_de: "Frauen zwischen 40 und 44 sowie ab 75 Jahren können sich bei der kostenlosen Serviceline 0800 500 181 oder auf www.frueh-erkennen.at zum Programm anmelden."
     cost_de: "kostenlos"
     sources: [sr25, sr25_optin]
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Family history ("Intelligente Erklärungen", use case 3.4) — owner: WS-K2.
+# Input: facts.family_history = list of conditions the person states for their family (e.g. ["darmkrebs"]).
+# Effect: matching programme items are marked "Besonders relevant" with an explanation that cites the OFFICIAL
+# programme only. No risk numbers, no individual risk assessment, no earlier/extra examinations recommended —
+# every explanation ends with doctor_note_de. If the programme item is not shown because of age/sex, an info item
+# (status upcoming, due at the programme age) is added so the programme is still explained (`add_if_absent`).
+# `match`: lower-case aliases (umlauts folded: ä->ae, ö->oe, ü->ue, ß->ss) of the stated condition.
+family_history:
+  doctor_note_de: "Ob und wann für Sie eine frühere oder zusätzliche Untersuchung sinnvoll ist, entscheidet Ihre Ärztin bzw. Ihr Arzt – sprechen Sie die Familiengeschichte bei der Vorsorgeuntersuchung an."
+  rules:
+    - id: darmkrebs
+      label_de: Darmkrebs
+      match: [darmkrebs, dickdarmkrebs, kolonkarzinom, kolorektales karzinom, colon cancer, bowel cancer, colorectal cancer]
+      items: [darmkrebs, vu]
+      add_if_absent: darmkrebs
+      explanation_de: "Sie haben angegeben, dass in Ihrer Familie Darmkrebs vorgekommen ist. Im offiziellen Programm werden bei der Vorsorgeuntersuchung ab dem 45. Lebensjahr alle zehn Jahre eine Darmspiegelung (Koloskopie) und bei jeder Vorsorgeuntersuchung ein Test auf nicht sichtbares Blut im Stuhl angeboten. Im Fragebogen der Vorsorgeuntersuchung wird auch nach erblicher Vorbelastung gefragt."
+      sources: [sr24, sr23_fragebogen]
+    - id: brustkrebs
+      label_de: Brustkrebs
+      match: [brustkrebs, mammakarzinom, breast cancer]
+      items: [mammografie, vu]
+      add_if_absent: mammografie
+      explanation_de: "Sie haben angegeben, dass in Ihrer Familie Brustkrebs vorgekommen ist. Im Brustkrebs-Früherkennungsprogramm „früh erkennen“ ist die e-card bei Frauen zwischen 45 und 74 Jahren alle zwei Jahre für die Mammografie freigeschaltet; laut Programm ist bei einem familiär erhöhten Risiko eine ärztliche Zuweisung zur Mammografie unabhängig vom Alter möglich – ob das auf Sie zutrifft, beurteilt Ihre Ärztin bzw. Ihr Arzt."
+      sources: [sr25, sr25_familiaer]
+    - id: diabetes
+      label_de: Diabetes
+      match: [diabetes, zuckerkrankheit, zucker, diabetes mellitus]
+      items: [vu]
+      explanation_de: "Sie haben angegeben, dass in Ihrer Familie Diabetes vorkommt. Die Vorsorgeuntersuchung konzentriert sich unter anderem auf Stoffwechselerkrankungen wie Diabetes; dabei werden Blutzucker- und Blutfettwerte bestimmt, und im Fragebogen wird nach erblicher Vorbelastung gefragt."
+      sources: [sr23_stoffwechsel, sr23_fragebogen]
+    - id: herz_kreislauf
+      label_de: Herz-Kreislauf-Erkrankungen
+      match: [herz_kreislauf, herz-kreislauf, herzkreislauf, herzinfarkt, schlaganfall, herzerkrankung, bluthochdruck, heart disease, stroke]
+      items: [vu]
+      explanation_de: "Sie haben angegeben, dass in Ihrer Familie Herz-Kreislauf-Erkrankungen vorkommen. Die Vorsorgeuntersuchung widmet sich unter anderem der Prävention von Herz-Kreislauf-Erkrankungen; dabei werden häufige beeinflussbare Gesundheitsrisiken wie Übergewicht, Bluthochdruck, Rauchen und Bewegungsmangel abgeklärt."
+      sources: [sr23, sr24_risiken, sr23_fragebogen]

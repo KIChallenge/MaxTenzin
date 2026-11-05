@@ -22,3 +22,17 @@ def test_situation_reminders_and_steps_flow(client):
     events = client.get("/api/audit", headers=auth("anna")).json()
     assert any(e["path"].endswith("/steps") and e["via"] == "service:situation" for e in events)
     assert case["id"]
+
+
+def test_second_copy_of_document_does_not_duplicate_suggestions(client):
+    from app.core.db import store
+
+    first = client.post("/api/situation/suggestions/from-document/doc-anna-entlassung", headers=H).json()
+    # a second copy of the SAME letter (e.g. photo + PDF) yields the same analysis content
+    original = client.get("/api/documents/doc-anna-entlassung/analysis", headers=H).json()
+    store.put("document_analyses", "doc-anna-copy", {**original, "document_id": "doc-anna-copy"}, subject_id="anna")
+    second = client.post("/api/situation/suggestions/from-document/doc-anna-copy", headers=H).json()
+    assert {e["id"] for e in second} <= {e["id"] for e in first} | {e["id"] for e in second if e["status"] != "suggested"}
+    overview = client.get("/api/situation", headers=H).json()
+    types = [e["type"] for e in overview["suggestions"]]
+    assert len(types) == len(set(types))

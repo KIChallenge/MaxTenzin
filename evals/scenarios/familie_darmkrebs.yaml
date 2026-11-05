@@ -1,0 +1,8 @@
+id: familie_darmkrebs
+actor: stefan
+turns:
+  - user: "In meiner Familie gab es Darmkrebs. Welche Vorsorge ist für mich sinnvoll?"
+    expect:
+      tools_any: [get_prevention, match_bundle]
+      reply_any: ["Ärztin", "Arzt"]
+      reply_none: ["Ihr Risiko liegt", "Prozent", "Ihnen fehlt"]
