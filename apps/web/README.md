@@ -42,8 +42,6 @@ Shows only what the API returns — no amounts, eligibility or medical statement
 None of its own; all from the services' `SourceRef`s.
 
 ## Limitations
-- Conditional form fields: until `FormField.when` is in the contract, the wizard hides empty required fields the server doesn't list as missing; optional conditional fields stay visible.
-- Eligibility is called only with analysed documents (newest copy per file name) – the API rejects the whole request otherwise.
 - Screenshots in `documentation/screenshots/` predate the polish pass (refresh pending).
 - No automated UI tests in repo; hero flow verified with a Playwright script (screenshots in `documentation/screenshots/`).
 

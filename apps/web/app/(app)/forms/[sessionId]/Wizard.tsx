@@ -60,11 +60,19 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
     refreshMissing();
   }, [refreshMissing, session.updated_at]);
 
-  // Until FormField exposes its condition (contract request): an empty required field the server does not
-  // report as missing is currently irrelevant → hide it.
-  const isHidden = (f: FormField) =>
-    missingIds !== null && f.required && !f.readonly_reason_de && !isFilled(session.values[f.id]?.value) && !missingIds.has(f.id);
-  const visible = (f: FormField) => !isHidden(f);
+  // Conditional fields (FormField.when), evaluated like the forms service does – on the live values incl. unsaved
+  // clicks, so a dependent field appears immediately.
+  const currentValue = (id: string): Val => (id in drafts ? drafts[id] : (session.values[id]?.value ?? null));
+  const visible = (f: FormField) => {
+    const c = f.when;
+    if (!c) return true;
+    if (c.proxy !== undefined && c.proxy !== null) return (session.actor_id !== session.subject_id) === c.proxy;
+    if (!c.field) return true;
+    const v = currentValue(c.field);
+    if (c.one_of && c.one_of.length) return c.one_of.includes(v as string);
+    if (c.equals === undefined || c.equals === null) return isFilled(v) && v !== false;
+    return v === c.equals;
+  };
   const missing = definition.fields.filter((f) => missingIds?.has(f.id));
   const progress = serverProgress ?? 0;
 
@@ -151,9 +159,10 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
       el?.focus();
     }, 50);
   };
+  // Only point to fields outside the current step – a field that appears right under the click needs no banner.
   const newlyRequiredFields = newlyRequired
     .map((id) => definition.fields.find((f) => f.id === id))
-    .filter((f): f is FormField => !!f);
+    .filter((f): f is FormField => !!f && f.section !== current);
 
   return (
     <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
@@ -281,7 +290,9 @@ function FieldRow(props: {
   const value = draft !== undefined ? draft : (fv?.value ?? null);
   const filled = isFilled(fv?.value);
   const missingReq = props.isMissing;
-  const dirty = draft !== undefined && draft !== (fv?.value ?? null);
+  // Choice/checkbox save on click – they never need a "Speichern" button (it would only flash while saving).
+  const instant = f.type === "choice" || f.type === "checkbox";
+  const dirty = !instant && draft !== undefined && draft !== (fv?.value ?? null);
   const id = `f-${f.id}`;
 
   const rowBase = "grid gap-x-6 gap-y-2 px-5 py-4 @2xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]";

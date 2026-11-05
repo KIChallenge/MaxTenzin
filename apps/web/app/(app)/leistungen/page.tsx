@@ -8,7 +8,7 @@ import { api, isPlain } from "@/lib/api";
 import { factLabel } from "@/lib/facts";
 import { ELIGIBILITY, fmtAmount, fullName } from "@/lib/labels";
 import { getMe } from "@/lib/me";
-import type { CriterionResult, DocumentAnalysis, DocumentSummary, EligibilityResult, EligibilityStatus, FormDefinition, SourceRef } from "@/lib/types";
+import type { CriterionResult, DocumentSummary, EligibilityResult, EligibilityStatus, FormDefinition, SourceRef } from "@/lib/types";
 
 type Amount = { label_de?: string; value?: number; unit?: string; source?: SourceRef };
 
@@ -21,12 +21,9 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
   const subject = me.data.subject;
   const name = fullName(subject);
 
-  // Only analysed documents (eligibility rejects the whole request otherwise), newest copy per file name.
+  // Newest copy per file name (the eligibility service skips documents without analysis on its own).
   const docs = await api<DocumentSummary[]>("/api/documents");
-  const newestFirst = docs.ok ? [...docs.data].sort((a, b) => b.uploaded_at.localeCompare(a.uploaded_at)) : [];
-  const analysed = (
-    await Promise.all(newestFirst.map(async (d) => ((await api<DocumentAnalysis>(`/api/documents/${d.document_id}/analysis`)).ok ? d : null)))
-  ).filter((d): d is DocumentSummary => d !== null);
+  const analysed = docs.ok ? [...docs.data].sort((a, b) => b.uploaded_at.localeCompare(a.uploaded_at)) : [];
   const seen = new Set<string>();
   const used = analysed.filter((d) => (seen.has(d.filename) ? false : (seen.add(d.filename), true)));
   if (sp.doc && !used.some((d) => d.document_id === sp.doc)) {
