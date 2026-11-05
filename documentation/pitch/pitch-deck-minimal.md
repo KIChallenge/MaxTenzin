@@ -47,13 +47,13 @@ Schlusszeile: **Lotsi entscheidet nichts. Er formuliert, was die Dienste entschi
 
 Die Zahl 157,30 € gegen 206,20 € ist nur noch Nice-to-have: optional in der Demo um 2:30 und als Q&A-Antwort auf „Halluziniert das nicht?“.
 
-## Folie 3 – Das Architekturbild (7:20–7:35)
-**Ein Weg für alle: Cockpit und Lotsi nutzen dieselben Dienste.**
-Links zwei Sätze, rechts das Mermaid-Diagramm aus der `README.md` (gerendert als Bild).
+## Folie 3 – Die Kommunikationswege (7:20–7:35)
+**Zwei Wege hinein, ein Eingang zu den Diensten.**
+Eigene Zeichnung (kein Mermaid): Person → Cockpit → zwei Wege (direkt oder über Lotsi) → ein Eingang „Login → Berechtigung der Person → Protokoll“ → Dienste in drei Gruppen (Person & Rechte · Anliegen & Anträge · Regeln & Werte) → Wissen (versioniert, quellenbelegt).
 
-> Sprechtext (15 s): „Vom Cockpit gehen zwei Wege nach unten, direkt oder über Lotsi. Beide landen an derselben Stelle: dieselben Schnittstellen, derselbe Token, dasselbe Protokoll. Lotsi hat keinen eigenen Weg an den Diensten vorbei. Ganz unten das Wissen: versioniert, quellenbelegt.“
+> Sprechtext (15 s): „Vom Cockpit gibt es zwei Wege: direkt oder über Lotsi. Beide landen am selben Eingang: Login, Berechtigung der Person, Protokoll. Lotsi hat keinen eigenen Weg daran vorbei. Dienst zu Dienst geht es nur über denselben Eingang mit dem Token der Person. Ganz unten das Wissen, versioniert und quellenbelegt.“
 
-Bild neu erzeugen nach Änderung des Diagramms: `npx -y @mermaid-js/mermaid-cli -i architecture.mmd -o architecture.png -s 3 -b "#f6f8f6"` (Mermaid-Block aus der README in `architecture.mmd` kopieren), dann als Bild in die Folie laden.
+Das vollständige Mermaid-Diagramm mit allen 14 Diensten bleibt in der `README.md` (Reserve für Q&A).
 
 ## Folie 4 – Schluss (7:35–7:50, bei Zeitdruck nur sprechen)
 **Bausteine tauschen, nicht neu bauen**
