@@ -37,6 +37,9 @@ Run `make test-api` (and `make lint`) before every commit that touches `services
 | `services/api/app/services/forms/`, `knowledge/forms/*.yaml` | WS-F |
 | `services/api/app/agent/`, `evals/` (except goldens) | WS-A |
 | `services/api/app/services/{cases,notifications}/` | WS-C |
+| `services/api/app/services/appointments/`, `knowledge/providers.yaml` | WS-T (appointments) |
+| `knowledge/benefits.yaml` + bundles/offers in `app/services/benefits/`, `knowledge/bundles.yaml`, `knowledge/prevention.yaml` (family-history rules) | WS-K2 (catalog & bundles) |
+| `services/api/app/services/documents/` (image/photo upload, vision) | WS-V (vision) |
 | `apps/web/` | WS-W |
 Do not edit outside your paths. Need a contract/core change? Add it under **Contract requests** in `PROGRESS.md`, work around it locally, and tell the integrator.
 
