@@ -391,3 +391,11 @@ def test_every_agent_tool_has_a_german_label_in_the_cockpit():
     text = labels.read_text(encoding="utf-8")
     missing = [t.name for t in TOOLS if not re.search(rf"\b{t.name}\b", text)]
     assert not missing, f"add German labels to TOOL_LABELS for: {missing}"
+
+
+def test_english_germanisms_are_fixed():
+    from app.agent.orchestrator import _sanitize
+
+    out = _sanitize("FSW — **comes very likely in question**. Reha — comes possibly into question.", "en")
+    assert "likely an option" in out and "may be an option" in out and "question" not in out
+    assert _sanitize("kommt voraussichtlich in Frage", "de") == "kommt voraussichtlich in Frage"

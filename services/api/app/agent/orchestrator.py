@@ -309,7 +309,7 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
         srcs = [s for o in outcomes if o.ok for s in o.sources]
         if srcs and not any(w in reply.lower() for w in ("quelle", "source", "kaynak")):
             reply += "\n\n**Quellen:** " + "; ".join(list(dict.fromkeys(srcs))[:6])
-        resp = ChatResponse(conversation_id=conv["id"], reply=_sanitize(reply), tool_trace=[_trace(o) for o in outcomes],
+        resp = ChatResponse(conversation_id=conv["id"], reply=_sanitize(reply, lang), tool_trace=[_trace(o) for o in outcomes],
                             boundary_triggered=False, suggestions_de=_suggestions(memo, outcomes),
                             actions=_actions(outcomes))
 
@@ -404,8 +404,19 @@ _TOOL_DE = {"search_slots": "Terminsuche", "book_appointment": "Terminbuchung", 
 _TOOL_RE = re.compile(r"`?\b(" + "|".join(_TOOL_DE) + r")\b`?")
 
 
-def _sanitize(reply: str) -> str:
+# Literal German→English status translations the model tends to produce ("kommt in Frage" → "comes in question").
+_EN_FIXES = [
+    (re.compile(r"\bcomes?\s+(?:very\s+)?likely\s+(?:in|into)\s+question\b", re.IGNORECASE), "is likely an option"),
+    (re.compile(r"\bcomes?\s+possibly\s+(?:in|into)\s+question\b", re.IGNORECASE), "may be an option"),
+    (re.compile(r"\bcomes?\s+(?:in|into)\s+question\b", re.IGNORECASE), "is an option"),
+]
+
+
+def _sanitize(reply: str, lang: str = "de") -> str:
     """Never show internal ids (session UUIDs) or internal tool names to the person."""
+    if lang == "en":
+        for rx, repl in _EN_FIXES:
+            reply = rx.sub(repl, reply)
     out = _TOOL_RE.sub(lambda m: _TOOL_DE[m.group(1)], _UUID.sub("", reply))
     out = re.sub(r"[^\n]*\b(provider_id|slot_id|session_id|episode_id|case_id|step_id)\b[^\n]*\n?", "", out)
     out = re.sub(r"\s*\(?`?demo-[a-z0-9-]+`?\)?", "", out)
