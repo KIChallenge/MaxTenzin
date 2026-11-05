@@ -315,6 +315,9 @@ def _actions(outcomes) -> list[ChatAction]:
                                           url=f"/api/forms/sessions/{sid}/render")
         elif o.tool in ("start_form", "set_form_fields", "get_next_questions") and sid:
             acts["form"] = ChatAction(kind="open_form", label_de="Antrag im Assistenten öffnen", url=f"/forms/{sid}")
+        elif o.tool == "book_appointment" and isinstance(o.data, dict) and o.data.get("ics_url"):
+            acts["ics"] = ChatAction(kind="download_ics", label_de="Termin in den Kalender (.ics)", url=o.data["ics_url"])
+            acts["appointments"] = ChatAction(kind="open_appointments", label_de="Meine Termine", url="/termine")
         elif o.tool in ("create_case", "update_case_step"):
             acts["case"] = ChatAction(kind="open_case", label_de="Mein Fall öffnen", url="/fall")
     return list(acts.values())
@@ -365,9 +368,20 @@ async def _form_write_reply(client: ToolClient, writes: list[ToolOutcome], model
     return "\n".join(lines) + ("\n\n" + rest if rest else "")
 
 
+_TOOL_DE = {"search_slots": "Terminsuche", "book_appointment": "Terminbuchung", "check_benefits": "Anspruchsprüfung",
+            "analyze_document": "Dokumentanalyse", "get_next_questions": "Antragsentwurf", "set_form_fields": "Antragsentwurf",
+            "start_form": "Antragsentwurf", "render_form": "PDF-Entwurf", "get_prevention": "Vorsorge-Hinweise",
+            "match_bundle": "Lebenssituation", "get_situation": "Lebenslage", "find_office": "Zuständige Stellen",
+            "search_law": "Rechtsgrundlagen", "get_value": "Werte-Tabelle", "get_benefit": "Leistungsbeschreibung",
+            "list_appointments": "Termine", "preview_form": "Antragsentwurf", "list_documents": "Dokumente"}
+_TOOL_RE = re.compile(r"`?\b(" + "|".join(_TOOL_DE) + r")\b`?")
+
+
 def _sanitize(reply: str) -> str:
-    """Never show internal ids (session UUIDs) to the person."""
-    return _UUID.sub("", reply)
+    """Never show internal ids (session UUIDs) or internal tool names to the person."""
+    out = _TOOL_RE.sub(lambda m: _TOOL_DE[m.group(1)], _UUID.sub("", reply))
+    out = re.sub(r"\n*\**Quellen:?\**:?\s*(keine|keine angegeben|keine Tool-Ergebnisse)[^\n]*", "", out, flags=re.IGNORECASE)
+    return out.strip()
 
 
 _CONSENT_YES = re.compile(r"\b(ja|jawohl|passt|stimmt|einverstanden|übernehmen|übernimm|bestätige|yes|evet)\b", re.IGNORECASE)
