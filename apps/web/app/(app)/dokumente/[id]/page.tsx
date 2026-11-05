@@ -8,6 +8,8 @@ import { DOC_TYPE, fmtDate, fullName, REC_CATEGORY } from "@/lib/labels";
 import { getMe } from "@/lib/me";
 import type { DocumentAnalysis } from "@/lib/types";
 import { ImportVaccinations } from "./ImportVaccinations";
+import { ScanText } from "lucide-react";
+import type { components } from "@/lib/api-types";
 import { SituationSuggestions } from "./SituationSuggestions";
 import type { SituationOverview } from "@/lib/situation";
 
@@ -20,6 +22,8 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
   if (!r.ok) return <ApiError status={r.status} detail={r.detail} subjectName={name} />;
   const a = r.data;
   const benefitIds = [...new Set(a.recommendations.flatMap((x) => x.related_benefit_ids ?? []))];
+  const transcript = await api<components["schemas"]["DocumentTranscript"]>(`/api/documents/${encodeURIComponent(id)}/transcript`);
+  const fromPhoto = transcript.ok && transcript.data.source === "image";
   // Pending Lebenslage suggestions that came from this document (only when the situation service answers).
   const situation = a.doc_type === "discharge_letter" ? await api<SituationOverview>("/api/situation") : null;
   const fromThisDoc = situation?.ok
@@ -125,6 +129,26 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
             </section>
           ) : null}
           {a.extraction_mode && <p className="text-sm text-muted">Auslesemodus: {a.extraction_mode}</p>}
+          {transcript.ok && transcript.data.pages.length > 0 && (
+            <details open={fromPhoto} className="card">
+              <summary className="flex cursor-pointer items-center gap-2 font-semibold">
+                <ScanText className="h-4 w-4 text-accent" aria-hidden /> Was Lotsi gelesen hat
+              </summary>
+              {transcript.data.notice_de && <p className="mt-2 rounded-md bg-warn-soft px-2.5 py-1.5 text-sm">{transcript.data.notice_de}</p>}
+              <ol className="mt-2 space-y-3">
+                {transcript.data.pages.map((p) => (
+                  <li key={p.page}>
+                    <p className="text-xs font-semibold text-muted">
+                      Seite {p.page}
+                      {p.unreadable > 0 && ` · ${p.unreadable} Stelle(n) unleserlich`}
+                      {p.low_resolution && " · geringe Auflösung"}
+                    </p>
+                    <p className="max-h-64 overflow-y-auto text-sm whitespace-pre-wrap">{p.text}</p>
+                  </li>
+                ))}
+              </ol>
+            </details>
+          )}
         </aside>
       </div>
     </>

@@ -2,7 +2,7 @@
 // Drop zone: drag a PDF or photo onto it, or click / press Enter to choose one. Upload starts right away.
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FileUp, LoaderCircle } from "lucide-react";
+import { Camera, FileUp, LoaderCircle } from "lucide-react";
 import { ACCEPT, uploadAndAnalyze } from "@/lib/upload";
 
 export function UploadForm({ subjectName }: { subjectName: string }) {
@@ -11,14 +11,16 @@ export function UploadForm({ subjectName }: { subjectName: string }) {
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
   const input = useRef<HTMLInputElement>(null);
+  const camera = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const busy = stage !== "idle";
 
-  async function handle(file: File | undefined) {
-    if (!file || busy) return;
+  async function handle(list: FileList | File[] | null | undefined) {
+    const files = Array.from(list ?? []);
+    if (!files.length || busy) return;
     setError(null);
-    setName(file.name);
-    const r = await uploadAndAnalyze(file, setStage);
+    setName(files.length > 1 ? `${files.length} Fotos` : files[0].name);
+    const r = await uploadAndAnalyze(files.length > 1 ? files : files[0], setStage);
     if (!r.ok) {
       setStage("idle");
       setError(r.status === 403 ? `Dafür hat ${subjectName} keine Berechtigung erteilt. ${r.detail}` : r.detail);
@@ -44,7 +46,7 @@ export function UploadForm({ subjectName }: { subjectName: string }) {
         onDrop={(e) => {
           e.preventDefault();
           setOver(false);
-          handle(e.dataTransfer.files?.[0]);
+          handle(e.dataTransfer.files);
         }}
         className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-6 py-10 text-center transition-colors ${
           over ? "border-accent bg-accent-soft" : "border-line bg-surface hover:border-accent/60 hover:bg-accent-soft/40"
@@ -57,14 +59,14 @@ export function UploadForm({ subjectName }: { subjectName: string }) {
         )}
         {busy ? (
           <p className="font-semibold">
-            {stage === "upload" ? "Wird hochgeladen …" : "Wird gelesen …"} <span className="font-normal text-muted">{name}</span>
+            {stage === "upload" ? "Wird hochgeladen und gelesen …" : "Wird ausgewertet …"} <span className="font-normal text-muted">{name}</span>
           </p>
         ) : (
           <>
             <p className="font-semibold">{over ? "Loslassen zum Hochladen" : "Dokument hierher ziehen"}</p>
             <p className="text-sm text-muted">
-              oder <span className="font-semibold text-accent underline underline-offset-2">Datei auswählen</span> · PDF oder Foto
-              (JPG, PNG)
+              oder <span className="font-semibold text-accent underline underline-offset-2">Datei auswählen</span> · ein PDF oder Fotos
+              (JPG, PNG) – mehrere Fotos werden ein Dokument
             </p>
             <p className="text-sm text-muted">z. B. Entlassungsbrief, Befund oder e-Impfpass von {subjectName}</p>
           </>
@@ -73,10 +75,30 @@ export function UploadForm({ subjectName }: { subjectName: string }) {
           ref={input}
           type="file"
           accept={ACCEPT}
+          multiple
           className="sr-only"
           tabIndex={-1}
           onChange={(e) => {
-            handle(e.target.files?.[0]);
+            handle(e.target.files);
+            e.target.value = "";
+          }}
+        />
+      </div>
+      <div className="mt-2 flex items-center gap-2">
+        <button type="button" className="btn-secondary py-1 text-sm" disabled={busy} onClick={() => camera.current?.click()}>
+          <Camera className="h-4 w-4" aria-hidden /> Foto aufnehmen
+        </button>
+        <span className="text-sm text-muted">Am Handy öffnet sich die Kamera. Gut ausleuchten, ganze Seite aufs Bild.</span>
+        <input
+          ref={camera}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          multiple
+          className="sr-only"
+          tabIndex={-1}
+          onChange={(e) => {
+            handle(e.target.files);
             e.target.value = "";
           }}
         />

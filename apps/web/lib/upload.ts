@@ -17,13 +17,21 @@ export function checkFile(file: File): string | null {
   return null;
 }
 
-export async function uploadAndAnalyze(file: File, onStage?: (s: "upload" | "analyze") => void): Promise<UploadResult> {
-  const problem = checkFile(file);
-  if (problem) return { ok: false, status: 0, detail: problem };
+/** One PDF or one photo → `file`; several photos → `files` (one page each, in the given order). */
+export async function uploadAndAnalyze(input: File | File[], onStage?: (s: "upload" | "analyze") => void): Promise<UploadResult> {
+  const files = Array.isArray(input) ? input : [input];
+  for (const f of files) {
+    const problem = checkFile(f);
+    if (problem) return { ok: false, status: 0, detail: problem };
+  }
+  if (files.length > 1 && files.some((f) => f.type === "application/pdf"))
+    return { ok: false, status: 0, detail: "Mehrere Seiten bitte als Fotos – oder ein einzelnes PDF." };
   onStage?.("upload");
   const fd = new FormData();
-  // Pasted screenshots have no useful name
-  fd.append("file", file, file.name && file.name !== "image.png" ? file.name : `Foto-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-")}.png`);
+  const named = (f: File, i: number) =>
+    f.name && f.name !== "image.png" ? f.name : `Foto-${i + 1}-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-")}.${f.type === "image/png" ? "png" : "jpg"}`;
+  if (files.length === 1) fd.append("file", files[0], named(files[0], 0));
+  else files.forEach((f, i) => fd.append("files", f, named(f, i)));
   const up = await bff<DocumentSummary>("/api/documents", { form: fd });
   if (!up.ok) return up;
   onStage?.("analyze");
