@@ -377,11 +377,23 @@ TOOLS: list[Tool] = [
                                   "items": [{k: i.get(k) for k in ("kind", "ref_id", "title_de", "why_de", "status")}
                                             for i in d.get("items", [])[:10]]},
          summary=lambda a, d: f"Bündel „{(d or {}).get('title_de', '–')}“ mit {len((d or {}).get('items', []))} Punkt(en)"),
+    Tool("get_care_team", "Behandlungsteam der vertretenen Person (Hausärztin, Fachambulanz) mit Adresse und provider_id.",
+         {}, [], "GET", lambda a, c: "/api/identity/care-team",
+         compact=lambda d: [{k: m.get(k) for k in ("role_de", "name", "provider_id", "address", "phone")}
+                            for m in d.get("members", [])],
+         summary=lambda a, d: "Behandlungsteam: " + (", ".join(f"{m['role_de']}: {m['name']}" for m in d.get("members", []))
+                                                    or "keine Einträge")),
+    Tool("set_care_team", "Ändert z. B. die Hausärztin, wenn die Person das ausdrücklich sagt (Ordination per provider_id "
+         "aus search_slots/Behandlungsteam).", {"role": _s("hausarzt | kinderarzt | ambulanz"), "provider_id": _s("Ordination")},
+         ["provider_id"], "PUT", lambda a, c: "/api/identity/care-team",
+         body=lambda a, c: {"role": a.get("role") or "hausarzt", "provider_id": a["provider_id"]},
+         summary=lambda a, d: "Behandlungsteam aktualisiert"),
     Tool("search_slots", "Freie Termine suchen (Demo-Termine). Frage vorher nur, was fehlt: Anlass, Nähe, vormittags/"
          "nachmittags – nutze gespeicherte Präferenzen, wenn vorhanden.",
          {"topic": _s("Anlass, z. B. hausarzt_kontrolle, vorsorgeuntersuchung, pflegeberatung, influenza, reha_onko"),
           "kind": _s("optional: gp | specialist | health_center | counselling | vaccination | rehab"),
           "specialty": _s("optional, z. B. Gastroenterologie"), "zip": _s("optional PLZ (Standard: Wohnadresse)"),
+          "provider_id": _s("optional: nur bei dieser Ordination, z. B. der eigenen Hausärztin aus dem Behandlungsteam"),
           "near": {"type": "boolean"}, "daypart": _s("morning | afternoon | any"),
           "from_date": _s("optional ISO-Datum"), "accessible_only": {"type": "boolean"}},
          [], "POST", lambda a, c: "/api/appointments/slots/search",

@@ -106,6 +106,42 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/identity/preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Preferences of the acting person */
+        get: operations["get_preferences_api_identity_preferences_get"];
+        /** Save preferences (language, detail, daypart …) */
+        put: operations["put_preferences_api_identity_preferences_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/care-team": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Behandlungsteam (Hausärztin u. a.) of the subject */
+        get: operations["care_team_api_identity_care_team_get"];
+        /** Set/change e.g. the Hausärztin (person's own choice) */
+        put: operations["set_care_team_api_identity_care_team_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/situation": {
         parameters: {
             query?: never;
@@ -1151,6 +1187,48 @@ export interface components {
              */
             document_ids: string[];
         };
+        /** CareTeam */
+        CareTeam: {
+            /** Subject Id */
+            subject_id: string;
+            /**
+             * Members
+             * @default []
+             */
+            members: components["schemas"]["CareTeamMember"][];
+            /**
+             * Notice De
+             * @default In Österreich gibt es keine formale Hausarzt-Registrierung. Im Echtbetrieb stammt diese Angabe aus e-card-Konsultationen (zuletzt besucht) oder aus Ihrer eigenen Angabe – Sie können sie jederzeit ändern.
+             */
+            notice_de: string;
+        };
+        /**
+         * CareTeamMember
+         * @description A regular contact in the person's care (Hausärztin, Fachambulanz …), linked to the appointments directory.
+         */
+        CareTeamMember: {
+            /** Role */
+            role: string;
+            /** Role De */
+            role_de: string;
+            /** Provider Id */
+            provider_id?: string | null;
+            /** Name */
+            name: string;
+            /**
+             * Address
+             * @default
+             */
+            address: string;
+            /**
+             * Phone
+             * @default
+             */
+            phone: string;
+            /** Since */
+            since?: string | null;
+            source: components["schemas"]["SourceRef"];
+        };
         /** Case */
         Case: {
             /** Id */
@@ -1350,6 +1428,11 @@ export interface components {
              */
             consent_note: string;
         };
+        /**
+         * DetailLevel
+         * @enum {string}
+         */
+        DetailLevel: "short" | "normal" | "detailed";
         /** DocumentAnalysis */
         DocumentAnalysis: {
             /** Document Id */
@@ -1912,6 +1995,44 @@ export interface components {
              */
             plain_language: boolean;
         };
+        /**
+         * Preferences
+         * @description Personal communication & organisation preferences (per acting person). Used by Lotsi and the cockpit.
+         */
+        Preferences: {
+            /**
+             * Language
+             * @default de
+             */
+            language: string;
+            /**
+             * Plain Language
+             * @default false
+             */
+            plain_language: boolean;
+            /** @default normal */
+            detail: components["schemas"]["DetailLevel"];
+            /**
+             * Daypart
+             * @default any
+             */
+            daypart: string;
+            /**
+             * Near Home
+             * @default true
+             */
+            near_home: boolean;
+            /**
+             * Accessible
+             * @default false
+             */
+            accessible: boolean;
+            /**
+             * Voice
+             * @default false
+             */
+            voice: boolean;
+        };
         /** PreventionItem */
         PreventionItem: {
             /** Id */
@@ -2091,6 +2212,16 @@ export interface components {
              */
             delegations: components["schemas"]["Delegation"][];
         };
+        /** SetCareTeamMember */
+        SetCareTeamMember: {
+            /**
+             * Role
+             * @default hausarzt
+             */
+            role: string;
+            /** Provider Id */
+            provider_id: string;
+        };
         /** SituationOverview */
         SituationOverview: {
             /** Subject Id */
@@ -2163,6 +2294,8 @@ export interface components {
             kind?: components["schemas"]["ProviderKind"] | null;
             /** Specialty */
             specialty?: string | null;
+            /** Provider Id */
+            provider_id?: string | null;
             /** Zip */
             zip?: string | null;
             /**
@@ -2505,6 +2638,150 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Delegation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_preferences_api_identity_preferences_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Preferences"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    put_preferences_api_identity_preferences_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Preferences"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Preferences"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    care_team_api_identity_care_team_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CareTeam"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_care_team_api_identity_care_team_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetCareTeamMember"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CareTeam"];
                 };
             };
             /** @description Validation Error */

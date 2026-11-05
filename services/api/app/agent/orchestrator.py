@@ -49,10 +49,11 @@ DETAIL_DE = {"short": "DETAILTIEFE KURZ: höchstens 4 Sätze oder 4 Aufzählungs
 def _prefs_text(prefs: dict) -> str:
     if not prefs:
         return "keine gespeichert"
+    team = "; ".join(prefs.get("_care_team") or []) or "unbekannt"
     daypart = {"morning": "vormittags", "afternoon": "nachmittags"}.get(prefs.get("daypart"), "keine Tageszeit-Präferenz")
     return (f"Sprache {prefs.get('language', 'de')}, Detailtiefe {prefs.get('detail', 'normal')}, Termine {daypart}, "
             f"{'möglichst in der Nähe' if prefs.get('near_home', True) else 'Entfernung egal'}"
-            f"{', barrierefrei' if prefs.get('accessible') else ''}")
+            f"{', barrierefrei' if prefs.get('accessible') else ''}. Behandlungsteam: {team}")
 
 
 def system_prompt(ctx: Context, memo: dict, plain: bool, lang: str = "de", prefs: dict | None = None) -> str:
@@ -115,6 +116,10 @@ async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, p
     r = await client.fetch("/api/identity/preferences", "context:preferences")
     prefs = r.json() if r.status_code == 200 else {}
     plain = plain or bool(prefs.get("plain_language"))
+    ct = await client.fetch("/api/identity/care-team", "context:care_team")
+    if ct.status_code == 200:
+        prefs = {**prefs, "_care_team": [f"{m['role_de']}: {m['name']} (provider_id {m['provider_id']}, {m['address']})"
+                                         for m in ct.json().get("members", [])]}
     if lang == "de" and prefs.get("language") and prefs["language"] != "de":
         lang = prefs["language"]
     messages = [{"role": "system", "content": system_prompt(ctx, memo, plain, lang, prefs)}, *state.history_messages(conv),

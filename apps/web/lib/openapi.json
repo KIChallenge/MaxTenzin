@@ -443,6 +443,362 @@
         }
       }
     },
+    "/api/identity/preferences": {
+      "get": {
+        "tags": [
+          "identity"
+        ],
+        "summary": "Preferences of the acting person",
+        "operationId": "get_preferences_api_identity_preferences_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Preferences"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "identity"
+        ],
+        "summary": "Save preferences (language, detail, daypart …)",
+        "operationId": "put_preferences_api_identity_preferences_put",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Preferences"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Preferences"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/care-team": {
+      "get": {
+        "tags": [
+          "identity"
+        ],
+        "summary": "Behandlungsteam (Hausärztin u. a.) of the subject",
+        "operationId": "care_team_api_identity_care_team_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareTeam"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "identity"
+        ],
+        "summary": "Set/change e.g. the Hausärztin (person's own choice)",
+        "operationId": "set_care_team_api_identity_care_team_put",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCareTeamMember"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareTeam"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/situation": {
       "get": {
         "tags": [
@@ -6174,6 +6530,92 @@
         "type": "object",
         "title": "BundleRequest"
       },
+      "CareTeam": {
+        "properties": {
+          "subject_id": {
+            "type": "string",
+            "title": "Subject Id"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/CareTeamMember"
+            },
+            "type": "array",
+            "title": "Members",
+            "default": []
+          },
+          "notice_de": {
+            "type": "string",
+            "title": "Notice De",
+            "default": "In Österreich gibt es keine formale Hausarzt-Registrierung. Im Echtbetrieb stammt diese Angabe aus e-card-Konsultationen (zuletzt besucht) oder aus Ihrer eigenen Angabe – Sie können sie jederzeit ändern."
+          }
+        },
+        "type": "object",
+        "required": [
+          "subject_id"
+        ],
+        "title": "CareTeam"
+      },
+      "CareTeamMember": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "role_de": {
+            "type": "string",
+            "title": "Role De"
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address",
+            "default": ""
+          },
+          "phone": {
+            "type": "string",
+            "title": "Phone",
+            "default": ""
+          },
+          "since": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Since"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceRef"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "role_de",
+          "name",
+          "source"
+        ],
+        "title": "CareTeamMember",
+        "description": "A regular contact in the person's care (Hausärztin, Fachambulanz …), linked to the appointments directory."
+      },
       "Case": {
         "properties": {
           "id": {
@@ -6664,6 +7106,15 @@
           "scopes"
         ],
         "title": "Delegation"
+      },
+      "DetailLevel": {
+        "type": "string",
+        "enum": [
+          "short",
+          "normal",
+          "detailed"
+        ],
+        "title": "DetailLevel"
       },
       "DocumentAnalysis": {
         "properties": {
@@ -8188,6 +8639,47 @@
         ],
         "title": "Person"
       },
+      "Preferences": {
+        "properties": {
+          "language": {
+            "type": "string",
+            "title": "Language",
+            "default": "de"
+          },
+          "plain_language": {
+            "type": "boolean",
+            "title": "Plain Language",
+            "default": false
+          },
+          "detail": {
+            "$ref": "#/components/schemas/DetailLevel",
+            "default": "normal"
+          },
+          "daypart": {
+            "type": "string",
+            "title": "Daypart",
+            "default": "any"
+          },
+          "near_home": {
+            "type": "boolean",
+            "title": "Near Home",
+            "default": true
+          },
+          "accessible": {
+            "type": "boolean",
+            "title": "Accessible",
+            "default": false
+          },
+          "voice": {
+            "type": "boolean",
+            "title": "Voice",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "Preferences",
+        "description": "Personal communication & organisation preferences (per acting person). Used by Lotsi and the cockpit."
+      },
       "PreventionItem": {
         "properties": {
           "id": {
@@ -8583,6 +9075,24 @@
         "title": "Session",
         "description": "Who is logged in (actor) and for whom they currently act (subject)."
       },
+      "SetCareTeamMember": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "default": "hausarzt"
+          },
+          "provider_id": {
+            "type": "string",
+            "title": "Provider Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider_id"
+        ],
+        "title": "SetCareTeamMember"
+      },
       "SituationOverview": {
         "properties": {
           "subject_id": {
@@ -8723,6 +9233,17 @@
               }
             ],
             "title": "Specialty"
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Id"
           },
           "zip": {
             "anyOf": [

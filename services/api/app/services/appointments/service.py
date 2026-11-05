@@ -273,7 +273,11 @@ def search(q: SlotSearch, home_zip: str | None, at: datetime | None = None) -> l
     at = at or now()
     zip_ = q.zip or home_zip
     start_day = date.fromisoformat(q.from_date) if q.from_date else (at + timedelta(days=1)).date()
-    cands = [p for p in providers() if matches(p, q.topic, q.kind, q.specialty, q.accessible_only)]
+    if q.provider_id:  # a chosen provider (e.g. own Hausärztin): all its free slots, no topic filter
+        cands = [p for p in providers() if p.id == q.provider_id]
+    else:
+        cands = [p for p in providers() if matches(p, q.topic, q.kind, q.specialty, q.accessible_only)]
+    per_provider = max(MAX_PER_PROVIDER, min(q.limit, 50)) if q.provider_id else MAX_PER_PROVIDER
     taken = booked_slot_ids()
     limit = max(1, min(q.limit, 50))
 
@@ -292,9 +296,9 @@ def search(q: SlotSearch, home_zip: str | None, at: datetime | None = None) -> l
                             end=e.isoformat(timespec="minutes"), distance_hint_de=hint, demo=True)
                 rows.append(((prox, s, p.id), slot))
                 found += 1
-                if found >= MAX_PER_PROVIDER:
+                if found >= per_provider:
                     break
-            if found >= MAX_PER_PROVIDER:
+            if found >= per_provider:
                 break
     rows.sort(key=lambda r: r[0])
     return [s for _, s in rows[:limit]]

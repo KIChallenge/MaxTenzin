@@ -2,6 +2,8 @@ from enum import StrEnum
 
 from pydantic import BaseModel
 
+from app.contracts.common import SourceRef
+
 
 class Scope(StrEnum):
     read_documents = "read_documents"
@@ -79,3 +81,27 @@ class Preferences(BaseModel):
     near_home: bool = True
     accessible: bool = False          # barrierefreie Einrichtungen bevorzugen
     voice: bool = False               # Sprachsteuerung im Cockpit
+
+
+class CareTeamMember(BaseModel):
+    """A regular contact in the person's care (Hausärztin, Fachambulanz …), linked to the appointments directory."""
+    role: str                         # hausarzt | facharzt | ambulanz | kinderarzt
+    role_de: str                      # e.g. "Hausärztin/Hausarzt"
+    provider_id: str | None = None    # appointments provider id (bookable)
+    name: str
+    address: str = ""
+    phone: str = ""
+    since: str | None = None
+    source: SourceRef
+
+
+class CareTeam(BaseModel):
+    subject_id: str
+    members: list[CareTeamMember] = []
+    notice_de: str = ("In Österreich gibt es keine formale Hausarzt-Registrierung. Im Echtbetrieb stammt diese Angabe aus "
+                      "e-card-Konsultationen (zuletzt besucht) oder aus Ihrer eigenen Angabe – Sie können sie jederzeit ändern.")
+
+
+class SetCareTeamMember(BaseModel):
+    role: str = "hausarzt"
+    provider_id: str
