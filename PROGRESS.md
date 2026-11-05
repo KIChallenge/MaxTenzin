@@ -29,6 +29,7 @@ Single source of truth for all sessions. Update your row at start and at Definit
 See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished items here as one line).
 
 ## Contract requests (agents → integrator)
+- WS-W → WS-D / integrator (demo risk): live extraction of `Entlassungsbefund.pdf` is not stable — 22 recommendations in one run, 10 in the next, person address/insurer sometimes missing. Recommend demo runs on golden mode (or cache the first analysis per file hash).
 - WS-W → WS-B: `POST /api/benefits/eligibility` returns 404 for the whole request if one `document_ids` entry has no analysis (e.g. uploaded but not analysed). Suggest skipping or reporting such documents instead. Cockpit works around it by sending only analysed documents.
 - (integrator, done) `StepUpdate` gained optional `form_session_id`; `status` now optional. Shared test fixtures moved to `services/api/app/conftest.py` (`from app.conftest import auth`).
 

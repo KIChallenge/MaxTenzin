@@ -53,7 +53,7 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
               <li key={rec.id} className="card">
                 <p className="eyebrow">{REC_CATEGORY[rec.category] ?? rec.category}</p>
                 <p className="mt-1 text-lg font-bold">{rec.text_de}</p>
-                <blockquote className="mt-3 border-l-4 border-accent/50 pl-3 text-muted italic">„{rec.quote}“</blockquote>
+                <blockquote className="mt-3 border-l-4 border-accent/50 pl-3 text-muted italic">„{displayQuote(rec.quote)}“</blockquote>
                 <p className="mt-2">
                   <SourceChip source={{ kind: "document", label: `${a.filename}, S. ${rec.page}`, quote: rec.quote, ref: a.document_id }} />
                 </p>
@@ -109,4 +109,9 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
       </div>
     </>
   );
+}
+
+/** Display only: drop a leading list bullet carried over from the PDF. The stored quote stays verbatim. */
+function displayQuote(q: string) {
+  return q.replace(/^\s*[•·\-–*]\s*/, "");
 }
