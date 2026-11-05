@@ -35,7 +35,7 @@ def _analyses(ctx: Context, document_ids: list[str]) -> list[DocumentAnalysis]:
         elif did == ANNA_ANALYSIS.document_id and ctx.subject.id == "anna":
             out.append(ANNA_ANALYSIS)          # golden fallback until the document has been analysed
         else:
-            raise HTTPException(404, f"Keine Auswertung für Dokument '{did}' gefunden.")
+            ctx.rule_ids.append(f"benefits.document_skipped:{did}")  # not analysed (yet): skip, visible in audit
     return out
 
 

@@ -5,6 +5,7 @@ Medical boundary: imaging reports and vaccination records never yield recommenda
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import re
 from pathlib import Path
@@ -16,6 +17,7 @@ from app.contracts.documents import (
     Recommendation,
     RecommendationCategory,
 )
+from app.core.db import store
 from app.core.llm import get_llm
 from app.services.documents import goldens
 from app.services.documents.facts import admin_facts
@@ -70,12 +72,24 @@ def from_golden(golden: dict, document_id: str, filename: str | None = None) -> 
     return a.model_copy(update={"filename": filename or a.filename, "extraction_mode": "golden"})
 
 
+CACHE = "analysis_cache"   # first live result per (prompt version, file hash): same file -> same analysis (stable demo)
+
+
+def _cache_key(sha: str) -> str:
+    return hashlib.sha256(PROMPT.encode()).hexdigest()[:12] + ":" + sha
+
+
 def analyze_pdf(document_id: str, filename: str, sha: str, doc_type: DocumentType, pages: list[str]) -> DocumentAnalysis:
     golden = goldens.by_sha(sha)
     analysis: DocumentAnalysis | None = None
-    if doc_type not in NO_RECOMMENDATION_TYPES and get_llm().live:
+    cached = store.get(CACHE, _cache_key(sha))
+    if cached:
+        analysis = DocumentAnalysis(**cached).model_copy(update={"document_id": document_id, "filename": filename,
+                                                                 "extraction_mode": "live-cached"})
+    elif doc_type not in NO_RECOMMENDATION_TYPES and get_llm().live:
         try:
             analysis = _live(document_id, filename, doc_type, pages)
+            store.put(CACHE, _cache_key(sha), analysis.model_dump())
         except Exception as e:  # noqa: BLE001 — network / auth / JSON errors -> golden fallback
             log.warning("live extraction failed (%s), falling back to golden", e)
     if analysis is None and golden:

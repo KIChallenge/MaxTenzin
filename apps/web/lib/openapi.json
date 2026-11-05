@@ -3814,7 +3814,7 @@
         "tags": [
           "agent"
         ],
-        "summary": "Chat with the KI-Lotse",
+        "summary": "Chat with Lotsi (KI-Lotse agent)",
         "operationId": "chat_api_agent_chat_post",
         "parameters": [
           {
@@ -5138,6 +5138,57 @@
         "type": "object",
         "title": "ExtractedPerson"
       },
+      "FieldCondition": {
+        "properties": {
+          "field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field"
+          },
+          "equals": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Equals"
+          },
+          "one_of": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "One Of",
+            "default": []
+          },
+          "proxy": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proxy"
+          }
+        },
+        "type": "object",
+        "title": "FieldCondition",
+        "description": "Field is relevant only if the condition holds (same shape as the form spec). proxy: actor acts for someone else."
+      },
       "FieldPatch": {
         "properties": {
           "values": {
@@ -5307,6 +5358,16 @@
               }
             ],
             "title": "Readonly Reason De"
+          },
+          "when": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FieldCondition"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",

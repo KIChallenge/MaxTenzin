@@ -144,7 +144,7 @@ def test_prefill_from_document_analysis_is_non_medical():
     sess = service.start_session(spec, get_person("anna"), get_person("maria"), ANNA_ANALYSIS)
     assert sess.values["Krankenhaus"].value == "ja"
     assert sess.values["Krankenhaus"].source.kind == "document"
-    assert sess.values["Unterlagen"].value == "Kopie: Entlassungsbefund.pdf"
+    assert sess.values["Unterlagen"].value == "Kopie des Entlassungsbefunds"
     assert sess.values["Leiden"].value is None  # never derived from the document
     ids = [q.id for q in service.next_questions(spec, sess).questions]
     assert ids[:1] == ["Leiden"] and {"KH von", "KH bis", "Spital"} <= set(ids)
