@@ -1,0 +1,190 @@
+# Situation bundles ("Bündel") — owner: WS-K2. Read ONLY by app/services/benefits/bundles.py (deterministic, no LLM).
+#
+# A bundle = everything relevant for one life situation, in a curated (process) order, each item with an
+# administrative reason (why_de, never medical) and a source. Status of benefit/offer items comes from the real
+# eligibility engine (service.evaluate) with the request's facts and document recommendations; items that are
+# `not_applicable` are left out. Prevention items come from the prevention engine (needs scope view_health_prevention;
+# otherwise they are skipped). Office items resolve the nearest office from knowledge/offices.yaml by topic.
+#
+# Item fields:
+#   kind: benefit | offer | prevention | appointment | office | form
+#   ref:  benefit/offer id (benefits.yaml) | prevention rule id (prevention.yaml) | appointment topic (WS-T slot
+#         search `topic`) | office topic (offices.yaml) | form id (knowledge/forms)
+#   why_de: administrative reason; title_de: required for appointment items (others derive it)
+#   source: SourceSpec (same syntax as benefits.yaml) — required for appointment items, optional otherwise
+#   if_fact: only shown when this fact is true;  if_benefit: only shown when that benefit is not `not_applicable`
+#
+# Matching (free text, deterministic): text and keywords are lower-cased, umlauts folded (ä->ae, ö->oe, ü->ue, ß->ss),
+# punctuation removed. A keyword matches at the start of a word ("pflege" matches "pflegen", "pflegebett").
+# Score = 3 per strong + 1 per weak keyword; highest score wins, ties by file order; score 0 -> no bundle.
+# `questions`: facts in priority order; the 2–3 highest-priority facts that are missing across the bundle's items
+# become questions_de (texts in the top-level `questions` map).
+
+version: 1
+
+questions:
+  care_need_months: "Wird die Unterstützung voraussichtlich mindestens sechs Monate lang nötig sein?"
+  care_hours_estimate: "Wie viele Stunden Hilfe im Monat sind ungefähr nötig (z. B. Körperpflege, Essen, Haushalt, Wege)?"
+  care_need_at_home: "Wird Hilfe bei der Pflege oder Betreuung zu Hause gebraucht (z. B. Heimhilfe, mobile Pflege)?"
+  pflegegeld_level: "Wird bereits Pflegegeld bezogen – und wenn ja, in welcher Stufe?"
+  pflegegeld_applied: "Wurde Pflegegeld schon beantragt?"
+  aid_needed: "Wird ein Hilfsmittel wie Rollator, Gehhilfe oder Pflegebett gebraucht oder schon verwendet?"
+  aid_prescribed: "Hat die Ärztin bzw. der Arzt das Hilfsmittel schon verordnet?"
+  home_nursing_ordered: "Hat die Ärztin bzw. der Arzt medizinische Hauskrankenpflege angeordnet?"
+  main_carer_since_months: "Pflegen Sie die Person überwiegend selbst – und seit wie vielen Monaten?"
+  caregiver_main_carer: "Pflegen Sie die Person zu Hause und nimmt das einen großen Teil Ihrer Arbeitskraft in Anspruch?"
+  carer_prevented: "Gibt es Zeiten, in denen Sie die Pflege nicht übernehmen können (z. B. Krankheit, Urlaub)?"
+  care_24h_needed: "Ist eine Betreuung rund um die Uhr (24-Stunden-Betreuung) nötig oder geplant?"
+  pflegekarenz_agreed: "Möchten Sie für die Pflege eine Pflegekarenz oder Pflegeteilzeit mit Ihrem Arbeitgeber vereinbaren?"
+  caregiver_insured_3m: "Sind Sie seit mindestens drei Monaten durchgehend angestellt (vollversichert)?"
+  walking_unable_confirmed: "Gibt es für Fahrten zur Behandlung eine ärztliche Transportanweisung?"
+  reha_application_with_medical_statement: "Unterstützt die behandelnde Ärztin bzw. der behandelnde Arzt einen Reha-Antrag?"
+  net_income_monthly: "Wie hoch ist das monatliche Nettoeinkommen (z. B. Pension)?"
+  household: "Lebt die Person allein oder als Paar im Haushalt?"
+  rgb_exempt: "Gibt es bereits eine Befreiung von der Rezeptgebühr?"
+  treatment_type: "Sind regelmäßige Fahrten zu einer Behandlung nötig (z. B. Strahlen- oder Chemotherapie, Dialyse)?"
+  distance_km: "Wie weit ist die Behandlungsstelle vom Wohnort entfernt (in km)?"
+  costs_eur: "Welche krankheitsbedingten Kosten fallen an (ungefähr in Euro)?"
+  financial_hardship: "Reichen Einkommen und Vermögen im Haushalt derzeit zum Leben aus?"
+  familienbeihilfe_received: "Wird für das Kind bereits Familienbeihilfe bezogen?"
+  shared_household_with_child: "Lebt das Kind mit Ihnen im gemeinsamen Haushalt (gleicher Hauptwohnsitz)?"
+  diabetes_type2: "Wurde bei Ihnen ärztlich Diabetes Typ 2 festgestellt?"
+  family_history: "Gibt es in Ihrer Familie Erkrankungen wie Darmkrebs, Brustkrebs, Diabetes oder Herz-Kreislauf-Erkrankungen? (Freiwillige Angabe – damit erklären wir, welche Vorsorgeprogramme besonders passen.)"
+
+bundles:
+  # ------------------------------------------------------------------------------------------------ Pflege zu Hause
+  - id: pflege_zuhause
+    title_de: Pflege und Unterstützung zu Hause
+    situation_de: "Ein Angehöriger braucht im Alltag Hilfe (z. B. „Meine Mutter ist chronisch krank und kommt allein nicht mehr zurecht“)."
+    match:
+      strong: [mutter, vater, mama, papa, oma, opa, grossmutter, grossvater, schwiegermutter, schwiegervater, eltern,
+               angehoerig, pflege, pflegen, pflegebeduerftig, allein nicht mehr, nicht mehr zurecht, kommt nicht zurecht,
+               betreuung, betreuen, 24 stunden, rollator, demenz, dement, heimhilfe, pflegeheim,
+               mother, father, parent, elderly, caregiver, care for, nursing]
+      weak: [hilfe, helfen, chronisch, alt, zuhause, zu hause, unterstuetzung, alltag, help]
+    questions: [care_need_months, care_need_at_home, pflegegeld_level, care_hours_estimate, aid_needed,
+                main_carer_since_months, pflegekarenz_agreed, net_income_monthly]
+    next_step_de: "Pflegegeld-Antrag (PAL 080) mit dem Formular-Assistenten vorbereiten und dabei die kostenlose Pflegeberatung zu Hause ankreuzen; parallel beim FSW (Tel. 01 24 5 24) Unterstützung zu Hause anfragen."
+    items:
+      - {kind: benefit, ref: pflegegeld, why_de: "Pflegegeld ist die zentrale Geldleistung bei dauerhaftem Pflegebedarf und Voraussetzung für viele weitere Hilfen (z. B. Ersatzpflege, 24-Stunden-Betreuung)."}
+      - {kind: form, ref: pva_pflegegeld_pal080, if_benefit: pflegegeld, why_de: "Mit diesem Formular wird Pflegegeld bei der PVA beantragt; wir füllen es vor, Sie prüfen und unterschreiben."}
+      - {kind: benefit, ref: pflegeberatung, why_de: "Eine diplomierte Pflegefachkraft berät kostenlos zu Hause und kennt die regionalen Angebote."}
+      - {kind: benefit, ref: fsw_mobile_pflege, why_de: "In Wien organisiert der FSW Heimhilfe und mobile Pflege zu Hause."}
+      - {kind: form, ref: fsw_foerderung, if_benefit: fsw_mobile_pflege, why_de: "Antrag auf Förderung von Leistungen beim FSW."}
+      - {kind: benefit, ref: heilbehelfe_hilfsmittel, why_de: "Hilfsmittel wie Rollator, Gehhilfe oder Pflegebett zahlt die ÖGK auf ärztliche Verordnung mit."}
+      - {kind: benefit, ref: hauskrankenpflege, why_de: "Medizinische Pflege zu Hause (z. B. Wundversorgung) gibt es auf ärztliche Anordnung."}
+      - {kind: appointment, ref: pflegeberatung, title_de: "Beratungstermin zur Pflege vereinbaren",
+         why_de: "Ein persönliches Beratungsgespräch hilft, Pflegegeld, mobile Dienste und Hilfsmittel aufeinander abzustimmen.",
+         source: {form: fsw_foerderung, page: 1, label: "FSW Antrag auf Förderung von Leistungen, S. 1"}}
+      - {kind: benefit, ref: ersatzpflege, why_de: "Für pflegende Angehörige: Zuschuss, wenn Sie wegen Krankheit oder Urlaub eine Vertretung brauchen."}
+      - {kind: benefit, ref: foerderung_24h_betreuung, why_de: "Wenn eine Betreuung rund um die Uhr nötig wird, gibt es eine Förderung."}
+      - {kind: benefit, ref: pflegekarenzgeld, why_de: "Für berufstätige Angehörige: Geld während einer vereinbarten Pflegekarenz oder Pflegeteilzeit."}
+      - {kind: benefit, ref: selbstversicherung_pflege, why_de: "Für pflegende Angehörige: Pensionsversicherung während der Pflege zu Hause."}
+      - {kind: benefit, ref: angebot_trittsicher, why_de: "Kostenlose Kurse zur Sturzvorbeugung ab 65."}
+      - {kind: benefit, ref: rezeptgebuehrenbefreiung, why_de: "Bei geringem Einkommen entfällt die Rezeptgebühr – und damit auch Kostenanteile, z. B. bei Hilfsmitteln."}
+      - {kind: office, ref: pflegegeld, why_de: "Zuständig für Pflegegeld und Pflegeberatung."}
+
+  # ------------------------------------------------------------------------------------------------ Nach dem Spital
+  - id: nach_spital
+    title_de: Nach dem Spitalsaufenthalt – was jetzt zu erledigen ist
+    situation_de: "Ein Befund oder Entlassungsbrief liegt vor und es ist unklar, was als Nächstes zu tun ist."
+    match:
+      strong: [spital, krankenhaus, entlassung, entlassen, entlassungsbrief, entlassungsbefund, befund, arztbrief,
+               klinik, operation, operiert, hospital, discharge, discharged]
+      weak: [reha, nachsorge, bestrahlung, therapie, brief, was erledigen, was muss ich tun]
+    questions: [care_need_months, walking_unable_confirmed, aid_needed, care_need_at_home, net_income_monthly,
+                reha_application_with_medical_statement, home_nursing_ordered]
+    next_step_de: "Kontrolltermin vereinbaren und die im Brief empfohlenen Schritte der Reihe nach erledigen – mit dem Pflegegeld-Antrag beginnen, wenn längerfristig Hilfe nötig ist."
+    items:
+      - {kind: appointment, ref: hausarzt_kontrolle, title_de: "Kontrolltermin in der Hausarztpraxis vereinbaren",
+         why_de: "Weitere Kontrollen und Behandlungen koordinieren; bei Vertragsärztinnen und -ärzten mit e-card ohne Zuzahlung.",
+         source: {page: 34, quote: "Die Behandlung bei den oben genannten Leistungserbringern wird für Versicherte zuzahlungsfrei von der ÖGK übernommen."}}
+      - {kind: benefit, ref: hauskrankenpflege, why_de: "Medizinische Pflege zu Hause auf ärztliche Anordnung, statt länger im Spital zu bleiben."}
+      - {kind: benefit, ref: fsw_mobile_pflege, why_de: "Unterstützung zu Hause (Heimhilfe, mobile Pflege) in Wien."}
+      - {kind: benefit, ref: pflegegeld, why_de: "Wenn voraussichtlich länger als sechs Monate Hilfe nötig ist."}
+      - {kind: form, ref: pva_pflegegeld_pal080, if_benefit: pflegegeld, why_de: "Antrag auf Pflegegeld bei der PVA, vorausgefüllt zum Prüfen und Unterschreiben."}
+      - {kind: benefit, ref: pflegeberatung, why_de: "Kostenlose Beratung zu Hause durch eine Pflegefachkraft."}
+      - {kind: benefit, ref: reha_onko, why_de: "Reha im Anschluss an die Behandlung – Antrag mit ärztlicher Begründung."}
+      - {kind: form, ref: sv_kur_reha, if_benefit: reha_onko, why_de: "Antrag auf Rehabilitation; die ärztliche Stellungnahme füllt die Ärztin bzw. der Arzt aus."}
+      - {kind: benefit, ref: krankentransport, why_de: "Transport zu Behandlungen, wenn eine ärztliche Transportanweisung vorliegt."}
+      - {kind: benefit, ref: fahrtkostenzuschuss, why_de: "Zuschuss zu weiten Fahrten zur Behandlung."}
+      - {kind: benefit, ref: heilbehelfe_hilfsmittel, why_de: "Hilfsmittel wie Rollator oder Gehhilfe auf ärztliche Verordnung."}
+      - {kind: benefit, ref: rezeptgebuehrenbefreiung, why_de: "Bei geringem Einkommen keine Rezeptgebühr; entlastet bei vielen Medikamenten."}
+      - {kind: office, ref: oegk_kundenservice, why_de: "Für Fragen zu Transport, Fahrtkosten, Rezeptgebühr und Hilfsmitteln."}
+
+  # ------------------------------------------------------------------------------------------------ Gesundheit fördern
+  - id: gesundheit_foerdern
+    title_de: Etwas für die eigene Gesundheit tun
+    situation_de: "„Ich möchte etwas für meine Gesundheit tun“ – Vorsorge, Impfungen, Bewegung, Ernährung und Kurse."
+    match:
+      strong: [fuer meine gesundheit, gesundheit tun, gesund leben, gesund bleiben, gesuender, fit, fitness, bewegung,
+               bewegen, sport, abnehmen, ernaehrung, vorsorge, impfung, impfen, impfstatus, rauchen, rauchfrei,
+               aufhoeren zu rauchen, stress, ruecken, healthy, exercise, prevention, check up, checkup]
+      weak: [gesund, gesundheit, praevention, kurs, park, essen]
+    questions: [family_history, diabetes_type2]
+    next_step_de: "Termin für die kostenlose Vorsorgeuntersuchung vereinbaren und dort auch Impfstatus und Familiengeschichte ansprechen."
+    items:
+      - {kind: benefit, ref: vorsorgeuntersuchung, with_prevention: vu, why_de: "Einmal im Jahr kostenlos: Gesundheits-Check mit persönlicher Beratung zu einem gesunden Lebensstil."}
+      - {kind: appointment, ref: vorsorgeuntersuchung, title_de: "Termin für die Vorsorgeuntersuchung vereinbaren",
+         why_de: "Die Vorsorgeuntersuchung gibt es bei der Hausärztin bzw. beim Hausarzt und in Gesundheitseinrichtungen der Sozialversicherung.",
+         source: {page: 23, quote: "Die Vorsorgeuntersuchung gibt es auch in vielen Gesundheitseinrichtungen der Sozialversicherung."}}
+      - {kind: prevention, ref: darmkrebs, why_de: "Darmkrebs-Früherkennung im Rahmen der Vorsorgeuntersuchung."}
+      - {kind: prevention, ref: mammografie, why_de: "Brustkrebs-Früherkennungsprogramm „früh erkennen“."}
+      - {kind: prevention, ref: influenza, why_de: "Impfstatus: Grippeimpfung."}
+      - {kind: prevention, ref: covid19, why_de: "Impfstatus: COVID-19-Auffrischung."}
+      - {kind: prevention, ref: dtp_polio, why_de: "Impfstatus: Diphtherie-Tetanus-Pertussis-Polio."}
+      - {kind: prevention, ref: herpes_zoster, why_de: "Impfstatus: Gürtelrose."}
+      - {kind: prevention, ref: pneumococcal, why_de: "Impfstatus: Pneumokokken."}
+      - {kind: benefit, ref: angebot_bewegt_im_park, why_de: "Kostenlose Bewegungskurse im Freien im Sommer."}
+      - {kind: benefit, ref: angebot_gesunder_ruecken, why_de: "Bewegungskurse und Online-Beratung für einen gesunden Rücken."}
+      - {kind: benefit, ref: angebot_gesund_leben_regional, why_de: "Ernährungsberatung, Gesundheitskurse und Workshops der ÖGK in Ihrer Region."}
+      - {kind: benefit, ref: angebot_richtig_essen, why_de: "Ernährungsworkshops für Eltern von Babys und Kleinkindern."}
+      - {kind: benefit, ref: angebot_rauchfrei, why_de: "Unterstützung beim Rauchstopp."}
+      - {kind: benefit, ref: angebot_momente_fuer_mich, why_de: "Angebote für die psychische Gesundheit."}
+      - {kind: benefit, ref: angebot_bewusst_leben, why_de: "Kostenloses Programm für Menschen ab der Lebensmitte."}
+      - {kind: benefit, ref: angebot_trittsicher, why_de: "Kurse zur Sturzvorbeugung ab 65."}
+      - {kind: benefit, ref: angebot_therapie_aktiv, if_fact: diabetes_type2, why_de: "Betreuungsprogramm bei Diabetes Typ 2."}
+      - {kind: benefit, ref: angebot_bgf, why_de: "Gesundheitsförderung im Betrieb – im eigenen Unternehmen nachfragen."}
+      - {kind: office, ref: vorsorgeuntersuchung, why_de: "ÖGK-Gesundheitszentrum in Ihrer Nähe (u. a. Vorsorgeuntersuchung)."}
+
+  # ------------------------------------------------------------------------------------------------ Kind
+  - id: kind
+    title_de: Leistungen und Angebote rund ums Kind
+    situation_de: "„Ich habe ein Kind …“ – Familienleistungen, Eltern-Kind-Pass, Impfungen und Angebote für Eltern."
+    match:
+      strong: [kind, kinder, baby, tochter, sohn, schwanger, schwangerschaft, geburt, eltern kind pass, mutter kind pass,
+               kinderbetreuungsgeld, familienbeihilfe, kleinkind, karenz, child, pregnant, newborn]
+      weak: [familie, eltern, schule, kindergarten]
+    questions: [familienbeihilfe_received, shared_household_with_child]
+    next_step_de: "Nächste Eltern-Kind-Pass-Untersuchung vereinbaren und prüfen, ob Familienbeihilfe und Kinderbetreuungsgeld beantragt sind."
+    items:
+      - {kind: benefit, ref: eltern_kind_pass, why_de: "Kostenlose Untersuchungen bis zum 62. Lebensmonat; bis zum 14. Lebensmonat Voraussetzung für das volle Kinderbetreuungsgeld."}
+      - {kind: appointment, ref: eltern_kind_pass, title_de: "Termin für die nächste Eltern-Kind-Pass-Untersuchung vereinbaren",
+         why_de: "Die Untersuchungen erfolgen in festgelegten Lebensmonaten.", source: {page: 74}}
+      - {kind: benefit, ref: familienbeihilfe, why_de: "Monatliche Familienleistung; Voraussetzung für das Kinderbetreuungsgeld."}
+      - {kind: benefit, ref: kinderbetreuungsgeld, why_de: "Geld für Eltern in der Betreuungszeit."}
+      - {kind: prevention, ref: kinderimpfprogramm, why_de: "Kostenloses Kinderimpfprogramm."}
+      - {kind: benefit, ref: angebot_richtig_essen, why_de: "Kostenlose Ernährungsworkshops für Eltern."}
+      - {kind: benefit, ref: angebot_gesunde_schule, why_de: "Gesundheitsförderung in der Schule – Schule darauf hinweisen."}
+      - {kind: benefit, ref: angebot_vereinscoaching, why_de: "Gesundheitsangebote im Sportverein, auch für Eltern."}
+      - {kind: office, ref: kinderbetreuungsgeld, why_de: "Zuständig für das Kinderbetreuungsgeld."}
+
+  # ------------------------------------------------------------------------------------------------ Finanzielle Unterstützung
+  - id: finanzielle_unterstuetzung
+    title_de: Finanzielle Entlastung bei Krankheit und geringem Einkommen
+    situation_de: "Kosten durch Krankheit oder geringes Einkommen – welche Befreiungen und Zuschüsse es gibt."
+    match:
+      strong: [geld, finanziell, finanzielle, kosten, leisten, rezeptgebuehr, zuschuss, einkommen, mindestsicherung,
+               sozialhilfe, armut, schulden, kann mir nicht, money, afford, cost]
+      weak: [teuer, bezahlen, zahlen, pension, rechnung]
+    questions: [net_income_monthly, household, costs_eur, financial_hardship]
+    next_step_de: "Mit dem monatlichen Nettoeinkommen prüfen, ob eine Rezeptgebührenbefreiung möglich ist; bei hohen krankheitsbedingten Kosten zusätzlich den Unterstützungsfonds beantragen."
+    items:
+      - {kind: benefit, ref: rezeptgebuehrenbefreiung, why_de: "Keine Rezeptgebühr bei geringem Einkommen."}
+      - {kind: benefit, ref: rezeptgebuehrenobergrenze, why_de: "Rezeptgebühren höchstens bis 2 % des Jahresnettoeinkommens."}
+      - {kind: benefit, ref: unterstuetzungsfonds, why_de: "Zuschuss in finanziellen Notlagen bei krankheitsbedingten Kosten."}
+      - {kind: benefit, ref: heilbehelfe_hilfsmittel, why_de: "Kostenanteil für Hilfsmittel entfällt bei Rezeptgebührenbefreiung wegen sozialer Schutzbedürftigkeit."}
+      - {kind: benefit, ref: fahrtkostenzuschuss, why_de: "Zuschuss zu weiten Fahrten zur Behandlung (meist bei Rezeptgebührenbefreiung)."}
+      - {kind: benefit, ref: pflegegeld, why_de: "Bei dauerhaftem Pflegebedarf eine monatliche Geldleistung."}
+      - {kind: benefit, ref: sozialhilfe_wien, why_de: "Außerhalb der Sozialversicherung: Mindestsicherung der Stadt Wien, wenn das Einkommen nicht reicht."}
+      - {kind: office, ref: rezeptgebuehrenbefreiung, why_de: "ÖGK-Kundenservice für Befreiungen und Zuschüsse."}
