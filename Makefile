@@ -34,8 +34,8 @@ demo-fresh:       ## preflight on full demo data, then wipe + demo data WITHOUT 
 	  if [ $$ok -ne 0 ]; then echo "!! Preflight nicht 22/22 – Hinweise oben lesen. Demo-Stand wird trotzdem vorbereitet."; fi; \
 	fi
 	$(MAKE) reset >/dev/null
-	SEED_SKIP_DOCS=doc-anna-entlassung $(MAKE) seed
-	@echo "Frischer Demo-Stand: Anna ohne Dokumente (Fotos aus var/demo hochladen). API startet jetzt (Ctrl+C beendet)."
+	DEMO_LIVE=1 SEED_SKIP_DOCS=doc-anna-entlassung $(MAKE) seed
+	@echo "Frischer Demo-Stand: Anna ohne Dokumente, Maria noch ohne Dokumente/Anträge-Recht, Stefan auf Englisch. API startet jetzt (Ctrl+C beendet)."
 	$(MAKE) api-demo
 
 web:             ## Next.js cockpit at http://localhost:3000

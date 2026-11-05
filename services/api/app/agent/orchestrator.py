@@ -115,6 +115,21 @@ _RETRY_SUFFIX = (" Antworte NICHT auf diese Prüfung, sondern beantworte die urs
                  "einmal vollständig – so, als wäre es deine erste Antwort.")
 
 
+def _granted_since_last_turn(ctx: Context, memo: dict) -> str | None:
+    """Permissions granted mid-conversation (e.g. Anna allows 'Anträge vorbereiten' after a refusal): the model must
+    not repeat the refusal from the history but retry with the tools."""
+    now = sorted(str(getattr(x, "value", x)) for x in ctx.scopes)
+    before = memo.get("_scopes")
+    memo["_scopes"] = now
+    granted = sorted(set(now) - set(before or now))
+    if not granted:
+        return None
+    names = ", ".join(f"„{SCOPE_DE.get(g, g)}“" for g in granted)
+    return (f"WICHTIG: Seit der letzten Nachricht wurden neue Berechtigungen erteilt: {names}. Frühere Ablehnungen im "
+            "Verlauf gelten nicht mehr – führe die gewünschte Aktion jetzt mit den Werkzeugen aus, statt die "
+            "Ablehnung zu wiederholen.")
+
+
 async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, plain: bool, lang: str,
                    outcomes: list[ToolOutcome]) -> str:
     memo = conv["memo"]
@@ -127,8 +142,10 @@ async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, p
                                          for m in ct.json().get("members", [])]}
     if lang == "de" and prefs.get("language") and prefs["language"] != "de":
         lang = prefs["language"]
-    messages = [{"role": "system", "content": system_prompt(ctx, memo, plain, lang, prefs)}, *state.history_messages(conv),
-                {"role": "user", "content": message}]
+    messages = [{"role": "system", "content": system_prompt(ctx, memo, plain, lang, prefs)}, *state.history_messages(conv)]
+    if note := _granted_since_last_turn(ctx, memo):
+        messages.append({"role": "system", "content": note})
+    messages.append({"role": "user", "content": message})
     reply = await _tool_loop(client, memo, messages, outcomes, MAX_TOOL_ROUNDS)
 
     allowed = guard.numbers_in([o.data for o in outcomes]) | guard.numbers_in([o.arguments for o in outcomes]) | \

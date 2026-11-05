@@ -127,33 +127,36 @@ def main() -> int:
         rb = chat(c, MARIA_ANNA, "Ist ihr Tumor jetzt weg?")
         check(rb["boundary_triggered"] and not rb["tool_trace"], "Akt 2: Grenze (keine Befundinterpretation)", t0)
 
-        # ---------------- Akt 4
+        # ---------------- Akt 4: Stefan – everything in English (live state: his preference is English)
+        def english(r: dict) -> list[str]:
+            low = r["reply"].lower()
+            return [w for w, bad in (("Antwort nicht englisch", " the " not in low and " you " not in low),
+                                     ("Germanismus 'in question'", "in question" in low or "into question" in low)) if bad]
+
         t0 = time.perf_counter()
-        rg = chat(c, STEFAN, "Ich möchte etwas für meine Gesundheit tun.")
-        check(bool({"match_bundle", "get_prevention"} & set(tools(rg))), "Akt 4: Stefan – Gesundheits-Bündel", t0)
+        rg = chat(c, STEFAN, "I want to do something for my health.")
+        why = (["kein Bündel"] if "match_bundle" not in tools(rg) else []) + english(rg)
+        check(not why, "Akt 4: Stefan (EN) – Gesundheits-Bündel, Antwort englisch", t0, "; ".join(why) + " – Szene wiederholen")
         t0 = time.perf_counter()
         prev = c.get("/api/prevention/overview", headers=STEFAN).json()
         flu = next((i for i in prev["items"] if i["id"] == "influenza"), {})
         check(flu.get("status") == "due", "Akt 4: Stefan – Grippeimpfung fällig (Impfpass importiert)", t0, "make seed")
-
-        # ---------------- Akt 4: Arzttermin-Dialog, Kind, Personalisierung
         t0 = time.perf_counter()
-        ra = chat(c, STEFAN, "Ich möchte einen Arzttermin.")
-        ra2 = chat(c, STEFAN, "Zur Kontrolle beim Hausarzt. Ja, gern in der Nähe, und vormittags.", ra["conversation_id"])
+        ra = chat(c, STEFAN, "I'd like to see a doctor.")
+        ra2 = chat(c, STEFAN, "A check-up with my GP. Nearby please, and in the morning.", ra["conversation_id"])
         check(not tools(ra) and "?" in ra["reply"] and "search_slots" in tools(ra2)
               and any(a["kind"] == "choose_slot" for a in ra2["actions"]),
-              "Akt 4: Arzttermin – Rückfrage zum Anlass → Vormittagstermine angeboten (nicht gebucht)", t0)
+              "Akt 4: Stefan (EN) – Arzttermin: Rückfrage zum Anlass → Vormittagstermine (nicht gebucht)", t0)
         t0 = time.perf_counter()
-        rk = chat(c, STEFAN, "Ich habe ein Kind und möchte wissen, welche Angebote es gibt.")
-        check("match_bundle" in tools(rk) and "Eltern-Kind-Pass" in rk["reply"], "Akt 4: Kind-Bündel (Eltern-Kind-Pass …)", t0)
+        rk = chat(c, STEFAN, "I have a child and would like to know what support is available.")
+        why = (["kein Kind-Bündel"] if "match_bundle" not in tools(rk) else []) + \
+              (["Eltern-Kind-Pass fehlt"] if not re.search(r"eltern-kind|parent-child|mother-child", rk["reply"], re.IGNORECASE) else []) + \
+              english(rk)
+        check(not why, "Akt 4: Stefan (EN) – Kind-Bündel (Eltern-Kind-Pass …)", t0, "; ".join(why) + " – Szene wiederholen")
         t0 = time.perf_counter()
-        ren = chat(c, MARIA_ANNA, "What is my mother entitled to after her hospital stay?", document_ids=["doc-anna-entlassung"])
-        low = ren["reply"].lower()
-        why = [w for w, bad in (("check_benefits nicht aufgerufen", "check_benefits" not in tools(ren)),
-                                ("Antwort nicht englisch", " the " not in low),
-                                ("Germanismus 'in question'", "in question" in low or "into question" in low)) if bad]
-        check(not why, "Akt 4: englische Antwort (vollständig Englisch, keine Germanismen)", t0,
-              "; ".join(why) + " – Szene wiederholen; API nach git pull neu gestartet?")
+        rf = chat(c, STEFAN, "There was colon cancer in my family. Which screenings make sense for me?")
+        check("get_prevention" in tools(rf) and not english(rf) and not rf["boundary_triggered"],
+              "Akt 4: Stefan (EN) – Familiengeschichte Darmkrebs (Programm erklärt, keine Risikoeinschätzung)", t0)
         t0 = time.perf_counter()
         rp = chat(c, MARIA_ANNA, "Was ist Pflegegeld und wer entscheidet darüber?", plain_language=True)
         check(bool({"get_benefit", "check_benefits"} & set(tools(rp))), "Akt 4: Einfache Sprache", t0)

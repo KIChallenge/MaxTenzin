@@ -49,9 +49,27 @@ def seed(skip: set[str] | None = None) -> list[str]:
     return seeded
 
 
+def seed_live_start() -> list[str]:
+    """Live demo start state (DEMO_LIVE=1): Maria may NOT yet read documents or prepare applications for Anna
+    (Anna grants both on stage), and Stefan has chosen English in his preferences."""
+    from app.seed.loader import OVERRIDES, delegations_for
+
+    d = next(x for x in delegations_for("anna") if x.id == "del-anna-maria")
+    scopes = [str(getattr(s, "value", s)) for s in d.scopes if str(getattr(s, "value", s))
+              not in ("read_documents", "prepare_applications")]
+    store.put(OVERRIDES, d.id, {"scopes": scopes}, subject_id="anna")
+    store.put("preferences", "stefan", {"language": "en", "plain_language": False, "detail": "normal",
+                                        "daypart": "any", "near_home": True, "accessible": False, "voice": False},
+              subject_id="stefan")
+    return [f"Vollmacht Anna→Maria für den Demo-Start: {', '.join(scopes)}", "Stefan: Sprache Englisch"]
+
+
 if __name__ == "__main__":
     import os
 
     skip = {s.strip() for s in os.environ.get("SEED_SKIP_DOCS", "").split(",") if s.strip()}
     for line in seed(skip) or ["nothing seeded — RAW_DATA_DIR/Befunde not found"]:
         print(line)
+    if os.environ.get("DEMO_LIVE"):
+        for line in seed_live_start():
+            print(line)

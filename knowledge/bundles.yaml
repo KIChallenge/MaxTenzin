@@ -119,8 +119,9 @@ bundles:
     match:
       strong: [fuer meine gesundheit, gesundheit tun, gesund leben, gesund bleiben, gesuender, fit, fitness, bewegung,
                bewegen, sport, abnehmen, ernaehrung, vorsorge, impfung, impfen, impfstatus, rauchen, rauchfrei,
-               aufhoeren zu rauchen, stress, ruecken, healthy, exercise, prevention, check up, checkup]
-      weak: [gesund, gesundheit, praevention, kurs, park, essen]
+               aufhoeren zu rauchen, stress, ruecken, healthy, exercise, prevention, check up, checkup,
+               my health, for my health, stay healthy, screening, vaccination, vaccine, flu shot, quit smoking]
+      weak: [gesund, gesundheit, praevention, kurs, park, essen, health, fit, diet]
     questions: [family_history, diabetes_type2]
     next_step_de: "Termin für die kostenlose Vorsorgeuntersuchung vereinbaren und dort auch Impfstatus und Familiengeschichte ansprechen."
     items:
@@ -153,8 +154,9 @@ bundles:
     situation_de: "„Ich habe ein Kind …“ – Familienleistungen, Eltern-Kind-Pass, Impfungen und Angebote für Eltern."
     match:
       strong: [kind, kinder, baby, tochter, sohn, schwanger, schwangerschaft, geburt, eltern kind pass, mutter kind pass,
-               kinderbetreuungsgeld, familienbeihilfe, kleinkind, karenz, child, pregnant, newborn]
-      weak: [familie, eltern, schule, kindergarten]
+               kinderbetreuungsgeld, familienbeihilfe, kleinkind, karenz, child, children, kid, kids, son, daughter, pregnant,
+               pregnancy, newborn, toddler]
+      weak: [familie, eltern, schule, kindergarten, family, school]
     questions: [familienbeihilfe_received, shared_household_with_child]
     next_step_de: "Nächste Eltern-Kind-Pass-Untersuchung vereinbaren und prüfen, ob Familienbeihilfe und Kinderbetreuungsgeld beantragt sind."
     items:

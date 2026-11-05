@@ -440,3 +440,17 @@ def test_next_questions_summary_separates_optional():
 
     d = {"questions": [{"required": False}] * 17, "progress": 1.0}
     assert _questions_summary(d) == "0 offene Pflichtangabe(n), 17 freiwillige Angabe(n), Pflichtangaben zu 100 % erledigt"
+
+
+def test_granted_scopes_are_announced_once():
+    from types import SimpleNamespace
+
+    from app.agent.orchestrator import _granted_since_last_turn
+
+    memo: dict = {}
+    ctx = SimpleNamespace(scopes={"manage_case"})
+    assert _granted_since_last_turn(ctx, memo) is None                      # first turn: nothing "new"
+    ctx.scopes = {"manage_case", "prepare_applications"}
+    note = _granted_since_last_turn(ctx, memo)
+    assert note and "Anträge vorbereiten" in note
+    assert _granted_since_last_turn(ctx, memo) is None                      # only once
