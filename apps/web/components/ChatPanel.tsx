@@ -1,4 +1,5 @@
 "use client";
+import { TriangleAlert, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { bff } from "@/lib/client";
@@ -119,12 +120,12 @@ export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string
         <div className="flex items-center gap-3">
           <LotsiAvatar size={44} />
           <div>
-          <h2 className="text-lg font-bold">Lotsi</h2>
+          <h2 className="font-semibold">Lotsi</h2>
           <p className="text-sm text-muted">für {subjectName} · nutzt nur Ihre Berechtigungen</p>
           </div>
         </div>
         <button type="button" onClick={() => setOpen(false)} className="btn-ghost" aria-label="Chat schließen">
-          ✕
+          <X className="h-5 w-5" aria-hidden />
         </button>
       </div>
 
@@ -192,13 +193,13 @@ function ChatMessage({ msg, onSuggest, pathname }: { msg: Msg; onSuggest: (s: st
     <div className="mr-8 space-y-2">
       {msg.trace.length > 0 && (
         <details className="rounded-lg border border-line bg-paper px-3 py-2 text-sm">
-          <summary className="cursor-pointer font-bold text-muted">
+          <summary className="cursor-pointer font-semibold text-muted">
             Lotsi hat abgefragt: {msg.trace.map((t) => t.summary_de || t.tool).join(" → ")}
           </summary>
           <ul className="mt-2 space-y-1">
             {msg.trace.map((t, i) => (
               <li key={i} className={t.status >= 400 ? "text-danger" : ""}>
-                <code className="font-bold">{t.tool}</code> · HTTP {t.status}
+                <code className="font-semibold">{t.tool}</code> · HTTP {t.status}
                 {t.status === 403 && " (keine Berechtigung)"} — {t.summary_de}
                 {t.sources?.length > 0 && <span className="block text-muted">Quellen: {t.sources.join(", ")}</span>}
               </li>
@@ -211,7 +212,7 @@ function ChatMessage({ msg, onSuggest, pathname }: { msg: Msg; onSuggest: (s: st
           msg.boundary ? "border-2 border-warn bg-warn-soft" : "border border-line bg-paper"
         }`}
       >
-        {msg.boundary && <p className="mb-1 text-sm font-bold text-warn">⚠ Medizinische Grenze – bitte mit Ärztin/Arzt klären</p>}
+        {msg.boundary && <p className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-warn"><TriangleAlert className="h-4 w-4" aria-hidden /> Medizinische Grenze – bitte mit Ärztin/Arzt klären</p>}
         <SimpleMarkdown text={msg.text} />
       </div>
       {msg.actions && msg.actions.length > 0 && (

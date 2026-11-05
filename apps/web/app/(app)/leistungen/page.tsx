@@ -1,3 +1,4 @@
+import { Check, ChevronRight, FilePen, Paperclip, X } from "lucide-react";
 import { startForm } from "@/app/actions";
 import { ApiError } from "@/components/ApiError";
 import { Badge } from "@/components/Badge";
@@ -86,14 +87,14 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
           </ul>
           {notApplicable.length > 0 && (
             <section aria-labelledby="na-h" className="mt-8">
-              <h2 id="na-h" className="mb-2 text-lg font-bold text-muted">
+              <h2 id="na-h" className="mb-2 font-semibold text-muted">
                 Trifft derzeit nicht zu
               </h2>
               <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
                 {notApplicable.map((r) => (
                   <li key={r.benefit.id} className="flex flex-wrap items-center gap-3 px-5 py-3">
                     <span className="flex-1">
-                      <span className="font-bold">{r.benefit.name_de}</span>
+                      <span className="font-semibold">{r.benefit.name_de}</span>
                       <span className="ml-2 text-sm text-muted">{r.benefit.provider}</span>
                     </span>
                     <Badge tone="neutral">{ELIGIBILITY.not_applicable.label}</Badge>
@@ -135,17 +136,15 @@ function BenefitCard({
     amounts.length > 1 && amounts.every((a) => a.source && a.source.label === amounts[0].source?.label) ? amounts[0].source : undefined;
 
   return (
-    <details className={`group card border-l-8 p-0 ${toneBorder(st.tone)}`}>
+    <details className={`group card border-l-4 p-0 ${toneBorder(st.tone)}`}>
       <summary className="flex cursor-pointer list-none flex-wrap items-start gap-x-4 gap-y-2 p-5 [&::-webkit-details-marker]:hidden">
-        <span aria-hidden className="mt-1 text-xl text-accent transition-transform group-open:rotate-90">
-          ▸
-        </span>
+        <ChevronRight className="mt-1 h-5 w-5 shrink-0 text-accent transition-transform group-open:rotate-90" aria-hidden />
         <span className="min-w-0 flex-1">
           <span className="eyebrow block">{b.provider}</span>
-          <span className="block text-xl font-bold">{b.name_de}</span>
+          <span className="block text-lg font-semibold">{b.name_de}</span>
           <span className="mt-1 block text-muted">{plain && b.plain_de ? b.plain_de : b.summary_de}</span>
           <span className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-            {docCriteria.length > 0 && <span className="font-bold text-accent-strong">📎 im Dokument empfohlen</span>}
+            {docCriteria.length > 0 && <span className="inline-flex items-center gap-1 font-semibold text-accent-strong"><Paperclip className="h-4 w-4" aria-hidden /> im Dokument empfohlen</span>}
             {firstAmount && (
               <span>
                 {amounts.length > 1 ? "ab " : ""}
@@ -153,7 +152,7 @@ function BenefitCard({
               </span>
             )}
             {missing.length > 0 && <span className="text-info">{missing.length} Angabe(n) offen</span>}
-            {b.form_ids?.length > 0 && <span>📝 Antrag kann vorbereitet werden</span>}
+            {b.form_ids?.length > 0 && <span className="inline-flex items-center gap-1"><FilePen className="h-4 w-4" aria-hidden /> Antrag kann vorbereitet werden</span>}
           </span>
         </span>
         <Badge tone={st.tone}>{st.label}</Badge>
@@ -167,10 +166,10 @@ function BenefitCard({
 
         <div className="mt-4 grid gap-6 md:grid-cols-2">
           <section>
-            <h3 className="font-bold">Voraussetzungen</h3>
+            <h3 className="font-semibold">Voraussetzungen</h3>
             {docCriteria.length > 0 && (
               <div className="mt-2 rounded-lg bg-accent-soft/60 p-3">
-                <p className="font-bold">📎 Im Dokument ausdrücklich empfohlen</p>
+                <p className="flex items-center gap-1.5 font-semibold"><Paperclip className="h-4 w-4" aria-hidden /> Im Dokument ausdrücklich empfohlen</p>
                 <ul className="mt-1 space-y-2">
                   {docCriteria.map((c) => (
                     <li key={c.id}>
@@ -185,7 +184,7 @@ function BenefitCard({
                 <li key={c.id} className="flex gap-3">
                   <Marker met={c.met} />
                   <div>
-                    <p className="font-bold">
+                    <p className="font-semibold">
                       {c.label_de}
                       <span className="sr-only">{c.met === true ? " – erfüllt" : c.met === false ? " – nicht erfüllt" : " – noch offen"}</span>
                     </p>
@@ -199,7 +198,7 @@ function BenefitCard({
           <section className="space-y-4">
             {amounts.length > 0 && (
               <div>
-                <h3 className="font-bold">Beträge</h3>
+                <h3 className="font-semibold">Beträge</h3>
                 <ul className="mt-2 space-y-1">
                   {amounts.map((a, i) => (
                     <li key={i} className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -219,7 +218,7 @@ function BenefitCard({
             )}
             {missing.length > 0 && (
               <div className="rounded-lg bg-info-soft p-3">
-                <h3 className="font-bold text-info">Noch offen</h3>
+                <h3 className="font-semibold text-info">Noch offen</h3>
                 <ul className="list-disc pl-5">
                   {missing.map((m) => (
                     <li key={m}>{factLabel(m)}</li>
@@ -229,7 +228,7 @@ function BenefitCard({
             )}
             {r.next_steps_de?.length ? (
               <div>
-                <h3 className="font-bold">Nächste Schritte</h3>
+                <h3 className="font-semibold">Nächste Schritte</h3>
                 <ol className="mt-1 list-decimal space-y-1 pl-5">
                   {r.next_steps_de.map((s) => (
                     <li key={s}>{s}</li>
@@ -239,7 +238,7 @@ function BenefitCard({
             ) : null}
             {b.required_documents_de?.length ? (
               <div>
-                <h3 className="font-bold">Unterlagen</h3>
+                <h3 className="font-semibold">Unterlagen</h3>
                 <ul className="list-disc pl-5">
                   {b.required_documents_de.map((d) => (
                     <li key={d}>{d}</li>
@@ -257,7 +256,7 @@ function BenefitCard({
               <input type="hidden" name="benefit_id" value={b.id} />
               <input type="hidden" name="document_id" value={prefillDoc} />
               <button className="btn-primary" disabled={!canPrepare} title={canPrepare ? undefined : "Berechtigung „Anträge vorbereiten“ fehlt"}>
-                📝 Antrag vorbereiten{b.form_ids.length > 1 || formTitle.get(fid) ? `: ${formTitle.get(fid) ?? fid}` : ""}
+                <FilePen className="h-4 w-4" aria-hidden /> Antrag vorbereiten{b.form_ids.length > 1 || formTitle.get(fid) ? `: ${formTitle.get(fid) ?? fid}` : ""}
               </button>
             </form>
           ))}
@@ -285,11 +284,11 @@ function Marker({ met }: { met: boolean | null | undefined }) {
   return (
     <span
       aria-hidden
-      className={`mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full font-bold ${
+      className={`mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full font-semibold ${
         met === true ? "bg-ok text-white" : met === false ? "bg-danger text-white" : "border border-info/40 bg-info-soft text-info"
       }`}
     >
-      {met === true ? "✓" : met === false ? "✕" : "?"}
+      {met === true ? <Check className="h-4 w-4" /> : met === false ? <X className="h-4 w-4" /> : <span className="text-sm font-semibold">?</span>}
     </span>
   );
 }

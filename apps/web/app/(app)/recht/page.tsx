@@ -21,11 +21,11 @@ export default async function LegalPage({ searchParams }: { searchParams: Promis
         </form>
         <form className="card flex flex-wrap items-end gap-3">
           <label className="flex flex-col gap-1">
-            <span className="font-bold">Gesetz</span>
+            <span className="font-semibold">Gesetz</span>
             <input name="law" defaultValue={sp.law ?? "BPGG"} className="input w-28" />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="font-bold">§</span>
+            <span className="font-semibold">§</span>
             <input name="nr" defaultValue={sp.nr ?? "4"} className="input w-20" />
           </label>
           <button className="btn-secondary">Paragraf öffnen</button>
@@ -58,9 +58,9 @@ function Paragraph({ p }: { p: LegalParagraph }) {
   return (
     <article className="card mb-6">
       <p className="eyebrow">{p.law_title}</p>
-      <h2 className="text-2xl font-bold">{shortTitle(p)}</h2>
+      <h2 className="text-xl font-semibold">{shortTitle(p)}</h2>
       {trail(p.heading).length > 0 && <p className="text-sm text-muted">{trail(p.heading).join(" › ")}</p>}
-      <p className="mt-1 rounded-lg bg-info-soft px-3 py-1 font-bold text-info">
+      <p className="mt-1 rounded-lg bg-info-soft px-3 py-1 font-semibold text-info">
         Fassung in Kraft seit {fmtDate(p.in_force)} · unverbindliche Information, keine Rechtsberatung
       </p>
       <div className="mt-4 max-w-3xl whitespace-pre-wrap">{p.text}</div>

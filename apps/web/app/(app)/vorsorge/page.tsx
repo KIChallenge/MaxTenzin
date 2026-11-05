@@ -37,7 +37,7 @@ export default async function PreventionPage() {
                 return (
                   <li key={it.id} className="card">
                     <div className="flex flex-wrap items-start gap-3">
-                      <h2 className="flex-1 text-xl font-bold">{it.title_de}</h2>
+                      <h2 className="flex-1 text-lg font-semibold">{it.title_de}</h2>
                       <Badge tone={st.tone}>{label}</Badge>
                     </div>
                     <p className="mt-1">{it.explanation_de}</p>
@@ -50,14 +50,14 @@ export default async function PreventionPage() {
               })}
             </ul>
             <section className="card h-fit">
-              <h2 className="text-lg font-bold">Im e-Impfpass dokumentiert</h2>
+              <h2 className="font-semibold">Im e-Impfpass dokumentiert</h2>
               {r.data.vaccinations.length === 0 ? (
                 <p className="text-muted">Keine Einträge.</p>
               ) : (
                 <ul className="mt-2 divide-y divide-line">
                   {r.data.vaccinations.map((v, i) => (
                     <li key={i} className="py-2">
-                      <p className="font-bold">{v.disease}</p>
+                      <p className="font-semibold">{v.disease}</p>
                       <p className="text-sm text-muted">
                         {fmtDate(v.date)} · {v.vaccine}
                         {v.dose_label && ` · ${v.dose_label}`}

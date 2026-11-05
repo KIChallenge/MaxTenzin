@@ -1,3 +1,4 @@
+import { Mail, Phone } from "lucide-react";
 import { ApiError } from "@/components/ApiError";
 import { PageTitle } from "@/components/PageTitle";
 import { SourceChip } from "@/components/SourceChip";
@@ -27,7 +28,7 @@ export default async function OfficesPage({ searchParams }: { searchParams: Prom
       </PageTitle>
       <form className="card mb-6 flex flex-wrap items-end gap-4">
         <label className="flex flex-col gap-1">
-          <span className="font-bold">Thema</span>
+          <span className="font-semibold">Thema</span>
           <select name="topic" defaultValue={topic} className="input">
             {TOPICS.map(([k, l]) => (
               <option key={k} value={k}>{l}</option>
@@ -35,7 +36,7 @@ export default async function OfficesPage({ searchParams }: { searchParams: Prom
           </select>
         </label>
         <label className="flex flex-col gap-1">
-          <span className="font-bold">Postleitzahl</span>
+          <span className="font-semibold">Postleitzahl</span>
           <input name="zip" defaultValue={zip} className="input w-32" inputMode="numeric" />
         </label>
         <button className="btn-primary">Suchen</button>
@@ -49,13 +50,13 @@ export default async function OfficesPage({ searchParams }: { searchParams: Prom
           {r.data.map((o) => (
             <li key={o.id} className="card">
               <p className="eyebrow">{o.provider}</p>
-              <h2 className="text-xl font-bold">{o.name}</h2>
+              <h2 className="text-lg font-semibold">{o.name}</h2>
               <address className="mt-1 not-italic">
                 {o.address}, {o.zip} {o.city}
               </address>
               <p className="mt-1">
-                {o.phone && <>☎ <a className="link" href={`tel:${o.phone.replace(/\s/g, "")}`}>{o.phone}</a> </>}
-                {o.email && <>· ✉ <a className="link" href={`mailto:${o.email}`}>{o.email}</a></>}
+                {o.phone && <span className="mr-4 inline-flex items-center gap-1.5"><Phone className="h-4 w-4 text-muted" aria-hidden /><a className="link" href={`tel:${o.phone.replace(/\s/g, "")}`}>{o.phone}</a></span>}
+                {o.email && <span className="inline-flex items-center gap-1.5"><Mail className="h-4 w-4 text-muted" aria-hidden /><a className="link" href={`mailto:${o.email}`}>{o.email}</a></span>}
               </p>
               {o.web && <a className="link" href={o.web}>{o.web}</a>}
               <p className="mt-2"><SourceChip source={o.source} /></p>

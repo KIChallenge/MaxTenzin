@@ -16,7 +16,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   return (
     <main className="mx-auto max-w-3xl px-5 py-12">
       <p className="eyebrow">Demo-Anmeldung</p>
-      <h1 className="text-4xl font-bold tracking-tight">Anmelden mit ID Austria</h1>
+      <h1 className="text-4xl font-semibold tracking-tight">Anmelden mit ID Austria</h1>
       <p className="mt-2 text-lg text-muted">
         Simulierte Anmeldung. Wählen Sie eine Demo-Person. Lotsi, die KI, arbeitet danach ausschließlich mit den
         Berechtigungen dieser Person.
@@ -37,7 +37,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               <form action={login}>
                 <input type="hidden" name="persona_id" value={p.id} />
                 <button className="card flex w-full flex-col items-start text-left transition hover:border-accent hover:shadow-md">
-                  <span className="text-xl font-bold text-accent-strong">{fullName(p)}</span>
+                  <span className="text-lg font-semibold text-accent-strong">{fullName(p)}</span>
                   <span className="text-muted">{ROLE[p.id] ?? ""}</span>
                   <span className="mt-2 text-sm text-muted">
                     geb. {fmtDate(p.birth_date)} · {p.insurer}

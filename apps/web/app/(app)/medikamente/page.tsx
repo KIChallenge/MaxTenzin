@@ -26,8 +26,8 @@ export default async function MedicationsPage({ searchParams }: { searchParams: 
           {r.data.map((m) => (
             <li key={m.pharma_nr} className="card">
               <div className="flex flex-wrap items-start gap-3">
-                <h2 className="flex-1 text-lg font-bold">{m.name}</h2>
-                <span className="rounded-full border border-line px-2 text-sm font-bold">{BOX[m.box] ?? m.box}</span>
+                <h2 className="flex-1 font-semibold">{m.name}</h2>
+                <span className="rounded-full border border-line px-2 text-sm font-semibold">{BOX[m.box] ?? m.box}</span>
               </div>
               <p className="text-muted">Packung: {m.pack}</p>
               <p className="mt-1">{m.approval_needed_de}</p>

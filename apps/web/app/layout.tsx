@@ -1,22 +1,18 @@
 import type { Metadata } from "next";
-import { Atkinson_Hyperlegible } from "next/font/google";
+import { cookies } from "next/headers";
+import { COOKIE_TEXT } from "@/lib/session";
 import "./globals.css";
-
-const atkinson = Atkinson_Hyperlegible({
-  variable: "--font-atkinson",
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "700"],
-});
 
 export const metadata: Metadata = {
   title: "KI-Lotse · Sozialversicherung",
   description: "Persönlicher Navigator durch die österreichische Sozialversicherung (Demo)",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const large = (await cookies()).get(COOKIE_TEXT)?.value === "large";
   return (
-    <html lang="de">
-      <body className={`${atkinson.variable} antialiased`}>{children}</body>
+    <html lang="de" className={large ? "text-large" : undefined}>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

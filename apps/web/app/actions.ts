@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { api } from "@/lib/api";
-import { COOKIE_PLAIN, COOKIE_SUBJECT, COOKIE_TOKEN } from "@/lib/session";
+import { COOKIE_PLAIN, COOKIE_SUBJECT, COOKIE_TEXT, COOKIE_TOKEN } from "@/lib/session";
 import type { Case, DocumentAnalysis, DocumentSummary, FormSession, Session } from "@/lib/types";
 
 const cookieOpts = { httpOnly: true, sameSite: "lax" as const, path: "/" };
@@ -28,6 +28,11 @@ export async function logout() {
 
 export async function setSubject(subjectId: string) {
   (await cookies()).set(COOKIE_SUBJECT, subjectId, cookieOpts);
+  revalidatePath("/", "layout");
+}
+
+export async function setLargeText(on: boolean) {
+  (await cookies()).set(COOKIE_TEXT, on ? "large" : "normal", cookieOpts);
   revalidatePath("/", "layout");
 }
 

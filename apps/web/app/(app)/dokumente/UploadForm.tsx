@@ -36,7 +36,7 @@ export function UploadForm({ subjectName }: { subjectName: string }) {
   return (
     <form onSubmit={submit} className="card space-y-4 border-2 border-dashed border-accent/40">
       <div>
-        <label htmlFor="doc" className="text-lg font-bold">
+        <label htmlFor="doc" className="font-semibold">
           Dokument hochladen (PDF)
         </label>
         <p className="text-muted">z. B. Entlassungsbrief, Befund oder e-Impfpass-Ausdruck von {subjectName}.</p>
@@ -46,7 +46,7 @@ export function UploadForm({ subjectName }: { subjectName: string }) {
         type="file"
         accept="application/pdf"
         onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-        className="block w-full text-ink file:mr-4 file:rounded-lg file:border-0 file:bg-accent-soft file:px-4 file:py-2 file:font-bold file:text-accent-strong"
+        className="block w-full text-ink file:mr-4 file:rounded-lg file:border-0 file:bg-accent-soft file:px-4 file:py-2 file:font-semibold file:text-accent-strong"
       />
       <button className="btn-primary" disabled={!file || state !== "idle"}>
         {state === "upload" ? "Wird hochgeladen …" : state === "analyze" ? "Wird gelesen …" : "Hochladen und lesen"}

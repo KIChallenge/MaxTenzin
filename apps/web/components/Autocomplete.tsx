@@ -91,7 +91,7 @@ export function Autocomplete({
 
   return (
     <div className="relative flex flex-1 flex-col gap-1">
-      <label htmlFor={id} className="font-bold">
+      <label htmlFor={id} className="font-semibold">
         {label}
       </label>
       <input
@@ -148,7 +148,7 @@ export function Autocomplete({
               onMouseEnter={() => setActive(i)}
               className={`cursor-pointer px-3 py-2 ${i === active ? "bg-accent-soft" : ""}`}
             >
-              <span className="block font-bold">{o.label}</span>
+              <span className="block font-semibold">{o.label}</span>
               <span className="block text-sm text-muted">{o.sub}</span>
             </li>
           ))}

@@ -1,3 +1,4 @@
+import { Building2, Compass, Eye, FilePen, FileText, ListChecks, Pill, Scale, Syringe } from "lucide-react";
 import Link from "next/link";
 import { OpenChatButton } from "@/components/OpenChatButton";
 import { api } from "@/lib/api";
@@ -6,15 +7,15 @@ import { getMe } from "@/lib/me";
 import type { Notification } from "@/lib/types";
 
 const TILES = [
-  { href: "/dokumente", icon: "📎", title: "Dokumente", text: "Entlassungsbrief hochladen – wir zeigen, was drinsteht." },
-  { href: "/leistungen", icon: "🧭", title: "Leistungen", text: "Welche Leistungen kommen in Frage – mit Quellen." },
-  { href: "/leistungen#antraege", icon: "📝", title: "Anträge", text: "Formulare vorausgefüllt vorbereiten, als PDF-Entwurf." },
-  { href: "/fall", icon: "✅", title: "Mein Fall", text: "Alle Schritte nach dem Spitalsaufenthalt im Blick." },
-  { href: "/vorsorge", icon: "💉", title: "Vorsorge", text: "Impfungen und Vorsorgeuntersuchungen laut Impfplan." },
-  { href: "/stellen", icon: "🏢", title: "Zuständige Stellen", text: "Wo Sie welchen Antrag einreichen." },
-  { href: "/medikamente", icon: "💊", title: "Medikamente", text: "Kosten und Bewilligung laut Erstattungskodex." },
-  { href: "/recht", icon: "§", title: "Rechtsgrundlagen", text: "Gesetzestexte mit gültiger Fassung." },
-  { href: "/transparenz", icon: "🔍", title: "Transparenz", text: "Wer hat wann was abgefragt – Mensch oder KI." },
+  { href: "/dokumente", icon: FileText, title: "Dokumente", text: "Entlassungsbrief hochladen – wir zeigen, was drinsteht." },
+  { href: "/leistungen", icon: Compass, title: "Leistungen", text: "Welche Leistungen kommen in Frage – mit Quellen." },
+  { href: "/leistungen#antraege", icon: FilePen, title: "Anträge", text: "Formulare vorausgefüllt vorbereiten, als PDF-Entwurf." },
+  { href: "/fall", icon: ListChecks, title: "Mein Fall", text: "Alle Schritte nach dem Spitalsaufenthalt im Blick." },
+  { href: "/vorsorge", icon: Syringe, title: "Vorsorge", text: "Impfungen und Vorsorgeuntersuchungen laut Impfplan." },
+  { href: "/stellen", icon: Building2, title: "Zuständige Stellen", text: "Wo Sie welchen Antrag einreichen." },
+  { href: "/medikamente", icon: Pill, title: "Medikamente", text: "Kosten und Bewilligung laut Erstattungskodex." },
+  { href: "/recht", icon: Scale, title: "Rechtsgrundlagen", text: "Gesetzestexte mit gültiger Fassung." },
+  { href: "/transparenz", icon: Eye, title: "Transparenz", text: "Wer hat wann was abgefragt – Mensch oder KI." },
 ];
 
 export default async function Cockpit() {
@@ -25,14 +26,13 @@ export default async function Cockpit() {
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
       <section>
-        <p className="eyebrow">Cockpit</p>
-        <h1 className="text-3xl font-bold tracking-tight">
+        <h1 className="text-[1.75rem] leading-tight font-semibold tracking-[-0.02em]">
           Guten Tag, {actor?.first_name}
           {forOther && <span className="text-muted">. Sie handeln für {fullName(subject)}.</span>}
         </h1>
         <div className="card mt-5 flex flex-wrap items-center gap-4 border-accent/30 bg-accent-soft">
           <div className="flex-1">
-            <p className="text-lg font-bold">Was möchten Sie heute erledigen?</p>
+            <p className="font-semibold">Was möchten Sie heute erledigen?</p>
             <p className="text-muted">Lotsi fragt die Dienste für Sie ab – mit denselben Berechtigungen wie Sie.</p>
           </div>
           <OpenChatButton>Frag Lotsi</OpenChatButton>
@@ -41,10 +41,8 @@ export default async function Cockpit() {
           {TILES.map((t) => (
             <li key={t.href}>
               <Link href={t.href} className="card flex h-full flex-col gap-1 transition hover:border-accent hover:shadow-md">
-                <span aria-hidden className="text-3xl">
-                  {t.icon}
-                </span>
-                <span className="text-xl font-bold text-accent-strong">{t.title}</span>
+                <t.icon className="h-6 w-6 text-accent" aria-hidden />
+                <span className="text-lg font-semibold text-accent-strong">{t.title}</span>
                 <span className="text-muted">{t.text}</span>
               </Link>
             </li>
@@ -52,7 +50,7 @@ export default async function Cockpit() {
         </ul>
       </section>
       <aside aria-labelledby="inbox-h">
-        <h2 id="inbox-h" className="text-xl font-bold">
+        <h2 id="inbox-h" className="text-lg font-semibold">
           Posteingang
         </h2>
         <div className="mt-3 space-y-3">
@@ -62,7 +60,7 @@ export default async function Cockpit() {
             inbox.data.map((n) => (
               <article key={n.id} className={`card ${n.read ? "" : "border-l-4 border-l-accent"}`}>
                 <p className="text-sm text-muted">{fmtDate(n.created_at)}</p>
-                <h3 className="font-bold">{n.title_de}</h3>
+                <h3 className="font-semibold">{n.title_de}</h3>
                 <p className="text-muted">{n.body_de}</p>
                 {n.link && (
                   <Link href={n.link} className="link mt-1 inline-block">

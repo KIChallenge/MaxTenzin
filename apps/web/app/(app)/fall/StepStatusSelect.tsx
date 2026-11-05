@@ -14,7 +14,7 @@ export function StepStatusSelect({ caseId, stepId, status, label }: { caseId: st
     <span className="inline-flex flex-col items-end">
       <select
         aria-label={`Status von „${label}"`}
-        className={`cursor-pointer rounded-full border px-3 py-1 font-bold ${PILL[value]}`}
+        className={`cursor-pointer rounded-full border px-3 py-1 font-semibold ${PILL[value]}`}
         value={value}
         disabled={pending}
         onChange={(e) => {

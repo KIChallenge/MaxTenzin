@@ -1,3 +1,4 @@
+import { Ban, Bot, Check, User } from "lucide-react";
 import { ApiError } from "@/components/ApiError";
 import { PageTitle } from "@/components/PageTitle";
 import { api } from "@/lib/api";
@@ -75,7 +76,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
             <thead className="bg-paper text-sm">
               <tr>
                 {["Zeit", "Wer · für wen", "Über", "Aktion", "Berechtigung", "Ergebnis", "Quellen / Regeln"].map((h) => (
-                  <th key={h} scope="col" className="px-3 py-1.5 font-bold">
+                  <th key={h} scope="col" className="px-3 py-1.5 font-semibold">
                     {h}
                   </th>
                 ))}
@@ -92,18 +93,18 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
                       {e.subject_id && e.subject_id !== e.actor_id && <span className="block text-sm text-muted">für {who(e.subject_id)}</span>}
                     </td>
                     <td className="px-3 py-1.5 whitespace-nowrap">
-                      {e.via === "agent" ? <span className="font-bold text-accent-strong">🤖 Lotsi (KI)</span> : "👤 Oberfläche"}
+                      {e.via === "agent" ? <span className="inline-flex items-center gap-1.5 font-semibold text-accent-strong"><Bot className="h-4 w-4" aria-hidden /> Lotsi (KI)</span> : <span className="inline-flex items-center gap-1.5"><User className="h-4 w-4 text-muted" aria-hidden /> Oberfläche</span>}
                       {e.tool && <span className="block text-sm text-muted">{e.tool}</span>}
                     </td>
                     <td className="px-3 py-1.5 text-sm">
                       <code className="whitespace-nowrap" title={`${e.method} ${e.path}`}>
                         {e.method} {shortPath(e.path)}
                       </code>
-                      {e.count > 1 && <span className="ml-1 rounded bg-neutral-soft px-1 font-bold">×{e.count}</span>}
+                      {e.count > 1 && <span className="ml-1 rounded bg-neutral-soft px-1 font-semibold">×{e.count}</span>}
                     </td>
                     <td className="px-3 py-1.5 text-sm">{e.scope_required ? SCOPE_LABELS[e.scope_required as Scope] ?? e.scope_required : "–"}</td>
-                    <td className="px-3 py-1.5 text-sm font-bold">
-                      {isDenied ? <span className="text-danger">⛔ abgelehnt ({e.status})</span> : e.status < 400 ? <span className="text-ok">✓ {e.status}</span> : <span className="text-warn">{e.status}</span>}
+                    <td className="px-3 py-1.5 text-sm font-semibold">
+                      {isDenied ? <span className="inline-flex items-center gap-1 text-danger"><Ban className="h-4 w-4" aria-hidden /> abgelehnt ({e.status})</span> : e.status < 400 ? <span className="inline-flex items-center gap-1 text-ok"><Check className="h-4 w-4" aria-hidden /> {e.status}</span> : <span className="text-warn">{e.status}</span>}
                     </td>
                     <td className="px-3 py-1.5 text-sm">{[...(e.sources ?? []), ...(e.rule_ids ?? [])].join(", ") || "–"}</td>
                   </tr>

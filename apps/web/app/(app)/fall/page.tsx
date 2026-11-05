@@ -1,3 +1,4 @@
+import { Check } from "lucide-react";
 import Link from "next/link";
 import { createCase } from "@/app/actions";
 import { ApiError } from "@/components/ApiError";
@@ -41,7 +42,7 @@ export default async function CasePage({ searchParams }: { searchParams: Promise
           return (
             <section key={c.id} className="mb-8">
               <div className="mb-3 flex flex-wrap items-end gap-3">
-                <h2 className="text-2xl font-bold">{c.title_de}</h2>
+                <h2 className="text-xl font-semibold">{c.title_de}</h2>
                 <span className="text-muted">
                   angelegt {fmtDate(c.created_at)} · {done} von {c.steps.length} erledigt
                 </span>
@@ -50,11 +51,11 @@ export default async function CasePage({ searchParams }: { searchParams: Promise
                 {c.steps.map((s, i) => {
                   return (
                     <li key={s.id} className={`card flex flex-wrap items-center gap-4 ${s.status === "done" ? "opacity-75" : ""}`}>
-                      <span aria-hidden className={`grid h-9 w-9 shrink-0 place-items-center rounded-full font-bold ${s.status === "done" ? "bg-ok text-white" : "bg-accent-soft text-accent-strong"}`}>
-                        {s.status === "done" ? "✓" : i + 1}
+                      <span aria-hidden className={`grid h-9 w-9 shrink-0 place-items-center rounded-full font-semibold ${s.status === "done" ? "bg-ok text-white" : "bg-accent-soft text-accent-strong"}`}>
+                        {s.status === "done" ? <Check className="h-5 w-5" aria-hidden /> : i + 1}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className={`text-lg font-bold ${s.status === "done" ? "line-through" : ""}`}>{s.title_de}</p>
+                        <p className={`font-semibold ${s.status === "done" ? "line-through" : ""}`}>{s.title_de}</p>
                         <p className="text-muted">
                           Zuständig: {s.responsible_de}
                           {s.due_date ? ` · bis ${fmtDate(s.due_date)}` : ""}
