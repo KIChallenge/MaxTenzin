@@ -105,3 +105,14 @@ services over HTTP with the same token. Full endpoint/scope table: [services.md]
   are not modelled.
 - Mock identity: no real ID Austria, no e-Vollmacht, no real e-card data. Single-node SQLite; not hardened for
   production (no rate limiting, no encryption at rest). See [roadmap.md](roadmap.md).
+
+## Automated security check (Floorplan health check, 05.11.2026)
+Floorplan reported 16 findings (10 high, 2 medium, 4 low). Assessment:
+- **15 × "endpoint without login check" – false positive.** The scanner does not recognise our auth dependency
+  (`require(Scope…)` / `get_context` in `app/core/auth.py`). Proof by behaviour: `app/tests/test_auth_everywhere.py`
+  calls every OpenAPI operation without credentials → all return **401**, except the three intentionally public ones
+  (`GET /api/health`, `GET /api/identity/personas`, `POST /api/identity/login` – mock ID Austria).
+- **1 × "very large file" (`apps/web/lib/api-types.ts`) – accepted.** It is generated from the OpenAPI spec
+  (`make openapi`) and never edited by hand.
+- What the check does *not* cover and remains true: the login itself is a mock (no real ID Austria) – see roadmap.
+

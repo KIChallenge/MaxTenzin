@@ -94,6 +94,8 @@ flowchart TB
 ```
 Services compose each other over HTTP with the **user's own token**, so scopes apply transitively (no Vorsorge scope → no Vorsorge hints in the inbox). Details: [architecture.md](documentation/architecture.md) · [safety.md](documentation/safety.md) · endpoints and scopes: [services.md](documentation/services.md) · decisions: [documentation/decisions/](documentation/decisions/) · roadmap: [roadmap.md](documentation/roadmap.md).
 
+Interactive architecture map (Floorplan export, open in a browser): [documentation/floorplan/sv-ki-lotse.html](documentation/floorplan/sv-ki-lotse.html)
+
 ## Services
 14 services + agent, 69 operations on 61 paths (OpenAPI at `/docs`).
 

@@ -8,7 +8,7 @@ docs/
 
 # Tooling state
 .omc/
-floorplan/
+/floorplan/
 .claude/settings.local.json
 
 # Python
