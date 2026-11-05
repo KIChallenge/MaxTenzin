@@ -1,7 +1,7 @@
 """notifications — proactive inbox, computed from other services via their HTTP APIs with the user's own token.
 
 Scopes therefore apply transitively: no 'view_health_prevention' for this subject -> no prevention notifications.
-REAL (WS-C).
+Owner: WS-C.
 """
 
 import hashlib

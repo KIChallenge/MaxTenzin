@@ -3,7 +3,7 @@ API := services/api
 WEB := apps/web
 UV  := uv run --project $(CURDIR)/$(API)
 
-.PHONY: help setup dev api api-demo web seed demo-assets demo-check test test-api test-extract eval lint extract openapi reset smoke-llm
+.PHONY: help setup dev api api-demo web seed demo-assets demo-check test test-api test-extract eval lint extract openapi sources reset smoke-llm
 
 help:             ## list targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*##/ —/'
@@ -40,6 +40,9 @@ lint:             ## ruff
 
 extract:          ## docs/ (raw, gitignored) -> knowledge/extracted/ (deterministic)
 	cd tools/extract && $(UV) python run_all.py
+
+sources:          ## documentation/sources.md: every knowledge item with its cited source (generated)
+	$(UV) python tools/sources.py
 
 openapi:          ## export OpenAPI spec + TS types for the web app
 	cd $(API) && LLM_MODE=fake uv run python -c "import json; from app.main import app; print(json.dumps(app.openapi(), ensure_ascii=False, indent=2))" > $(CURDIR)/$(WEB)/lib/openapi.json

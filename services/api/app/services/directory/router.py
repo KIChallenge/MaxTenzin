@@ -1,4 +1,4 @@
-"""directory — 'Wer ist zuständig?'. REAL (owner: WS-B, data: knowledge/offices.yaml)."""
+"""directory — 'Wer ist zuständig?'. (owner: WS-B, data: knowledge/offices.yaml)."""
 
 from fastapi import APIRouter, Depends, Query
 

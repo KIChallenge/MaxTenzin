@@ -46,9 +46,9 @@ Each golden is keyed by the sha256 of the PDF and holds only quotes and structur
 The document itself: every recommendation carries a quote and a page. The audit log records `"<filename>, S. <page>"` and rule `documents.quote_verification.v1`.
 
 ## Limitations
-- Live extraction varies between runs (12–21 recommendations seen for the Entlassungsbrief); every one is quote-verified.
+- Live extraction varies between runs (12–21 recommendations seen for the Entlassungsbrief); every one is quote-verified. The first live result per (prompt version, file hash) is cached in `analysis_cache`, so the same file always yields the same analysis (`extraction_mode="live-cached"`).
 - Clinical instructions to physicians (labs, blood pressure, medication, side effects, fluid balance) are filtered deterministically after extraction and replaced by a neutral notice (`CLINICAL` in extract.py).
-- Administrative facts (`facts`, e.g. Entlassungsdatum) come from `facts.py` (regex, quote + page), never from the LLM.
+- Administrative facts (`facts`, e.g. Entlassungsdatum, department) and, for discharge letters, the documented `main_diagnosis` / `secondary_diagnoses` (verbatim, for forms that ask for them, e.g. PAL 080 "Leiden") come from `facts.py` (regex, quote + page), never from the LLM. They are copied, never explained.
 - Scanned PDFs without a text layer produce no text and therefore no recommendations (no OCR for PDFs; upload such pages as photos instead).
 - **Photos: quote verification is weaker.** Quotes are checked against the model's own transcription, not the paper. A misread word that the extractor then quotes passes verification (seen at 72 dpi: „entsprechend“ instead of „entsprechender“). Hence the photo notice; recommendations and facts stay unconfirmed until the person checks them.
 - Photos: handwriting is not reliably readable; low resolution (< 1400 px long side), blur, glare and strong skew increase misreadings. The model marks what it cannot read as `[unleserlich]`, but it can also misread without marking.

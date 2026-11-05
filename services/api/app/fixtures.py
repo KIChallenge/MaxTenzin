@@ -1,4 +1,5 @@
-"""Contract-valid fixture data for stub endpoints (Phase 0). Workstreams replace stubs with real logic.
+"""Contract-valid fixture data (from Phase 0). Still used as the golden fallback for Anna's demo analysis
+(`ANNA_ANALYSIS`, read by benefits, cases and situation when the demo document has not been analysed) and by tests.
 
 Facts here mirror the fictional Entlassungsbefund (Anna Berger) and e-Impfpass (Stefan Testpatient).
 """

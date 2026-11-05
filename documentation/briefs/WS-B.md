@@ -1,5 +1,7 @@
 # WS-B — Benefits catalog + eligibility, directory, legal search, medications
 
+> **Historical brief** — the task as handed to the workstream at the start. Current behaviour: the service READMEs, `documentation/architecture.md` and `documentation/services.md`.
+
 **Branch:** `ws/B-benefits` · **Owned paths:** `services/api/app/services/{benefits,directory,legal,medications,values}/`, `knowledge/benefits.yaml`, `knowledge/offices.yaml`, `knowledge/schema/benefits.schema.json`
 Read `CLAUDE.md` first (invariants!). Contracts: `app/contracts/benefits.py`, `misc.py`, `common.py` — do not change them (use Contract requests in PROGRESS.md).
 

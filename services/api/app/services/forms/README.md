@@ -10,7 +10,9 @@ what is still missing, so the agent asks only what is needed. The result is the 
 |---|---|---|
 | GET | `` | all form definitions (from YAML) |
 | GET | `/definitions/{form_id}` | one `FormDefinition` (PDF mapping stays internal) |
-| POST | `/definitions/{form_id}/sessions?document_id=` | start a prefilled session (uuid id). `document_id` (optional, needs `read_documents`) adds non-medical facts from `store('document_analyses')` |
+| GET | `/definitions/{form_id}/template` | blank official PDF as published by the Träger (login only) |
+| GET | `/brochures/serviceratgeber` | ÖGK Serviceratgeber 2026 PDF, only if the raw data folder is present (cited pages open in the cockpit) |
+| POST | `/definitions/{form_id}/sessions?document_id=` | start a prefilled session (uuid id). `document_id` (optional, needs `read_documents`) adds document facts (quote + page) from `store('document_analyses')` |
 | GET | `/sessions/{id}` | session values (`FieldValue` with `SourceRef`, `confirmed`) |
 | GET | `/sessions/{id}/next-questions?include_optional=` | required + relevant + empty + not doctor-only, in section order; `include_optional=true` also returns recommended questions |
 | PATCH | `/sessions/{id}` | set values; validated (type, options, dates `TT.MM.JJJJ`/ISO, doctor-only) → 422 `{"message_de", "fields": {id: msg}}` |
@@ -26,11 +28,17 @@ Sessions are scoped to the subject (other subjects get 404). Status: `draft` →
   `pdf_overflow` + `max_chars` (long text continues on the form's next line), `when` (relevance: other field value or
   `proxy`), `required` / `recommended`, `ask_hint_de`, `prefill`, `doctor_only` + `readonly_reason_de`.
 - Prefill (`prefill.py`): `profile.*` (subject), `actor.*` + `delegation.*` (only when acting for someone else),
-  `document.*`, `system.today`, `const:` (a suggestion, unconfirmed). Every prefill carries a `SourceRef` and starts
-  `confirmed: false`.
-- **Medical boundary:** medical fields (e.g. PAL080 §3 "Leiden", Medikamente) are never prefilled, derived or
-  paraphrased; the person enters them (ideally copied verbatim from the Befund). From documents we only take the
-  file name (Beilagen) and the fact that it is a discharge letter (§5 Krankenanstalt = ja).
+  `document.*` (admin facts from the analysis, quote + page), `situation.*` (confirmed Lebenslage episodes, only if
+  the actor has `manage_situation`; see `situation/README.md`), `system.today`, `const:` (a suggestion). Rules may
+  chain alternatives (`situation.stay1.end|document.discharge_date`). Every prefill carries a `SourceRef` and starts
+  `confirmed: false`. Profile sources are labelled honestly: "ID Austria" only for name/birth date, "ID Austria –
+  Hauptwohnsitz laut ZMR" for the address, "e-card / Sozialversicherung" for SVNR/insurer, everything else
+  "Profilangaben – bitte prüfen".
+- **Medical boundary:** medical fields are never derived or paraphrased. The only medical content taken from a
+  document is the **verbatim** main diagnosis for PAL 080 §3 "Leiden" (`document.main_diagnosis`, extracted by regex
+  in `documents/facts.py`, quote + page, unconfirmed — the person checks it); Lotsi adds the secondary diagnoses
+  verbatim on request. Other document prefills are administrative: hospital stay (§5 Krankenanstalt = ja, KH bis =
+  discharge date) and the attachment "Kopie des Entlassungsbefunds".
 - **Doctor-only:** `doctor_only_pages` blocks every AcroForm field whose widgets lie only on those pages
   (Kur/Reha p. 2 "Ärztliche Stellungnahme"); such fields are never prefilled, never asked, PATCH → 422, and are dropped
   at render even if a session was tampered with. Header fields shared with page 1 (VSNR) stay writable.
@@ -48,11 +56,13 @@ Not mapped yet: `fsw_einrichtungswunsch`, `fsw_senioren_wg`, `sv_reha_nach_unfal
 
 ## Sources
 Official AcroForm templates in `knowledge/forms/templates/` (field names + states verified against the PDFs);
-start, preview and render cite the form version in the audit log (`ctx.cite`). Prefill sources: ID Austria demo profile, delegation, document.
+start, preview and render cite the form version in the audit log (`ctx.cite`). Prefill sources: demo profile
+(labelled ID Austria / ZMR / e-card / Profilangaben), delegation, document quote + page, Lebenslage episode.
 
 ## Limitations
-- PAL080 "Antragsart" defaults to "Zuerkennung / Erhöhung" (unconfirmed suggestion) so the demo session has only
-  "Leiden" left as a required question; Yes/No sections (§4–§9) are `recommended`, not required, for the same reason.
+- PAL080 "Antragsart" defaults to "Zuerkennung / Erhöhung" (unconfirmed suggestion) to keep the demo session short;
+  Yes/No sections (§4–§9) are `recommended`, not required, for the same reason (Lotsi offers them via
+  `next-questions?include_optional=true`). KH von / Spital are asked: the letter has no admission date or hospital name.
 - No IBAN checksum / SVNR check digit validation. Text is not wrapped inside a single line; very long values shrink
   (auto font size) in viewers.
 - Document prefill reads `store('document_analyses')`; the document must have been analysed first.
@@ -60,4 +70,6 @@ start, preview and render cite the form version in the audit log (`ctx.cite`). P
 ## Tests
 `app/services/forms/tests/test_forms.py` — schema sync, every `pdf_field` exists, full AcroForm coverage, radio export
 states exist in the PDF, doctor-only enforcement, Maria→Anna prefill, document prefill, HTTP session flow + 422,
-render read-back with pypdf, preview. Run `make test-api`.
+render read-back with pypdf, preview. `test_prefill_facts.py` — document facts (discharge date, verbatim diagnosis)
+with quote + page. `test_prefill_situation.py` — Lebenslage prefill vs. document fallback, no mixing, scope check.
+Run `make test-api`.

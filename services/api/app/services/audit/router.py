@@ -1,4 +1,4 @@
-"""audit — read the transparency log. REAL (integrator-owned)."""
+"""audit — read the transparency log. (integrator-owned)."""
 
 import json
 

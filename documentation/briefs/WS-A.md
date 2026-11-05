@@ -1,5 +1,7 @@
 # WS-A — Agent (AI top layer) + guardrails + evals
 
+> **Historical brief** — the task as handed to the workstream at the start. Current behaviour: the service READMEs, `documentation/architecture.md` and `documentation/services.md`.
+
 **Branch:** `ws/A-agent` · **Owned paths:** `services/api/app/agent/`, `evals/` (except `evals/goldens/`)
 Read `CLAUDE.md` first. Contracts: `app/contracts/agent.py` (ChatRequest/ChatResponse/ToolTrace). Blocked until `make smoke-llm` passes.
 

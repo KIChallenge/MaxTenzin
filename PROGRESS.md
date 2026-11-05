@@ -2,14 +2,14 @@
 
 Single source of truth for all sessions. Update your row at start and at Definition of Done.
 
-**Now:** Wave 1 merged (B, D, F, C) · WS-A agent + WS-W web running · **Next gate:** G1/G2 · **Feature freeze:** H19
+**Now:** all workstreams merged; docs aligned with the code (WS-DOC) · **Next gate:** G3 (rehearsal + backup video) · **Feature freeze:** H19
 
 ## Gates (go / no-go)
 - [x] **G0 (H2)** skeleton, contracts, stub API (33 paths), auth/scopes/audit, extraction, `make test` green
 - [x] **G0b** Azure LLM reachable (`make smoke-llm`) — live extraction of Entlassungsbrief: 12/12 quotes verified, 5.6 s
-- [ ] **G1 (H8)** hero flow clickable in cockpit; ✅ WS-B/D/F real services merged (114 tests) — API end-to-end verified: letter → eligibility → PAL080 official PDF (30 fields, ENTWURF stamp)
-- [ ] **G2 (H13)** hero flow on real API incl. agent — ✅ API side done (agent + evals 28/28 live); ⬜ cockpit wiring (WS-W)
-- [ ] **G3 (H19) FREEZE** evals green, Floorplan health check clean, demo script run 3×, backup video recorded
+- [x] **G1 (H8)** hero flow clickable in cockpit; ✅ WS-B/D/F real services merged (114 tests) — API end-to-end verified: letter → eligibility → PAL080 official PDF (30 fields, ENTWURF stamp)
+- [x] **G2 (H13)** hero flow on real API incl. agent — ✅ API side done (agent + evals 28/28 live); ✅ cockpit wired (WS-W): photo upload → Lebenslage → Leistungen → PAL 080 via chat in the open wizard → PDF → inbox → appointment → Mein Fall; evals now 34/34 live
+- [ ] **G3 (H19) FREEZE** evals green, Floorplan health check clean, demo script run 3×, backup video recorded — in progress: evals 34/34 live, `make test` 250 passed, `make demo-check` 16/16; ⬜ rehearsal 3×, ⬜ backup video
 - [ ] **G4 (H23)** pitch deck (DE) done, rehearsed 3×
 
 ## Workstreams
@@ -17,15 +17,16 @@ Single source of truth for all sessions. Update your row at start and at Definit
 |---|---|---|---|---|---|---|
 | P0 | extraction, skeleton, contracts, docs | integrator | main | merged | H2 | — |
 | WS-B | benefits catalog + eligibility, directory, legal FTS5, medications | bg agent | ws/B-benefits | merged | H5 | offices outside Wien not curated |
-| WS-D | documents extraction (+golden), prevention (Impfpass) | bg agent | ws/D-documents | merged | H4 | live LLM path untested (key 401) |
+| WS-D | documents extraction (+golden), prevention (Impfpass) | bg agent | ws/D-documents | merged | H4 | — (live path verified; first live result cached per file hash) |
 | WS-F | forms: schemas, sessions, prefill, real PDF fill | bg agent | ws/F-forms | merged | H6 | Einrichtungswunsch/Senioren-WG/Reha-n-Unfall not mapped |
 | WS-W | web cockpit | human session | ws/W-web | merged (6×); screenshots on clean data | H16 | — |
-| WS-A | agent orchestrator + guardrails + evals | bg agent | ws/A-agent | merged | H7 | evals 28/28 live (REPORT.md) |
+| WS-A | agent orchestrator + guardrails + evals | bg agent | ws/A-agent | merged | H7 | evals 34/34 live (REPORT.md) |
 | WS-C | cases + notifications | integrator | main | merged | H3 | — |
 | WS-T | appointments (providers, slots by preferences, booking, ics) | bg agent | ws/T-appointments | merged | — | providers outside Wien not covered |
 | WS-V | photo upload (vision transcription → same pipeline) | bg agent | ws/V-vision | merged | — | quotes verified against model transcription (notice shown) |
 | WS-K2 | catalog: 13 offers (Gesundheitsförderung), Heilbehelfe, Angehörige (BPGG §§ 21a–c), Sozialhilfe Wien, 5 situation bundles, family-history prevention | bg agent | ws/K2-catalog | merged | — | Pflegekarenz threshold not in corpus (AVRAG) |
-| WS-S | Lebenslage (episodes, suggestions w/ consent, effects) | bg agent | ws/S-situation | merged | — | benefits facts wiring after WS-K2 |
+| WS-S | Lebenslage (episodes, suggestions w/ consent, effects) | bg agent | ws/S-situation | merged | — | — (situation facts wired into eligibility) |
+| WS-DOC | README, architecture, safety, roadmap, services (endpoint/scope table from code), `make sources`, ADRs 0002–0013, service READMEs | bg agent | ws/DOC-docs | ready to merge | — | see contract requests (WS-DOC) |
 
 ## Task checklists
 - WS-W: login, header/subject switch + scopes, cockpit + inbox, Dokumente, Leistungen, Antrag-Wizard (2 s poll, PDF), Chat panel, Mein Fall, Vorsorge, Transparenz, Vertretung, 403 handling, Stellen/Medikamente/Recht — build + lint green, screenshots in `documentation/screenshots/`.
@@ -73,6 +74,9 @@ See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished it
 
 - (integrator, done) Diagnosis loop fixed (user report): copying documented diagnoses VERBATIM into PAL 080 "Krankheiten" is administrative (use case §4) → deterministic copy-intent exemption before the LLM boundary check; documents extract `main_diagnosis` / `secondary_diagnoses` facts verbatim (quote+page); PAL 080 `Leiden` prefilled unconfirmed from `document.main_diagnosis`; on an explicit copy request with an open form, Lotsi writes it deterministically. Interpretation questions ("Was bedeutet …? heilbar?") still blocked. Cases: `POST /api/cases/{id}/steps` (situation no longer writes the store directly); Lebenslage reminders in the inbox. Evals 28/28.
 
+- (WS-W → WS-S duplicate suggestions: resolved server-side — `POST /api/situation/suggestions/from-document/{id}` returns an existing episode with the same type/subtype/start/end instead of creating a twin.)
+- WS-DOC → integrator (found while aligning docs; behaviour not changed): (1) `agent/orchestrator.py` reads `store.get("known_facts", …)` directly — invariant 4 says API only; use `GET /api/benefits/facts`. (2) Notification links are `/prevention`, `/lebenslage`, `/case`, but cockpit routes are `/vorsorge`, `/` (Lebenslage panel), `/fall`; the cockpit maps them via `cockpitRoute()`, a contract-level fix would be cleaner. (3) `identity` (except care-team) and `audit` routes use `Depends(get_context)` instead of `require()` (invariant 5 wording); behaviour is fine (authenticated, audited). (4) `documentation/demo-script.md` says "249 Tests" and "19 Grenzfälle": verified are 250 passed (`make test`: 244 API + 6 extraction) and 20 boundary evals (34 total). (5) No per-service README for identity, cases, notifications, audit (DoD asks for one).
+
 ## Decisions log
 - D1 Modular monolith (FastAPI routers per service) instead of microservices — same boundaries, 1/10 ops cost.
 - D2 Raw data in `docs/` gitignored; deterministic extraction into committed `knowledge/extracted/` (`make extract`).
@@ -83,6 +87,7 @@ See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished it
 - D8 Clinical instructions to physicians are never relisted, even if quoted verbatim (deterministic filter after LLM).
 - D9 Verbatim copying of documented diagnoses into forms that ask for them is allowed (unconfirmed, quote+page); explaining/assessing them is not.
 - D6 LLM: Azure AI Foundry OpenAI-v1 endpoint, model `gpt-5-4-mini`, fake mode for tests/offline.
+- ADRs: D1–D9 as `documentation/decisions/0001–0009`; plus 0010 shared form session (wizard + chat), 0011 consent-gated Lebenslage suggestions, 0012 shared known facts, 0013 deterministic post-processing of agent replies.
 
-## Cut list (→ roadmap slide)
+## Cut list (→ roadmap slide, details in `documentation/roadmap.md`)
 - Real ID Austria / e-Vollmacht, ELGA & e-Impfpass API, real appointment booking, push/SMS, Honorarordnung (Steiermark 2025, wrong region), dental tariffs, other Träger (SVS, BVAEB), microservice split.

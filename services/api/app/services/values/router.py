@@ -1,4 +1,4 @@
-"""values — veränderliche Werte (yearly amounts) from veraendW. REAL."""
+"""values — veränderliche Werte (yearly amounts) from veraendW."""
 
 from fastapi import APIRouter, Depends, HTTPException
 

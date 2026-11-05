@@ -1,4 +1,4 @@
-"""identity — mock ID Austria login, persona list, delegations (Vertretung) with scopes. REAL (integrator-owned)."""
+"""identity — mock ID Austria login, persona list, delegations (Vertretung) with scopes. (integrator-owned)."""
 
 from fastapi import APIRouter, Depends, HTTPException
 

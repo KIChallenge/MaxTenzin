@@ -16,7 +16,7 @@ class ToolTrace(BaseModel):
 
 class ChatAction(BaseModel):
     """UI action produced by a tool call (e.g. download the rendered draft, open the wizard)."""
-    kind: str                         # download_pdf | open_form | open_case
+    kind: str                         # download_pdf | open_form | open_case | download_ics | open_appointments
     label_de: str
     method: str = "GET"
     url: str                          # API path (download) or app route (open_*)
@@ -37,4 +37,4 @@ class ChatResponse(BaseModel):
     tool_trace: list[ToolTrace] = []
     boundary_triggered: bool = False  # medical boundary guard fired
     suggestions_de: list[str] = []    # quick-reply chips
-    actions: list[ChatAction] = []    # buttons for the UI (download draft, open wizard, open case)
+    actions: list[ChatAction] = []    # buttons for the UI (draft PDF, wizard, case, .ics, appointments)

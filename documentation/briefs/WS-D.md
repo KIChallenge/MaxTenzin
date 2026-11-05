@@ -1,5 +1,7 @@
 # WS-D — Documents (explicit recommendations) + Prevention (e-Impfpass, Vorsorge)
 
+> **Historical brief** — the task as handed to the workstream at the start. Current behaviour: the service READMEs, `documentation/architecture.md` and `documentation/services.md`.
+
 **Branch:** `ws/D-documents` · **Owned paths:** `services/api/app/services/{documents,prevention}/`, `knowledge/prevention.yaml`, `evals/goldens/`
 Read `CLAUDE.md` first (medical boundary!). Contracts: `app/contracts/documents.py`, `prevention.py` — don't change (Contract requests in PROGRESS.md).
 
