@@ -301,7 +301,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Definition */
+        /** One form definition (wizard + agent) */
         get: operations["definition_api_forms_definitions__form_id__get"];
         put?: never;
         post?: never;
@@ -335,7 +335,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Session */
+        /** Current session values */
         get: operations["get_session_api_forms_sessions__session_id__get"];
         put?: never;
         post?: never;
@@ -353,8 +353,25 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Only missing required fields */
+        /** Only missing required fields (optionally also recommended ones) */
         get: operations["next_questions_api_forms_sessions__session_id__next_questions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/forms/sessions/{session_id}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Review step: label, value and source of every filled field */
+        get: operations["preview_api_forms_sessions__session_id__preview_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1049,6 +1066,25 @@ export interface components {
             /** Readonly Reason De */
             readonly_reason_de?: string | null;
         };
+        /** FormPreview */
+        FormPreview: {
+            /** Session Id */
+            session_id: string;
+            /** Form Id */
+            form_id: string;
+            /** Title De */
+            title_de: string;
+            /** Status */
+            status: string;
+            /** Items */
+            items: components["schemas"]["PreviewItem"][];
+            /** Missing Required */
+            missing_required: string[];
+            /** Notice De */
+            notice_de: string;
+            /** Submit Info De */
+            submit_info_de: string;
+        };
         /** FormSession */
         FormSession: {
             /** Id */
@@ -1293,6 +1329,35 @@ export interface components {
          * @enum {string}
          */
         PreventionStatus: "due" | "upcoming" | "up_to_date" | "not_documented";
+        /** PreviewItem */
+        PreviewItem: {
+            /** Field Id */
+            field_id: string;
+            /** Label De */
+            label_de: string;
+            /** Section */
+            section: string;
+            /** Value */
+            value: string | boolean | null;
+            source?: components["schemas"]["SourceRef"] | null;
+            /**
+             * Confirmed
+             * @default false
+             */
+            confirmed: boolean;
+            /**
+             * Required
+             * @default false
+             */
+            required: boolean;
+            /**
+             * Missing
+             * @default false
+             */
+            missing: boolean;
+            /** Readonly Reason De */
+            readonly_reason_de?: string | null;
+        };
         /**
          * Recommendation
          * @description An EXPLICITLY documented recommendation. Never inferred, never interpreted.
@@ -2140,7 +2205,10 @@ export interface operations {
     };
     start_api_forms_definitions__form_id__sessions_post: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Optional analysed document for prefill */
+                document_id?: string | null;
+            };
             header?: {
                 Authorization?: string;
                 "X-Subject-Id"?: string | null;
@@ -2252,7 +2320,9 @@ export interface operations {
     };
     next_questions_api_forms_sessions__session_id__next_questions_get: {
         parameters: {
-            query?: never;
+            query?: {
+                include_optional?: boolean;
+            };
             header?: {
                 Authorization?: string;
                 "X-Subject-Id"?: string | null;
@@ -2273,6 +2343,42 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["NextQuestions"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_api_forms_sessions__session_id__preview_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormPreview"];
                 };
             };
             /** @description Validation Error */
@@ -2308,7 +2414,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/pdf": unknown;
                 };
             };
             /** @description Validation Error */

@@ -1663,7 +1663,7 @@
         "tags": [
           "forms"
         ],
-        "summary": "Definition",
+        "summary": "One form definition (wizard + agent)",
         "operationId": "definition_api_forms_definitions__form_id__get",
         "parameters": [
           {
@@ -1770,6 +1770,24 @@
             }
           },
           {
+            "name": "document_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional analysed document for prefill",
+              "title": "Document Id"
+            },
+            "description": "Optional analysed document for prefill"
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "required": false,
@@ -1851,7 +1869,7 @@
         "tags": [
           "forms"
         ],
-        "summary": "Get Session",
+        "summary": "Current session values",
         "operationId": "get_session_api_forms_sessions__session_id__get",
         "parameters": [
           {
@@ -2047,8 +2065,112 @@
         "tags": [
           "forms"
         ],
-        "summary": "Only missing required fields",
+        "summary": "Only missing required fields (optionally also recommended ones)",
         "operationId": "next_questions_api_forms_sessions__session_id__next_questions_get",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "include_optional",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Include Optional"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NextQuestions"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/forms/sessions/{session_id}/preview": {
+      "get": {
+        "tags": [
+          "forms"
+        ],
+        "summary": "Review step: label, value and source of every filled field",
+        "operationId": "preview_api_forms_sessions__session_id__preview_get",
         "parameters": [
           {
             "name": "session_id",
@@ -2118,7 +2240,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NextQuestions"
+                  "$ref": "#/components/schemas/FormPreview"
                 }
               }
             }
@@ -2210,9 +2332,7 @@
           "200": {
             "description": "Successful Response",
             "content": {
-              "application/json": {
-                "schema": {}
-              }
+              "application/pdf": {}
             }
           },
           "422": {
@@ -4808,6 +4928,60 @@
         ],
         "title": "FormField"
       },
+      "FormPreview": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "form_id": {
+            "type": "string",
+            "title": "Form Id"
+          },
+          "title_de": {
+            "type": "string",
+            "title": "Title De"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PreviewItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "missing_required": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Required"
+          },
+          "notice_de": {
+            "type": "string",
+            "title": "Notice De"
+          },
+          "submit_info_de": {
+            "type": "string",
+            "title": "Submit Info De"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "form_id",
+          "title_de",
+          "status",
+          "items",
+          "missing_required",
+          "notice_de",
+          "submit_info_de"
+        ],
+        "title": "FormPreview"
+      },
       "FormSession": {
         "properties": {
           "id": {
@@ -5373,6 +5547,80 @@
           "not_documented"
         ],
         "title": "PreventionStatus"
+      },
+      "PreviewItem": {
+        "properties": {
+          "field_id": {
+            "type": "string",
+            "title": "Field Id"
+          },
+          "label_de": {
+            "type": "string",
+            "title": "Label De"
+          },
+          "section": {
+            "type": "string",
+            "title": "Section"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed",
+            "default": false
+          },
+          "required": {
+            "type": "boolean",
+            "title": "Required",
+            "default": false
+          },
+          "missing": {
+            "type": "boolean",
+            "title": "Missing",
+            "default": false
+          },
+          "readonly_reason_de": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Readonly Reason De"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field_id",
+          "label_de",
+          "section",
+          "value"
+        ],
+        "title": "PreviewItem"
       },
       "Recommendation": {
         "properties": {

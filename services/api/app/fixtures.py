@@ -7,7 +7,6 @@ from app.contracts.benefits import Benefit, CriterionResult, EligibilityResult, 
 from app.contracts.cases import Case, CaseStep
 from app.contracts.common import SourceKind, SourceRef
 from app.contracts.documents import DocumentAnalysis, DocumentType, ExtractedPerson, Recommendation
-from app.contracts.forms import FieldType, FieldValue, FormDefinition, FormField, FormSession
 from app.contracts.misc import Notification, Office
 from app.contracts.prevention import PreventionItem, PreventionOverview, PreventionStatus, VaccinationEntry
 
@@ -100,33 +99,6 @@ STEFAN_PREVENTION = PreventionOverview(
                        explanation_de="Ab 18 Jahren einmal jährlich kostenlos möglich.", cost_de="kostenlos",
                        sources=[SourceRef(kind=SourceKind.brochure, label="Serviceratgeber 2026, S. 23", ref="page:23")]),
     ],
-)
-
-PAL080_DEF = FormDefinition(
-    form_id="pva_pflegegeld_pal080", title_de="Antrag auf Pflegegeld (PAL 080)", provider="PVA",
-    sections=["Persönliche Angaben", "Antragstellung durch andere Person", "Gesundheitszustand", "Betreuung", "Pflegeberatung"],
-    fields=[
-        FormField(id="Fam.Name", label_de="Familienname", type=FieldType.text, section="Persönliche Angaben", required=True),
-        FormField(id="Vorname", label_de="Vorname", type=FieldType.text, section="Persönliche Angaben", required=True),
-        FormField(id="Geburtsdatum", label_de="Geburtsdatum", type=FieldType.date, section="Persönliche Angaben", required=True),
-        FormField(id="Leiden", label_de="Krankheiten bzw. gesundheitliche Beeinträchtigungen", type=FieldType.textarea,
-                  section="Gesundheitszustand", required=True,
-                  ask_hint_de="Welche Erkrankungen stehen im Entlassungsbrief? Ich kann sie wörtlich übernehmen."),
-        FormField(id="Hausbesuch", label_de="Weitere Person über Hausbesuch informieren", type=FieldType.checkbox,
-                  section="Gesundheitszustand", ask_hint_de="Sollen Sie über den Termin des Hausbesuchs informiert werden?"),
-    ],
-    submit_info_de="Unterschreiben und an die PVA Landesstelle Wien, Friedrich-Hillegeist-Straße 1, 1020 Wien senden.",
-)
-
-PAL080_SESSION = FormSession(
-    id="fs-demo", form_id="pva_pflegegeld_pal080", subject_id="anna", actor_id="maria", updated_at="2026-11-05T10:00:00+00:00",
-    values={
-        "Fam.Name": FieldValue(value="Berger", source=SourceRef(kind=SourceKind.external, label="ID Austria Stammdaten", ref="profile")),
-        "Vorname": FieldValue(value="Anna", source=SourceRef(kind=SourceKind.external, label="ID Austria Stammdaten", ref="profile")),
-        "Geburtsdatum": FieldValue(value="14.03.1948", source=SourceRef(kind=SourceKind.external, label="ID Austria Stammdaten", ref="profile")),
-        "Leiden": FieldValue(value=None),
-        "Hausbesuch": FieldValue(value=None),
-    },
 )
 
 ANNA_CASE = Case(
