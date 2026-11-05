@@ -1,0 +1,231 @@
+{
+  "$defs": {
+    "BenefitSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name_de": {
+          "title": "Name De",
+          "type": "string"
+        },
+        "area": {
+          "pattern": "^[A-F]$",
+          "title": "Area",
+          "type": "string"
+        },
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        },
+        "summary_de": {
+          "title": "Summary De",
+          "type": "string"
+        },
+        "plain_de": {
+          "title": "Plain De",
+          "type": "string"
+        },
+        "form_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Form Ids",
+          "type": "array"
+        },
+        "required_documents_de": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Documents De",
+          "type": "array"
+        },
+        "legal_basis": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/SourceSpec"
+          },
+          "title": "Legal Basis",
+          "type": "array"
+        },
+        "sources": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/SourceSpec"
+          },
+          "title": "Sources",
+          "type": "array"
+        },
+        "value_refs": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Value Refs",
+          "type": "array"
+        },
+        "criteria": {
+          "additionalProperties": {
+            "$ref": "#/$defs/CriterionSpec"
+          },
+          "title": "Criteria",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "name_de",
+        "area",
+        "provider",
+        "summary_de",
+        "plain_de",
+        "criteria"
+      ],
+      "title": "BenefitSpec",
+      "type": "object"
+    },
+    "CriterionSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "label_de": {
+          "title": "Label De",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceSpec"
+        }
+      },
+      "required": [
+        "label_de",
+        "source"
+      ],
+      "title": "CriterionSpec",
+      "type": "object"
+    },
+    "SourceSpec": {
+      "additionalProperties": false,
+      "description": "Exactly one of law / page / form / value.",
+      "properties": {
+        "law": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Law"
+        },
+        "nr": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Nr"
+        },
+        "abs": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Abs"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        },
+        "form": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Form"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "title": "SourceSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "title": "Version",
+      "type": "integer"
+    },
+    "areas": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Areas",
+      "type": "object"
+    },
+    "benefits": {
+      "items": {
+        "$ref": "#/$defs/BenefitSpec"
+      },
+      "title": "Benefits",
+      "type": "array"
+    }
+  },
+  "required": [
+    "version",
+    "areas",
+    "benefits"
+  ],
+  "title": "SV KI-Lotse benefit catalog (knowledge/benefits.yaml)",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}
