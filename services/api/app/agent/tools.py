@@ -255,7 +255,7 @@ TOOLS: list[Tool] = [
     Tool("analyze_document",
          "Liest ein Dokument und liefert NUR ausdrücklich dokumentierte Empfehlungen und offene Aufgaben (je Zitat + "
          "Seite). Keine Interpretation von Befunden.",
-         {"document_id": _s("Dokument-ID, z. B. doc-anna-entlassung")}, ["document_id"],
+         {"document_id": _s("Dokument-ID aus 'Bekannte Dokumente' bzw. list_documents (nie raten)")}, ["document_id"],
          "POST", lambda a, c: f"/api/documents/{a['document_id']}/analyze",
          compact=_compact_analysis, summary=_sum_analysis),
     Tool("check_benefits",

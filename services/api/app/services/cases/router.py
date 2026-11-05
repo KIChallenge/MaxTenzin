@@ -27,7 +27,9 @@ def _analysis_for(document_id: str | None) -> DocumentAnalysis | None:
     if data:
         return DocumentAnalysis(**data)
     from app.fixtures import ANNA_ANALYSIS  # golden fallback: demo document not analysed yet
-    return ANNA_ANALYSIS if document_id == ANNA_ANALYSIS.document_id else None
+    from app.services.documents import goldens
+
+    return ANNA_ANALYSIS if document_id == ANNA_ANALYSIS.document_id and not goldens.hidden(document_id) else None
 
 
 @router.get("", response_model=list[Case], summary="Cases of the current subject")

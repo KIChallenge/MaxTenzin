@@ -8,7 +8,7 @@
 | POST | `` | Upload a PDF or photos (multipart `file`, and/or several photos under `files`, one per page in order). PDF → `var/uploads/<doc_id>.pdf`; photos → `var/uploads/<doc_id>-p<N>.jpg|png`, transcribed immediately so `doc_type` is known. Type is sniffed from the bytes. 415 for other types (HEIC gets a hint to save as JPG/PNG), for PDF + photos mixed or several PDFs, and for unreadable images; 413 over 20 MB total or more than 10 photos |
 | GET | `` | Documents of the current subject |
 | POST | `/{id}/analyze` | Runs the extraction. Stores the result in collection `document_analyses` (key = document id; WS-B and WS-F read it there) |
-| GET | `/{id}/analysis` | Last stored analysis. 404 if the document has not been analysed (demo ids fall back to their golden) |
+| GET | `/{id}/analysis` | Last stored analysis. 404 if the document has not been analysed (demo ids fall back to their golden, unless the id was deliberately left unseeded) |
 | GET | `/{id}/file` | Streams the stored PDF, or photo page `?page=N` (default 1) |
 | GET | `/{id}/transcript` | What was read, per page: photo transcription (`mode` vision / vision-cached / fake / error, `unreadable` count, `low_resolution`) or the PDF text layer (`mode` pdf-text). 404 for demo ids without a file |
 
@@ -54,6 +54,7 @@ The document itself: every recommendation carries a quote and a page. The audit 
 - Live extraction varies between runs (12–21 recommendations seen for the Entlassungsbrief); every one is quote-verified. The first live result per (prompt version, file hash) is cached in `analysis_cache`, so the same file always yields the same analysis (`extraction_mode="live-cached"`).
 - Clinical instructions to physicians (labs, blood pressure, medication, side effects, fluid balance) are filtered deterministically after extraction and replaced by a neutral notice (`CLINICAL` in extract.py).
 - Administrative facts (`facts`, e.g. Entlassungsdatum, department) and, for discharge letters, the documented `main_diagnosis` / `secondary_diagnoses` (verbatim, for forms that ask for them, e.g. PAL 080 "Leiden") come from `facts.py` (regex, quote + page), never from the LLM. They are copied, never explained.
+- Golden fallback only for demo ids that were not deliberately skipped: `seed_demo` with `SEED_SKIP_DOCS` (live demo start) records the skipped ids in collection `demo_hidden_documents`; `goldens.by_demo_id` and the `ANNA_ANALYSIS` fallbacks in benefits/cases/situation then return nothing for them, so Anna's letter exists only once Maria uploads it. `make reset` empties the marker with the DB.
 - Scanned PDFs without a text layer produce no text and therefore no recommendations (no OCR for PDFs; upload such pages as photos instead).
 - **Photos: quote verification is weaker.** Quotes are checked against the model's own transcription, not the paper. A misread word that the extractor then quotes passes verification (seen at 72 dpi: „entsprechend“ instead of „entsprechender“). Hence the photo notice; recommendations and facts stay unconfirmed until the person checks them.
 - Photos: handwriting is not reliably readable; low resolution (< 1400 px long side), blur, glare and strong skew increase misreadings. The model marks what it cannot read as `[unleserlich]`, but it can also misread without marking.

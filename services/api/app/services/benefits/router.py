@@ -15,6 +15,7 @@ from app.fixtures import ANNA_ANALYSIS
 from app.seed.loader import delegations_of_grantee, get_person
 from app.services.benefits import bundles, catalog
 from app.services.benefits.service import DocRec, EvalInput, evaluate
+from app.services.documents import goldens
 from app.services.prevention.engine import evaluate as prevention_evaluate
 from app.services.prevention.router import _stored_vaccinations as stored_vaccinations
 
@@ -33,7 +34,7 @@ def _analyses(ctx: Context, document_ids: list[str]) -> list[DocumentAnalysis]:
     for did in document_ids:
         if did in own:
             out.append(DocumentAnalysis.model_validate(own[did]))
-        elif did == ANNA_ANALYSIS.document_id and ctx.subject.id == "anna":
+        elif did == ANNA_ANALYSIS.document_id and ctx.subject.id == "anna" and not goldens.hidden(did):
             out.append(ANNA_ANALYSIS)          # golden fallback until the document has been analysed
         else:
             ctx.rule_ids.append(f"benefits.document_skipped:{did}")  # not analysed (yet): skip, visible in audit

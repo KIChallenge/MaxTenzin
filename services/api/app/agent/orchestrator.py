@@ -18,6 +18,7 @@ from app.agent import guard, state
 from app.agent.scripted import Scripted, forbidden_text
 from app.agent.tools import SCOPE_DE, TOOL_SPECS, ToolClient, ToolOutcome, llm_payload
 from app.contracts.agent import ChatAction, ChatRequest, ChatResponse, ToolTrace
+from app.contracts.identity import Scope
 from app.core.auth import Context
 from app.core.db import now_iso
 from app.core.llm import get_llm
@@ -57,15 +58,18 @@ def _prefs_text(prefs: dict) -> str:
             + (f". Von der Person erteilte Vollmachten: {'; '.join(prefs['_granted'])}" if prefs.get("_granted") else ""))
 
 
-def system_prompt(ctx: Context, memo: dict, plain: bool, lang: str = "de", prefs: dict | None = None) -> str:
+def system_prompt(ctx: Context, memo: dict, plain: bool, lang: str = "de", prefs: dict | None = None,
+                  documents: list[dict] | None = None) -> str:
     s = ctx.subject
     relation = ""
     if ctx.actor.id != s.id:
         rel = next((d.relation for d in delegations_for(s.id) if d.grantee_id == ctx.actor.id), "")
         relation = f" – {_full_name(ctx.actor)} handelt als Vertretung" + (f" ({rel})" if rel else "")
-    docs = state.DEMO_DOCUMENTS.get(s.id, [])
-    doc_txt = ", ".join(f"{d['document_id']} ({d['filename']}, {d['doc_type']})" for d in docs) or \
-        "unbekannt – bei Bedarf list_documents aufrufen"
+    if documents is None:
+        doc_txt = f"nicht einsehbar – {_full_name(s)} hat die Berechtigung „{SCOPE_DE['read_documents']}“ nicht erteilt"
+    else:
+        doc_txt = ", ".join(f"{d['document_id']} ({d['filename']}, {d['doc_type']})" for d in documents) or \
+            "keine – es wurde noch kein Dokument hochgeladen"
     scopes = ", ".join(f"{SCOPE_DE.get(x, x)}" for x in sorted(ctx.scopes)) if ctx.actor.id != s.id else \
         "alle (handelt für sich selbst)"
     plain_txt = ("EINFACHE SPRACHE: kurze Sätze, keine Fachwörter ohne Erklärung, eine Information pro Satz."
@@ -131,6 +135,27 @@ def _granted_since_last_turn(ctx: Context, memo: dict) -> str | None:
             "Ablehnung zu wiederholen.")
 
 
+async def known_documents(client: ToolClient, ctx: Context) -> list[dict] | None:
+    """Documents that really exist for the subject, read via the API with the user's token (None = no permission).
+    Golden-backed demo ids count only if the documents API serves them (not when deliberately left unseeded)."""
+    if Scope.read_documents not in ctx.scopes:
+        return None   # no request at all: a context read must not show up as a refused attempt in the audit log
+    r = await client.fetch("/api/documents", "context:documents")
+    if r.status_code != 200:
+        return None
+    docs = [{k: d.get(k) for k in ("document_id", "filename", "doc_type")} for d in r.json()]
+    served = client.memo.setdefault("_demo_docs_served", {})   # once per conversation: keeps the audit log readable
+    for d in state.DEMO_DOCUMENTS.get(ctx.subject.id, []):
+        did = d["document_id"]
+        if did in {x["document_id"] for x in docs}:
+            continue
+        if did not in served:
+            served[did] = (await client.fetch(f"/api/documents/{did}/analysis", "context:documents")).status_code == 200
+        if served[did]:
+            docs.append(d)
+    return docs
+
+
 async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, plain: bool, lang: str,
                    outcomes: list[ToolOutcome]) -> str:
     memo = conv["memo"]
@@ -148,7 +173,9 @@ async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, p
                                            + ", ".join(SCOPE_DE.get(x, x) for x in d["scopes"]) for d in dl.json()]}
     if lang == "de" and prefs.get("language") and prefs["language"] != "de":
         lang = prefs["language"]
-    messages = [{"role": "system", "content": system_prompt(ctx, memo, plain, lang, prefs)}, *state.history_messages(conv)]
+    documents = await known_documents(client, ctx)
+    messages = [{"role": "system", "content": system_prompt(ctx, memo, plain, lang, prefs, documents)},
+                *state.history_messages(conv)]
     if note := _granted_since_last_turn(ctx, memo):
         messages.append({"role": "system", "content": note})
     messages.append({"role": "user", "content": message})

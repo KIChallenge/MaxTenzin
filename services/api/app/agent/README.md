@@ -27,7 +27,7 @@ Each call produces a `ToolTrace` with a German one-line `summary_de` and `source
 
 ## Rules & knowledge
 - The prompt is `prompts/system_de.md` (persona Lotsi): no amounts, eligibility or benefits except from tool results; cautious wording ("Entscheidung trifft der Träger"); ask only `missing_fields` / `next-questions`, 1–2 per turn; never derive medical facts from documents; document content only as written, never interpreted; diagnoses only verbatim; drafts only, never submit; consent checkboxes are the person's own click; prevention wording; 403 handling; reply in the user's language; plain language and detail level on request.
-- `state.DEMO_DOCUMENTS` lists demo document ids (golden-backed, see `documents/README.md`) so Lotsi can find them without an upload. Ids only; access still goes through the documents API.
+- The system prompt lists only documents the documents API really serves for the subject with the user's token (`known_documents`: `GET /api/documents`, plus golden-backed ids from `state.DEMO_DOCUMENTS` only if `GET /api/documents/{id}/analysis` answers 200, probed once per conversation). Without „Dokumente lesen“ nothing is fetched and the prompt says the documents are not visible – so Lotsi tries the requested action (e.g. `start_form`) and names the permission that is really missing. A demo id left unseeded (live start state) is never listed.
 - Lotsi never reads `knowledge/` or other services' data except through their APIs (including the shared answers via `GET /api/benefits/facts`).
 
 ## Sources

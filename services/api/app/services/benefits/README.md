@@ -17,7 +17,7 @@ Obergrenze) or the verbatim brochure sentence (Heilbehelfe/Hilfsmittel, Servicer
 | POST | `/api/benefits/bundles/match` | `BundleRequest` {`situation` id \| `text`, `facts`, `document_ids`} → `Bundle` or `null` (text matches nothing). Unknown id → 404; neither → 422; only `document_ids` → `nach_spital` if one of them is a discharge letter (or unclassified letter) of the subject, else `null` (imaging reports / e-Impfpass imply no hospital stay); the same check applies when free text matches nothing |
 
 `subject_id` must equal the acting context (`X-Subject-Id`), else 403. `document_ids` need scope `read_documents`;
-analyses are read from store collection `document_analyses` (WS-D), fallback: golden `doc-anna-entlassung` for Anna.
+analyses are read from store collection `document_analyses` (WS-D), fallback: golden `doc-anna-entlassung` for Anna (not when that id was left unseeded, `goldens.hidden`).
 
 ### Facts the engine understands (`facts`, all optional — missing ones appear in `missing_fields`)
 | key | type | used by |

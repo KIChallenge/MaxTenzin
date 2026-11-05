@@ -22,6 +22,8 @@ def seed(skip: set[str] | None = None) -> list[str]:
     seeded = []
     for g in goldens.all_goldens():
         if g["demo_document_id"] in (skip or set()):
+            store.put(goldens.HIDDEN, g["demo_document_id"], {"document_id": g["demo_document_id"]},
+                      subject_id=g["demo_subject_id"])
             continue
         src = befunde / g["source_filename"]
         if not src.exists():

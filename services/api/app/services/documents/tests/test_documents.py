@@ -204,3 +204,28 @@ def test_clinical_instructions_are_filtered_reha_survives():
     assert [r.id for r in out.recommendations] == ["reha"]
     assert "Medikation" in out.notice_de
     assert enforce_boundary(out).notice_de == out.notice_de  # idempotent
+
+
+def test_hidden_demo_document_has_no_golden_fallback(client):
+    """Live demo start: Anna's letter is NOT seeded (Maria uploads photos on stage). Its golden must not stand in for
+    it anywhere – documents, benefits, situation – until a real upload exists."""
+    from app.core.db import store
+    from app.services.documents import goldens
+    from app.services.situation.service import load_analysis
+
+    h = auth("anna")
+    did = "doc-anna-entlassung"
+    assert client.get(f"/api/documents/{did}/analysis", headers=h).status_code in (200, 404)
+    store.delete("document_analyses", did)
+    assert client.get(f"/api/documents/{did}/analysis", headers=h).status_code == 200   # golden fallback (tests)
+    store.put(goldens.HIDDEN, did, {"document_id": did}, subject_id="anna")
+    try:
+        assert client.get(f"/api/documents/{did}/analysis", headers=h).status_code == 404
+        assert client.post(f"/api/documents/{did}/analyze", headers=h).status_code == 404
+        el = client.post("/api/benefits/eligibility", headers=h,
+                         json={"subject_id": "anna", "facts": {}, "document_ids": [did]}).json()
+        assert not any((c.get("source") or {}).get("kind") == "document" for e in el for c in e["criteria"])
+        assert load_analysis("anna", did) is None
+    finally:
+        store.delete(goldens.HIDDEN, did)
+    assert client.get(f"/api/documents/{did}/analysis", headers=h).status_code == 200

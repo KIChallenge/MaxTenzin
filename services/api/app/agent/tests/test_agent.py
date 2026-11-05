@@ -524,3 +524,36 @@ def test_permission_request_regex():
     assert _PERMISSION_REQ.search("Bitte erlaube Maria, Anträge vorzubereiten und Dokumente zu lesen.")
     assert _PERMISSION_REQ.search("Gib Maria das Recht, Dokumente zu lesen")
     assert not _PERMISSION_REQ.search("Was steht im Entlassungsbrief?")
+
+
+def test_prompt_lists_only_documents_the_api_serves(client):
+    """Lotsi knows a document only if the documents API serves it with the user's token: no permission → none listed
+    (and no refused request in the audit log); a deliberately unseeded demo letter is not listed either."""
+    import asyncio
+
+    from app.agent.orchestrator import known_documents, system_prompt
+    from app.agent.tools import ToolClient
+    from app.core.auth import Context
+    from app.core.db import store
+    from app.seed.loader import get_person
+    from app.services.documents import goldens
+
+    anna = get_person("anna")
+    ctx = Context(actor=anna, subject=anna, scopes=set(), via="agent")
+    tc = ToolClient({"Authorization": "Bearer demo-anna"}, "anna", "Anna Berger", memo={})
+    assert asyncio.run(known_documents(tc, ctx)) is None
+    assert "nicht einsehbar" in system_prompt(ctx, {}, False, documents=None)
+    from app.contracts.identity import Scope
+
+    ctx.scopes = set(Scope)
+    docs = asyncio.run(known_documents(tc, ctx))
+    assert "doc-anna-entlassung" in [d["document_id"] for d in docs]           # golden-backed demo id (no upload)
+    store.put(goldens.HIDDEN, "doc-anna-entlassung", {"document_id": "doc-anna-entlassung"}, subject_id="anna")
+    try:
+        store.delete("document_analyses", "doc-anna-entlassung")
+        tc.memo.clear()                                                          # new conversation
+        docs = asyncio.run(known_documents(tc, ctx))
+        assert "doc-anna-entlassung" not in [d["document_id"] for d in docs]
+        assert "doc-anna-entlassung" not in system_prompt(ctx, {}, False, documents=docs)
+    finally:
+        store.delete(goldens.HIDDEN, "doc-anna-entlassung")

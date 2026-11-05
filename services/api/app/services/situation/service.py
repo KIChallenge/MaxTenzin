@@ -118,7 +118,8 @@ def load_analysis(subject_id: str, document_id: str) -> DocumentAnalysis | None:
         return enforce_boundary(from_golden(g, document_id))
     from app.fixtures import ANNA_ANALYSIS
 
-    return ANNA_ANALYSIS if document_id == ANNA_ANALYSIS.document_id and subject_id == "anna" else None
+    return ANNA_ANALYSIS if document_id == ANNA_ANALYSIS.document_id and subject_id == "anna" \
+        and not goldens.hidden(document_id) else None
 
 
 def document_pages(subject_id: str, document_id: str) -> list[str]:
