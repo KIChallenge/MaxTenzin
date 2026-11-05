@@ -20,7 +20,8 @@ def _norm(text: str) -> str:
 
 # --------------------------------------------------------------------------------------------- language
 _LANG_HINTS = {
-    "en": r"\b(the|what|my|does|mean|please|can you|i have|how|should|is it|help)\b",
+    "en": r"\b(the|what|my|does|mean|please|can|you|have|how|should|is|it|help|she|he|her|his|was|which|could|"
+          r"get|from|mother|father|and|to|for|of|with|according|letter|benefits?)\b",
     "tr": r"\b(ne|bir|benim|annem|için|nasıl|mı|mi|ilaç|doktor|yardım|lütfen|nedir)\b|[şğı]",
 }
 _DE_HINTS = r"\b(der|die|das|und|ich|meine?|bitte|ist|nicht|was|wie|für|mit|kann)\b|[äöüß]"

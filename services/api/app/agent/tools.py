@@ -411,8 +411,11 @@ def llm_payload(o: ToolOutcome) -> str:
     """What the model sees: data wrapped as untrusted DATA, never as instructions."""
     body: dict[str, Any] = {"status": o.status, "data": o.data, "sources": o.sources}
     if o.forbidden_scope or o.status == 403:
-        body["hinweis"] = ("Die vertretene Person hat diese Berechtigung NICHT erteilt. Erkläre das freundlich, "
-                           "versuche es nicht über andere Wege, biete Alternativen an.")
+        scope_de = SCOPE_DE.get(o.forbidden_scope or "", "diese Aktion")
+        body["data"] = {"error": "forbidden", "berechtigung_de": scope_de}
+        body["hinweis"] = (f"Die vertretene Person hat die Berechtigung „{scope_de}“ NICHT erteilt. Erkläre das "
+                           "freundlich mit genau dieser deutschen Bezeichnung (keine technischen Namen), versuche es "
+                           "nicht über andere Wege, biete Alternativen an. Ein 403 ist keine Quelle.")
     text = json.dumps(body, ensure_ascii=False, default=str)
     if len(text) > 14000:
         text = text[:14000] + "…(gekürzt)"

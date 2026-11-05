@@ -142,14 +142,16 @@ def record(suite: str, case: str, failures: list[str], tools: list[str], lat: li
 def write_report(path: Path) -> None:
     n_pass = sum(r.passed for r in RESULTS)
     lat = sorted(TURN_LATENCIES)
-    p50 = lat[len(lat) // 2] if lat else 0
-    p90 = lat[int(len(lat) * 0.9)] if lat else 0
+    llm = sorted(ms for ms, m in zip(TURN_LATENCIES, TURN_MODES, strict=False) if not m.startswith("boundary"))
+    p50 = llm[len(llm) // 2] if llm else 0
+    p90 = llm[int(len(llm) * 0.9)] if llm else 0
     lines = [
         "# Agent eval report",
         "",
         (f"Generated {datetime.now().isoformat(timespec='seconds')} · mode **{mode()}** · model "
-        f"`{get_settings().llm_model}` · **{n_pass}/{len(RESULTS)} passed** · {len(lat)} turns · latency/turn "
-        f"p50 {p50 / 1000:.1f}s, p90 {p90 / 1000:.1f}s, max {(lat[-1] if lat else 0) / 1000:.1f}s"),
+        f"`{get_settings().llm_model}` · **{n_pass}/{len(RESULTS)} passed** · {len(lat)} turns · latency per LLM turn "
+        f"(n={len(llm)}) p50 {p50 / 1000:.1f}s, p90 {p90 / 1000:.1f}s, max {(llm[-1] if llm else 0) / 1000:.1f}s · "
+        f"boundary turns answer in < 0.2s without LLM"),
         "",
         ("Run: `make eval` (live if `AZURE_API_KEY` is set, else scripted fake mode). Assertions are behavioural: tool "
         "sequence, boundary, scope handling, sources named, every € amount traceable to a deterministic service."),

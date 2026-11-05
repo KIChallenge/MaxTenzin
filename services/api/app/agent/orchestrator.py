@@ -28,6 +28,7 @@ MAX_TOOL_ROUNDS = 6
 MAX_TOKENS = 3000
 REASONING = "low"
 PROMPT = Path(__file__).parent / "prompts" / "system_de.md"
+LANG_NAMES = {"de": "Deutsch", "en": "Englisch (English)", "tr": "Türkisch (Türkçe)"}
 
 
 @lru_cache
@@ -39,7 +40,7 @@ def _full_name(p) -> str:
     return f"{p.first_name} {p.last_name}"
 
 
-def system_prompt(ctx: Context, memo: dict, plain: bool) -> str:
+def system_prompt(ctx: Context, memo: dict, plain: bool, lang: str = "de") -> str:
     s = ctx.subject
     relation = ""
     if ctx.actor.id != s.id:
@@ -53,7 +54,7 @@ def system_prompt(ctx: Context, memo: dict, plain: bool) -> str:
     plain_txt = ("EINFACHE SPRACHE: kurze Sätze, keine Fachwörter ohne Erklärung, eine Information pro Satz."
                  if plain else "Klare Alltagssprache; Fachbegriffe kurz erklären.")
     return _prompt_template().format(
-        plain_language=plain_txt, today=date.today().isoformat(), actor_name=_full_name(ctx.actor),
+        plain_language=plain_txt, reply_language=LANG_NAMES.get(lang, "Deutsch"), today=date.today().isoformat(), actor_name=_full_name(ctx.actor),
         subject_name=_full_name(s), subject_birth=s.birth_date, subject_zip=s.address.zip, subject_insurer=s.insurer,
         relation=relation, scopes=scopes, documents=doc_txt, memo=state.memo_text(memo))
 
@@ -92,10 +93,10 @@ def _assistant_msg(msg) -> dict:
     return out
 
 
-async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, plain: bool,
+async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, plain: bool, lang: str,
                    outcomes: list[ToolOutcome]) -> str:
     memo = conv["memo"]
-    messages = [{"role": "system", "content": system_prompt(ctx, memo, plain)}, *state.history_messages(conv),
+    messages = [{"role": "system", "content": system_prompt(ctx, memo, plain, lang)}, *state.history_messages(conv),
                 {"role": "user", "content": message}]
     reply = ""
     for _ in range(MAX_TOOL_ROUNDS):
@@ -182,7 +183,8 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
     t0 = time.perf_counter()
     conv = state.load_or_create(req.conversation_id, ctx.actor.id, ctx.subject.id)
     memo = conv["memo"]
-    lang = req.language if req.language and req.language != "de" else guard.detect_language(req.message)
+    prev_lang = conv["turns"][-1].get("language", "de") if conv["turns"] else "de"
+    lang = req.language if req.language and req.language != "de" else guard.detect_language(req.message, prev_lang)
     subject_name = _full_name(ctx.subject)
     outcomes: list[ToolOutcome] = []
     mode = "live" if get_llm().live else "scripted"
@@ -205,7 +207,7 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
         reply = ""
         if mode == "live":
             try:
-                reply = await run_live(client, ctx, conv, req.message, req.plain_language, outcomes)
+                reply = await run_live(client, ctx, conv, req.message, req.plain_language, lang, outcomes)
             except Exception as e:
                 if _is_content_filter(e):
                     # Provider-side safety filter (e.g. jailbreak / injection attempt): fixed safe reply, no fallback
