@@ -180,7 +180,7 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
         {!isReview ? (
           <>
             <h2 className="mb-3 text-2xl font-bold">{current}</h2>
-            <div className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
+            <div className="@container divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
               {(fieldsBySection.get(current) ?? []).filter(visible).map((f) => (
                 <FieldRow
                   key={f.id}
@@ -241,7 +241,7 @@ function FieldRow(props: {
   const dirty = draft !== undefined && draft !== (fv?.value ?? null);
   const id = `f-${f.id}`;
 
-  const rowBase = "grid gap-x-6 gap-y-2 px-5 py-4 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]";
+  const rowBase = "grid gap-x-6 gap-y-2 px-5 py-4 @2xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]";
   const hint = f.ask_hint_de && <p className="mt-0.5 text-sm text-muted">{f.ask_hint_de}</p>;
 
   if (f.readonly_reason_de) {

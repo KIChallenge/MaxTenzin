@@ -49,7 +49,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
   return (
     <>
       <PageTitle eyebrow="Transparenz" title={`Wer hat auf Daten von ${name} zugegriffen?`}>
-        Jeder Zugriff – ob durch Sie oder durch den KI-Lotsen – wird protokolliert. Der Lotse hat keine Sonderrechte.
+        Jeder Zugriff – ob durch Sie oder durch Lotsi, die KI – wird protokolliert. Lotsi hat keine Sonderrechte.
       </PageTitle>
       <div className="mb-4 flex flex-wrap items-center gap-2">
         {filters.map(([k, label]) => (
@@ -92,7 +92,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
                       {e.subject_id && e.subject_id !== e.actor_id && <span className="block text-sm text-muted">für {who(e.subject_id)}</span>}
                     </td>
                     <td className="px-3 py-1.5 whitespace-nowrap">
-                      {e.via === "agent" ? <span className="font-bold text-accent-strong">🤖 KI-Lotse</span> : "👤 Oberfläche"}
+                      {e.via === "agent" ? <span className="font-bold text-accent-strong">🤖 Lotsi (KI)</span> : "👤 Oberfläche"}
                       {e.tool && <span className="block text-sm text-muted">{e.tool}</span>}
                     </td>
                     <td className="px-3 py-1.5 text-sm">

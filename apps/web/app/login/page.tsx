@@ -18,7 +18,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       <p className="eyebrow">Demo-Anmeldung</p>
       <h1 className="text-4xl font-bold tracking-tight">Anmelden mit ID Austria</h1>
       <p className="mt-2 text-lg text-muted">
-        Simulierte Anmeldung. Wählen Sie eine Demo-Person. Der KI-Lotse arbeitet danach ausschließlich mit den
+        Simulierte Anmeldung. Wählen Sie eine Demo-Person. Lotsi, die KI, arbeitet danach ausschließlich mit den
         Berechtigungen dieser Person.
       </p>
       {error && (

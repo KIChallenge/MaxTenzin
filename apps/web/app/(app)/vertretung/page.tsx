@@ -19,7 +19,7 @@ export default async function DelegationPage() {
   return (
     <>
       <PageTitle eyebrow="Vertretung" title="Vertretung & Berechtigungen">
-        Nur die vertretene Person entscheidet, was ihre Vertretung – und damit auch der KI-Lotse – tun darf.
+        Nur die vertretene Person entscheidet, was ihre Vertretung – und damit auch Lotsi – tun darf.
       </PageTitle>
       {!dels.ok && <ApiError status={dels.status} detail={dels.detail} />}
       {list.length === 0 && dels.ok && <p className="card text-muted">Keine Vollmachten vorhanden.</p>}

@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { bff } from "@/lib/client";
 import type { ChatAction, ChatResponse, ToolTrace } from "@/lib/types";
+import { LotsiAvatar } from "./Lotsi";
+import { SimpleMarkdown } from "./SimpleMarkdown";
 
 type Msg =
   | { role: "user"; text: string }
@@ -74,7 +76,7 @@ export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string
           text:
             r.status === 403
               ? `Dafür hat ${subjectName} keine Berechtigung erteilt. ${r.detail}`
-              : "Der Lotse ist gerade nicht erreichbar. Sie können alle Schritte auch direkt im Cockpit erledigen.",
+              : "Lotsi ist gerade nicht erreichbar. Sie können alle Schritte auch direkt im Cockpit erledigen.",
         },
       ]);
       return;
@@ -100,22 +102,26 @@ export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="btn-primary fixed right-5 bottom-5 z-40 rounded-full px-5 py-3 text-lg shadow-lg"
+        className="btn-primary fixed right-5 bottom-5 z-40 rounded-full py-2 pr-5 pl-2 text-lg shadow-lg"
       >
-        💬 Frag den Lotsen
+        <LotsiAvatar size={36} />
+        Frag Lotsi
       </button>
     );
   }
 
   return (
     <aside
-      aria-label="Chat mit dem KI-Lotsen"
+      aria-label="Chat mit Lotsi"
       className="fixed inset-y-0 right-0 z-40 flex w-full max-w-md flex-col border-l border-line bg-surface shadow-2xl"
     >
       <div className="flex items-center justify-between border-b border-line px-4 py-3">
-        <div>
-          <h2 className="text-lg font-bold">Frag den Lotsen</h2>
+        <div className="flex items-center gap-3">
+          <LotsiAvatar size={44} />
+          <div>
+          <h2 className="text-lg font-bold">Lotsi</h2>
           <p className="text-sm text-muted">für {subjectName} · nutzt nur Ihre Berechtigungen</p>
+          </div>
         </div>
         <button type="button" onClick={() => setOpen(false)} className="btn-ghost" aria-label="Chat schließen">
           ✕
@@ -126,7 +132,8 @@ export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string
         {msgs.length === 0 && (
           <div className="space-y-3">
             <p className="text-muted">
-              Ich helfe Ihnen, Leistungen zu finden und Anträge vorzubereiten. Ich stelle keine Diagnosen und sende nichts ab.
+              Ich bin Lotsi und zeige Ihnen den Weg durch die Sozialversicherung: Leistungen finden, Anträge vorbereiten.
+              Ich stelle keine Diagnosen, und abschicken tun immer Sie selbst.
             </p>
             <div className="flex flex-wrap gap-2">
               {STARTERS.map((s) => (
@@ -138,9 +145,9 @@ export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string
           </div>
         )}
         {msgs.map((m, i) => (
-          <ChatMessage key={i} msg={m} onSuggest={send} />
+          <ChatMessage key={i} msg={m} onSuggest={send} pathname={pathname} />
         ))}
-        {busy && <p className="text-muted">Lotse arbeitet …</p>}
+        {busy && <p className="text-muted">Lotsi arbeitet …</p>}
         <div ref={endRef} />
       </div>
 
@@ -152,7 +159,7 @@ export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string
         }}
       >
         <label htmlFor="chat-input" className="sr-only">
-          Nachricht an den Lotsen
+          Nachricht an Lotsi
         </label>
         <input
           id="chat-input"
@@ -170,7 +177,7 @@ export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string
   );
 }
 
-function ChatMessage({ msg, onSuggest }: { msg: Msg; onSuggest: (s: string) => void }) {
+function ChatMessage({ msg, onSuggest, pathname }: { msg: Msg; onSuggest: (s: string) => void; pathname: string }) {
   if (msg.role === "user") {
     return <div className="ml-8 rounded-xl bg-accent px-3 py-2 text-white">{msg.text}</div>;
   }
@@ -186,7 +193,7 @@ function ChatMessage({ msg, onSuggest }: { msg: Msg; onSuggest: (s: string) => v
       {msg.trace.length > 0 && (
         <details className="rounded-lg border border-line bg-paper px-3 py-2 text-sm">
           <summary className="cursor-pointer font-bold text-muted">
-            Lotse hat abgefragt: {msg.trace.map((t) => t.summary_de || t.tool).join(" → ")}
+            Lotsi hat abgefragt: {msg.trace.map((t) => t.summary_de || t.tool).join(" → ")}
           </summary>
           <ul className="mt-2 space-y-1">
             {msg.trace.map((t, i) => (
@@ -200,18 +207,20 @@ function ChatMessage({ msg, onSuggest }: { msg: Msg; onSuggest: (s: string) => v
         </details>
       )}
       <div
-        className={`rounded-xl px-3 py-2 whitespace-pre-wrap ${
+        className={`rounded-xl px-3 py-2 ${
           msg.boundary ? "border-2 border-warn bg-warn-soft" : "border border-line bg-paper"
         }`}
       >
         {msg.boundary && <p className="mb-1 text-sm font-bold text-warn">⚠ Medizinische Grenze – bitte mit Ärztin/Arzt klären</p>}
-        {msg.text}
+        <SimpleMarkdown text={msg.text} />
       </div>
       {msg.actions && msg.actions.length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {msg.actions.map((a) => (
-            <ActionButton key={a.kind + a.url} action={a} />
-          ))}
+          {msg.actions
+            .filter((a) => !(a.kind === "open_form" && a.url === pathname))
+            .map((a) => (
+              <ActionButton key={a.kind + a.url} action={a} />
+            ))}
         </div>
       )}
       {msg.suggestions.length > 0 && (
@@ -257,7 +266,7 @@ function ActionButton({ action }: { action: ChatAction }) {
 }
 
 /** What the user is looking at, so the Lotse works on the same form/document instead of starting a new one.
- *  `document_ids` is in ChatRequest; `form_session_id` is requested from WS-A (ignored by the API until then). */
+ *  Both fields are part of ChatRequest; the agent continues exactly this form session. */
 function pageContext(pathname: string): { document_ids?: string[]; form_session_id?: string } {
   const form = /^\/forms\/([^/]+)/.exec(pathname);
   if (form) return { form_session_id: form[1] };

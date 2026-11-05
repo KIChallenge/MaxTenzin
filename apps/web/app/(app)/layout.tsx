@@ -50,7 +50,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         {children}
       </main>
       <footer className="mx-auto max-w-7xl px-5 pb-24 text-sm text-muted">
-        Demo · Unverbindliche Information, keine Rechtsberatung und keine medizinische Beratung. Der Lotse sendet nie
+        Demo · Unverbindliche Information, keine Rechtsberatung und keine medizinische Beratung. Lotsi sendet nie
         etwas ab – Sie prüfen, unterschreiben und senden selbst.
       </footer>
       <ChatPanel subjectId={me.data.subject.id} subjectName={fullName(me.data.subject)} plain={plain} />

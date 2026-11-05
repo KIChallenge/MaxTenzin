@@ -33,9 +33,9 @@ export default async function Cockpit() {
         <div className="card mt-5 flex flex-wrap items-center gap-4 border-accent/30 bg-accent-soft">
           <div className="flex-1">
             <p className="text-lg font-bold">Was möchten Sie heute erledigen?</p>
-            <p className="text-muted">Der Lotse fragt die Dienste für Sie ab – mit denselben Berechtigungen wie Sie.</p>
+            <p className="text-muted">Lotsi fragt die Dienste für Sie ab – mit denselben Berechtigungen wie Sie.</p>
           </div>
-          <OpenChatButton>💬 Frag den Lotsen</OpenChatButton>
+          <OpenChatButton>Frag Lotsi</OpenChatButton>
         </div>
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {TILES.map((t) => (

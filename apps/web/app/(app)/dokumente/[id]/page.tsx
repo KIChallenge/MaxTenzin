@@ -40,7 +40,7 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
       {isImaging && a.recommendations.length === 0 && (
         <div className="card mb-6 border-2 border-warn bg-warn-soft">
           <p className="font-bold">⚠ Befunde besprechen Sie bitte mit Ihrer Ärztin bzw. Ihrem Arzt.</p>
-          <p>Der Lotse interpretiert keine Bildgebungsbefunde.</p>
+          <p>Lotsi interpretiert keine Bildgebungsbefunde.</p>
         </div>
       )}
 
