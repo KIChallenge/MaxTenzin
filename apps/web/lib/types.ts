@@ -16,6 +16,7 @@ export type CriterionResult = S["CriterionResult"];
 export type FormDefinition = S["FormDefinition"];
 export type FormField = S["FormField"];
 export type FormSession = S["FormSession"];
+export type NextQuestions = S["NextQuestions"];
 export type FieldValue = S["FieldValue"];
 export type Case = S["Case"];
 export type CaseStep = S["CaseStep"];

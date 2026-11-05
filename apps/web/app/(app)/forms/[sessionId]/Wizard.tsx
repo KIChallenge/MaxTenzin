@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { SourceChip } from "@/components/SourceChip";
 import { bff } from "@/lib/client";
-import type { FieldValue, FormDefinition, FormField, FormSession } from "@/lib/types";
+import type { FieldValue, FormDefinition, FormField, FormSession, NextQuestions } from "@/lib/types";
 
 type Val = string | boolean | null;
 const REVIEW = "__review__";
@@ -22,6 +22,9 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [pdfBusy, setPdfBusy] = useState(false);
+  // Server truth for "missing": respects conditional fields (e.g. other citizenship only if "andere").
+  const [missingIds, setMissingIds] = useState<Set<string> | null>(null);
+  const [serverProgress, setServerProgress] = useState<number | null>(null);
   const editing = useRef(new Set<string>());
   const lastValues = useRef(initial.values);
 
@@ -31,9 +34,24 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
     for (const f of definition.fields) m.set(f.section, [...(m.get(f.section) ?? []), f]);
     return m;
   }, [definition.fields]);
-  const required = definition.fields.filter((f) => f.required && !f.readonly_reason_de);
-  const missing = required.filter((f) => !isFilled(session.values[f.id]?.value));
-  const progress = required.length ? (required.length - missing.length) / required.length : 1;
+  const refreshMissing = useCallback(async () => {
+    const r = await bff<NextQuestions>(`/api/forms/sessions/${initial.id}/next-questions`);
+    if (r.ok) {
+      setMissingIds(new Set(r.data.questions.map((q) => q.id)));
+      setServerProgress(r.data.progress);
+    }
+  }, [initial.id]);
+  useEffect(() => {
+    refreshMissing();
+  }, [refreshMissing, session.updated_at]);
+
+  // Until FormField exposes its condition (contract request): an empty required field the server does not
+  // report as missing is currently irrelevant → hide it.
+  const isHidden = (f: FormField) =>
+    missingIds !== null && f.required && !f.readonly_reason_de && !isFilled(session.values[f.id]?.value) && !missingIds.has(f.id);
+  const visible = (f: FormField) => !isHidden(f);
+  const missing = definition.fields.filter((f) => missingIds?.has(f.id));
+  const progress = serverProgress ?? 0;
 
   const applyRemote = useCallback((next: FormSession) => {
     const changed: string[] = [];
@@ -154,13 +172,14 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
           <>
             <h2 className="mb-4 text-2xl font-bold">{current}</h2>
             <div className="space-y-4">
-              {(fieldsBySection.get(current) ?? []).map((f) => (
+              {(fieldsBySection.get(current) ?? []).filter(visible).map((f) => (
                 <FieldRow
                   key={f.id}
                   field={f}
                   fv={session.values[f.id]}
                   draft={drafts[f.id]}
                   flashAt={flash[f.id]}
+                  isMissing={!!missingIds?.has(f.id)}
                   onDraft={(v) => setDrafts((d) => ({ ...d, [f.id]: v }))}
                   onFocus={() => editing.current.add(f.id)}
                   onBlur={() => editing.current.delete(f.id)}
@@ -184,6 +203,7 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
             definition={definition}
             session={session}
             missing={missing}
+            visible={visible}
             onJump={(sec) => setStep(steps.indexOf(sec))}
             onPdf={downloadPdf}
             pdfBusy={pdfBusy}
@@ -199,6 +219,7 @@ function FieldRow(props: {
   fv?: FieldValue;
   draft: Val | undefined;
   flashAt?: number;
+  isMissing: boolean;
   onDraft: (v: Val) => void;
   onFocus: () => void;
   onBlur: () => void;
@@ -207,7 +228,7 @@ function FieldRow(props: {
   const { field: f, fv, draft, flashAt } = props;
   const value = draft !== undefined ? draft : (fv?.value ?? null);
   const filled = isFilled(fv?.value);
-  const missingReq = f.required && !filled && !f.readonly_reason_de;
+  const missingReq = props.isMissing;
   const dirty = draft !== undefined && draft !== (fv?.value ?? null);
   const id = `f-${f.id}`;
 
@@ -284,7 +305,10 @@ function Input({
           type="checkbox"
           className="h-5 w-5 accent-accent"
           checked={value === true}
-          onChange={(e) => onCommit(e.target.checked)}
+          onChange={(e) => {
+            onChange(e.target.checked);
+            onCommit(e.target.checked);
+          }}
         />
         Ja
       </label>
@@ -296,7 +320,10 @@ function Input({
         <legend className="sr-only">{f.label_de}</legend>
         {f.options.map((o) => (
           <label key={o} className="inline-flex items-center gap-2 rounded-lg border border-line px-3 py-1">
-            <input type="radio" name={id} className="accent-accent" checked={value === o} onChange={() => onCommit(o)} />
+            <input type="radio" name={id} className="accent-accent" checked={value === o} onChange={() => {
+                onChange(o);
+                onCommit(o);
+              }} />
             {o}
           </label>
         ))}
@@ -319,6 +346,7 @@ function Review({
   definition,
   session,
   missing,
+  visible,
   onJump,
   onPdf,
   pdfBusy,
@@ -326,6 +354,7 @@ function Review({
   definition: FormDefinition;
   session: FormSession;
   missing: FormField[];
+  visible: (f: FormField) => boolean;
   onJump: (section: string) => void;
   onPdf: () => void;
   pdfBusy: boolean;
@@ -357,7 +386,7 @@ function Review({
           </div>
           <dl className="mt-2 divide-y divide-line">
             {definition.fields
-              .filter((f) => f.section === sec)
+              .filter((f) => f.section === sec && visible(f))
               .map((f) => {
                 const fv = session.values[f.id];
                 const v = fv?.value;
