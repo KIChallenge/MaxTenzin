@@ -1,0 +1,12 @@
+{
+  "subject_id": "stefan",
+  "as_of": "2026-11-05",
+  "input": "vaccinations from golden da2002c80f2941836191fbaafc0c32af0f54216d6ae730fdf0a4095a1ebc3bbf.json (e-Impfpass, 5x COVID-19, 4x Influenza)",
+  "expected_status": {
+    "influenza": "due",
+    "dtp_polio": "not_documented",
+    "fsme": "not_documented",
+    "vu": "due"
+  },
+  "notes": "Stefan is 39 on 2026-11-05: no COVID-19 item (rule min_age 60), no Darmkrebs (45+), no Mammografie (w only)."
+}
