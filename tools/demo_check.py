@@ -40,7 +40,7 @@ def tools(r: dict) -> list[str]:
     return [t["tool"] for t in r["tool_trace"]]
 
 
-def main() -> int:  # noqa: PLR0915 – linear checklist on purpose
+def main() -> int:
     with httpx.Client(base_url=API, timeout=120) as c:
         t0 = time.perf_counter()
         try:
