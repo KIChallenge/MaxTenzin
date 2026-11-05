@@ -31,14 +31,21 @@ Die Botschaft wird im Cockpit gesagt, nicht gezeigt. Je ein Satz pro Moment:
 | Transparenz-Protokoll | „Jeder Schritt der KI ist ein normaler Dienst-Aufruf: sichtbar, mit Rechten, prüfbar. Auch der verweigerte von vorhin.“ |
 
 ## Folie 2 – Nachher (6:50–7:20)
-**Die These in einer Zahl**
-§ 5 BPGG: **157,30 €** (Stand 2020) · Wertetabelle 2026: **206,20 €** (mit Quelle)
+**Fünf Schichten. Lotsi ist nur die oberste.**
 
-- Ein Modell aus dem Gedächtnis zitiert das Gesetz. Und liegt falsch.
-- Halluzinationen verhindert kein besserer Prompt, sondern Design: vorher Grenze prüfen · währenddessen nur Werkzeuge mit den Rechten der Person · nachher jeden €-Betrag, jedes Zitat, jede „eingereicht“-Behauptung prüfen.
-- **Lotsi entscheidet nichts. Er formuliert, was die Dienste entschieden haben. Und die Formulierung wird geprüft.**
+| Schicht | Was dort passiert |
+|---|---|
+| Lotsi | versteht, wählt Werkzeuge, formuliert. **Entscheidet nichts.** |
+| Werkzeuge | 30 Werkzeuge, jedes genau ein Dienst-Aufruf, mit den Rechten der Person |
+| API | 70 Endpunkte, jeder mit Login, Berechtigungsprüfung und Protokoll |
+| Dienste | 14 deterministische Dienste: Anspruch, Betrag, Frist, Zuständigkeit. Jede Aussage mit Quelle |
+| Daten | 1.976 § aus 19 Gesetzen · 686 Werte 2026 · 6.985 EKO-Packungen · offizielle Formulare · Serviceratgeber ÖGK |
 
-> Sprechtext (30 s): „Das ist unsere These in einer Zahl. Der Gesetzestext ist veraltet, die Wertetabelle nicht. Lotsi darf nur sagen, was ein Dienst belegt hat. Er kann sich im Ausdruck irren, deshalb prüfen wir die Antwort, bevor die Person sie sieht: Beträge, Zusagen, Quellen. Der schwierige Teil war nicht die KI. Es waren die Daten und Prozesse: richtige Quelle, richtige Fassung, richtige Formularfelder, richtige Rechte.“
+Schlusszeile: **Lotsi entscheidet nichts. Er formuliert, was die Dienste entschieden haben. Und die Formulierung wird geprüft.**
+
+> Sprechtext (30 s): „Was Sie gerade gesehen haben, läuft auf fünf Schichten. Unten die Daten der Challenge, mit Herkunft. Darauf 14 Dienste, die entscheiden, jede Aussage mit Quelle. Erinnern Sie sich an die 206,20 Euro: Im Gesetz steht noch 157,30, Stand 2020. Ein Modell aus dem Gedächtnis zitiert das Gesetz und liegt falsch. Darüber die API mit Login, Rechten und Protokoll, daraus 30 Werkzeuge, und erst ganz oben Lotsi. Das Modell ist austauschbar, die Schichten darunter nicht. Halluzinationen verhindert kein besserer Prompt, sondern dieser Aufbau. Der schwierige Teil war nicht die KI, es waren die Daten und Prozesse.“
+
+Die Zahl 157,30 € gegen 206,20 € wird in der Demo um 2:25 gesagt (Drehbuch, Leistungen) und hier nur als Rückgriff erwähnt.
 
 ## Folie 3 – Schluss (7:20–7:40, bei Zeitdruck nur sprechen)
 **Bausteine tauschen, nicht neu bauen**
@@ -55,12 +62,14 @@ Die Botschaft wird im Cockpit gesagt, nicht gezeigt. Je ein Satz pro Moment:
 | Alt | Neu |
 |---|---|
 | 1 Titel, 3 These | Folie 1 |
+| Infrastruktur (altes Artifact-Deck, Folie 2) | Folie 2 |
 | 2 Problem (Brief) | ein Satz im Sprechtext von Folie 1, dann Demo |
 | 4 Keine Sonderrechte, 7 Grenzen | Demo-Sätze (Protokoll, Vollmacht, Röntgen) |
 | 5 Live-Demo | die Demo selbst |
-| 6 Schlüsselsatz | Folie 2 |
+| 6 Schlüsselsatz | Demo (2:25), Rückgriff im Sprechtext von Folie 2 |
 | 8 Vier Szenarien | Demo (Akt 1 + Akt 4), Rest Q&A |
-| 9 Daten, 10 Betrieb, 11 Warum | Folie 3 |
+| 9 Daten | Folie 2 (Daten-Zeile) und Folie 3 (Kacheln) |
+| 10 Betrieb, 11 Warum | Folie 3 |
 
 ## Nicht sagen
 „Lotsi halluziniert nicht.“ Ein Jurymitglied testet das live. Stattdessen die fette Zeile auf Folie 2.
