@@ -1,21 +1,23 @@
-# Pitch-Deck minimal – 4 Folien, der Rest ist Demo
+# Pitch-Deck minimal – 5 Folien, der Rest ist Demo
 
-Deutsch, Fachjury, 7 Minuten. Folie 1 vor der Demo, Folie 2 bis 4 danach. Dazwischen (0:30–6:50) nur das Cockpit – Drehbuch `documentation/demo-script.md`.
+Deutsch, Fachjury, 7 Minuten. Folie 1 und 2 vor der Demo, Folie 3 bis 5 danach. Dazwischen (0:30–6:50) nur das Cockpit – Drehbuch `documentation/demo-script.md`.
 Die drei Kernbotschaften aus `kernbotschaft.md` stehen je einmal auf einer Folie und werden sonst nur gesprochen.
 Zahlen vor dem Pitch mit `make test` und `evals/REPORT.md` prüfen. Das ausführliche 11-Folien-Deck (`pitch-deck.md`) bleibt als Reserve für Q&A.
-Gebaut als Slide-Deck: https://claude.ai/artifact/RkjTdgdGPBaSBzZGfkXUTn – Folien 1–4 sind der Pitch, ab Folie 5 („Reserve für Q&A“) folgt das alte 12-Folien-Deck.
+Gebaut als Slide-Deck: https://claude.ai/artifact/RkjTdgdGPBaSBzZGfkXUTn – Folien 1–5 sind der Pitch, ab Folie 6 („Reserve für Q&A“) folgt das alte 12-Folien-Deck.
 
 ---
 
-## Folie 1 – Vorher (0:00–0:30)
+## Folie 1 – Titel und These (0:00–0:15)
 **Erst die Prozesse, dann die KI.**
-SV KI-Lotse „Lotsi“ · Use Case 1 · Team MaxTenzin
+SV KI-Lotse „Lotsi“ · Use Case 1 · Team MaxTenzin. Dazu ein Satz: Ein guter KI-Lotse braucht eine gute Infrastruktur.
 
-- Entscheiden tun Dienste mit Quelle: Anspruch, Betrag, Frist, Zuständigkeit.
-- Lotsi versteht, extrahiert, erklärt. Er entscheidet nichts.
-- Lotsi hat genau die Rechte der Person. Keine Sonderrechte.
+> Sprechtext (15 s): „Gesucht ist kein Chatbot, sondern ein Lotse. Unsere These: Ein KI-Assistent ist nur so gut wie die Infrastruktur darunter. Deshalb haben wir zuerst die Prozesse als Dienste gebaut, jeder mit Quelle, und Lotsi als oberste Schicht daraufgesetzt.“
 
-> Sprechtext (30 s): „Gesucht ist kein Chatbot, sondern ein Lotse. Unsere These: Ein KI-Assistent ist nur so gut wie die Infrastruktur darunter. Deshalb haben wir zuerst die Prozesse als Dienste gebaut, jeder mit Quelle, und Lotsi als oberste Schicht daraufgesetzt. Was das heißt, zeige ich Ihnen an Maria: Ihre Mutter kommt aus dem Spital, acht Aufgaben, sechs Stellen, null Überblick.“
+## Folie 2 – Das ist Lotsi (0:15–0:35)
+**Der persönliche Lotse für Angehörige. Kein Chatbot.**
+Drei Karten: **Versteht** (freie Anliegen in Deutsch, Englisch, Türkisch, Einfache Sprache, fragt nur nach, was fehlt) · **Erledigt** (Dokumente mit Zitat und Seite, Leistungen mit Quelle, offizielle Formulare als Entwurf, Termine) · **Tut nie** (entscheiden, einreichen, medizinisch deuten, mehr dürfen als die Person erlaubt hat).
+
+> Sprechtext (20 s): „Das ist Lotsi: ein persönlicher Lotse für Angehörige, von der ersten Frage bis zum unterschriftsreifen Antrag. Er versteht, er erledigt, und er tut nie etwas, was die Person nicht erlaubt hat. Das zeige ich an Maria: Ihre Mutter kommt aus dem Spital, acht Aufgaben, sechs Stellen, null Überblick.“
 
 ## Demo (0:30–6:50) – keine Folien
 Die Botschaft wird im Cockpit gesagt, nicht gezeigt. Je ein Satz pro Moment:
@@ -30,7 +32,7 @@ Die Botschaft wird im Cockpit gesagt, nicht gezeigt. Je ein Satz pro Moment:
 | Röntgenbefund „Was bedeutet das?“ | „Die Grenze ist kein Prompt-Wunsch, sondern ein Prüfschritt vor dem Modell.“ |
 | Transparenz-Protokoll | „Jeder Schritt der KI ist ein normaler Dienst-Aufruf: sichtbar, mit Rechten, prüfbar. Auch der verweigerte von vorhin.“ |
 
-## Folie 2 – Nachher (6:50–7:20)
+## Folie 3 – Nachher (6:50–7:20)
 **Fünf Schichten. Lotsi ist nur die oberste.**
 
 | Schicht | Was dort passiert |
@@ -47,7 +49,7 @@ Schlusszeile: **Lotsi entscheidet nichts. Er formuliert, was die Dienste entschi
 
 Die Zahl 157,30 € gegen 206,20 € ist nur noch Nice-to-have: optional in der Demo um 2:30 und als Q&A-Antwort auf „Halluziniert das nicht?“.
 
-## Folie 3 – Die Kommunikationswege (7:20–7:35)
+## Folie 4 – Die Kommunikationswege (7:20–7:35)
 **Zwei Wege hinein, ein Eingang zu den Diensten.**
 Eigene Zeichnung (kein Mermaid): Person → Cockpit → zwei Wege (direkt oder über Lotsi) → ein Eingang „Login → Berechtigung der Person → Protokoll“ → Dienste in drei Gruppen (Person & Rechte · Anliegen & Anträge · Regeln & Werte) → Wissen (versioniert, quellenbelegt).
 
@@ -55,7 +57,7 @@ Eigene Zeichnung (kein Mermaid): Person → Cockpit → zwei Wege (direkt oder �
 
 Das vollständige Mermaid-Diagramm mit allen 14 Diensten bleibt in der `README.md` (Reserve für Q&A).
 
-## Folie 4 – Schluss (7:35–7:50, bei Zeitdruck nur sprechen)
+## Folie 5 – Schluss (7:35–7:50, bei Zeitdruck nur sprechen)
 **Bausteine tauschen, nicht neu bauen**
 
 - ID Austria statt Demo-Login · ELGA statt Upload · meinSV statt Entwurf. Abgeschickt wird immer von der Person.
@@ -69,15 +71,15 @@ Das vollständige Mermaid-Diagramm mit allen 14 Diensten bleibt in der `README.m
 ## Was vom 11-Folien-Deck wohin ging
 | Alt | Neu |
 |---|---|
-| 1 Titel, 3 These | Folie 1 |
-| Infrastruktur (altes Artifact-Deck, Folie 2) | Folie 2 |
+| 1 Titel, 3 These | Folie 1 und 2 |
+| Infrastruktur (altes Artifact-Deck, Folie 2) | Folie 3 |
 | 2 Problem (Brief) | ein Satz im Sprechtext von Folie 1, dann Demo |
-| 4 Keine Sonderrechte, 7 Grenzen | Demo-Sätze (Protokoll, Vollmacht, Röntgen); Architekturbild Folie 3 |
+| 4 Keine Sonderrechte, 7 Grenzen | Demo-Sätze (Protokoll, Vollmacht, Röntgen); Kommunikationswege Folie 4 |
 | 5 Live-Demo | die Demo selbst |
 | 6 Schlüsselsatz | Nice-to-have: Demo 2:30 (optional) und Q&A |
 | 8 Vier Szenarien | Demo (Akt 1 + Akt 4), Rest Q&A |
-| 9 Daten | Folie 2 (Daten-Zeile) und Folie 4 (Kacheln) |
-| 10 Betrieb, 11 Warum | Folie 4 |
+| 9 Daten | Folie 3 (Daten-Zeile) und Folie 5 (Kacheln) |
+| 10 Betrieb, 11 Warum | Folie 5 |
 
 ## Nicht sagen
-„Lotsi halluziniert nicht.“ Ein Jurymitglied testet das live. Stattdessen die fette Zeile auf Folie 2.
+„Lotsi halluziniert nicht.“ Ein Jurymitglied testet das live. Stattdessen die fette Zeile auf Folie 3.
