@@ -6,11 +6,11 @@ import { SourceChip, SourceList } from "@/components/SourceChip";
 import { api, isPlain } from "@/lib/api";
 import { ELIGIBILITY, fmtAmount, fullName } from "@/lib/labels";
 import { getMe } from "@/lib/me";
-import type { DocumentSummary, EligibilityResult, FormDefinition, SourceRef } from "@/lib/types";
+import type { DocumentAnalysis, DocumentSummary, EligibilityResult, FormDefinition, SourceRef } from "@/lib/types";
 
 type Amount = { label_de?: string; value?: number; unit?: string; source?: SourceRef };
 
-export default async function BenefitsPage({ searchParams }: { searchParams: Promise<{ error?: string; status?: string }> }) {
+export default async function BenefitsPage({ searchParams }: { searchParams: Promise<{ error?: string; status?: string; doc?: string }> }) {
   const sp = await searchParams;
   const [me, plain] = await Promise.all([getMe(), isPlain()]);
   if (!me.ok) return <ApiError status={me.status} detail={me.detail} />;
@@ -18,7 +18,22 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
   const name = fullName(subject);
 
   const docs = await api<DocumentSummary[]>("/api/documents");
-  const documentIds = docs.ok ? docs.data.map((d) => d.document_id) : [];
+  // Only analysed documents: eligibility rejects the whole request if one document has no analysis.
+  const analysed = docs.ok
+    ? (
+        await Promise.all(
+          docs.data.map(async (d) => ((await api<DocumentAnalysis>(`/api/documents/${d.document_id}/analysis`)).ok ? d : null)),
+        )
+      ).filter((d): d is DocumentSummary => d !== null)
+    : [];
+  const documentIds = analysed.map((d) => d.document_id);
+  // Document used for form prefill: the one we came from, else the newest discharge letter, else the newest document.
+  const byNewest = [...analysed].sort((a, b) => b.uploaded_at.localeCompare(a.uploaded_at));
+  const prefillDoc =
+    (sp.doc && documentIds.includes(sp.doc) ? sp.doc : undefined) ??
+    byNewest.find((d) => d.doc_type === "discharge_letter")?.document_id ??
+    byNewest[0]?.document_id ??
+    "";
   const [elig, forms] = await Promise.all([
     api<EligibilityResult[]>("/api/benefits/eligibility", {
       method: "POST",
@@ -140,6 +155,7 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
                     <form key={fid} action={startForm}>
                       <input type="hidden" name="form_id" value={fid} />
                       <input type="hidden" name="benefit_id" value={b.id} />
+                      <input type="hidden" name="document_id" value={prefillDoc} />
                       <button className="btn-primary" disabled={!canPrepare} title={canPrepare ? undefined : "Berechtigung „Anträge vorbereiten“ fehlt"}>
                         📝 Antrag vorbereiten{b.form_ids.length > 1 ? `: ${formTitle.get(fid) ?? fid}` : ""}
                       </button>

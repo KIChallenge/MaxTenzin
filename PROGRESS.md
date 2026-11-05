@@ -29,6 +29,7 @@ Single source of truth for all sessions. Update your row at start and at Definit
 See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished items here as one line).
 
 ## Contract requests (agents → integrator)
+- WS-W → WS-B: `POST /api/benefits/eligibility` returns 404 for the whole request if one `document_ids` entry has no analysis (e.g. uploaded but not analysed). Suggest skipping or reporting such documents instead. Cockpit works around it by sending only analysed documents.
 - (integrator, done) `StepUpdate` gained optional `form_session_id`; `status` now optional. Shared test fixtures moved to `services/api/app/conftest.py` (`from app.conftest import auth`).
 
 - (integrator, done) WS-D: `SourceRef.retrieved` added; `DocumentAnalysis.dropped_unverified` added + wired. Declined: enum for `extraction_mode`.

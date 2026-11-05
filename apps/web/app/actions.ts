@@ -39,7 +39,11 @@ export async function setPlain(on: boolean) {
 /** "Antrag vorbereiten": start a prefilled form session and open the wizard. */
 export async function startForm(formData: FormData) {
   const formId = String(formData.get("form_id") ?? "");
-  const r = await api<FormSession>(`/api/forms/definitions/${encodeURIComponent(formId)}/sessions`, { method: "POST" });
+  const documentId = String(formData.get("document_id") ?? "");
+  const base = `/api/forms/definitions/${encodeURIComponent(formId)}/sessions`;
+  // Prefill from the analysed document when we have one; fall back to profile-only prefill.
+  let r = await api<FormSession>(documentId ? `${base}?document_id=${encodeURIComponent(documentId)}` : base, { method: "POST" });
+  if (!r.ok && documentId && r.status === 404) r = await api<FormSession>(base, { method: "POST" });
   if (!r.ok) redirect(`/leistungen?error=${encodeURIComponent(r.detail)}&status=${r.status}`);
   // Link the new session to the matching "Mein Fall" step (best effort; case may not exist yet).
   const benefitId = String(formData.get("benefit_id") ?? "");
