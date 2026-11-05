@@ -4,7 +4,7 @@ import { LawPicker } from "@/components/LawPicker";
 import { PageTitle } from "@/components/PageTitle";
 import { api } from "@/lib/api";
 import { fmtDate } from "@/lib/labels";
-import type { Law } from "@/lib/laws";
+import { type Law, type LawParagraph, linkableParagraphs } from "@/lib/laws";
 import type { LegalHit, LegalParagraph } from "@/lib/types";
 
 export default async function LegalPage({ searchParams }: { searchParams: Promise<{ q?: string; law?: string; nr?: string; abs?: string }> }) {
@@ -13,8 +13,9 @@ export default async function LegalPage({ searchParams }: { searchParams: Promis
   const para = sp.law && sp.nr ? await api<LegalParagraph>(`/api/legal/paragraphs/${encodeURIComponent(sp.law)}/${encodeURIComponent(sp.nr)}`) : null;
   const toc =
     sp.law && !sp.nr && !sp.q
-      ? await api<{ nr: string; heading: string; in_force?: string }[]>(`/api/legal/laws/${encodeURIComponent(sp.law)}/paragraphs`)
+      ? await api<LawParagraph[]>(`/api/legal/laws/${encodeURIComponent(sp.law)}/paragraphs`)
       : null;
+  const tocList = toc?.ok ? linkableParagraphs(toc.data) : [];
   const lawInfo = laws.ok ? laws.data.find((l) => l.key === sp.law) : undefined;
   const hits = sp.q ? await api<LegalHit[]>(`/api/legal/search?q=${encodeURIComponent(sp.q)}${sp.law ? `&law=${encodeURIComponent(sp.law)}` : ""}&limit=10`) : null;
   return (
@@ -33,14 +34,14 @@ export default async function LegalPage({ searchParams }: { searchParams: Promis
       {toc?.ok && (
         <section aria-labelledby="toc-h" className="mb-6">
           <h2 id="toc-h" className="mb-2 font-semibold">
-            {lawInfo ? `${lawInfo.abbr} – ${lawInfo.title}` : sp.law} · {toc.data.length} Bestimmungen
+            {lawInfo ? `${lawInfo.abbr} – ${lawInfo.title}` : sp.law} · {tocList.length} Bestimmungen
           </h2>
           <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface text-sm">
-            {toc.data.map((p) => (
-              <li key={p.nr}>
+            {tocList.map((p) => (
+              <li key={p.type + p.nr}>
                 <a href={`/recht?law=${encodeURIComponent(sp.law!)}&nr=${encodeURIComponent(p.nr)}`} className="flex gap-3 px-4 py-1.5 hover:bg-accent-soft/50">
-                  <span className="w-16 shrink-0 font-semibold tabular-nums">§ {p.nr}</span>
-                  <span className="min-w-0 flex-1">{p.heading}</span>
+                  <span className="w-20 shrink-0 font-semibold tabular-nums">{p.label}</span>
+                  <span className="min-w-0 flex-1">{p.heading || <span className="text-muted">ohne Überschrift</span>}</span>
                 </a>
               </li>
             ))}
@@ -102,7 +103,8 @@ function Paragraph({ p, abs }: { p: LegalParagraph; abs?: string }) {
 /** "§ 1 BPGG – Zweck des Pflegegeldes" instead of the full TEIL/ABSCHNITT chain. */
 function shortTitle(p: LegalParagraph) {
   const parts = p.heading.split(" – ").map((x) => x.trim()).filter(Boolean);
-  return `§ ${p.nr} ${p.law} – ${parts[parts.length - 1] ?? p.heading}`;
+  const title = (parts[parts.length - 1] ?? p.heading).trim();
+  return title ? `§ ${p.nr} ${p.law} – ${title}` : `§ ${p.nr} ${p.law}`;
 }
 /** The structural part of the heading (Teil, Abschnitt), shown small as a breadcrumb. */
 function trail(heading: string) {

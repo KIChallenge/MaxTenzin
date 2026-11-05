@@ -3,21 +3,20 @@
 // § field falls back to free text.
 import { useEffect, useState } from "react";
 import { bff } from "@/lib/client";
-import type { Law } from "@/lib/laws";
+import { type Law, type LawParagraph, linkableParagraphs } from "@/lib/laws";
 import { Picker } from "./Picker";
 
-type Para = { nr: string; heading: string; in_force?: string };
 
 export function LawPicker({ laws, defaultKey, defaultNr }: { laws: Law[]; defaultKey?: string; defaultNr?: string }) {
   const [law, setLaw] = useState(defaultKey ?? "");
   const [nr, setNr] = useState(defaultNr ?? "");
-  const [paras, setParas] = useState<Para[] | null>(null);
+  const [paras, setParas] = useState<LawParagraph[] | null>(null);
 
   useEffect(() => {
     setParas(null);
     if (!law) return;
     let alive = true;
-    bff<Para[]>(`/api/legal/laws/${encodeURIComponent(law)}/paragraphs`).then((r) => alive && setParas(r.ok ? r.data : []));
+    bff<LawParagraph[]>(`/api/legal/laws/${encodeURIComponent(law)}/paragraphs`).then((r) => alive && setParas(r.ok ? linkableParagraphs(r.data) : []));
     return () => {
       alive = false;
     };
@@ -48,7 +47,7 @@ export function LawPicker({ laws, defaultKey, defaultNr }: { laws: Law[]; defaul
           emptyLabel="Alle Paragrafen"
           value={nr}
           onChange={setNr}
-          options={paras.map((p) => ({ value: p.nr, label: `§ ${p.nr}`, sub: p.heading }))}
+          options={paras.map((p) => ({ value: p.nr, label: p.label, sub: p.heading || undefined, search: p.nr }))}
         />
       ) : (
         <label className="flex flex-col gap-1">
