@@ -24,8 +24,10 @@ DEMO_DOCUMENTS: dict[str, list[dict]] = {
 
 
 def load_or_create(conversation_id: str | None, actor_id: str, subject_id: str) -> dict:
+    # Always touch the store first: core.db.engine() is lazily created and not thread-safe, and the tool loop may run
+    # parallel in-process calls on a fresh DB ("table already exists" race).
+    conv = store.get(COLL, conversation_id or "_")
     if conversation_id:
-        conv = store.get(COLL, conversation_id)
         if conv:
             if conv["actor_id"] != actor_id or conv["subject_id"] != subject_id:
                 raise HTTPException(404, "Gespräch nicht gefunden")
