@@ -40,6 +40,7 @@ def person_keys(p: Person) -> dict[str, str]:
         "sex_de": SEX_DE.get(p.sex, ""),
         "sex_code": p.sex,
         "svnr": p.svnr,
+        "svnr_digits": p.svnr.replace(" ", ""),
         "insurer": p.insurer,
         "street": a.street,
         "house": a.house,
@@ -119,8 +120,10 @@ def prefill(spec: FormSpec, subject: Person, actor: Person, delegation: Delegati
         elif kind == "document" and analysis:
             value = doc.get(key)
             src = SourceRef(kind=SourceKind.document, label=analysis.filename, ref=f"document:{analysis.document_id}")
-        elif kind == "system" and key == "today":
+        elif kind == "system" and key in ("today", "city_today"):
             value = today.strftime("%d.%m.%Y")
+            if key == "city_today":
+                value = f"{subj['city']}, {value}"
             src = SourceRef(kind=SourceKind.form, label="Heutiges Datum – bitte beim Unterschreiben prüfen", ref="today")
         if value in (None, ""):
             continue

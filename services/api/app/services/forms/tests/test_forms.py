@@ -16,7 +16,7 @@ from app.tests.conftest import auth
 
 MARIA_FOR_ANNA = auth("maria", "anna")
 PAL = "pva_pflegegeld_pal080"
-MAPPED = ["pva_pflegegeld_pal080"]
+MAPPED = ["pva_pflegegeld_pal080", "fsw_foerderung", "sv_kur_reha", "oegk_fahrtkosten_wien"]
 
 
 def _fields_json(form_id: str) -> dict:

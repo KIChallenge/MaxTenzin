@@ -1,0 +1,304 @@
+# Sozialversicherung – Antrag auf Rehabilitations-, Kur- bzw. Erholungsaufenthalt (DVSV KUR1 V/8.10).
+# Page 1 = Versicherte:r (mapped). Page 2 = "Ärztliche Stellungnahme": doctor-only, NEVER written (doctor_only_pages).
+# The shared header field VSNR_1 (patient's SVNR) appears on both pages and stays writable.
+form_id: sv_kur_reha
+title_de: Antrag auf Rehabilitations-, Kur- bzw. Erholungsaufenthalt
+provider: SV (zuständiger Krankenversicherungs- bzw. Pensionsversicherungsträger)
+form_version: DVSV KUR1 V/8.10
+submit_info_de: >-
+  Seite 1 prüfen und unterschreiben. Seite 2 („Ärztliche Stellungnahme“) füllt ausschließlich die behandelnde
+  Ärztin bzw. der behandelnde Arzt aus. Danach an den zuständigen Sozialversicherungsträger senden. Der Antrag wird
+  nicht automatisch eingereicht.
+sections:
+  - Patient:in und Versicherte:r
+  - Leistungsbezug
+  - Zusatzangaben (Antrag für Angehörige)
+  - Frühere Aufenthalte
+  - Ärztliche Stellungnahme (nur Ärztin/Arzt)
+doctor_only_pages: [2]
+unmapped_pdf_fields: {}
+fields:
+  # ---------------------------------------------------------------- Patient:in und Versicherte:r
+  - id: zuständiger SV-träger
+    label_de: Zuständiger Sozialversicherungsträger
+    type: text
+    section: Patient:in und Versicherte:r
+    required: true
+    prefill: profile.insurer
+    ask_hint_de: Bei welchem Sozialversicherungsträger ist die Person versichert (z. B. ÖGK)?
+  - id: Patient(in)
+    label_de: Patient:in – Familienname und Vorname
+    type: text
+    section: Patient:in und Versicherte:r
+    required: true
+    prefill: profile.full_name_last_first
+    ask_hint_de: Familienname und Vorname der Patientin bzw. des Patienten?
+  - id: VSNR_1
+    label_de: Patient:in – Versicherungsnummer
+    type: text
+    section: Patient:in und Versicherte:r
+    required: true
+    prefill: profile.svnr
+    ask_hint_de: Versicherungsnummer der Patientin bzw. des Patienten (steht auf der e-card)?
+  - id: Anschrift Patient(in)
+    label_de: Patient:in – Anschrift
+    type: text
+    section: Patient:in und Versicherte:r
+    required: true
+    prefill: profile.address_line
+    ask_hint_de: Anschrift der Patientin bzw. des Patienten?
+  - id: patient_ist_angehoerige
+    label_de: Ist die Patientin bzw. der Patient bei jemand anderem mitversichert (Angehörige:r)?
+    type: choice
+    section: Patient:in und Versicherte:r
+    pdf_field: null
+    options: [nein, ja]
+    recommended: true
+    ask_hint_de: >-
+      Ist die Patientin bzw. der Patient selbst versichert (z. B. durch Pension oder Arbeit), oder bei einer anderen
+      Person mitversichert?
+  - id: Versicherte(r)
+    label_de: Versicherte:r – Familienname und Vorname
+    type: text
+    section: Patient:in und Versicherte:r
+    required: true
+    when: {field: patient_ist_angehoerige, equals: ja}
+    ask_hint_de: Bei wem ist die Patientin bzw. der Patient mitversichert (Familienname und Vorname)?
+  - id: VSNR_2
+    label_de: Versicherte:r – Versicherungsnummer
+    type: text
+    section: Patient:in und Versicherte:r
+    required: true
+    when: {field: patient_ist_angehoerige, equals: ja}
+    ask_hint_de: Versicherungsnummer dieser versicherten Person?
+  - id: Versicherte(r) beschäftigt
+    label_de: Versicherte:r beschäftigt bei (Dienstgeber:in, Dienstort, Telefon)
+    type: text
+    section: Patient:in und Versicherte:r
+    recommended: true
+    ask_hint_de: Ist die versicherte Person berufstätig? Wenn ja, bei welchem Dienstgeber (Ort, Telefon)?
+  - id: Personenstand
+    label_de: Versicherte:r – Personenstand
+    type: text
+    section: Patient:in und Versicherte:r
+    required: true
+    prefill: profile.marital_status
+    ask_hint_de: Personenstand der versicherten Person?
+  - id: Telefonnummer
+    label_de: Versicherte:r – Telefonnummer
+    type: text
+    section: Patient:in und Versicherte:r
+    prefill: profile.phone
+    recommended: true
+    ask_hint_de: Telefonnummer der versicherten Person?
+  - id: Anschrift
+    label_de: Versicherte:r – Anschrift
+    type: text
+    section: Patient:in und Versicherte:r
+    required: true
+    prefill: profile.address_line
+    ask_hint_de: Anschrift der versicherten Person?
+  # ---------------------------------------------------------------- Leistungsbezug (a-f, Pension, Pflegegeld)
+  - id: Pensionsversicherung
+    label_de: a) Leistungen aus der Pensionsversicherung
+    type: choice
+    section: Leistungsbezug
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /n, ja: /j}
+    ask_hint_de: Bezieht die versicherte Person eine Pension?
+  - id: Pensionsversicherungsträger
+    label_de: Pensionsversicherungsträger
+    type: text
+    section: Leistungsbezug
+    required: true
+    when: {field: Pensionsversicherung, equals: ja}
+    ask_hint_de: Von welchem Pensionsversicherungsträger (z. B. PVA)?
+  - id: Arbeitslosenversicherung
+    label_de: b) Leistungen aus der Arbeitslosenversicherung
+    type: choice
+    section: Leistungsbezug
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /n, ja: /j}
+    ask_hint_de: Gibt es Leistungen vom AMS (Arbeitslosenversicherung)?
+  - id: Geschäftsstelle AMS
+    label_de: Geschäftsstelle des AMS
+    type: text
+    section: Leistungsbezug
+    required: true
+    when: {field: Arbeitslosenversicherung, equals: ja}
+    ask_hint_de: Welche AMS-Geschäftsstelle?
+  - id: Unfallversicherung
+    label_de: c) Leistungen aus der Unfallversicherung
+    type: choice
+    section: Leistungsbezug
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /n, ja: /j}
+    ask_hint_de: Gibt es Leistungen aus der Unfallversicherung (z. B. Versehrtenrente)?
+  - id: Unfallversicherungsanstalt
+    label_de: Unfallversicherung – Anstalt
+    type: text
+    section: Leistungsbezug
+    required: true
+    when: {field: Unfallversicherung, equals: ja}
+    ask_hint_de: Von welcher Anstalt (z. B. AUVA)?
+  - id: Bundesamt
+    label_de: d) Leistungen vom Bundesamt für Soziales und Behindertenwesen
+    type: choice
+    section: Leistungsbezug
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /n, ja: /j}
+    ask_hint_de: Gibt es Leistungen vom Sozialministeriumservice (Bundesamt für Soziales und Behindertenwesen)?
+  - id: Sozialhilfeträger
+    label_de: e) Leistungen von einem Sozialhilfeträger
+    type: choice
+    section: Leistungsbezug
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /n, ja: /j}
+    ask_hint_de: Gibt es Leistungen von einem Sozialhilfeträger (z. B. Sozialhilfe, FSW)?
+  - id: "öffentlich-rechtl. DVH"
+    label_de: f) Leistungen aus einem öffentlich-rechtlichen Dienstverhältnis (Ruhebezug etc.)
+    type: choice
+    section: Leistungsbezug
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /n, ja: /j}
+    ask_hint_de: Gibt es einen Ruhebezug aus einem öffentlich-rechtlichen Dienstverhältnis (z. B. Beamtenpension)?
+  - id: Von welcher Stelle
+    label_de: Ruhebezug – von welcher Stelle
+    type: text
+    section: Leistungsbezug
+    required: true
+    when: {field: "öffentlich-rechtl. DVH", equals: ja}
+    ask_hint_de: Von welcher Stelle kommt der Ruhebezug?
+  - id: Pensionsantrag
+    label_de: Pensions-(Renten-)antrag gestellt
+    type: choice
+    section: Leistungsbezug
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /n, ja: /j}
+    ask_hint_de: Wurde ein Pensions- oder Rentenantrag gestellt?
+  - id: Bei welcher Anstalt1
+    label_de: Pensionsantrag – bei welcher Anstalt
+    type: text
+    section: Leistungsbezug
+    required: true
+    when: {field: Pensionsantrag, equals: ja}
+    ask_hint_de: Bei welcher Anstalt wurde der Antrag gestellt?
+  - id: freiwillig versichert
+    label_de: In der Pensionsversicherung freiwillig versichert
+    type: choice
+    section: Leistungsbezug
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /n, ja: /j}
+    ask_hint_de: Besteht eine freiwillige Versicherung in der Pensionsversicherung?
+  - id: Bei welcher Anstalt2
+    label_de: Freiwillige Versicherung – bei welcher Anstalt
+    type: text
+    section: Leistungsbezug
+    required: true
+    when: {field: freiwillig versichert, equals: ja}
+    ask_hint_de: Bei welcher Anstalt?
+  - id: Pflegegeld
+    label_de: Bezug von Pflegegeld
+    type: choice
+    section: Leistungsbezug
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /n, ja: /j}
+    ask_hint_de: Bezieht die versicherte Person bereits Pflegegeld?
+  - id: Von welcher Anstalt
+    label_de: Pflegegeld – von welcher Anstalt
+    type: text
+    section: Leistungsbezug
+    required: true
+    when: {field: Pflegegeld, equals: ja}
+    ask_hint_de: Von welcher Stelle kommt das Pflegegeld?
+  - id: Stufe1
+    label_de: Pflegegeld – Stufe
+    type: text
+    section: Leistungsbezug
+    required: true
+    when: {field: Pflegegeld, equals: ja}
+    ask_hint_de: Welche Pflegegeldstufe (1–7)?
+  # ---------------------------------------------------------------- Zusatzangaben (patient is Angehörige:r)
+  - {id: Verwandschaftsverhältnis, label_de: Verwandtschaftsverhältnis zur versicherten Person, type: text, required: true,
+     ask_hint_de: "In welchem Verwandtschaftsverhältnis steht die Patientin bzw. der Patient zur versicherten Person?",
+     section: Zusatzangaben (Antrag für Angehörige), when: {field: patient_ist_angehoerige, equals: ja}}
+  - {id: zuletzt beschäftigt bis, label_de: Patient:in zuletzt beschäftigt bis, type: text,
+     section: Zusatzangaben (Antrag für Angehörige), when: {field: patient_ist_angehoerige, equals: ja}}
+  - {id: Pensionsbezug, label_de: Patient:in bezieht eine Pension, type: choice, options: [nein, ja],
+     pdf_options: {nein: /n, ja: /j}, section: Zusatzangaben (Antrag für Angehörige),
+     when: {field: patient_ist_angehoerige, equals: ja}}
+  - {id: Von welcher Anstalt2, label_de: Pension der Patientin bzw. des Patienten – von welcher Anstalt, type: text,
+     section: Zusatzangaben (Antrag für Angehörige), when: {field: Pensionsbezug, equals: ja}}
+  - {id: freiwillig versichert1, label_de: Patient:in freiwillig pensionsversichert, type: choice, options: [nein, ja],
+     pdf_options: {nein: /n, ja: /j}, section: Zusatzangaben (Antrag für Angehörige),
+     when: {field: patient_ist_angehoerige, equals: ja}}
+  - {id: Bei welcher Anstalt3, label_de: Freiwillige Versicherung der Patientin bzw. des Patienten – Anstalt, type: text,
+     section: Zusatzangaben (Antrag für Angehörige), when: {field: freiwillig versichert1, equals: ja}}
+  - {id: pensions- unfallversichert, label_de: Patient:in pensions- oder unfallversichert, type: choice, options: [nein, ja],
+     pdf_options: {nein: /n, ja: /j}, section: Zusatzangaben (Antrag für Angehörige),
+     when: {field: patient_ist_angehoerige, equals: ja}}
+  - {id: Bei welcher Anstalt4, label_de: Pensions-/Unfallversicherung der Patientin bzw. des Patienten – Anstalt, type: text,
+     section: Zusatzangaben (Antrag für Angehörige), when: {field: pensions- unfallversichert, equals: ja}}
+  - {id: Pflegegeld1, label_de: Patient:in bezieht Pflegegeld, type: choice, options: [nein, ja],
+     pdf_options: {nein: /n, ja: /j}, section: Zusatzangaben (Antrag für Angehörige),
+     when: {field: patient_ist_angehoerige, equals: ja}}
+  - {id: Von welcher Stelle2, label_de: Pflegegeld der Patientin bzw. des Patienten – von welcher Stelle, type: text,
+     section: Zusatzangaben (Antrag für Angehörige), when: {field: Pflegegeld1, equals: ja}}
+  - {id: Stufe2, label_de: Pflegegeld der Patientin bzw. des Patienten – Stufe, type: text,
+     section: Zusatzangaben (Antrag für Angehörige), when: {field: Pflegegeld1, equals: ja}}
+  # ---------------------------------------------------------------- Frühere Aufenthalte
+  - id: Aufenthalt innerhalb von  Jahren
+    label_de: Reha-, Kur-, Land- oder Erholungsaufenthalt in den letzten fünf Jahren (mit Kostenbeteiligung)
+    type: choice
+    section: Frühere Aufenthalte
+    recommended: true
+    options: [nein, ja]
+    pdf_options: {nein: /n, ja: /j}
+    ask_hint_de: Gab es in den letzten fünf Jahren schon einen Reha-, Kur- oder Erholungsaufenthalt, den die Versicherung mitbezahlt hat?
+  - {id: Wann1, label_de: Aufenthalt 1 – wann, type: text, required: true, ask_hint_de: "Wann war der Aufenthalt?",
+     section: Frühere Aufenthalte, when: {field: Aufenthalt innerhalb von  Jahren, equals: ja}}
+  - {id: Wo1, label_de: Aufenthalt 1 – wo, type: text, required: true, ask_hint_de: "Wo war der Aufenthalt?",
+     section: Frühere Aufenthalte, when: {field: Aufenthalt innerhalb von  Jahren, equals: ja}}
+  - {id: Wann2, label_de: Aufenthalt 2 – wann, type: text,
+     section: Frühere Aufenthalte, when: {field: Aufenthalt innerhalb von  Jahren, equals: ja}}
+  - {id: Wo2, label_de: Aufenthalt 2 – wo, type: text,
+     section: Frühere Aufenthalte, when: {field: Aufenthalt innerhalb von  Jahren, equals: ja}}
+  - id: Datum
+    label_de: Datum (neben der Unterschrift)
+    type: date
+    section: Frühere Aufenthalte
+    prefill: system.today
+  # ---------------------------------------------------------------- page 2: doctor-only (shown read-only)
+  - id: Aktuelle Vorgeschichte
+    label_de: Aktuelle Vorgeschichte – soweit antragsrelevant
+    type: textarea
+    section: Ärztliche Stellungnahme (nur Ärztin/Arzt)
+    doctor_only: true
+    readonly_reason_de: Dieser Teil wird ausschließlich von der Ärztin bzw. dem Arzt ausgefüllt.
+  - id: Antragsrelevante Diagnose
+    label_de: Antragsrelevante Diagnose
+    type: textarea
+    section: Ärztliche Stellungnahme (nur Ärztin/Arzt)
+    doctor_only: true
+    readonly_reason_de: Dieser Teil wird ausschließlich von der Ärztin bzw. dem Arzt ausgefüllt.
+  - id: Befunde
+    label_de: Maßgebliche Befunde und Funktionseinschränkungen
+    type: textarea
+    section: Ärztliche Stellungnahme (nur Ärztin/Arzt)
+    doctor_only: true
+    readonly_reason_de: Dieser Teil wird ausschließlich von der Ärztin bzw. dem Arzt ausgefüllt.
+  - id: Begründung
+    label_de: Begründung für die vorgeschlagene Maßnahme
+    type: textarea
+    section: Ärztliche Stellungnahme (nur Ärztin/Arzt)
+    doctor_only: true
+    readonly_reason_de: Dieser Teil wird ausschließlich von der Ärztin bzw. dem Arzt ausgefüllt.

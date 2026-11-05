@@ -48,6 +48,7 @@ class FieldSpec(BaseModel):
     pdf_options: dict[str, str] = Field({}, description="choice: option label -> export value of the radio kid")
     pdf_overflow: list[str] = Field([], description="continuation lines for long text (filled in order)")
     max_chars: int | None = Field(None, description="characters per line before continuing in pdf_overflow")
+    compact: bool = Field(False, description="strip whitespace + uppercase on input (comb fields: IBAN, SVNR)")
     when: Condition | None = None
     prefill: str | None = Field(None, description="profile.<key> | actor.<key> | delegation.<key> | document.<key> | "
                                                    "system.<key> | const:<value>")

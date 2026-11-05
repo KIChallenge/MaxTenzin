@@ -154,6 +154,12 @@
           "description": "characters per line before continuing in pdf_overflow",
           "title": "Max Chars"
         },
+        "compact": {
+          "default": false,
+          "description": "strip whitespace + uppercase on input (comb fields: IBAN, SVNR)",
+          "title": "Compact",
+          "type": "boolean"
+        },
         "when": {
           "anyOf": [
             {

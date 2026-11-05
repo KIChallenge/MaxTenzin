@@ -160,6 +160,8 @@ def validate_value(spec: FormSpec, f: FieldSpec, value):
         return match
     if f.type == FieldType.date:
         return _normalize_date(text)
+    if f.compact:
+        text = re.sub(r"\s+", "", text).upper()
     if len(text) > 2000:
         raise ValueError("Der Text ist zu lang (höchstens 2000 Zeichen).")
     return text
