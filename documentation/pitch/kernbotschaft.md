@@ -38,7 +38,7 @@ Merksatz für die Folie: **„Erst die Prozesse, dann die KI.“**
 |---|---|
 | Brief hochladen → Empfehlungen mit Zitat + Seite | „Lotsi liest nur, was ausdrücklich dasteht – mit Seite. Kein Zitat, keine Aussage.“ |
 | Leistungsprüfung mit Status und Quelle | „Ob ein Anspruch wahrscheinlich ist, entscheidet ein Regeldienst, nicht das Modell.“ |
-| Pflegegeld-Betrag / Rezeptgebühr | „Diese Zahl kommt aus der amtlichen Wertetabelle 2026 – anklickbar.“ |
+| Pflegegeld-Betrag / Rezeptgebühr | „Diese Zahl kommt aus der amtlichen Wertetabelle 2026 – die Quelle steht direkt daneben.“ |
 | Transparenz-Protokoll | „Jeder Schritt der KI ist ein normaler Dienst-Aufruf – sichtbar, mit Rechten, prüfbar.“ |
 | Vollmacht entziehen | „Die KI hat keine Sonderrechte. Was Maria nicht darf, darf Lotsi auch nicht.“ |
 | Röntgenbefund „Was bedeutet das?“ | „Die Grenze ist kein Prompt-Wunsch, sondern ein eigener Prüfschritt vor dem Modell.“ |
