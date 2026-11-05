@@ -9,7 +9,7 @@ Gebaut als Slide-Deck: https://claude.ai/artifact/RkjTdgdGPBaSBzZGfkXUTn – Fol
 
 ## Folie 1 – Titel und These (0:00–0:15)
 **Ein guter KI-Lotse braucht eine gute Infrastruktur.**
-Aufbau der alten Titelfolie: Segelboot, Eyebrow „SV-Lotsi · DVSV KI-Challenge · Use Case 1“, Cockpit-Screenshot rechts. Darunter der Merksatz **Erst die Prozesse, dann die KI.** und ein Satz: Das Sprachmodell ist austauschbar, die Dienste, Daten und Regeln darunter sind es nicht. Fußzeile: Team MaxTenzin.
+Aufbau der alten Titelfolie: Segelboot, Eyebrow „SV-Lotsi · DVSV KI-Challenge · Use Case 1“, rechts nur ein schmaler Cockpit-Ausschnitt („Maria handelt für Anna“ mit der Berechtigungsleiste) statt des ganzen Screenshots. Darunter der Merksatz **Erst die Prozesse, dann die KI.** und ein Satz: Das Sprachmodell ist austauschbar, die Dienste, Daten und Regeln darunter sind es nicht. Fußzeile: Team MaxTenzin.
 
 > Sprechtext (15 s): „Ein guter KI-Lotse braucht eine gute Infrastruktur. Gesucht ist kein Chatbot, sondern ein Lotse. Deshalb haben wir zuerst die Prozesse als Dienste gebaut, jeder mit Quelle, und Lotsi als oberste Schicht daraufgesetzt. Erst die Prozesse, dann die KI.“
 
