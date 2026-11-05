@@ -1,11 +1,15 @@
 import { Check, ChevronRight, FilePen, Paperclip, X } from "lucide-react";
+import Link from "next/link";
 import { startForm } from "@/app/actions";
+import { FactQuestion } from "@/components/FactQuestion";
+import { findEvidence } from "@/lib/facts";
+import type { components } from "@/lib/api-types";
 import { ApiError } from "@/components/ApiError";
 import { Badge } from "@/components/Badge";
 import { PageTitle } from "@/components/PageTitle";
 import { SourceChip, SourceList } from "@/components/SourceChip";
-import { api, isPlain } from "@/lib/api";
-import { factLabel } from "@/lib/facts";
+import { api, getFacts, isPlain } from "@/lib/api";
+import { FactAnswers } from "@/components/FactAnswers";
 import { ELIGIBILITY, fmtAmount, fullName } from "@/lib/labels";
 import { getMe } from "@/lib/me";
 import type { CriterionResult, DocumentSummary, EligibilityResult, EligibilityStatus, FormDefinition, SourceRef } from "@/lib/types";
@@ -16,7 +20,7 @@ const ORDER: Record<EligibilityStatus, number> = { likely: 0, possible: 1, needs
 
 export default async function BenefitsPage({ searchParams }: { searchParams: Promise<{ error?: string; status?: string; doc?: string }> }) {
   const sp = await searchParams;
-  const [me, plain] = await Promise.all([getMe(), isPlain()]);
+  const [me, plain, facts] = await Promise.all([getMe(), isPlain(), getFacts()]);
   if (!me.ok) return <ApiError status={me.status} detail={me.detail} />;
   const subject = me.data.subject;
   const name = fullName(subject);
@@ -38,10 +42,14 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
     used[0]?.document_id ??
     "";
 
+  // Text of the document used for the questions – to show matching passages verbatim next to them.
+  const transcript = prefillDoc ? await api<components["schemas"]["DocumentTranscript"]>(`/api/documents/${prefillDoc}/transcript`) : null;
+  const transcriptPages = transcript?.ok ? transcript.data.pages.map((p) => ({ page: p.page, text: p.text })) : [];
+  const prefillName = used.find((d) => d.document_id === prefillDoc)?.filename;
   const [elig, forms] = await Promise.all([
     api<EligibilityResult[]>("/api/benefits/eligibility", {
       method: "POST",
-      body: { subject_id: subject.id, facts: {}, document_ids: documentIds },
+      body: { subject_id: subject.id, facts, document_ids: documentIds },
     }),
     api<FormDefinition[]>("/api/forms"),
   ]);
@@ -58,6 +66,7 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
         {used.length ? ` – auf Basis von: ${used.map((d) => d.filename).join(", ")}` : ""}. Die Entscheidung trifft immer
         der zuständige Träger.
       </PageTitle>
+      <FactAnswers facts={facts} name={subject.first_name} />
       {sp.error && (
         <div className="mb-6">
           <ApiError status={Number(sp.status ?? 0)} detail={sp.error} subjectName={name} />
@@ -80,6 +89,8 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
                   prefillDoc={prefillDoc}
                   formTitle={formTitle}
                   docMap={docMap}
+                  transcriptPages={transcriptPages}
+                  prefillName={prefillName}
                 />
               </li>
             ))}
@@ -116,6 +127,8 @@ function BenefitCard({
   prefillDoc,
   formTitle,
   docMap,
+  transcriptPages,
+  prefillName,
 }: {
   r: EligibilityResult;
   plain: boolean;
@@ -124,6 +137,8 @@ function BenefitCard({
   prefillDoc: string;
   formTitle: Map<string, string>;
   docMap: Record<string, string>;
+  transcriptPages: { page: number; text: string }[];
+  prefillName?: string;
 }) {
   const st = ELIGIBILITY[r.status];
   const b = r.benefit;
@@ -135,6 +150,16 @@ function BenefitCard({
   // One chip instead of N identical ones when every amount comes from the same value table.
   const sharedSource =
     amounts.length > 1 && amounts.every((a) => a.source && a.source.label === amounts[0].source?.label) ? amounts[0].source : undefined;
+  // Action first: next steps without the disclaimer line (moves to the footer); the form button sits on the step that mentions it.
+  const allSteps = r.next_steps_de ?? [];
+  const disclaimer = allSteps.find((x) => /^Unverbindliche Information/i.test(x));
+  const steps = allSteps.filter((x) => x !== disclaimer);
+  const formIds = b.form_ids ?? [];
+  const formStep = formIds.length ? Math.max(0, steps.findIndex((x) => /Antrag|Formular/i.test(x))) : -1;
+  const docHint = docCriteria[0];
+  const values = amounts.filter((a) => a.value != null && a.unit === "EUR").map((a) => a.value!);
+  const range = values.length > 1 ? `${fmtAmount(Math.min(...values), "EUR")} bis ${fmtAmount(Math.max(...values), "EUR")}` : null;
+  const rangeNote = /Stufe/.test(amounts.map((a) => a.label_de ?? "").join(" ")) ? "je nach Stufe" : "je nach Fall";
 
   return (
     <details className={`group card border-l-4 p-0 ${toneBorder(st.tone)}`}>
@@ -161,112 +186,145 @@ function BenefitCard({
         <Badge tone={st.tone}>{st.label}</Badge>
       </summary>
 
-      <div className="border-t border-line px-4 py-4">
-        <div className="flex flex-wrap items-center gap-2 text-sm">
-          <span className="text-muted">Rechtsgrundlage:</span>
-          <SourceList sources={b.legal_basis} documents={docMap} />
-        </div>
-
-        <div className="mt-4 grid gap-6 md:grid-cols-2">
-          <section>
-            <h3 className="font-semibold">Voraussetzungen</h3>
-            {docCriteria.length > 0 && (
-              <div className="mt-2 rounded-lg bg-accent-soft/60 p-3">
-                <p className="flex items-center gap-1.5 font-semibold"><Paperclip className="h-4 w-4" aria-hidden /> Im Dokument ausdrücklich empfohlen</p>
-                <ul className="mt-1 space-y-2">
-                  {docCriteria.map((c) => (
-                    <li key={c.id}>
-                      <span>{c.explanation_de}</span> {c.source && <SourceChip source={c.source} documents={docMap} />}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            <ul className="mt-3 space-y-3">
-              {ruleCriteria.map((c) => (
-                <li key={c.id} className="flex gap-3">
-                  <Marker met={c.met} />
-                  <div>
-                    <p className="font-semibold">
-                      {c.label_de}
-                      <span className="sr-only">{c.met === true ? " – erfüllt" : c.met === false ? " – nicht erfüllt" : " – noch offen"}</span>
-                    </p>
-                    <p className="text-muted">{c.explanation_de}</p>
-                    {c.source && <SourceChip source={c.source} documents={docMap} />}
-                  </div>
+      <div className="max-w-3xl space-y-5 border-t border-line px-4 py-4 pl-12">
+        {/* 1 · Was jetzt zu tun ist */}
+        <section aria-label="Was jetzt zu tun ist" className="rounded-xl border border-accent/25 bg-accent-soft/50 p-4">
+          <h3 className="font-semibold">Was jetzt zu tun ist</h3>
+          <p className="mt-0.5 text-sm text-muted">{leadSentence(r, formIds.length > 0)}</p>
+          {steps.length > 0 && (
+            <ol className="mt-3 space-y-2">
+              {steps.map((s, i) => (
+                <li key={s} className="flex flex-wrap items-start gap-x-3 gap-y-1.5">
+                  <span aria-hidden className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent text-xs font-semibold text-white">
+                    {i + 1}
+                  </span>
+                  <span className="min-w-0 flex-1 pt-0.5">{s}</span>
+                  {i === formStep &&
+                    formIds.map((fid) => (
+                      <form key={fid} action={startForm}>
+                        <input type="hidden" name="form_id" value={fid} />
+                        <input type="hidden" name="benefit_id" value={b.id} />
+                        <input type="hidden" name="document_id" value={prefillDoc} />
+                        <button className="btn-primary py-1 text-sm" disabled={!canPrepare} title={canPrepare ? (formTitle.get(fid) ?? undefined) : "Berechtigung „Anträge vorbereiten“ fehlt"}>
+                          <FilePen className="h-4 w-4" aria-hidden /> {formIds.length > 1 ? (formTitle.get(fid) ?? "Antrag vorbereiten") : "Antrag vorbereiten"}
+                        </button>
+                      </form>
+                    ))}
                 </li>
+              ))}
+            </ol>
+          )}
+          {b.required_documents_de?.length ? (
+            <p className="mt-3 text-sm">
+              <span className="font-semibold">Mitschicken: </span>
+              {b.required_documents_de.join(" · ")}
+            </p>
+          ) : null}
+          <p className="mt-2 flex flex-wrap gap-x-4 text-sm">
+            <Link href={`/stellen?topic=${encodeURIComponent(b.id)}`} className="link">
+              Zuständige Stelle
+            </Link>
+            {!canPrepare && formIds.length > 0 && <span className="text-muted">Für Anträge hat {name} keine Berechtigung erteilt.</span>}
+          </p>
+        </section>
+
+        {/* 3 · Was Sie vorab klären können */}
+        {missing.length > 0 && (
+          <section aria-label="Was Sie vorab klären können">
+            <h3 className="font-semibold">Noch offene Angaben</h3>
+            <p className="mb-1.5 text-sm text-muted">Beantworten Sie, was Sie wissen – die Prüfung wird sofort aktualisiert.</p>
+            <ul className="divide-y divide-line rounded-lg border border-info/30 bg-info-soft/40">
+              {missing.map((m) => (
+                <FactQuestion
+                  key={m}
+                  factKey={m}
+                  benefitName={b.name_de}
+                  evidence={findEvidence(m, transcriptPages)}
+                  documentId={prefillDoc || undefined}
+                  filename={prefillName}
+                />
               ))}
             </ul>
           </section>
-          <section className="space-y-4">
-            {amounts.length > 0 && (
-              <div>
-                <h3 className="font-semibold">Beträge</h3>
-                <ul className="mt-2 space-y-1">
-                  {amounts.map((a, i) => (
-                    <li key={i} className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <span>{a.label_de}:</span>
-                      <strong className="text-lg">{a.value != null ? fmtAmount(a.value, a.unit ?? "") : "–"}</strong>
-                      {!sharedSource && a.source && <SourceChip source={a.source} />}
-                    </li>
-                  ))}
-                </ul>
+        )}
+
+        {/* 2 · Warum das passt */}
+        <section aria-label="Warum das passt">
+          <h3 className="mb-1.5 font-semibold">Warum das passt</h3>
+          <ul className="space-y-1.5">
+            {docHint && (
+              <li className="flex gap-2.5">
+                <Paperclip className="mt-1 h-4 w-4 shrink-0 text-accent" aria-hidden />
+                <span className="min-w-0">
+                  {docHint.explanation_de} {docHint.source && <SourceChip source={docHint.source} documents={docMap} />}
+                </span>
+              </li>
+            )}
+            {ruleCriteria.map((c) => (
+              <li key={c.id} className="flex gap-2.5">
+                <Marker met={c.met} small />
+                <span className="min-w-0">
+                  <span className="font-semibold">{c.label_de}</span>
+                  <span className="sr-only">{c.met === true ? " – erfüllt" : c.met === false ? " – nicht erfüllt" : " – noch offen"}</span>
+                  {c.explanation_de && <span className="text-muted"> – {c.explanation_de}</span>} {c.source && <SourceChip source={c.source} documents={docMap} />}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+
+        {/* 4 · Wie viel? */}
+        {amounts.length > 0 && (
+          <section aria-label="Wie viel">
+            <h3 className="mb-1 font-semibold">Wie viel?</h3>
+            {amounts.length === 1 ? (
+              <p>
+                {amounts[0].label_de}: <strong>{amounts[0].value != null ? fmtAmount(amounts[0].value, amounts[0].unit ?? "") : "–"}</strong>{" "}
+                {amounts[0].source && <SourceChip source={amounts[0].source} />}
+              </p>
+            ) : (
+              <details className="group/amt">
+                <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                  {range ? (
+                    <>
+                      <strong>{range}</strong> <span className="text-muted">{rangeNote}</span>
+                    </>
+                  ) : (
+                    <span>{amounts.length} Beträge</span>
+                  )}{" "}
+                  <span className="text-sm font-semibold text-accent group-open/amt:hidden">Alle Beträge ›</span>
+                </summary>
+                <table className="mt-2 text-sm">
+                  <tbody>
+                    {amounts.map((a, i) => (
+                      <tr key={i}>
+                        <td className="py-0.5 pr-4 text-muted">{a.label_de}</td>
+                        <td className="py-0.5 text-right font-semibold tabular-nums">{a.value != null ? fmtAmount(a.value, a.unit ?? "") : "–"}</td>
+                        {!sharedSource && <td className="pl-3">{a.source && <SourceChip source={a.source} />}</td>}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
                 {sharedSource && (
-                  <p className="mt-2 text-sm">
+                  <p className="mt-1 text-sm">
                     <span className="text-muted">Alle Beträge laut </span>
                     <SourceChip source={sharedSource} />
                   </p>
                 )}
-              </div>
+              </details>
             )}
-            {missing.length > 0 && (
-              <div className="rounded-lg bg-info-soft p-3">
-                <h3 className="font-semibold text-info">Noch offen</h3>
-                <ul className="list-disc pl-5">
-                  {missing.map((m) => (
-                    <li key={m}>{factLabel(m)}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {r.next_steps_de?.length ? (
-              <div>
-                <h3 className="font-semibold">Nächste Schritte</h3>
-                <ol className="mt-1 list-decimal space-y-1 pl-5">
-                  {r.next_steps_de.map((s) => (
-                    <li key={s}>{s}</li>
-                  ))}
-                </ol>
-              </div>
-            ) : null}
-            {b.required_documents_de?.length ? (
-              <div>
-                <h3 className="font-semibold">Unterlagen</h3>
-                <ul className="list-disc pl-5">
-                  {b.required_documents_de.map((d) => (
-                    <li key={d}>{d}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
           </section>
-        </div>
+        )}
 
-        <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-line pt-4">
-          {b.form_ids?.map((fid) => (
-            <form key={fid} action={startForm}>
-              <input type="hidden" name="form_id" value={fid} />
-              <input type="hidden" name="benefit_id" value={b.id} />
-              <input type="hidden" name="document_id" value={prefillDoc} />
-              <button className="btn-primary" disabled={!canPrepare} title={canPrepare ? undefined : "Berechtigung „Anträge vorbereiten“ fehlt"}>
-                <FilePen className="h-4 w-4" aria-hidden /> Antrag vorbereiten{b.form_ids.length > 1 || formTitle.get(fid) ? `: ${formTitle.get(fid) ?? fid}` : ""}
-              </button>
-            </form>
-          ))}
-          {!canPrepare && b.form_ids?.length > 0 && <span className="text-muted">Dafür hat {name} keine Berechtigung erteilt.</span>}
-          <SourceList sources={b.sources} />
-          {r.rule_ids?.length ? <span className="ml-auto text-sm text-muted">Regel: {r.rule_ids.join(", ")}</span> : null}
-        </div>
+        {/* 5 · Quellen & Hinweis */}
+        <footer className="flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-line pt-3 text-sm text-muted">
+          <span>Rechtsgrundlage:</span>
+          <SourceList sources={b.legal_basis} documents={docMap} />
+          {b.sources?.length ? <SourceList sources={b.sources} documents={docMap} /> : null}
+          {r.rule_ids?.length ? <span>· Regel {r.rule_ids.join(", ")}</span> : null}
+          <span className="w-full">{disclaimer ?? `Unverbindliche Information – die Entscheidung trifft ${b.provider}.`}</span>
+        </footer>
       </div>
     </details>
   );
@@ -283,11 +341,11 @@ function dedupe(criteria: CriterionResult[]) {
   });
 }
 
-function Marker({ met }: { met: boolean | null | undefined }) {
+function Marker({ met, small = false }: { met: boolean | null | undefined; small?: boolean }) {
   return (
     <span
       aria-hidden
-      className={`mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full font-semibold ${
+      className={`mt-0.5 grid shrink-0 place-items-center rounded-full font-semibold ${small ? "h-5 w-5 text-xs" : "h-7 w-7"} ${
         met === true ? "bg-ok text-white" : met === false ? "bg-danger text-white" : "border border-info/40 bg-info-soft text-info"
       }`}
     >
@@ -298,4 +356,18 @@ function Marker({ met }: { met: boolean | null | undefined }) {
 
 function toneBorder(t: string) {
   return { ok: "border-l-ok", warn: "border-l-warn", info: "border-l-info", neutral: "border-l-neutral", danger: "border-l-danger" }[t] ?? "";
+}
+
+/** One plain sentence above the steps: what the status means and who decides. */
+function leadSentence(r: EligibilityResult, hasForm: boolean) {
+  const who = r.benefit.provider;
+  const base =
+    r.status === "likely"
+      ? "Die Voraussetzungen sind voraussichtlich erfüllt."
+      : r.status === "possible"
+        ? `Das kann passen – ob es gewährt wird, entscheidet ${who}.`
+        : r.status === "needs_info"
+          ? `Ob es passt, hängt von offenen Angaben ab – die Entscheidung trifft ${who}.`
+          : "Trifft derzeit nicht zu.";
+  return hasForm && r.status !== "not_applicable" ? `${base} Den Antrag können Sie schon jetzt vorbereiten.` : base;
 }

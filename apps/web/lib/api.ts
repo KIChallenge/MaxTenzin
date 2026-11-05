@@ -1,7 +1,7 @@
 // Server-side API access. Reads the mock-ID-Austria token + chosen subject from cookies
 // and calls the FastAPI services with the user's own rights (via: ui).
 import { cookies } from "next/headers";
-import { API_URL, COOKIE_PLAIN, COOKIE_SUBJECT, COOKIE_TOKEN } from "./session";
+import { API_URL, COOKIE_PLAIN, COOKIE_SUBJECT, COOKIE_TOKEN, factsCookie } from "./session";
 import type { ApiResult } from "./types";
 
 export async function authHeaders(): Promise<Record<string, string>> {
@@ -51,4 +51,16 @@ export async function apiOrThrow<T>(path: string, init?: { method?: string; body
   const r = await api<T>(path, init);
   if (!r.ok) throw new Error(`${r.status}: ${r.detail}`);
   return r.data;
+}
+
+/** Facts the person entered for the current subject (see saveFact). */
+export async function getFacts(): Promise<Record<string, string | number | boolean>> {
+  const jar = await cookies();
+  const subject = jar.get(COOKIE_SUBJECT)?.value;
+  if (!subject) return {};
+  try {
+    return JSON.parse(jar.get(factsCookie(subject))?.value ?? "{}");
+  } catch {
+    return {};
+  }
 }
