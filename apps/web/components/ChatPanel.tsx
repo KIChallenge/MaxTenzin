@@ -9,6 +9,7 @@ import type { components } from "@/lib/api-types";
 import { ACCEPT, uploadAndAnalyze } from "@/lib/upload";
 import { LotsiAvatar } from "./Lotsi";
 import { SimpleMarkdown } from "./SimpleMarkdown";
+import { SlotChoices } from "./SlotChoices";
 
 type Conversation = components["schemas"]["Conversation"];
 type Attachment = { key: string; filename: string; status: "uploading" | "ready" | "error"; documentId?: string; error?: string };
@@ -356,7 +357,7 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
             </div>
           )}
           {msgs.map((m, i) => (
-            <ChatMessage key={i} msg={m} onSuggest={send} pathname={pathname} />
+            <ChatMessage key={i} msg={m} onSuggest={send} pathname={pathname} latest={i === msgs.length - 1} busy={busy} />
           ))}
           {busy && <p className="text-muted">Lotsi arbeitet …</p>}
           <div ref={endRef} />
@@ -463,7 +464,19 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
   );
 }
 
-function ChatMessage({ msg, onSuggest, pathname }: { msg: Msg; onSuggest: (s: string) => void; pathname: string }) {
+function ChatMessage({
+  msg,
+  onSuggest,
+  pathname,
+  latest = false,
+  busy = false,
+}: {
+  msg: Msg;
+  onSuggest: (s: string) => void;
+  pathname: string;
+  latest?: boolean;
+  busy?: boolean;
+}) {
   if (msg.role === "user") {
     return (
       <div className="ml-8 space-y-1.5 rounded-xl bg-accent px-3 py-2 text-white">
@@ -514,6 +527,11 @@ function ChatMessage({ msg, onSuggest, pathname }: { msg: Msg; onSuggest: (s: st
         {msg.boundary && <p className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-warn"><TriangleAlert className="h-4 w-4" aria-hidden /> Medizinische Grenze – bitte mit Ärztin/Arzt klären</p>}
         <SimpleMarkdown text={msg.text} />
       </div>
+      {latest &&
+        msg.trace
+          .filter((t) => t.tool === "search_slots" && t.status < 400)
+          .slice(-1)
+          .map((t, i) => <SlotChoices key={i} args={t.arguments as Record<string, unknown>} onChoose={onSuggest} disabled={busy} />)}
       {msg.actions && msg.actions.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {msg.actions
