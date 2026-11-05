@@ -265,9 +265,10 @@ fields:
     required: true
     pdf_overflow: [Leiden2]
     max_chars: 95
+    prefill: document.main_diagnosis
     ask_hint_de: >-
-      Wegen welcher Krankheiten oder Beeinträchtigungen wird Hilfe gebraucht? Bitte übernehmen Sie die Diagnosen
-      wörtlich aus dem Befund oder Entlassungsbrief – ich formuliere medizinische Angaben nicht um.
+      Wegen welcher Krankheiten oder Beeinträchtigungen wird Hilfe gebraucht? Liegt ein Entlassungsbrief vor, übernehme
+      ich die Hauptdiagnose wörtlich daraus (bitte prüfen); weitere Diagnosen trage ich auf Wunsch ebenfalls wörtlich ein.
   - id: körperl. Einschränkung
     label_de: Grund der Pflegebedürftigkeit – körperliche Einschränkung
     type: choice

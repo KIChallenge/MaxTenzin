@@ -160,6 +160,18 @@
         "value": "Abteilung für Innere Medizin und Onkologie",
         "quote": "Abteilung für Innere Medizin und Onkologie –",
         "page": 1
+      },
+      {
+        "key": "main_diagnosis",
+        "value": "Lokal fortgeschrittenes Rektumkarzinom mit regionalem Lymphknotenbefall",
+        "quote": "Hauptdiagnose: Lokal fortgeschrittenes Rektumkarzinom mit regionalem Lymphknotenbefall.",
+        "page": 1
+      },
+      {
+        "key": "secondary_diagnoses",
+        "value": "Arterielle Hypertonie, medikamentös behandelt; Ausgeprägte therapiebedingte Fatigue mit reduzierter körperlicher Belastbarkeit; Wiederkehrende Übelkeit und zeitweise verminderter Appetit; Wechselnde Stuhlfrequenz mit zeitweiligen Durchfällen im Zusammenhang mit der onkologischen Therapie; Erhöhtes Sturzrisiko bei allgemeiner Schwäche und eingeschränkter Gehstrecke; Unterstützungsbedarf bei einzelnen Aktivitäten des täglichen Lebens",
+        "quote": "Nebendiagnosen: Arterielle Hypertonie, medikamentös behandelt. • Ausgeprägte therapiebedingte Fatigue mit reduzierter körperlicher Belastbarkeit. • Wiederkehrende Übelkeit und zeitweise verminderter Appetit. • Wechselnde Stuhlfrequenz mit zeitweiligen Durchfällen im Zusammenhang mit der onkologischen Therapie. • Erhöhtes Sturzrisiko bei allgemeiner Schwäche und eingeschränkter Gehstrecke. • Unterstützungsbedarf bei einzelnen Aktivitäten des täglichen Lebens.",
+        "page": 1
       }
     ]
   }

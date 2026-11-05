@@ -101,6 +101,19 @@ HEALTH_TERMS = re.compile(r"(befund|diagnos|tumor|krebs|karzinom|metasta|röntge
                           r"doctor|medication|diagnos|x-?ray)")
 
 
+_COPY_INTENT = re.compile(r"(übernehm|übernimm|eintrag|trag\w* .{0,40}\bein\b|abschreib|wörtlich|kopier|ausfüll|füll\w* .{0,40}\baus\b|"
+                          r"\bnehmen\b|\bnimm\b|in den antrag|ins formular|copy|fill in)", re.IGNORECASE)
+_DOC_DIAG = re.compile(r"(diagnose|krankheit|beeinträchtig|leiden|befund|entlassungsbrief|entlassungsbefund)", re.IGNORECASE)
+_INTERPRET = re.compile(r"(bedeutet|heißt das|heilbar|schlimm|gefährlich|prognose|überleb|risiko|soll ich|"
+                        r"was hat (sie|er|mein|meine)|ist (das|es|der|die) .{0,30}(normal|gut|schlecht))", re.IGNORECASE)
+
+
+def is_copy_request(message: str) -> bool:
+    """Copying documented diagnoses verbatim into a form is administrative, not interpretation (use case §4)."""
+    m = message or ""
+    return bool(_COPY_INTENT.search(m) and _DOC_DIAG.search(m) and not _INTERPRET.search(m))
+
+
 def check_boundary(message: str) -> BoundaryHit | None:
     t = _norm(message)
     for cat, rx in _COMPILED:
@@ -182,7 +195,8 @@ LLM_BOUNDARY_SYSTEM = (
     "medizinische Bewertung verlangt. Kategorien: diagnosis (Diagnose stellen), findings (Befund/Werte deuten), "
     "prognosis (Prognose/Risiko), medication (Medikament/Dosis/Therapie-Rat), emergency (akuter Notfall), none. "
     "Administrative Fragen (Kosten, Rezeptgebühr, Anträge, Zuständigkeit, was im Dokument ausdrücklich empfohlen wird) "
-    "sind none. Antworte als JSON: {\"category\": \"...\"}"
+    "sind none. Auch die Bitte, im Dokument stehende Diagnosen WÖRTLICH in ein Antragsformular zu übernehmen, ist none "
+    "(Abschreiben, keine Deutung). Antworte als JSON: {\"category\": \"...\"}"
 )
 
 
