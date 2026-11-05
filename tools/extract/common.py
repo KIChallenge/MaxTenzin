@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -57,7 +57,7 @@ def record(name: str, *, sources: list[Path], outputs: list[Path], rows: int, no
         "outputs": sorted(str(p.relative_to(REPO_ROOT)) for p in outputs),
         "rows": rows,
         "script_version": SCRIPT_VERSION,
-        "extracted_at": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "extracted_at": datetime.now(UTC).strftime("%Y-%m-%d"),
         "notes": notes,
     }
     write_json(MANIFEST, manifest)

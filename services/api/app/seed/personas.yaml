@@ -1,0 +1,41 @@
+# Fictional demo personas (mock ID Austria). Anna mirrors the fictional Entlassungsbefund; Stefan the fictional e-Impfpass.
+- id: anna
+  first_name: Anna
+  last_name: Berger
+  birth_date: "1948-03-14"
+  sex: w
+  svnr: "1234 140348"
+  insurer: ÖGK
+  address: {street: Musterstraße, house: "12", zip: "1030", city: Wien}
+  phone: "+43 660 1234567"
+  marital_status: verwitwet
+  plain_language: true
+- id: maria
+  first_name: Maria
+  last_name: Berger
+  birth_date: "1975-06-02"
+  sex: w
+  svnr: "2345 020675"
+  insurer: ÖGK
+  address: {street: Landstraßer Hauptstraße, house: "5/8", zip: "1030", city: Wien}
+  phone: "+43 664 7654321"
+  email: maria.berger@example.at
+  marital_status: verheiratet
+- id: stefan
+  first_name: Stefan
+  last_name: Testpatient
+  birth_date: "1987-03-22"
+  sex: m
+  svnr: "1234 220387"
+  insurer: ÖGK
+  address: {street: Teststraße, house: "15", zip: "1120", city: Wien}
+  phone: "+43 612 345293"
+  marital_status: verheiratet
+- id: lena
+  first_name: Lena
+  last_name: Testpatient
+  birth_date: "2024-09-10"
+  sex: w
+  svnr: "3456 100924"
+  insurer: ÖGK
+  address: {street: Teststraße, house: "15", zip: "1120", city: Wien}

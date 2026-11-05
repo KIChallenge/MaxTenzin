@@ -1,0 +1,13 @@
+# Vertretungen (extended ID Austria). Scopes are what the grantee (and thus the AI acting for the grantee) may do.
+- id: del-anna-maria
+  grantor_id: anna
+  grantee_id: maria
+  relation: Tochter
+  scopes: [read_documents, prepare_applications, manage_appointments, manage_case]
+  consent_note: "Vollmacht von Anna Berger, erteilt am 30.10.2026 (Demo). Vorsorge-/Gesundheitsdaten bewusst nicht freigegeben."
+- id: del-lena-stefan
+  grantor_id: lena
+  grantee_id: stefan
+  relation: Vater (Obsorge)
+  scopes: [read_documents, prepare_applications, manage_appointments, view_health_prevention, manage_case]
+  consent_note: "Gesetzliche Vertretung (Obsorge) für minderjähriges Kind."

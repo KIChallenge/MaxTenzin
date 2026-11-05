@@ -5,6 +5,7 @@ import forms
 import legal
 import serviceratgeber
 import values
+
 from common import RAW_DIR
 
 if __name__ == "__main__":

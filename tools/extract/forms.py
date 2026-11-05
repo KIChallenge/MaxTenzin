@@ -10,7 +10,7 @@ import shutil
 
 from pypdf import PdfReader
 
-from common import OUT_DIR, RAW_DIR, REPO_ROOT, record, write_json
+from common import RAW_DIR, REPO_ROOT, record, write_json
 
 TEMPLATES_DIR = REPO_ROOT / "knowledge" / "forms" / "templates"
 
