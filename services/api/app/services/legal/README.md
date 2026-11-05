@@ -6,6 +6,9 @@ Rechtsgrundlagen from the SozDok corpus with Fassung / in-force date. Unverbindl
 ## Endpoints
 - `GET /api/legal/paragraphs/{law_key}/{nr}` → `LegalParagraph` (law_key case-insensitive; PARA wins over ANL/ANH).
 - `GET /api/legal/search?q=&law=&limit=` → `list[LegalHit]` (score: higher = better).
+- `GET /api/legal/laws` → laws with paragraph count; `GET /api/legal/laws/{law_key}/paragraphs` → `list[LawParagraphEntry]`
+  (table of contents: § in natural order 1, 2, 2a, 3 … then Anlagen/Anhänge; heading = last part of the heading chain,
+  may be empty when the corpus has none; 404 for unknown laws).
 
 ## Rules & knowledge
 - `service.py`: lookup + `source_ref(law_key, nr, abs)` → `SourceRef` (label "§ 46 Abs. 5 Satzung OEGK 2025",

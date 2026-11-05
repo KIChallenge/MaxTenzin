@@ -56,6 +56,15 @@ class LegalParagraph(BaseModel):
     citation_de: str                  # e.g. "§ 4 BPGG (in Kraft seit 01.01.2015)"
 
 
+class LawParagraphEntry(BaseModel):
+    """Table-of-contents entry of a law (GET /api/legal/laws/{law_key}/paragraphs)."""
+    nr: str
+    type: str                         # PARA, ART, ANL, ANH, … (same nr can exist as § and as Anlage)
+    label: str                        # e.g. "§ 4", "Anl. 1"
+    heading: str                      # last part of the heading chain (no TEIL/ABSCHNITT prefix)
+    in_force: str
+
+
 class LegalHit(BaseModel):
     paragraph: LegalParagraph
     score: float

@@ -6011,6 +6011,104 @@
         }
       }
     },
+    "/api/legal/laws/{law_key}/paragraphs": {
+      "get": {
+        "tags": [
+          "legal"
+        ],
+        "summary": "Table of contents of one law: all paragraphs in natural order, then annexes",
+        "operationId": "law_paragraphs_api_legal_laws__law_key__paragraphs_get",
+        "parameters": [
+          {
+            "name": "law_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Law Key"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LawParagraphEntry"
+                  },
+                  "title": "Response Law Paragraphs Api Legal Laws  Law Key  Paragraphs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/values/{key}": {
       "get": {
         "tags": [
@@ -8858,6 +8956,40 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "LawParagraphEntry": {
+        "properties": {
+          "nr": {
+            "type": "string",
+            "title": "Nr"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "heading": {
+            "type": "string",
+            "title": "Heading"
+          },
+          "in_force": {
+            "type": "string",
+            "title": "In Force"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nr",
+          "type",
+          "label",
+          "heading",
+          "in_force"
+        ],
+        "title": "LawParagraphEntry",
+        "description": "Table-of-contents entry of a law (GET /api/legal/laws/{law_key}/paragraphs)."
       },
       "LegalHit": {
         "properties": {

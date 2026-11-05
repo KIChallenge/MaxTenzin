@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import re
 from functools import lru_cache
 
 from app.contracts.common import SourceKind, SourceRef
-from app.contracts.misc import LegalParagraph
+from app.contracts.misc import LawParagraphEntry, LegalParagraph
 from app.core.knowledge import jsonl
 
 CORPUS = "extracted/legal/paragraphs.jsonl"
@@ -53,3 +54,22 @@ def source_ref(law_key: str, nr: str, abs_: str | None = None) -> SourceRef:
     if r is None:
         raise KeyError(f"paragraph {law_key} {nr} not in corpus")
     return SourceRef(kind=SourceKind.law, label=short_label(r, abs_), ref=r["doc_id"], in_force=r["in_force"])
+
+
+_TYPE_ORDER = {"PARA": 0, "ART": 1, "ZIFF": 2, "ANL": 3, "ANH": 4, "BEIL": 5, "INH": 6}
+
+
+def _natural(nr: str) -> tuple:
+    """'2' < '2a' < '3' < '10'; non-numeric nrs after numeric ones."""
+    m = re.match(r"(\d+)(.*)", nr)
+    return (0, int(m.group(1)), m.group(2)) if m else (1, 0, nr)
+
+
+def law_paragraphs(law_key: str) -> list[LawParagraphEntry] | None:
+    """All entries of one law in natural § order, then annexes. None if the law is not in the corpus."""
+    rs = [r for r in rows() if r["law_key"].lower() == law_key.lower()]
+    if not rs:
+        return None
+    rs.sort(key=lambda r: (_TYPE_ORDER.get(r["type"], 9), _natural(r["nr"])))
+    return [LawParagraphEntry(nr=r["nr"], type=r["type"], label=f"{_SYMBOL.get(r['type'], r['type'])} {r['nr']}",
+                              heading=r["heading"].split(" – ")[-1].strip(), in_force=r["in_force"]) for r in rs]

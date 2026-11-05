@@ -399,3 +399,30 @@ def test_english_germanisms_are_fixed():
     out = _sanitize("FSW — **comes very likely in question**. Reha — comes possibly into question.", "en")
     assert "likely an option" in out and "may be an option" in out and "question" not in out
     assert _sanitize("kommt voraussichtlich in Frage", "de") == "kommt voraussichtlich in Frage"
+    # bare infinitive after a modal / "likely to" (seen live: "likely to is an option")
+    out = _sanitize("likely to come into question. It may come into question. Most likely to come in question.", "en")
+    assert out == "likely to be an option. It may be an option. Most likely to be an option."
+
+
+def test_rezeptgebuehr_amount_always_stated_and_no_tool_wording():
+    from app.agent.orchestrator import _ensure_rezeptgebuehr_amount, _sanitize
+    from app.agent.tools import ToolOutcome
+
+    o = ToolOutcome("check_benefits", {}, 200, data={"results": [{"benefit_id": "rezeptgebuehrenbefreiung", "amounts": [
+        {"label_de": "Rezeptgebühr pro Packung (2026)", "value": 7.55, "source": "veraendW Tab. 20 (2026)"}]}]})
+    out = _ensure_rezeptgebuehr_amount("Muss sie Rezeptgebühr zahlen?", "Befreiung möglich – Einkommen fehlt.", [o], "de")
+    assert "7,55 € pro Packung" in out and "veraendW Tab. 20" in out
+    same = "Die Rezeptgebühr beträgt 7,55 €."
+    assert _ensure_rezeptgebuehr_amount("Rezeptgebühr?", same, [o], "de") == same
+    assert _ensure_rezeptgebuehr_amount("Wann ist mein Termin?", "x", [o], "de") == "x"
+    assert "Tool-Ergebnis" not in _sanitize("Laut Tool-Ergebnis liegt sie bei 7,55 €. Aus dem Tool-Ergebnis folgt …")
+
+
+def test_rezeptgebuehr_dot_decimal_still_gets_german_line_and_hyphen_variants():
+    from app.agent.orchestrator import _ensure_rezeptgebuehr_amount, _sanitize
+    from app.agent.tools import ToolOutcome
+
+    o = ToolOutcome("check_benefits", {}, 200, data={"results": [{"amounts": [
+        {"label_de": "Rezeptgebühr pro Packung (2026)", "value": 7.55, "source": "veraendW Tab. 20 (2026)"}]}]})
+    assert "7,55 € pro Packung" in _ensure_rezeptgebuehr_amount("Rezeptgebühr?", "Sie beträgt 7.55 EUR.", [o], "de")
+    assert "Ergebnis" not in _sanitize("Laut Tool‑Ergebnis gilt das. Das Tool–Ergebnis zeigt …").replace("Prüfergebnis", "")
