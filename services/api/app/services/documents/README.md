@@ -36,7 +36,9 @@ Each golden is keyed by the sha256 of the PDF and holds only quotes and structur
 The document itself: every recommendation carries a quote and a page. The audit log records `"<filename>, S. <page>"` and rule `documents.quote_verification.v1`.
 
 ## Limitations
-- The live path is untested against the real model because the Azure key returns 401. It is covered with a stubbed LLM.
+- Live extraction varies between runs (12–21 recommendations seen for the Entlassungsbrief); every one is quote-verified.
+- Clinical instructions to physicians (labs, blood pressure, medication, side effects, fluid balance) are filtered deterministically after extraction and replaced by a neutral notice (`CLINICAL` in extract.py).
+- Administrative facts (`facts`, e.g. Entlassungsdatum) come from `facts.py` (regex, quote + page), never from the LLM.
 - Scanned PDFs without a text layer produce no text and therefore no recommendations (no OCR).
 - `open_tasks` are not verified (they are free text in the contract). Golden tasks were checked by hand.
 - Live output wording (`text_de`) is not checked automatically. Only quote and page are verified.

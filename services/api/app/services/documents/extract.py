@@ -100,7 +100,8 @@ def verify(analysis: DocumentAnalysis, pages: list[str]) -> DocumentAnalysis:
 # content: relisting them would read as medical advice. Narrow terms on purpose ("Strahlentherapie" in a Reha
 # recommendation must survive).
 CLINICAL = re.compile(r"Medikation|Medikament|antihypertensiv|Wechselwirkung|Blutbild|Elektrolyt|Nierenfunktion|"
-                      r"Blutdruck|Dosis|Dosierung|Laborkontroll|Laborwert", re.IGNORECASE)
+                      r"Blutdruck|Dosis|Dosierung|Laborkontroll|Laborwert|Nebenwirkung|Flüssigkeitshaushalt",
+                      re.IGNORECASE)
 CLINICAL_NOTICE_DE = (" Medizinische Behandlungsempfehlungen an Ärztinnen und Ärzte (z. B. Laborkontrollen, Blutdruck, "
                       "Medikation) gebe ich bewusst nicht wieder – bitte besprechen Sie diese mit Ihrer Hausärztin "
                       "bzw. Ihrem Hausarzt.")

@@ -40,6 +40,8 @@ See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished it
 - (integrator, done) WS-A: `ChatResponse.actions` (download_pdf/open_form/open_case, derived deterministically), `ChatRequest.document_ids`, thread-safe `core.db.engine()`. Open: move Conversation models into contracts.
 - (integrator, fixes after independent live eval run 27/28): start_form idempotent per conversation (no lost answers), explicit "PDF" command renders deterministically, soft guard max 2 questions/turn → 3/3 hero runs, suite 28/28.
 
+- (integrator, done) Polish: `DocumentAnalysis.facts` (deterministic admin facts with quote+page, e.g. Entlassungsdatum) → PAL080 "KH bis" prefilled (open questions 4→3); `FormSession.document_id`; deterministic clinical-instruction filter in documents (labs, blood pressure, medication, side effects, fluid balance → removed + notice). Declined: making PAL080 §3–§9 required (agent offers recommended yes/no questions instead).
+
 ## Decisions log
 - D1 Modular monolith (FastAPI routers per service) instead of microservices — same boundaries, 1/10 ops cost.
 - D2 Raw data in `docs/` gitignored; deterministic extraction into committed `knowledge/extracted/` (`make extract`).
@@ -47,6 +49,7 @@ See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished it
 - D4 Amounts only from veraendW value tables (law text can be outdated, e.g. § 5 BPGG).
 - D5 Mock ID Austria: stateless token `demo-<persona>` + `X-Subject-Id`; scopes from delegations; AI inherits user's scopes.
 - D7 Statute-only amounts (Satzung ÖGK § 46 Fahrtkosten, RRZ § 13 2 %-cap) are cited from the paragraph; veraendW stays primary where a table exists.
+- D8 Clinical instructions to physicians are never relisted, even if quoted verbatim (deterministic filter after LLM).
 - D6 LLM: Azure AI Foundry OpenAI-v1 endpoint, model `gpt-5-4-mini`, fake mode for tests/offline.
 
 ## Cut list (→ roadmap slide)
