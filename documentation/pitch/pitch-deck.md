@@ -84,7 +84,7 @@ Personalisierung: Sprache (Deutsch/Englisch/Türkisch), Einfache Sprache, Detail
 - Befunde: Entlassungsbrief, e-Impfpass, Röntgen – Zitat + Seite, Grenze bei Bildgebung
 - Serviceratgeber ÖGK 2026: 118 Seiten für Stellen, Angebote, Vorsorge
 - Bewusst nicht: Honorarordnung (Steiermark 2025 – falsche Region für unsere Personen)
-Qualität: 262 automatische Tests · 35/35 Live-Evals (Szenarien, Grenzfälle, Vollmacht, Sprache) · jede Antwort mit Quelle
+Qualität: 268 automatische Tests (262 API + 6 Extraktion) · 35/35 Live-Evals (Szenarien, Grenzfälle, Vollmacht, Sprache) · jede Antwort mit Quelle
 
 > Sprechtext: „Jede Zahl, die Sie heute gesehen haben, hat eine Quelle, die Sie anklicken können. Und wir sagen auch, was wir weglassen – und warum.“
 
