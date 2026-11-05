@@ -117,9 +117,11 @@ def test_subject_mismatch_and_scope(client):
 
 
 def test_unknown_document_and_benefit(client):
+    # Another person's (or an unanalysed) document is skipped, never used: no citation from Anna's letter for Stefan
     r = client.post("/api/benefits/eligibility", headers=auth("stefan"),
                     json={"subject_id": "stefan", "document_ids": ["doc-anna-entlassung"]})
-    assert r.status_code == 404
+    assert r.status_code == 200
+    assert "Entlassungsbefund" not in r.text
     r = client.post("/api/benefits/eligibility", headers=auth("stefan"), json={"subject_id": "stefan", "benefit_ids": ["x"]})
     assert r.status_code == 404
 

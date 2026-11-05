@@ -13,6 +13,14 @@ class FieldType(StrEnum):
     textarea = "textarea"
 
 
+class FieldCondition(BaseModel):
+    """Field is relevant only if the condition holds (same shape as the form spec). proxy: actor acts for someone else."""
+    field: str | None = None
+    equals: str | bool | None = None
+    one_of: list[str] = []
+    proxy: bool | None = None
+
+
 class FormField(BaseModel):
     id: str
     label_de: str
@@ -22,6 +30,7 @@ class FormField(BaseModel):
     ask_hint_de: str = ""             # plain-language question the agent/wizard asks
     options: list[str] = []
     readonly_reason_de: str | None = None   # e.g. doctor-only sections
+    when: FieldCondition | None = None       # show/ask only if this holds
 
 
 class FormDefinition(BaseModel):

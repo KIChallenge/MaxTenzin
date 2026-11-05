@@ -628,7 +628,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Chat with the KI-Lotse */
+        /** Chat with Lotsi (KI-Lotse agent) */
         post: operations["chat_api_agent_chat_post"];
         delete?: never;
         options?: never;
@@ -1125,6 +1125,23 @@ export interface components {
             /** Living Situation */
             living_situation?: string | null;
         };
+        /**
+         * FieldCondition
+         * @description Field is relevant only if the condition holds (same shape as the form spec). proxy: actor acts for someone else.
+         */
+        FieldCondition: {
+            /** Field */
+            field?: string | null;
+            /** Equals */
+            equals?: string | boolean | null;
+            /**
+             * One Of
+             * @default []
+             */
+            one_of: string[];
+            /** Proxy */
+            proxy?: boolean | null;
+        };
         /** FieldPatch */
         FieldPatch: {
             /** Values */
@@ -1194,6 +1211,7 @@ export interface components {
             options: string[];
             /** Readonly Reason De */
             readonly_reason_de?: string | null;
+            when?: components["schemas"]["FieldCondition"] | null;
         };
         /** FormPreview */
         FormPreview: {

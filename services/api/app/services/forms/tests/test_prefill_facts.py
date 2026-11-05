@@ -28,3 +28,13 @@ def test_imaging_report_has_no_facts():
     from app.services.documents.facts import admin_facts
 
     assert admin_facts(DocumentType.imaging_report, ["Entlassungsdatum 01.01.2026\n"]) == []
+
+
+def test_source_labels_are_honest_and_when_exposed(client):
+    s = client.post("/api/forms/definitions/pva_pflegegeld_pal080/sessions", headers=H).json()
+    v = s["values"]
+    assert v["Fam.Name"]["source"]["label"].startswith("ID Austria (")
+    labels = {k: x["source"]["label"] for k, x in v.items() if x.get("source")}
+    assert not any(lbl.startswith("ID Austria") for k, lbl in labels.items() if k in ("Telefon", "Personenstand"))
+    d = client.get("/api/forms/definitions/pva_pflegegeld_pal080", headers=H).json()
+    assert any(f.get("when") for f in d["fields"])

@@ -14,7 +14,7 @@ from typing import Literal
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from app.contracts.forms import FieldType, FormDefinition, FormField
+from app.contracts.forms import FieldCondition, FieldType, FormDefinition, FormField
 from app.core.config import get_settings
 
 
@@ -81,7 +81,8 @@ class FieldSpec(BaseModel):
     def to_contract(self) -> FormField:
         return FormField(id=self.id, label_de=self.label_de, type=self.type, section=self.section,
                          required=self.required, ask_hint_de=self.ask_hint_de, options=self.options,
-                         readonly_reason_de=self.readonly_reason_de)
+                         readonly_reason_de=self.readonly_reason_de,
+                         when=FieldCondition(**self.when.model_dump()) if self.when else None)
 
 
 class FormSpec(BaseModel):

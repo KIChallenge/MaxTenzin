@@ -71,7 +71,8 @@ def delegation_keys(d: Delegation) -> dict[str, str]:
 def document_keys(a: DocumentAnalysis) -> dict[str, str]:
     keys = {
         "filename": a.filename,
-        "attachment": f"Kopie: {a.filename}",
+        "attachment": "Kopie des Entlassungsbefunds" if a.doc_type == DocumentType.discharge_letter
+        else f"Kopie: {a.filename}",
         "hospital_stay": "ja" if a.doc_type == DocumentType.discharge_letter else "",
     }
     for fact in a.facts:
@@ -85,8 +86,22 @@ def document_keys(a: DocumentAnalysis) -> dict[str, str]:
     return keys
 
 
+ID_AUSTRIA_KEYS = {"first_name", "last_name", "full_name", "full_name_last_first", "birth_date", "birth_year"}
+ZMR_KEYS = {"street", "house", "zip", "city", "country", "address_line"}
+ECARD_KEYS = {"svnr", "svnr_digits", "insurer"}
+
+
 def _profile_src(p: Person, key: str, who: str) -> SourceRef:
-    return SourceRef(kind=SourceKind.external, label=f"ID Austria Stammdaten ({who}, Demo)", ref=f"person:{p.id}#{key}")
+    """Honest provenance: ID Austria only provides identity (+ ZMR main residence with consent); the rest is profile data."""
+    if key in ID_AUSTRIA_KEYS:
+        label = f"ID Austria ({who}, Demo)"
+    elif key in ZMR_KEYS:
+        label = f"ID Austria – Hauptwohnsitz laut ZMR ({who}, Demo)"
+    elif key in ECARD_KEYS:
+        label = f"e-card / Sozialversicherung ({who}, Demo)"
+    else:
+        label = f"Profilangaben – bitte prüfen ({who}, Demo)"
+    return SourceRef(kind=SourceKind.external, label=label, ref=f"person:{p.id}#{key}")
 
 
 def prefill(spec: FormSpec, subject: Person, actor: Person, delegation: Delegation | None = None,
