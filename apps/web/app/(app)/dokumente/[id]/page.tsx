@@ -220,7 +220,8 @@ function Todo({ n, title, done = false, children }: { n: number; title: string; 
     <li className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
       <span
         aria-hidden
-        className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-semibold ${done ? "bg-ok text-white" : "bg-accent text-white"}`}
+        // open = outlined (action required), done = filled with a check mark
+        className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-semibold ${done ? "bg-ok text-white" : "border-2 border-accent bg-surface text-accent-strong"}`}
       >
         {done ? <Check className="h-3.5 w-3.5" /> : n}
       </span>

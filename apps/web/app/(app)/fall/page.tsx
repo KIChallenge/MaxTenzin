@@ -68,7 +68,7 @@ export default async function CasePage({ searchParams }: { searchParams: Promise
                 {c.steps.map((s, i) => {
                   return (
                     <li key={s.id} className={`flex flex-wrap items-center gap-3 px-4 py-2.5 ${s.status === "done" ? "opacity-70" : ""}`}>
-                      <span aria-hidden className={`grid h-7 w-7 shrink-0 text-sm place-items-center rounded-full font-semibold ${s.status === "done" ? "bg-ok text-white" : "bg-accent-soft text-accent-strong"}`}>
+                      <span aria-hidden className={`grid h-7 w-7 shrink-0 text-sm place-items-center rounded-full font-semibold ${s.status === "done" ? "bg-ok text-white" : "border-2 border-accent bg-surface text-accent-strong"}`}>
                         {s.status === "done" ? <Check className="h-5 w-5" aria-hidden /> : i + 1}
                       </span>
                       <div className="min-w-0 flex-1">
