@@ -39,6 +39,10 @@ export default async function Cockpit() {
     .filter((d) => (seen.has(d.filename) ? false : (seen.add(d.filename), true)))
     .slice(0, 3)
     .map((d) => d.document_id);
+  const latestLetter = (docs.ok ? [...docs.data].sort((a, b) => b.uploaded_at.localeCompare(a.uploaded_at)) : []).find((d) => d.doc_type === "discharge_letter")?.document_id;
+  const catalog = await api<components["schemas"]["Benefit"][]>("/api/benefits");
+  const formOwner: Record<string, string> = {};
+  for (const b of catalog.ok ? catalog.data : []) for (const f of b.form_ids ?? []) formOwner[f] ??= b.id;
   const bundle =
     docIds.length || (situation.ok && situation.data.summary_de)
       ? await api<components["schemas"]["Bundle"] | null>("/api/benefits/bundles/match", {
@@ -65,7 +69,7 @@ export default async function Cockpit() {
         </div>
         {bundle?.ok && bundle.data && (
           <div className="mt-5">
-            <BundleCard bundle={bundle.data} />
+            <BundleCard bundle={bundle.data} formOwner={formOwner} documentId={latestLetter} canPrepare={!!me.ok && me.data.scopes.includes("prepare_applications")} />
           </div>
         )}
         <div className="card mt-5 flex flex-wrap items-center gap-4 border-accent/30 bg-accent-soft">
