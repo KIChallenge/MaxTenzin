@@ -63,12 +63,14 @@ fields:
     type: text
     section: Behandlung und Fahrt
     required: true
+    prefill: situation.therapy.institution
     ask_hint_de: Wo bzw. bei wem fand die Behandlung statt (Name und Adresse)?
   - id: Art der Behandlung
     label_de: Art der Behandlung bzw. Reha-Maßnahme
     type: text
     section: Behandlung und Fahrt
     required: true
+    prefill: situation.therapy.kind
     ask_hint_de: Welche Behandlung war es (z. B. Bestrahlung, Dialyse, Reha)? Bitte so angeben, wie es auf der Terminbestätigung steht.
   - id: Transportmittel
     label_de: Transportmittel

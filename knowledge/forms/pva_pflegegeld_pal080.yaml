@@ -486,7 +486,7 @@ fields:
     recommended: true
     options: [nein, ja]
     pdf_options: {nein: /01, ja: /02}
-    prefill: document.hospital_stay
+    prefill: situation.stay.any|document.hospital_stay
     ask_hint_de: War die Person in den letzten Monaten im Krankenhaus, auf Reha oder in einer Pflegeeinrichtung?
   - id: KH von
     label_de: Aufenthalt 1 – von
@@ -494,6 +494,7 @@ fields:
     section: 5 Krankenanstalt
     required: true
     when: {field: Krankenhaus, equals: ja}
+    prefill: situation.stay1.start
     ask_hint_de: Von wann bis wann war der Aufenthalt? Die Daten stehen meist oben im Entlassungsbrief.
   - id: KH bis
     label_de: Aufenthalt 1 – bis
@@ -501,7 +502,7 @@ fields:
     section: 5 Krankenanstalt
     required: true
     when: {field: Krankenhaus, equals: ja}
-    prefill: document.discharge_date
+    prefill: situation.stay1.end|document.discharge_date
     ask_hint_de: Bis wann dauerte der Aufenthalt (Entlassungsdatum)?
   - id: Spital
     label_de: Aufenthalt 1 – Krankenanstalt / Einrichtung
@@ -509,22 +510,26 @@ fields:
     section: 5 Krankenanstalt
     required: true
     when: {field: Krankenhaus, equals: ja}
+    prefill: situation.stay1.institution
     ask_hint_de: In welchem Krankenhaus bzw. welcher Einrichtung? (Der Entlassungsbrief nennt nur die Abteilung, nicht den Namen des Krankenhauses.)
   - id: KH von 2
     label_de: Aufenthalt 2 – von
     type: date
     section: 5 Krankenanstalt
     when: {field: Krankenhaus, equals: ja}
+    prefill: situation.stay2.start
   - id: KH bis 2
     label_de: Aufenthalt 2 – bis
     type: date
     section: 5 Krankenanstalt
     when: {field: Krankenhaus, equals: ja}
+    prefill: situation.stay2.end
   - id: Spital2
     label_de: Aufenthalt 2 – Krankenanstalt / Einrichtung
     type: text
     section: 5 Krankenanstalt
     when: {field: Krankenhaus, equals: ja}
+    prefill: situation.stay2.institution
   # ---------------------------------------------------------------- 6 Unfall
   - id: Unfall
     label_de: Pflegebedürftig durch einen Unfall
