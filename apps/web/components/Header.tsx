@@ -19,7 +19,7 @@ export function Header({ me, represented }: { me: Session; represented: Person[]
             <span aria-hidden className="grid h-7 w-7 place-items-center rounded-md bg-accent text-white">
               <Sailboat className="h-4 w-4" />
             </span>
-            KI-Lotse
+            SV-Lotsi
           </Link>
           <div className="order-last w-full @5xl:order-none @5xl:w-auto">
             <NavBar />

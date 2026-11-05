@@ -4,7 +4,7 @@ import { COOKIE_TEXT } from "@/lib/session";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "KI-Lotse · Sozialversicherung",
+  title: "SV-Lotsi · Sozialversicherung",
   description: "Persönlicher Navigator durch die österreichische Sozialversicherung (Demo)",
 };
 
