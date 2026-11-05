@@ -3,7 +3,7 @@ API := services/api
 WEB := apps/web
 UV  := uv run --project $(CURDIR)/$(API)
 
-.PHONY: help setup dev api api-demo web seed test test-api test-extract eval lint extract openapi reset smoke-llm
+.PHONY: help setup dev api api-demo web seed demo-check test test-api test-extract eval lint extract openapi reset smoke-llm
 
 help:             ## list targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*##/ —/'
@@ -47,6 +47,9 @@ openapi:          ## export OpenAPI spec + TS types for the web app
 
 seed:             ## load demo documents (from docs/) + import Stefan's e-Impfpass into the local DB
 	cd $(API) && RAW_DATA_DIR=$(CURDIR)/docs uv run python -m app.services.documents.seed_demo
+
+demo-check:       ## preflight: demo-script chat lines against the running API (make api-demo)
+	$(UV) python tools/demo_check.py
 
 reset:            ## wipe local DB (var/)
 	rm -rf var/*.db
