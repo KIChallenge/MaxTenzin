@@ -813,6 +813,96 @@
         }
       }
     },
+    "/api/documents/{document_id}/file": {
+      "get": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "Download the uploaded PDF",
+        "operationId": "get_file_api_documents__document_id__file_get",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/pdf": {}
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/benefits": {
       "get": {
         "tags": [
@@ -1104,6 +1194,24 @@
         "operationId": "overview_api_prevention_overview_get",
         "parameters": [
           {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Stichtag (ISO date), default today",
+              "title": "As Of"
+            },
+            "description": "Stichtag (ISO date), default today"
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "required": false,
@@ -1196,6 +1304,24 @@
               "type": "string",
               "title": "Document Id"
             }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Stichtag (ISO date), default today",
+              "title": "As Of"
+            },
+            "description": "Stichtag (ISO date), default today"
           },
           {
             "name": "Authorization",
@@ -3959,6 +4085,12 @@
             "type": "string",
             "title": "Extraction Mode",
             "default": "live"
+          },
+          "dropped_unverified": {
+            "type": "integer",
+            "title": "Dropped Unverified",
+            "description": "Recommendations discarded because their quote was not found on the stated page",
+            "default": 0
           }
         },
         "type": "object",
@@ -5098,6 +5230,18 @@
             ],
             "title": "In Force",
             "description": "In-force date / Fassung for legal sources"
+          },
+          "retrieved": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieved",
+            "description": "Retrieval date (ISO) for external web sources"
           }
         },
         "type": "object",

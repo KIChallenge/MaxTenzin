@@ -17,7 +17,7 @@ Single source of truth for all sessions. Update your row at start and at Definit
 |---|---|---|---|---|---|---|
 | P0 | extraction, skeleton, contracts, docs | integrator | main | merged | H2 | — |
 | WS-B | benefits catalog + eligibility, directory, legal FTS5, medications | bg agent | ws/B-benefits | doing | — | — |
-| WS-D | documents extraction (+golden), prevention (Impfpass) | bg agent | ws/D-documents | doing | — | LLM key (golden fallback ok) |
+| WS-D | documents extraction (+golden), prevention (Impfpass) | bg agent | ws/D-documents | merged | H4 | live LLM path untested (key 401) |
 | WS-F | forms: schemas, sessions, prefill, real PDF fill | bg agent | ws/F-forms | doing | — | — |
 | WS-W | web cockpit | human session | ws/W-web | todo | — | — |
 | WS-A | agent orchestrator + guardrails + evals | Wave 2 | ws/A-agent | todo | — | needs B/D/F merged |
@@ -28,6 +28,9 @@ See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished it
 
 ## Contract requests (agents → integrator)
 - (integrator, done) `StepUpdate` gained optional `form_session_id`; `status` now optional. Shared test fixtures moved to `services/api/app/conftest.py` (`from app.conftest import auth`).
+
+- (integrator, done) WS-D: `SourceRef.retrieved` added; `DocumentAnalysis.dropped_unverified` added + wired. Declined: enum for `extraction_mode`.
+- Shared store collections: `document_analyses` (key doc id), `vaccinations` (key subject id). Demo doc ids without upload: `doc-anna-entlassung`, `doc-stefan-impfpass`, `doc-stefan-roentgen-1/-2`, `doc-stefan-bildgebung`. `make seed` loads demo PDFs + imports Stefan's Impfpass.
 
 ## Decisions log
 - D1 Modular monolith (FastAPI routers per service) instead of microservices — same boundaries, 1/10 ops cost.

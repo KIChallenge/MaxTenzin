@@ -158,6 +158,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/documents/{document_id}/file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download the uploaded PDF */
+        get: operations["get_file_api_documents__document_id__file_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/benefits": {
         parameters: {
             query?: never;
@@ -836,6 +853,12 @@ export interface components {
              * @default live
              */
             extraction_mode: string;
+            /**
+             * Dropped Unverified
+             * @description Recommendations discarded because their quote was not found on the stated page
+             * @default 0
+             */
+            dropped_unverified: number;
         };
         /** DocumentSummary */
         DocumentSummary: {
@@ -1318,6 +1341,11 @@ export interface components {
              * @description In-force date / Fassung for legal sources
              */
             in_force?: string | null;
+            /**
+             * Retrieved
+             * @description Retrieval date (ISO) for external web sources
+             */
+            retrieved?: string | null;
         };
         /**
          * StepStatus
@@ -1744,6 +1772,42 @@ export interface operations {
             };
         };
     };
+    get_file_api_documents__document_id__file_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+                "X-Subject-Id"?: string | null;
+                "X-Via"?: string;
+                "X-Agent-Tool"?: string | null;
+            };
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     catalog_api_benefits_get: {
         parameters: {
             query?: never;
@@ -1854,7 +1918,10 @@ export interface operations {
     };
     overview_api_prevention_overview_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Stichtag (ISO date), default today */
+                as_of?: string | null;
+            };
             header?: {
                 Authorization?: string;
                 "X-Subject-Id"?: string | null;
@@ -1888,7 +1955,10 @@ export interface operations {
     };
     import_impfpass_api_prevention_import__document_id__post: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Stichtag (ISO date), default today */
+                as_of?: string | null;
+            };
             header?: {
                 Authorization?: string;
                 "X-Subject-Id"?: string | null;

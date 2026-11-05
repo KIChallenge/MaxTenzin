@@ -21,6 +21,7 @@ class SourceRef(BaseModel):
     ref: str = Field("", description="Machine reference: doc_id, value key, page, URL")
     quote: str | None = Field(None, description="Verbatim quote when citing a document")
     in_force: str | None = Field(None, description="In-force date / Fassung for legal sources")
+    retrieved: str | None = Field(None, description="Retrieval date (ISO) for external web sources")
 
 
 class Problem(BaseModel):

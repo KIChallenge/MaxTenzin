@@ -178,3 +178,14 @@ def test_committed_goldens_are_wellformed():
     for name in ("Röntgen Befund.pdf", "Röntgen Befund2.pdf", "Befund bildgebende Diagnostik.pdf"):
         assert by_name[name]["analysis"]["doc_type"] == "imaging_report"
         assert by_name[name]["analysis"]["recommendations"] == []
+
+
+def test_dropped_unverified_count_is_reported():
+    from app.contracts.documents import DocumentAnalysis, DocumentType, ExtractedPerson
+    from app.services.documents.extract import verify
+
+    pages = ["", "Eine ambulante Rehabilitation wird nach Abschluss der Therapie empfohlen."]
+    a = DocumentAnalysis(document_id="d", filename="f.pdf", doc_type=DocumentType.discharge_letter, pages=2,
+                         person=ExtractedPerson(), recommendations=[rec("ok", pages[1], 2), rec("fake", "Erfundene Empfehlung zur Kur in Bad Ischl", 2)])
+    out = verify(a, pages)
+    assert [r.id for r in out.recommendations] == ["ok"] and out.dropped_unverified == 1

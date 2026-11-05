@@ -90,7 +90,7 @@ def verify(analysis: DocumentAnalysis, pages: list[str]) -> DocumentAnalysis:
     kept, dropped = verify_recommendations(analysis.recommendations, pages)
     if dropped:
         log.info("dropped unverified recommendations %s for %s", dropped, analysis.document_id)
-    return analysis.model_copy(update={"recommendations": kept})
+    return analysis.model_copy(update={"recommendations": kept, "dropped_unverified": len(dropped)})
 
 
 def enforce_boundary(analysis: DocumentAnalysis) -> DocumentAnalysis:
