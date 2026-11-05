@@ -3,6 +3,7 @@
 Deutsch, Fachjury, 7 Minuten. Folie 1 vor der Demo, Folie 2 und 3 danach. Dazwischen (0:30–6:50) nur das Cockpit – Drehbuch `documentation/demo-script.md`.
 Die drei Kernbotschaften aus `kernbotschaft.md` stehen je einmal auf einer Folie und werden sonst nur gesprochen.
 Zahlen vor dem Pitch mit `make test` und `evals/REPORT.md` prüfen. Das ausführliche 11-Folien-Deck (`pitch-deck.md`) bleibt als Reserve für Q&A.
+Gebaut als Slide-Deck: https://claude.ai/artifact/RkjTdgdGPBaSBzZGfkXUTn – Folien 1–3 sind der Pitch, ab Folie 4 („Reserve für Q&A“) folgt das alte 12-Folien-Deck.
 
 ---
 
@@ -21,12 +22,13 @@ Die Botschaft wird im Cockpit gesagt, nicht gezeigt. Je ein Satz pro Moment:
 
 | Moment | Satz |
 |---|---|
+| Maria darf keine Dokumente hochladen, Lotsi darf keinen Antrag anlegen → Anna erteilt die Rechte | „Lotsi hat keine Sonderrechte. Er ruft dieselben Dienste mit Marias Vollmacht auf. Nur Anna kann das ändern.“ |
 | Brief-Foto → Empfehlungen mit Zitat + Seite | „Lotsi liest nur, was ausdrücklich dasteht. Kein Zitat, keine Aussage.“ |
 | Leistungsprüfung mit Status + Quelle | „Ob ein Anspruch wahrscheinlich ist, entscheidet ein Regeldienst, nicht das Modell.“ |
 | Pflegegeld / Rezeptgebühr | „Diese Zahl kommt aus der Wertetabelle 2026. Anklickbar.“ |
 | PAL 080 als Entwurf | „Offizielles PVA-Formular, Feld für Feld. Eingereicht wird nie von Lotsi.“ |
 | Röntgenbefund „Was bedeutet das?“ | „Die Grenze ist kein Prompt-Wunsch, sondern ein Prüfschritt vor dem Modell.“ |
-| Transparenz-Protokoll + Vollmacht entziehen | „Was Maria nicht darf, darf Lotsi auch nicht. Rote Zeile im Protokoll.“ |
+| Transparenz-Protokoll | „Jeder Schritt der KI ist ein normaler Dienst-Aufruf: sichtbar, mit Rechten, prüfbar. Auch der verweigerte von vorhin.“ |
 
 ## Folie 2 – Nachher (6:50–7:20)
 **Die These in einer Zahl**
