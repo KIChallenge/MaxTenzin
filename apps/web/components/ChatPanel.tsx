@@ -12,7 +12,14 @@ import { SimpleMarkdown } from "./SimpleMarkdown";
 import { SlotChoices } from "./SlotChoices";
 
 type Conversation = components["schemas"]["Conversation"];
-type Attachment = { key: string; filename: string; status: "uploading" | "ready" | "error"; documentId?: string; error?: string };
+type Attachment = {
+  key: string;
+  filename: string;
+  status: "pending" | "uploading" | "ready" | "error";
+  file?: File;
+  documentId?: string;
+  error?: string;
+};
 type Msg =
   | { role: "user"; text: string; files?: string[] }
   | { role: "assistant"; text: string; trace: ToolTrace[]; boundary: boolean; suggestions: string[]; actions?: ChatAction[] }
@@ -129,27 +136,42 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
     return () => document.body.classList.remove("chat-open");
   }, [open]);
 
-  /** Attach: upload + read right away, so Lotsi can use the document as context for the next message. */
-  const attach = useCallback(
-    async (list: FileList | File[] | null | undefined) => {
-      for (const file of Array.from(list ?? [])) {
-        const key = `${file.name}-${file.size}-${Date.now()}`;
-        setFiles((f) => [...f, { key, filename: file.name || "Foto", status: "uploading" }]);
-        const r = await uploadAndAnalyze(file);
-        setFiles((f) =>
-          f.map((a) =>
-            a.key !== key
-              ? a
-              : r.ok
-                ? { ...a, status: "ready", documentId: r.doc.document_id, filename: r.doc.filename }
-                : { ...a, status: "error", error: r.status === 403 ? `Dafür hat ${subjectName} keine Berechtigung erteilt.` : r.detail },
-          ),
-        );
-        if (r.ok) router.refresh();
+  /** Attach: only queue the files. They are uploaded and read when the message is sent (Enter / Senden), so the
+   *  person can still write a question – and several photos of one letter become ONE document. */
+  const attach = useCallback((list: FileList | File[] | null | undefined) => {
+    const added = Array.from(list ?? []).map((file, i) => ({
+      key: `${file.name}-${file.size}-${Date.now()}-${i}`,
+      filename: file.name || "Foto",
+      status: "pending" as const,
+      file,
+    }));
+    if (added.length) setFiles((f) => [...f.filter((a) => a.status !== "error"), ...added]);
+  }, []);
+
+  /** Upload the queued files: all photos together as one document, each PDF on its own. */
+  async function uploadPending(pending: Attachment[]): Promise<{ ids: string[]; names: string[]; error?: string }> {
+    const photos = pending.filter((a) => a.file && a.file.type !== "application/pdf");
+    const pdfs = pending.filter((a) => a.file && a.file.type === "application/pdf");
+    const groups: Attachment[][] = [...(photos.length ? [photos] : []), ...pdfs.map((p) => [p])];
+    const keys = new Set(pending.map((a) => a.key));
+    setFiles((f) => f.map((a) => (keys.has(a.key) ? { ...a, status: "uploading" } : a)));
+    const ids: string[] = [];
+    const names: string[] = [];
+    for (const g of groups) {
+      const r = await uploadAndAnalyze(g.length > 1 ? g.map((a) => a.file!) : g[0].file!);
+      const gk = new Set(g.map((a) => a.key));
+      if (!r.ok) {
+        const error = r.status === 403 ? `Dafür hat ${subjectName} keine Berechtigung erteilt. ${r.detail}` : r.detail;
+        setFiles((f) => f.map((a) => (gk.has(a.key) ? { ...a, status: "error", error } : a)));
+        return { ids, names, error };
       }
-    },
-    [router, subjectName],
-  );
+      ids.push(r.doc.document_id);
+      names.push(r.doc.filename);
+      setFiles((f) => f.map((a) => (gk.has(a.key) ? { ...a, status: "ready", documentId: r.doc.document_id } : a)));
+    }
+    router.refresh();
+    return { ids, names };
+  }
 
   function newConversation() {
     setConv(null);
@@ -187,16 +209,22 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
   }
 
   async function send(text: string) {
-    const ready = files.filter((f) => f.status === "ready" && f.documentId);
+    const pending = files.filter((f) => f.status === "pending");
+    if (busy || files.some((f) => f.status === "uploading") || (!text.trim() && !pending.length)) return;
+    setBusy(true);
+    const up = pending.length ? await uploadPending(pending) : { ids: [] as string[], names: [] as string[] };
+    if (up.error) {
+      setBusy(false);   // keep the text and the files; the error is shown above the input
+      return;
+    }
+    const n = pending.length;
     const message =
-      text.trim() || (ready.length ? `Bitte sieh dir ${ready.length > 1 ? "diese Dokumente" : "dieses Dokument"} an: ${ready.map((f) => f.filename).join(", ")}` : "");
-    if (!message || busy || files.some((f) => f.status === "uploading")) return;
+      text.trim() || `Bitte sieh dir ${up.ids.length > 1 ? "diese Dokumente" : n > 1 ? `dieses Dokument (${n} Fotos)` : "dieses Dokument"} an.`;
     setInput("");
     setFiles([]);
-    setMsgs((m) => [...m, { role: "user", text: message, files: ready.map((f) => f.filename) }]);
-    setBusy(true);
+    setMsgs((m) => [...m, { role: "user", text: message, files: pending.map((f) => f.filename) }]);
     const ctx = pageContext(pathname);
-    const documentIds = [...ready.map((f) => f.documentId!), ...(ctx.document_ids ?? [])];
+    const documentIds = [...up.ids, ...(ctx.document_ids ?? [])];
     const r = await bff<ChatResponse>("/api/agent/chat", {
       body: {
         message,
@@ -259,7 +287,7 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
   }
 
   const uploading = files.some((f) => f.status === "uploading");
-  const canSend = !busy && !uploading && (!!input.trim() || files.some((f) => f.status === "ready"));
+  const canSend = !busy && !uploading && (!!input.trim() || files.some((f) => f.status === "pending"));
 
   return (
     <aside
@@ -445,11 +473,19 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
             <label htmlFor="chat-input" className="sr-only">
               Nachricht an Lotsi
             </label>
-            <input
+            <textarea
               id="chat-input"
-              className="input"
+              className="input resize-none"
+              rows={Math.min(5, Math.max(1, input.split("\n").length))}
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                // Enter sends, Shift+Enter = new line (no send while an IME composition is open)
+                if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+                  e.preventDefault();
+                  e.currentTarget.form?.requestSubmit();
+                }
+              }}
               onPaste={(e) => {
                 const images = Array.from(e.clipboardData.files).filter((f) => f.type.startsWith("image/") || f.type === "application/pdf");
                 if (images.length) {
@@ -457,7 +493,7 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
                   attach(images);
                 }
               }}
-              placeholder={listening ? "Ich höre zu …" : files.length ? "Frage zum Dokument (optional) …" : "Ihre Frage …"}
+              placeholder={listening ? "Ich höre zu …" : files.length ? "Frage zum Dokument (optional) – Enter sendet" : "Ihre Frage …"}
               autoComplete="off"
             />
             <button className="btn-primary" disabled={!canSend}>
