@@ -84,10 +84,15 @@ async def _sync_case_steps(request: Request, ctx: Context) -> list[str]:
     today = date.today()
     eps = svc.confirmed(ctx.subject.id, today)
     steps = svc.case_steps_from(eps, today, svc.pflegegeld_involved(ctx.subject.id))
-    added = svc.add_case_steps(case, steps)
+    have = {s["id"] for s in case.get("steps", [])}
+    probe = {"steps": list(case.get("steps", []))}
+    added = svc.add_case_steps(probe, steps)  # builds step dicts in contract shape, idempotent by id
     if added:
-        # Workaround until cases offers POST /api/cases/{id}/steps (contract request): same document, same shape.
-        store.put("cases", case["id"], case, subject_id=ctx.subject.id)
+        new_steps = [s for s in probe["steps"] if s["id"] in added and s["id"] not in have]
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://internal") as c:
+            r = await c.post(f"/api/cases/{case['id']}/steps", headers=headers, json=new_steps)
+        if r.status_code != 200:
+            return []
         ctx.rule_ids.append(f"situation.case_steps:{case['id']}:{len(added)}")
     return added
 
