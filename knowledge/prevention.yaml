@@ -1,0 +1,162 @@
+# Prevention rules (owner: WS-D). Read ONLY by app/services/prevention/engine.py — deterministic, no LLM.
+#
+# Every rule carries its sources. Two kinds:
+#   brochure  — ÖGK Serviceratgeber 2026 (knowledge/extracted/serviceratgeber/pages.jsonl, printed page);
+#               `quote` must occur verbatim (whitespace-normalised) on that page — enforced by tests.
+#   external  — Österreichischer Impfplan (NOT in the provided data). Cited with URL + retrieval date and
+#               shown to the user as an external source. Intervals below are taken from the WS-D brief and
+#               were not re-verified against the live Impfplan PDF (see prevention README, Limitations).
+#
+# Rule fields:
+#   kind: vaccination | screening
+#   match: disease names (e-Impfpass, canonical, see impfpass.py) that count as a documented dose
+#   min_age / max_age: years at as_of (inclusive); sex: w | m (optional)
+#   logic: seasonal (annual autumn season) | interval (interval_years, interval_years_60plus)
+#          | info (show availability only; no due computation)
+#          | annual_screening | age_range_screening
+
+sources:
+  impfplan:
+    kind: external
+    label: "Impfplan Österreich 2025/2026 (externe Quelle, abgerufen am 05.11.2026)"
+    url: "https://www.sozialministerium.gv.at/impfplan"
+    retrieved: "2026-11-05"
+  sr23:
+    kind: brochure
+    label: "ÖGK Serviceratgeber 2026, S. 23"
+    page: 23
+    quote: "Die ÖGK lädt Personen ab 18 Jahren ein, zur kostenlosen Vorsorgeuntersuchung zu gehen."
+  sr24:
+    kind: brochure
+    label: "ÖGK Serviceratgeber 2026, S. 24"
+    page: 24
+    quote: "Zur Krebsvorsorge bzw. zur Früherkennung von Dickdarmkrebs wird bei der Vorsorgeuntersuchung ab dem 45. Lebensjahr alle zehn Jahre eine Darmspiegelung (Koloskopie) und bei jeder Vorsorgeuntersuchung ein Test auf okkultes (optisch nicht sichtbares) Blut im Stuhl angeboten."
+  sr25:
+    kind: brochure
+    label: "ÖGK Serviceratgeber 2026, S. 25"
+    page: 25
+    quote: "Bei Frauen zwischen 45 und 74 Jahren ist die e-card für die Mammografie alle zwei Jahre automatisch freigeschaltet."
+  sr25_optin:
+    kind: brochure
+    label: "ÖGK Serviceratgeber 2026, S. 25"
+    page: 25
+    quote: "Frauen zwischen 40 und 44 sowie ab 75 Jahren können sich bei der kostenlosen Service-line 0800 500 181 oder auf www. frueh-erkennen.at zum Programm anmelden."
+  sr32_free:
+    kind: brochure
+    label: "ÖGK Serviceratgeber 2026, S. 32"
+    page: 32
+    quote: "Das sind für Erwachsene z.B. Impfungen gegen Influenza („echte“ Grippe), COVID-19 sowie ab 60 Jahren gegen Gürtelrose und Pneumokokken."
+  sr32_fsme:
+    kind: brochure
+    label: "ÖGK Serviceratgeber 2026, S. 32"
+    page: 32
+    quote: "Für Zeckenimpfungen (FSME) können Sie einen Kostenzuschuss erhalten."
+  sr32_kids:
+    kind: brochure
+    label: "ÖGK Serviceratgeber 2026, S. 32"
+    page: 32
+    quote: "Für Kinder gibt es ein umfangreiches kostenloses Impfangebot."
+  sr32_scope:
+    kind: brochure
+    label: "ÖGK Serviceratgeber 2026, S. 32"
+    page: 32
+    quote: "Die ÖGK ist gesetzlich zwar grundsätzlich nicht für Impfungen zuständig, beteiligt sich aber finanziell an österreichweiten Impfprogrammen, die der Bevölkerung bestimmte kostenlose Impfungen ermöglichen."
+
+rules:
+  - id: influenza
+    kind: vaccination
+    title_de: "Influenza-Impfung (Grippe)"
+    match: [Influenza]
+    min_age: 18
+    logic: seasonal
+    season_start_month: 9      # a dose from September on counts for the season
+    due_from_month: 10         # recommended from October ("jährlich im Herbst")
+    recommendation_de: "Laut Impfplan wird die Grippeimpfung jährlich im Herbst empfohlen."
+    cost_de: "kostenlos im Rahmen des öffentlichen Impfprogramms"
+    sources: [impfplan, sr32_free]
+  - id: covid19
+    kind: vaccination
+    title_de: "COVID-19-Auffrischung"
+    match: [COVID-19]
+    min_age: 60
+    logic: seasonal
+    season_start_month: 9
+    due_from_month: 10
+    recommendation_de: "Laut Impfplan wird ab 60 Jahren (und für Risikogruppen) eine jährliche COVID-19-Auffrischung im Herbst empfohlen."
+    cost_de: "kostenlos im Rahmen des öffentlichen Impfprogramms"
+    sources: [impfplan, sr32_free]
+  - id: dtp_polio
+    kind: vaccination
+    title_de: "Diphtherie-Tetanus-Pertussis-Polio (Auffrischung)"
+    match: [Diphtherie, Tetanus, Pertussis, Polio]
+    min_age: 18
+    logic: interval
+    interval_years: 10
+    interval_years_60plus: 5
+    recommendation_de: "Laut Impfplan wird die Auffrischung alle 10 Jahre empfohlen, ab 60 Jahren alle 5 Jahre."
+    cost_de: "Impfungen für Erwachsene sind großteils privat zu bezahlen"
+    sources: [impfplan, sr32_scope]
+  - id: herpes_zoster
+    kind: vaccination
+    title_de: "Impfung gegen Gürtelrose (Herpes zoster)"
+    match: [Herpes zoster]
+    min_age: 60
+    logic: info
+    recommendation_de: "Ab 60 Jahren ist die Impfung gegen Gürtelrose im Rahmen eines Impfprogramms kostenlos."
+    cost_de: "kostenlos ab 60 Jahren"
+    sources: [sr32_free]
+  - id: pneumococcal
+    kind: vaccination
+    title_de: "Impfung gegen Pneumokokken"
+    match: [Pneumokokken]
+    min_age: 60
+    logic: info
+    recommendation_de: "Ab 60 Jahren ist die Impfung gegen Pneumokokken im Rahmen eines Impfprogramms kostenlos."
+    cost_de: "kostenlos ab 60 Jahren"
+    sources: [sr32_free]
+  - id: fsme
+    kind: vaccination
+    title_de: "FSME-Impfung (Zecken)"
+    match: [FSME]
+    min_age: 18
+    logic: info
+    recommendation_de: "Für die FSME-Impfung (Zeckenimpfung) gibt es einen Kostenzuschuss der ÖGK."
+    cost_de: "Kostenzuschuss der ÖGK möglich"
+    sources: [sr32_fsme]
+  - id: kinderimpfprogramm
+    kind: vaccination
+    title_de: "Kostenloses Kinderimpfprogramm"
+    match: []
+    max_age: 17
+    logic: info
+    recommendation_de: "Für Kinder gibt es ein umfangreiches kostenloses Impfangebot."
+    cost_de: "kostenlos"
+    sources: [sr32_kids]
+  - id: vu
+    kind: screening
+    title_de: "Vorsorgeuntersuchung"
+    min_age: 18
+    logic: annual_screening
+    recommendation_de: "Ab 18 Jahren ist die Vorsorgeuntersuchung einmal jährlich kostenlos möglich."
+    cost_de: "kostenlos"
+    sources: [sr23]
+  - id: darmkrebs
+    kind: screening
+    title_de: "Darmkrebs-Früherkennung im Rahmen der Vorsorgeuntersuchung"
+    min_age: 45
+    logic: annual_screening
+    recommendation_de: "Ab 45 Jahren werden bei der Vorsorgeuntersuchung alle zehn Jahre eine Darmspiegelung und bei jeder Vorsorgeuntersuchung ein Test auf Blut im Stuhl angeboten."
+    cost_de: "kostenlos im Rahmen der Vorsorgeuntersuchung"
+    sources: [sr24]
+  - id: mammografie
+    kind: screening
+    title_de: "Mammografie (Brustkrebs-Früherkennungsprogramm)"
+    sex: w
+    min_age: 40
+    logic: age_range_screening
+    range_min: 45
+    range_max: 74
+    recommendation_de: "Bei Frauen zwischen 45 und 74 Jahren ist die e-card für die Mammografie alle zwei Jahre automatisch freigeschaltet."
+    optin_de: "Frauen zwischen 40 und 44 sowie ab 75 Jahren können sich bei der kostenlosen Serviceline 0800 500 181 oder auf www.frueh-erkennen.at zum Programm anmelden."
+    cost_de: "kostenlos"
+    sources: [sr25, sr25_optin]

@@ -3,7 +3,7 @@ API := services/api
 WEB := apps/web
 UV  := uv run --project $(CURDIR)/$(API)
 
-.PHONY: help setup dev api web test test-api test-extract eval lint extract openapi reset smoke-llm
+.PHONY: help setup dev api web seed test test-api test-extract eval lint extract openapi reset smoke-llm
 
 help:             ## list targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*##/ —/'
@@ -41,6 +41,9 @@ extract:          ## docs/ (raw, gitignored) -> knowledge/extracted/ (determinis
 openapi:          ## export OpenAPI spec + TS types for the web app
 	cd $(API) && LLM_MODE=fake uv run python -c "import json; from app.main import app; print(json.dumps(app.openapi(), ensure_ascii=False, indent=2))" > $(CURDIR)/$(WEB)/lib/openapi.json
 	cd $(WEB) && npx --yes openapi-typescript@7.4.4 lib/openapi.json -o lib/api-types.ts
+
+seed:             ## load demo documents (from docs/) + import Stefan's e-Impfpass into the local DB
+	cd $(API) && RAW_DATA_DIR=$(CURDIR)/docs uv run python -m app.services.documents.seed_demo
 
 reset:            ## wipe local DB (var/)
 	rm -rf var/*.db

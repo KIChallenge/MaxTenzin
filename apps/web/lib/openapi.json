@@ -813,14 +813,120 @@
         }
       }
     },
+    "/api/documents/{document_id}/file": {
+      "get": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "Download the uploaded PDF",
+        "operationId": "get_file_api_documents__document_id__file_get",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/pdf": {}
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/benefits": {
       "get": {
         "tags": [
           "benefits"
         ],
         "summary": "Benefit catalog",
-        "operationId": "catalog_api_benefits_get",
+        "operationId": "list_catalog_api_benefits_get",
         "parameters": [
+          {
+            "name": "area",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Area"
+            }
+          },
           {
             "name": "Authorization",
             "in": "header",
@@ -884,7 +990,160 @@
                   "items": {
                     "$ref": "#/components/schemas/Benefit"
                   },
-                  "title": "Response Catalog Api Benefits Get"
+                  "title": "Response List Catalog Api Benefits Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/benefits/rezeptgebuehr/check": {
+      "get": {
+        "tags": [
+          "benefits"
+        ],
+        "summary": "Rezeptgebühr calculator: befreit / Obergrenze 2 % / nicht befreit",
+        "operationId": "rezeptgebuehr_check_api_benefits_rezeptgebuehr_check_get",
+        "parameters": [
+          {
+            "name": "net_income_monthly",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "title": "Net Income Monthly"
+            }
+          },
+          {
+            "name": "household",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(alleinstehend|paar)$",
+              "default": "alleinstehend",
+              "title": "Household"
+            }
+          },
+          {
+            "name": "children_count",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Children Count"
+            }
+          },
+          {
+            "name": "chronic_illness_expenses",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Chronic Illness Expenses"
+            }
+          },
+          {
+            "name": "receives_ausgleichszulage",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Receives Ausgleichszulage"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EligibilityResult"
+                  },
+                  "title": "Response Rezeptgebuehr Check Api Benefits Rezeptgebuehr Check Get"
                 }
               }
             }
@@ -1104,6 +1363,24 @@
         "operationId": "overview_api_prevention_overview_get",
         "parameters": [
           {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Stichtag (ISO date), default today",
+              "title": "As Of"
+            },
+            "description": "Stichtag (ISO date), default today"
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "required": false,
@@ -1196,6 +1473,24 @@
               "type": "string",
               "title": "Document Id"
             }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Stichtag (ISO date), default today",
+              "title": "As Of"
+            },
+            "description": "Stichtag (ISO date), default today"
           },
           {
             "name": "Authorization",
@@ -1368,7 +1663,7 @@
         "tags": [
           "forms"
         ],
-        "summary": "Definition",
+        "summary": "One form definition (wizard + agent)",
         "operationId": "definition_api_forms_definitions__form_id__get",
         "parameters": [
           {
@@ -1475,6 +1770,24 @@
             }
           },
           {
+            "name": "document_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional analysed document for prefill",
+              "title": "Document Id"
+            },
+            "description": "Optional analysed document for prefill"
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "required": false,
@@ -1556,7 +1869,7 @@
         "tags": [
           "forms"
         ],
-        "summary": "Get Session",
+        "summary": "Current session values",
         "operationId": "get_session_api_forms_sessions__session_id__get",
         "parameters": [
           {
@@ -1752,8 +2065,112 @@
         "tags": [
           "forms"
         ],
-        "summary": "Only missing required fields",
+        "summary": "Only missing required fields (optionally also recommended ones)",
         "operationId": "next_questions_api_forms_sessions__session_id__next_questions_get",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "include_optional",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Include Optional"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NextQuestions"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/forms/sessions/{session_id}/preview": {
+      "get": {
+        "tags": [
+          "forms"
+        ],
+        "summary": "Review step: label, value and source of every filled field",
+        "operationId": "preview_api_forms_sessions__session_id__preview_get",
         "parameters": [
           {
             "name": "session_id",
@@ -1823,7 +2240,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NextQuestions"
+                  "$ref": "#/components/schemas/FormPreview"
                 }
               }
             }
@@ -1915,9 +2332,7 @@
           "200": {
             "description": "Successful Response",
             "content": {
-              "application/json": {
-                "schema": {}
-              }
+              "application/pdf": {}
             }
           },
           "422": {
@@ -2544,6 +2959,40 @@
             }
           },
           {
+            "name": "provider",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Provider"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 100,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "required": false,
@@ -2647,6 +3096,8 @@
             "required": false,
             "schema": {
               "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
               "default": 20,
               "title": "Limit"
             }
@@ -2715,6 +3166,101 @@
                     "$ref": "#/components/schemas/Medication"
                   },
                   "title": "Response Search Api Medications Search Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/medications/{pharma_nr}": {
+      "get": {
+        "tags": [
+          "medications"
+        ],
+        "summary": "One EKO pack by Pharmazentralnummer",
+        "operationId": "get_medication_api_medications__pharma_nr__get",
+        "parameters": [
+          {
+            "name": "pharma_nr",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{1,7}$",
+              "title": "Pharma Nr"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Subject-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Subject-Id"
+            }
+          },
+          {
+            "name": "X-Via",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ui",
+              "title": "X-Via"
+            }
+          },
+          {
+            "name": "X-Agent-Tool",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Agent-Tool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Medication"
                 }
               }
             }
@@ -2840,7 +3386,7 @@
         "tags": [
           "legal"
         ],
-        "summary": "Keyword search (naive; WS-L replaces with FTS5)",
+        "summary": "Full-text search (SQLite FTS5, BM25, core-law boost)",
         "operationId": "search_api_legal_search_get",
         "parameters": [
           {
@@ -2874,6 +3420,8 @@
             "required": false,
             "schema": {
               "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
               "default": 10,
               "title": "Limit"
             }
@@ -3959,6 +4507,12 @@
             "type": "string",
             "title": "Extraction Mode",
             "default": "live"
+          },
+          "dropped_unverified": {
+            "type": "integer",
+            "title": "Dropped Unverified",
+            "description": "Recommendations discarded because their quote was not found on the stated page",
+            "default": 0
           }
         },
         "type": "object",
@@ -4373,6 +4927,60 @@
           "section"
         ],
         "title": "FormField"
+      },
+      "FormPreview": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "form_id": {
+            "type": "string",
+            "title": "Form Id"
+          },
+          "title_de": {
+            "type": "string",
+            "title": "Title De"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PreviewItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "missing_required": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Required"
+          },
+          "notice_de": {
+            "type": "string",
+            "title": "Notice De"
+          },
+          "submit_info_de": {
+            "type": "string",
+            "title": "Submit Info De"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "form_id",
+          "title_de",
+          "status",
+          "items",
+          "missing_required",
+          "notice_de",
+          "submit_info_de"
+        ],
+        "title": "FormPreview"
       },
       "FormSession": {
         "properties": {
@@ -4940,6 +5548,80 @@
         ],
         "title": "PreventionStatus"
       },
+      "PreviewItem": {
+        "properties": {
+          "field_id": {
+            "type": "string",
+            "title": "Field Id"
+          },
+          "label_de": {
+            "type": "string",
+            "title": "Label De"
+          },
+          "section": {
+            "type": "string",
+            "title": "Section"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed",
+            "default": false
+          },
+          "required": {
+            "type": "boolean",
+            "title": "Required",
+            "default": false
+          },
+          "missing": {
+            "type": "boolean",
+            "title": "Missing",
+            "default": false
+          },
+          "readonly_reason_de": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Readonly Reason De"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field_id",
+          "label_de",
+          "section",
+          "value"
+        ],
+        "title": "PreviewItem"
+      },
       "Recommendation": {
         "properties": {
           "id": {
@@ -5098,6 +5780,18 @@
             ],
             "title": "In Force",
             "description": "In-force date / Fassung for legal sources"
+          },
+          "retrieved": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieved",
+            "description": "Retrieval date (ISO) for external web sources"
           }
         },
         "type": "object",

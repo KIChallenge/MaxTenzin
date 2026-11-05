@@ -1,0 +1,93 @@
+# Responsible offices ("Wer ist zuständig?") — owner: WS-B. Every entry cites where address/phone come from.
+# Sources: ÖGK Serviceratgeber 2026 S. 82, 94–96 (Wien); PVA PAL 080 S. 8 (Landesstellen); FSW Antrag auf Förderung S. 1.
+# Topics are benefit ids (knowledge/benefits.yaml) plus a few generic tags; the directory filters by them.
+# Scope: Wien first (demo region); PVA for all Bundesländer.
+
+topic_sets:
+  oegk_kundenservice: &oegk [oegk_kundenservice, rezeptgebuehr, rezeptgebuehrenbefreiung, rezeptgebuehrenobergrenze,
+                             fahrtkostenzuschuss, krankentransport, hauskrankenpflege, unterstuetzungsfonds,
+                             reha, reha_onko, kinderbetreuungsgeld, eltern_kind_pass]
+  oegk_gz: &gz [gesundheitszentrum, vorsorgeuntersuchung]
+  pva: &pva [pflegegeld, pflegeberatung, pflege, reha, reha_onko, pension]
+
+offices:
+  # ---------------------------------------------------------------- ÖGK Wien – Kundenservicestellen (S. 94–96)
+  - {id: oegk-ks-leopoldstadt, name: ÖGK Kundenservice Leopoldstadt, provider: ÖGK, topics: *oegk,
+     address: Lassallestraße 9b, zip: "1020", city: Wien, phone: "+43 5 0766-118000", web: www.oegk.at, page: 94}
+  - {id: oegk-ks-mariahilf, name: ÖGK Kundenservice Mariahilf, provider: ÖGK, topics: *oegk,
+     address: Mariahilfer Straße 85-87, zip: "1060", city: Wien, phone: "+43 5 0766-118000", web: www.oegk.at, page: 94}
+  - {id: oegk-ks-favoriten, name: ÖGK Kundenservice Favoriten, provider: ÖGK, topics: *oegk,
+     address: Ada-Christen-Gasse 12, zip: "1100", city: Wien, phone: "+43 5 0766-118000", web: www.oegk.at, page: 95}
+  - {id: oegk-ks-wienerberg, name: ÖGK Kundenservice Wienerberg, provider: ÖGK, topics: *oegk,
+     address: Wienerbergstraße 15-19, zip: "1100", city: Wien, phone: "+43 5 0766-110", web: www.oegk.at, page: 95}
+  - {id: oegk-ks-simmering, name: ÖGK Kundenservice Simmering, provider: ÖGK, topics: *oegk,
+     address: "Guglgasse 8, Gasometer B", zip: "1110", city: Wien, phone: "+43 5 0766-118000", web: www.oegk.at, page: 95}
+  - {id: oegk-ks-meidling, name: ÖGK Kundenservice Meidling, provider: ÖGK, topics: *oegk,
+     address: "Vio Plaza, Schönbrunner Straße 230", zip: "1120", city: Wien, phone: "+43 5 0766-118000",
+     web: www.oegk.at, page: 95}
+  - {id: oegk-ks-penzing, name: ÖGK Kundenservice Penzing, provider: ÖGK, topics: *oegk,
+     address: Hütteldorfer Straße 112, zip: "1140", city: Wien, phone: "+43 5 0766-118000", web: www.oegk.at, page: 95}
+  - {id: oegk-ks-doebling, name: ÖGK Kundenservice Döbling, provider: ÖGK, topics: *oegk,
+     address: Heiligenstädter Straße 31, zip: "1190", city: Wien, phone: "+43 5 0766-118000", web: www.oegk.at, page: 96}
+  - {id: oegk-ks-floridsdorf, name: ÖGK Kundenservice Floridsdorf, provider: ÖGK, topics: *oegk,
+     address: Franz-Jonas-Platz 11, zip: "1210", city: Wien, phone: "+43 5 0766-118000", web: www.oegk.at, page: 96}
+  - {id: oegk-ks-aspern, name: ÖGK Kundenservice Aspern, provider: ÖGK, topics: *oegk,
+     address: Erzherzog-Karl-Straße 250, zip: "1220", city: Wien, phone: "+43 5 0766-118000", web: www.oegk.at, page: 96}
+  - {id: oegk-ks-kagran, name: ÖGK Kundenservice Kagran, provider: ÖGK, topics: *oegk,
+     address: Kagraner Platz 1, zip: "1220", city: Wien, phone: "+43 5 0766-118000", web: www.oegk.at, page: 96}
+  - {id: oegk-ks-kbg-wien, name: ÖGK Kundenservice Kinderbetreuungsgeld Wien, provider: ÖGK,
+     topics: [kinderbetreuungsgeld, familie],
+     address: Kagraner Platz 1, zip: "1220", city: Wien, phone: "+43 5 0766-1114070", web: www.oegk.at, page: 96}
+
+  # ---------------------------------------------------------------- ÖGK Wien – Gesundheitszentren (S. 94–96)
+  - {id: oegk-gz-landstrasse, name: ÖGK Gesundheitszentrum Landstraße, provider: ÖGK, topics: *gz,
+     address: Strohgasse 28, zip: "1030", city: Wien, phone: "+43 5 0766-1140300", web: www.oegk.at/gz, page: 94}
+  - {id: oegk-gz-mariahilf, name: ÖGK Gesundheitszentrum Mariahilf, provider: ÖGK, topics: *gz,
+     address: Mariahilfer Straße 85-87, zip: "1060", city: Wien, phone: "+43 5 0766-1140600", web: www.oegk.at/gz,
+     page: 94}
+  - {id: oegk-gz-favoriten, name: ÖGK Gesundheitszentrum Favoriten, provider: ÖGK, topics: *gz,
+     address: Wienerbergstraße 13, zip: "1100", city: Wien, phone: "+43 5 0766-111722", web: www.oegk.at/gz, page: 95}
+  - {id: oegk-gz-floridsdorf, name: ÖGK Gesundheitszentrum Floridsdorf, provider: ÖGK, topics: *gz,
+     address: Karl-Aschenbrenner-Gasse 3, zip: "1210", city: Wien, phone: "+43 5 0766-1140200", web: www.oegk.at/gz,
+     page: 96}
+
+  # ---------------------------------------------------------------- PVA Landesstellen (PAL 080, S. 8)
+  - {id: pva-wien, name: PVA Landesstelle Wien, provider: PVA, topics: *pva, address: Friedrich-Hillegeist-Straße 1,
+     zip: "1020", city: Wien, phone: "+43 5 0303", email: pva-lsw@pv.at, web: www.pv.at, form: pva_pflegegeld_pal080}
+  - {id: pva-wien-kundenzone, name: PVA Landesstelle Wien – Kundenzone, provider: PVA, topics: *pva,
+     address: Ghegastraße 1, zip: "1030", city: Wien, phone: "+43 5 0303-27170", email: pva-lsw@pv.at, web: www.pv.at,
+     form: pva_pflegegeld_pal080}
+  - {id: pva-kaernten, name: PVA Landesstelle Kärnten, provider: PVA, topics: *pva, address: Südbahngürtel 10,
+     zip: "9020", city: Klagenfurt am Wörthersee, phone: "+43 5 0303-35170", email: pva-lsk@pv.at, web: www.pv.at,
+     form: pva_pflegegeld_pal080}
+  - {id: pva-noe, name: PVA Landesstelle Niederösterreich, provider: PVA, topics: *pva, address: Kremser Landstraße 5,
+     zip: "3100", city: St. Pölten, phone: "+43 5 0303-32170", email: pva-lsn@pv.at, web: www.pv.at,
+     form: pva_pflegegeld_pal080}
+  - {id: pva-salzburg, name: PVA Landesstelle Salzburg, provider: PVA, topics: *pva, address: Schallmooser Hauptstraße 11,
+     zip: "5020", city: Salzburg, phone: "+43 5 0303-37170", email: pva-lss@pv.at, web: www.pv.at,
+     form: pva_pflegegeld_pal080}
+  - {id: pva-burgenland, name: PVA Landesstelle Burgenland, provider: PVA, topics: *pva, address: Ödenburger Straße 8,
+     zip: "7000", city: Eisenstadt, phone: "+43 5 0303-33170", email: pva-lsb@pv.at, web: www.pv.at,
+     form: pva_pflegegeld_pal080}
+  - {id: pva-tirol, name: PVA Landesstelle Tirol, provider: PVA, topics: *pva, address: Ing.-Etzel-Straße 13,
+     zip: "6020", city: Innsbruck, phone: "+43 5 0303-38170", email: pva-lst@pv.at, web: www.pv.at,
+     form: pva_pflegegeld_pal080}
+  - {id: pva-ooe, name: PVA Landesstelle Oberösterreich, provider: PVA, topics: *pva,
+     address: "Terminal Tower, Bahnhofplatz 8", zip: "4020", city: Linz, phone: "+43 5 0303-36170", email: pva-lso@pv.at,
+     web: www.pv.at, form: pva_pflegegeld_pal080}
+  - {id: pva-vorarlberg, name: PVA Landesstelle Vorarlberg, provider: PVA, topics: *pva, address: Zollgasse 6,
+     zip: "6850", city: Dornbirn, phone: "+43 5 0303-39170", email: pva-lsv@pv.at, web: www.pv.at,
+     form: pva_pflegegeld_pal080}
+  - {id: pva-steiermark, name: PVA Landesstelle Steiermark, provider: PVA, topics: *pva, address: Eggenberger Straße 3,
+     zip: "8020", city: Graz, phone: "+43 5 0303-34170", email: pva-lsg@pv.at, web: www.pv.at,
+     form: pva_pflegegeld_pal080}
+
+  # ---------------------------------------------------------------- Wien: FSW (Antrag auf Förderung, S. 1)
+  - {id: fsw, name: Fonds Soziales Wien – Kund:innenservice, provider: FSW,
+     topics: [fsw_mobile_pflege, mobile_pflege, pflege, pflegeberatung], address: Guglgasse 7–9, zip: "1030",
+     city: Wien, phone: "01 24 5 24", email: kundinnenservice@fsw.at, web: www.fsw.at, form: fsw_foerderung}
+
+  # ---------------------------------------------------------------- Österreichweit: 1450 (Serviceratgeber S. 82)
+  - {id: tel-1450, name: Telefonische Gesundheitsberatung 1450, provider: "1450",
+     topics: [gesundheitsberatung, akut], address: telefonisch (ohne Vorwahl, rund um die Uhr), zip: "", city: Österreich,
+     phone: "1450", page: 82}

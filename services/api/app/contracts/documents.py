@@ -52,6 +52,7 @@ class DocumentAnalysis(BaseModel):
         "Ich gebe nur wieder, was im Dokument ausdrücklich steht. Medizinische Fragen klären Sie bitte mit Ihrer Ärztin bzw. Ihrem Arzt.",
     )
     extraction_mode: str = "live"   # live | golden | fake
+    dropped_unverified: int = Field(0, description="Recommendations discarded because their quote was not found on the stated page")
 
 
 class DocumentSummary(BaseModel):

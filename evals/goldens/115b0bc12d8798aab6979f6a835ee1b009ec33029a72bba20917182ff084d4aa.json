@@ -1,0 +1,24 @@
+{
+  "sha256": "115b0bc12d8798aab6979f6a835ee1b009ec33029a72bba20917182ff084d4aa",
+  "source_filename": "Befund bildgebende Diagnostik.pdf",
+  "demo_document_id": "doc-stefan-bildgebung",
+  "demo_subject_id": "stefan",
+  "verified": "Hand-checked 2026-11-05 against pypdf page text; every quote verified verbatim (whitespace-normalised) on its page.",
+  "analysis": {
+    "filename": "Befund bildgebende Diagnostik.pdf",
+    "doc_type": "imaging_report",
+    "pages": 1,
+    "person": {
+      "first_name": "Stefan",
+      "last_name": "Testpatient",
+      "birth_date": "1986-03-04",
+      "address": null,
+      "insurer": null,
+      "living_situation": null
+    },
+    "recommendations": [],
+    "open_tasks": [],
+    "notice_de": "Ich gebe nur wieder, was im Dokument ausdrücklich steht. Medizinische Fragen klären Sie bitte mit Ihrer Ärztin bzw. Ihrem Arzt.",
+    "extraction_mode": "golden"
+  }
+}

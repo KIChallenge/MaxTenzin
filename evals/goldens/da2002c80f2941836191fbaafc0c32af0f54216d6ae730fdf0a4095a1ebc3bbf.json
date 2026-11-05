@@ -1,0 +1,89 @@
+{
+  "sha256": "da2002c80f2941836191fbaafc0c32af0f54216d6ae730fdf0a4095a1ebc3bbf",
+  "source_filename": "Impfpass.pdf",
+  "demo_document_id": "doc-stefan-impfpass",
+  "demo_subject_id": "stefan",
+  "verified": "Hand-checked 2026-11-05 against pypdf page text; every quote verified verbatim (whitespace-normalised) on its page.",
+  "analysis": {
+    "filename": "Impfpass.pdf",
+    "doc_type": "vaccination_record",
+    "pages": 2,
+    "person": {
+      "first_name": "Stefan",
+      "last_name": "Testpatient",
+      "birth_date": "1987-03-22",
+      "address": null,
+      "insurer": null,
+      "living_situation": null
+    },
+    "recommendations": [],
+    "open_tasks": [],
+    "notice_de": "Ich gebe nur wieder, was im Dokument ausdrücklich steht. Medizinische Fragen klären Sie bitte mit Ihrer Ärztin bzw. Ihrem Arzt.",
+    "extraction_mode": "golden"
+  },
+  "vaccinations": [
+    {
+      "disease": "COVID-19",
+      "date": "2025-11-03",
+      "vaccine": "COMIRNATY LP.8.1 INJ30 10x6",
+      "dose_label": "Auffrischung",
+      "place": "1020 Wien"
+    },
+    {
+      "disease": "COVID-19",
+      "date": "2022-12-04",
+      "vaccine": "COMIRNATY COV19 BA4/5 10x6",
+      "dose_label": "Auffrischung",
+      "place": "1220 Wien"
+    },
+    {
+      "disease": "COVID-19",
+      "date": "2021-12-09",
+      "vaccine": "PFIZER-BION COV19 KONZ30 1x6",
+      "dose_label": "Dosis 3",
+      "place": "1220 Wien"
+    },
+    {
+      "disease": "COVID-19",
+      "date": "2021-07-08",
+      "vaccine": "PFIZER-BION COV19 KONZ30 1x6",
+      "dose_label": "Dosis 2",
+      "place": "1180 Wien"
+    },
+    {
+      "disease": "COVID-19",
+      "date": "2021-06-03",
+      "vaccine": "PFIZER-BION COV19 KONZ30 1x6",
+      "dose_label": "Dosis 1",
+      "place": "1180 Wien"
+    },
+    {
+      "disease": "Influenza",
+      "date": "2025-11-03",
+      "vaccine": "INFLUVAC TRI FSPR 0,5ML O.K.",
+      "dose_label": "Auffrischung",
+      "place": "1020 Wien"
+    },
+    {
+      "disease": "Influenza",
+      "date": "2024-11-06",
+      "vaccine": "INFLUVAC TETRA FSPR0,5ML O.K",
+      "dose_label": "Auffrischung",
+      "place": "1130 Wien"
+    },
+    {
+      "disease": "Influenza",
+      "date": "2023-11-22",
+      "vaccine": "VAXIGRIP TETRA FSPR O.K",
+      "dose_label": "Auffrischung",
+      "place": "2620 Neunkirchen"
+    },
+    {
+      "disease": "Influenza",
+      "date": "2021-11-17",
+      "vaccine": "VAXIGRIP TETRA FSPR 0,5ML",
+      "dose_label": "Dosis 1",
+      "place": "1160 Wien"
+    }
+  ]
+}

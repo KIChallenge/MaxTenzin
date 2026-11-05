@@ -1,0 +1,113 @@
+# ÖGK – Antrag auf Zuschuss zu Fahrtkosten für Versicherte mit Rezeptgebührenbefreiung (ÖGK-VM2/0023-11/V01).
+# The treatment confirmation boxes (stamp + signature per trip) are filled by the treating facility, not mapped.
+form_id: oegk_fahrtkosten_wien
+title_de: Antrag auf Zuschuss zu Fahrtkosten (ÖGK)
+provider: ÖGK
+form_version: ÖGK-VM2/0023-11/V01
+submit_info_de: >-
+  Pro Fahrt von der Behandlungsstelle abstempeln lassen, Belege in Kopie beilegen, unterschreiben und an die ÖGK
+  (Wienerbergstraße 15–19, 1100 Wien) senden. Der Antrag wird nicht automatisch eingereicht.
+sections:
+  - Patient:in
+  - Behandlung und Fahrt
+  - Auszahlung und Unterschrift
+unmapped_pdf_fields: {}
+fields:
+  - id: Patient/in
+    label_de: Patient:in
+    type: text
+    section: Patient:in
+    required: true
+    prefill: profile.full_name_last_first
+    ask_hint_de: Familienname und Vorname der Patientin bzw. des Patienten?
+  - id: Versicherungsnummer1
+    label_de: Patient:in – Versicherungsnummer
+    type: text
+    section: Patient:in
+    required: true
+    compact: true
+    prefill: profile.svnr_digits
+    ask_hint_de: Versicherungsnummer (10 Ziffern, steht auf der e-card)?
+  - id: Adresse
+    label_de: Adresse (Straße, Postleitzahl, Ort)
+    type: text
+    section: Patient:in
+    required: true
+    prefill: profile.address_line
+    ask_hint_de: Adresse der Patientin bzw. des Patienten?
+  - id: patient_ist_mitversichert
+    label_de: Ist die Patientin bzw. der Patient bei jemand anderem mitversichert?
+    type: choice
+    section: Patient:in
+    pdf_field: null
+    options: [nein, ja]
+    recommended: true
+    ask_hint_de: Ist die Patientin bzw. der Patient selbst versichert oder bei einer anderen Person mitversichert?
+  - id: Versicherte/r
+    label_de: Versicherte:r (bei Mitversicherung)
+    type: text
+    section: Patient:in
+    required: true
+    when: {field: patient_ist_mitversichert, equals: ja}
+    ask_hint_de: Bei wem ist die Person mitversichert (Name)?
+  - id: Versicherungsnummer2
+    label_de: Versicherte:r – Versicherungsnummer
+    type: text
+    section: Patient:in
+    required: true
+    compact: true
+    when: {field: patient_ist_mitversichert, equals: ja}
+    ask_hint_de: Versicherungsnummer der versicherten Person?
+  - id: Behandler/in
+    label_de: Bei wem fand die Behandlung statt? (Name, Adresse)
+    type: text
+    section: Behandlung und Fahrt
+    required: true
+    ask_hint_de: Wo bzw. bei wem fand die Behandlung statt (Name und Adresse)?
+  - id: Art der Behandlung
+    label_de: Art der Behandlung bzw. Reha-Maßnahme
+    type: text
+    section: Behandlung und Fahrt
+    required: true
+    ask_hint_de: Welche Behandlung war es (z. B. Bestrahlung, Dialyse, Reha)? Bitte so angeben, wie es auf der Terminbestätigung steht.
+  - id: Transportmittel
+    label_de: Transportmittel
+    type: choice
+    section: Behandlung und Fahrt
+    required: true
+    options: [Öffentliches Verkehrsmittel, Taxi, Privater PKW]
+    pdf_options: {Öffentliches Verkehrsmittel: /Auswahl1, Taxi: /Auswahl2, Privater PKW: /Auswahl3}
+    ask_hint_de: Wie sind Sie gefahren – öffentlich, mit dem Taxi oder mit dem eigenen Auto?
+  - id: Tatsächliche Kosten
+    label_de: Tatsächliche Kosten (Euro)
+    type: text
+    section: Behandlung und Fahrt
+    required: true
+    ask_hint_de: Wie viel hat die Fahrt tatsächlich gekostet (in Euro)? Belege bitte in Kopie beilegen.
+  - id: Begleitperson
+    label_de: Begleitperson
+    type: choice
+    section: Behandlung und Fahrt
+    required: true
+    options: [Ja, Nein]
+    pdf_options: {Ja: /Auswahl1, Nein: /Auswahl2}
+    ask_hint_de: Wurde die Person bei der Fahrt begleitet?
+  - id: Grund
+    label_de: Warum wurden Sie begleitet?
+    type: textarea
+    section: Behandlung und Fahrt
+    required: true
+    when: {field: Begleitperson, equals: Ja}
+    ask_hint_de: Warum war eine Begleitung nötig? (Die Notwendigkeit muss ärztlich bestätigt sein.)
+  - id: IBAN
+    label_de: IBAN für die Überweisung des Zuschusses
+    type: text
+    section: Auszahlung und Unterschrift
+    required: true
+    compact: true
+    ask_hint_de: Auf welches Konto (IBAN) soll der Zuschuss überwiesen werden?
+  - id: Ort/Datum
+    label_de: Ort / Datum (neben der Unterschrift)
+    type: text
+    section: Auszahlung und Unterschrift
+    prefill: system.city_today
