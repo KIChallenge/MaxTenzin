@@ -2,6 +2,7 @@ import { BookOpen, Coins, FileText, Link2, Paperclip, Pill, Scale, type LucideIc
 import Link from "next/link";
 import type { SourceRef } from "@/lib/types";
 import { fmtDate } from "@/lib/labels";
+import { ChipTooltip } from "./ChipTooltip";
 
 const KIND_ICON: Record<string, LucideIcon> = {
   law: Scale,
@@ -74,8 +75,18 @@ export function SourceChip({ source, documents }: { source: SourceRef; documents
     </>
   );
   const label = `${href ? "Quelle öffnen" : "Quelle"}: ${source.label}. ${detail.join(". ")}`;
+  const tip = (
+    <>
+      <strong className="block">{source.label}</strong>
+      {detail.map((d) => (
+        <span key={d} className="mt-1 block">
+          {d}
+        </span>
+      ))}
+    </>
+  );
   return (
-    <span className="group/chip relative inline-flex align-middle">
+    <ChipTooltip tip={tip}>
       {!href ? (
         <span tabIndex={0} className={cls} aria-label={label}>
           {content}
@@ -89,18 +100,7 @@ export function SourceChip({ source, documents }: { source: SourceRef; documents
           {content}
         </a>
       )}
-      <span
-        role="tooltip"
-        className="pointer-events-none invisible absolute bottom-full left-0 z-30 mb-2 w-72 rounded-lg bg-ink p-3 text-sm font-normal text-white opacity-0 shadow-lg transition-opacity group-focus-within/chip:visible group-focus-within/chip:opacity-100 group-hover/chip:visible group-hover/chip:opacity-100"
-      >
-        <strong className="block">{source.label}</strong>
-        {detail.map((d) => (
-          <span key={d} className="mt-1 block">
-            {d}
-          </span>
-        ))}
-      </span>
-    </span>
+    </ChipTooltip>
   );
 }
 

@@ -47,6 +47,7 @@ Merksatz für die Folie: **„Erst die Prozesse, dann die KI.“**
 - **„Halluziniert das trotzdem?“** – Im Ausdruck kann sich das Modell irren; bei Entscheidungen, Beträgen und Quellen nicht, weil die nur von Diensten kommen und die Antwort geprüft wird. Die Evals messen genau das.
 - **„Ist das nicht einfach ein Chatbot mit Datenbank?“** – Nein: Die Dienste sind dieselben wie für die Oberfläche, mit denselben Rechten. Die KI ist die oberste Schicht, nicht das Fundament.
 - **„Was passiert mit einem besseren Modell?“** – Lotsi wird besser im Verstehen und Erklären. Die Entscheidungen bleiben gleich – das ist gewollt.
+- **„Warum druckt man das Formular noch aus?“** – Im Prototyp endet es bewusst als Entwurf. Im Betrieb geht der Antrag per Schnittstelle direkt an die zuständige Stelle (z. B. meinSV, PVA-Onlineformular) – **abgeschickt wird aber immer mit dem Klick der Person, nie von Lotsi.** Status und Rückfragen der Stelle landen dann in „Mein Fall“.
 - **„Was war am schwierigsten?“** – Nicht die KI, sondern die Daten und Prozesse: richtige Quelle, richtige Fassung, richtige Formularfelder, richtige Rechte.
 
 ## Offen vor dem Pitch

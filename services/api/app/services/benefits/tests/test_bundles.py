@@ -162,3 +162,15 @@ def test_finanzielle_unterstuetzung(client):
     assert b["id"] == "finanzielle_unterstuetzung"
     assert it["sozialhilfe_wien"]["source"]["kind"] == "external"
     assert b["questions_de"][0].startswith("Wie hoch ist das monatliche Nettoeinkommen")
+
+
+def test_imaging_report_or_impfpass_is_no_hospital_stay(client):
+    from app.core.db import store
+    from app.services.documents.storage import DOCS
+
+    for did, typ in (("doc-t-roentgen", "imaging_report"), ("doc-t-impfpass", "vaccination_record")):
+        store.put(DOCS, did, {"document_id": did, "filename": f"{did}.pdf", "doc_type": typ, "owner_id": "stefan"},
+                  subject_id="stefan")
+    r = client.post("/api/benefits/bundles/match", headers=auth("stefan"),
+                    json={"document_ids": ["doc-t-roentgen", "doc-t-impfpass"], "facts": {}})
+    assert r.status_code == 200 and r.json() is None

@@ -166,6 +166,24 @@ def bundle_catalog(ctx: Context = Depends(require())):
     return out
 
 
+_HOSPITAL_DOC_TYPES = {"discharge_letter", "other"}
+
+
+def _has_hospital_letter(ctx: Context, document_ids: list[str]) -> bool:
+    """Only a discharge letter (or an unclassified letter) of the subject implies a hospital stay.
+    Type from the upload metadata, else from the analysis (incl. the golden fallback used by _analyses)."""
+    from app.services.documents.storage import get_meta
+
+    analysed = {a.document_id: a.doc_type for a in _analyses(ctx, document_ids)}
+    for d in document_ids:
+        meta = get_meta(d)
+        own = meta and meta.get("owner_id") == ctx.subject.id
+        doc_type = meta.get("doc_type") if own else analysed.get(d)
+        if doc_type in _HOSPITAL_DOC_TYPES:
+            return True
+    return False
+
+
 @router.post("/bundles/match", response_model=Bundle | None,
              summary="Bundle for a situation (id or free text) + facts; null if the text matches no situation")
 def bundle_match(body: BundleRequest, ctx: Context = Depends(require())):
@@ -176,13 +194,17 @@ def bundle_match(body: BundleRequest, ctx: Context = Depends(require())):
         ctx.rule_ids.append(f"bundles.match.explicit:{bid}")
     elif body.text and body.text.strip():
         m = bundles.match_text(body.text)
-        if m is None and not body.document_ids:
+        if m is None and not _has_hospital_letter(ctx, body.document_ids):
             ctx.rule_ids.append("bundles.match.none")
             return None
         bid = m.bundle_id if m else "nach_spital"
         ctx.rule_ids.append(f"bundles.match.text:{bid}:{','.join(m.hits) if m else 'document'}")
     elif body.document_ids:
-        bid = "nach_spital"                     # a document without a question -> "what do I do now?"
+        # a discharge letter without a question -> "what do I do now?"; imaging reports / e-Impfpass are no hospital stay
+        if not _has_hospital_letter(ctx, body.document_ids):
+            ctx.rule_ids.append("bundles.match.document:none")
+            return None
+        bid = "nach_spital"
         ctx.rule_ids.append("bundles.match.document:nach_spital")
     else:
         raise HTTPException(422, "Bitte eine Situation (situation) oder eine Beschreibung (text) angeben.")
