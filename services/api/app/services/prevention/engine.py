@@ -149,8 +149,8 @@ def _apply_family_history(items: list[PreventionItem], applied: list[str], perso
                 item = PreventionItem(
                     id=rule["id"], kind=rule["kind"], title_de=rule["title_de"], status=PreventionStatus.upcoming,
                     due_date=start.isoformat(), cost_de=rule.get("cost_de", ""),
-                    explanation_de=(f"{rule['recommendation_de']} Das Programm ist für Sie laut Alter ab "
-                                    f"{de(start)} vorgesehen."),
+                    # the family-history explanation below already describes the programme
+                    explanation_de=f"Das Programm ist für Sie laut Alter ab {de(start)} vorgesehen.",
                     sources=[source_ref(s) for s in rule["sources"]])
                 items.append(item)
                 by_id[item.id] = item
