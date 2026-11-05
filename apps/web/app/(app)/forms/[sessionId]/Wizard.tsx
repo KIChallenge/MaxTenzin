@@ -28,6 +28,9 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
   // Server truth for "missing": respects conditional fields (e.g. other citizenship only if "andere").
   const [missingIds, setMissingIds] = useState<Set<string> | null>(null);
   const [serverProgress, setServerProgress] = useState<number | null>(null);
+  // Fields that just became required because of another answer (e.g. consent after "Pflegeberatung = Ja").
+  const [newlyRequired, setNewlyRequired] = useState<string[]>([]);
+  const prevMissing = useRef<Set<string> | null>(null);
   const editing = useRef(new Set<string>());
   const lastValues = useRef(initial.values);
 
@@ -40,7 +43,14 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
   const refreshMissing = useCallback(async () => {
     const r = await bff<NextQuestions>(`/api/forms/sessions/${initial.id}/next-questions`);
     if (r.ok) {
-      setMissingIds(new Set(r.data.questions.map((q) => q.id)));
+      const next = new Set(r.data.questions.map((q) => q.id));
+      const prev = prevMissing.current;
+      if (prev) {
+        const added = [...next].filter((id) => !prev.has(id));
+        setNewlyRequired((cur) => [...cur.filter((id) => next.has(id)), ...added.filter((id) => !cur.includes(id))]);
+      }
+      prevMissing.current = next;
+      setMissingIds(next);
       setServerProgress(r.data.progress);
     }
   }, [initial.id]);
@@ -129,6 +139,20 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
 
   if (lost) return <ApiError status={lost.status} detail={lost.detail} subjectName={subjectName} />;
 
+  const jumpTo = (fieldId: string) => {
+    const f = definition.fields.find((x) => x.id === fieldId);
+    if (!f) return;
+    setStep(steps.indexOf(f.section));
+    setTimeout(() => {
+      const el = document.getElementById(`f-${fieldId}`);
+      el?.scrollIntoView({ block: "center", behavior: "smooth" });
+      el?.focus();
+    }, 50);
+  };
+  const newlyRequiredFields = newlyRequired
+    .map((id) => definition.fields.find((f) => f.id === id))
+    .filter((f): f is FormField => !!f);
+
   return (
     <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
       <aside>
@@ -172,6 +196,23 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
       </aside>
 
       <section>
+        {newlyRequiredFields.length > 0 && (
+          <div role="status" className="mb-4 rounded-lg border-l-4 border-warn bg-warn-soft p-3">
+            <p className="font-bold">Durch Ihre Angabe ist jetzt zusätzlich nötig:</p>
+            <ul className="mt-1 space-y-1">
+              {newlyRequiredFields.map((f) => (
+                <li key={f.id} className="flex flex-wrap items-center gap-x-3">
+                  <span>
+                    {f.label_de} <span className="text-muted">({sectionTitle(f.section)})</span>
+                  </span>
+                  <button type="button" className="link" onClick={() => jumpTo(f.id)}>
+                    Zum Feld
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         {error && (
           <p role="alert" className="mb-4 rounded-lg bg-danger-soft p-3 text-danger">
             {error}
