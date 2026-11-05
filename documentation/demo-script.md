@@ -14,7 +14,7 @@ Gemessene Wartezeiten (Probelauf 05.11., live `gpt-5-4-mini`): Foto-Upload + Ana
 | ✓ | Schritt | Befehl / Aktion |
 |---|---|---|
 | ☐ | Stand holen | `git pull` |
-| ☐ | Datenbank frisch + Demo-Daten (setzt auch Vollmachten, Lebenslage, Termine zurück) | `make reset && make seed` |
+| ☐ | Datenbank frisch + Demo-Daten (setzt auch Vollmachten, Lebenslage, Termine zurück) | `make reset && make seed` – **danach die API neu starten** (sie hält Vollmachten im Speicher) |
 | ☐ | Demo-Fotos des Entlassungsbriefs erzeugen (4 JPGs in `var/demo/`) | `make demo-assets` |
 | ☐ | API **ohne Auto-Reload** (Terminal 1) | `make api-demo` |
 | ☐ | Cockpit (Terminal 2) | `make web` |
@@ -23,7 +23,7 @@ Gemessene Wartezeiten (Probelauf 05.11., live `gpt-5-4-mini`): Foto-Upload + Ana
 | ☐ | Finder-Fenster mit `var/demo/entlassungsbrief-foto-*.jpg` (4 Fotos) daneben | |
 | ☐ | Zweiter Tab: `http://localhost:8000/docs` · drittes Fenster: Backup-Video, pausiert | |
 
-Nach jeder Probe: `make reset && make seed`.
+Nach jeder Probe: `make reset && make seed`, dann API neu starten (`Ctrl+C`, `make api-demo`) und `make demo-check`.
 
 ---
 

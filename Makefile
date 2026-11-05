@@ -57,8 +57,10 @@ demo-assets:      ## demo photos of the Entlassungsbrief (pages 1,4,5,6 as JPG) 
 demo-check:       ## preflight: demo-script chat lines against the running API (make api-demo)
 	$(UV) python tools/demo_check.py
 
-reset:            ## wipe local DB (var/)
-	rm -rf var/*.db
+reset:            ## empty the local DB in place (safe while the API runs) + uploads; then RESTART the API
+	cd $(API) && uv run python -c "from app.core.db import reset_db; reset_db()"
+	rm -rf var/uploads var/legal_fts.db
+	@echo "DB geleert. Laufende API jetzt neu starten (Ctrl+C, make api-demo) – sie hält Vollmachten im Speicher. Danach: make seed"
 
 smoke-llm:        ## check the Azure LLM connection from .env
 	cd $(API) && uv run python -m app.core.llm
