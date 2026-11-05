@@ -33,16 +33,16 @@ Bild: Cockpit-Screenshot `documentation/screenshots/03-uebersicht-lebenslage-beh
 ## Folie 4 – So arbeitet Lotsi: keine Sonderrechte
 **Frage → Lotsi → Werkzeug → Dienst (mit Annas Vollmacht) → Antwort + Quelle**
 - 14 Dienste: Vertretung · Lebenslage · Dokumente · Leistungen · Anträge · Termine · Fall · Vorsorge · Rechtsgrundlagen · Werte · Medikamente · Stellen · Benachrichtigungen · Protokoll
-- 30 Werkzeuge, jedes ist genau ein Dienst-Aufruf – per HTTP, mit dem Token der Person
+- 31 Werkzeuge, jedes ist genau ein Dienst-Aufruf – per HTTP, mit dem Token der Person
 - Jeder Aufruf im Transparenz-Protokoll: „Lotsi (KI) · Leistungen prüfen · erlaubt / verweigert“
 Bild: Architekturgrafik aus `documentation/architecture.md`, Screenshot `10-transparenz.png`
 
-> Sprechtext: „Lotsi hat keinen Datenbankzugang und keine eigenen Rechte. Entzieht Anna ihrer Tochter das Recht, Anträge vorzubereiten, kann es Lotsi auch nicht mehr – das sehen Sie gleich live, inklusive roter Zeile im Protokoll.“
+> Sprechtext: „Lotsi hat keinen Datenbankzugang und keine eigenen Rechte. Fehlt Maria das Recht, Anträge vorzubereiten, kann es Lotsi auch nicht – das sehen Sie gleich live, zu Beginn der Demo, mit abgelehntem Aufruf im Protokoll.“
 
 ## Folie 5 – Live-Demo
 **Maria organisiert Annas Nachsorge – in 5 Minuten**
-Foto des Briefs → ausdrücklich dokumentierte Empfehlungen (Zitat + Seite) → Lebenslage übernehmen → Leistungen mit Quelle → offizielles PVA-Formular PAL 080 als Entwurf, per Chat befüllt → Meldepflicht im Posteingang → Rezeptgebühr aus der Wertetabelle → Kontrolltermin bei der Hausärztin → Mein Fall
-Dann: die medizinische Grenze · Vollmacht entziehen · Kind, Arzttermin, Englisch
+Anna erteilt Maria per Chat die Rechte → Foto des Briefs → ausdrücklich dokumentierte Empfehlungen (Zitat + Seite) → Lebenslage übernehmen → Leistungen mit Quelle → offizielles PVA-Formular PAL 080 als Entwurf, per Chat befüllt → Meldepflicht im Posteingang → Rezeptgebühr aus der Wertetabelle → Kontrolltermin bei der Hausärztin → Mein Fall
+Dann: die medizinische Grenze · Transparenz-Protokoll · Stefan auf Englisch: Gesundheit, Kind, Arzttermin
 
 > Sprechtext: Drehbuch `documentation/demo-script.md`. Wartezeiten mit den Sätzen aus der Spalte „Was man sagt“ überbrücken.
 
@@ -57,7 +57,7 @@ Dann: die medizinische Grenze · Vollmacht entziehen · Kind, Arzttermin, Englis
 ## Folie 7 – Grenzen, die man sehen kann
 **Diagnose abschreiben – ja. Deuten – nie.**
 - Keine Diagnosen, keine Befundinterpretation, keine Risiken, keine Therapie- oder Medikamentenratschläge – Prüfung **vor** dem Antwortmodell, Antwort in < 1 s
-- Aus Dokumenten nur ausdrücklich dokumentierte Empfehlungen, jedes Zitat deterministisch gegen die Seite geprüft; Laborwerte und Medikation bewusst nicht wiedergegeben
+- Aus Dokumenten nur ausdrücklich dokumentierte Empfehlungen, jedes Zitat deterministisch gegen die Seite geprüft; Inhalte werden wörtlich wiedergegeben, nie gedeutet; ärztliche Anweisungen macht Lotsi nicht zu Aufgaben
 - Nichts wird eingereicht; Zustimmungs-Häkchen setzt nur die Person; Dokument-Vorschläge gelten erst nach „Ja, übernehmen“
 - Rechtsinformation immer mit Fassung und „unverbindlich, keine Rechtsberatung“
 
@@ -94,7 +94,7 @@ Qualität: 262 automatische Tests · 35/35 Live-Evals (Szenarien, Grenzfälle, V
 - Gesundheitsdaten: ELGA e-Befunde und e-Impfpass-API statt Upload – dieselbe Zitatprüfung
 - Träger: Übergabe an meinSV / Online-Formulare mit Klick der Person, Status zurück in „Mein Fall“; echte Terminsysteme
 - Fläche: Stellen und Ordinationen aller Bundesländer (Serviceratgeber S. 96–115), SVS und BVAEB
-- Offen: dieselben 30 Werkzeuge als MCP-Server – andere Assistenten nutzen die Dienste mit ID-Austria-Login und genau den erteilten Rechten
+- Offen: dieselben 31 Werkzeuge als MCP-Server – andere Assistenten nutzen die Dienste mit ID-Austria-Login und genau den erteilten Rechten
 - Betrieb: Microservice-Schnitt entlang der bestehenden Grenzen, Postgres, Audit append-only, Modell-Pinning mit Evals als Release-Gate
 
 > Sprechtext: „Weil die Prozesse Dienste sind, ist der Weg in die Produktion ein Austausch von Bausteinen, kein Neubau. Der erste Mehrwert – Angehörige füllen offizielle Formulare in Minuten statt Tagen aus – braucht nur den ID-Austria-Login.“

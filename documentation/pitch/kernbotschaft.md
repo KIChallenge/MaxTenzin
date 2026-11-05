@@ -20,7 +20,7 @@ Merksatz für die Folie: **„Erst die Prozesse, dann die KI.“**
 | Schicht | Was passiert | Beleg im Projekt |
 |---|---|---|
 | **Vorher: Grenzen** | Medizinische Fragen (Diagnose, Befund, Medikation, Prognose) werden erkannt, **bevor** das Modell antwortet | 20 Grenzfälle in den Evals, Antwort in < 0,2 s ohne Sprachmodell |
-| **Währenddessen: nur Werkzeuge** | Lotsi hat keine Datenbank und kein eigenes Wissen über Ansprüche. 30 Werkzeuge, jedes genau ein Dienst-Aufruf – mit dem Login und den Rechten der Person | Vollmacht entziehen → Lotsi kann es auch nicht mehr (Demo, Transparenz-Protokoll) |
+| **Währenddessen: nur Werkzeuge** | Lotsi hat keine Datenbank und kein eigenes Wissen über Ansprüche. 31 Werkzeuge, jedes genau ein Dienst-Aufruf – mit dem Login und den Rechten der Person | Ohne erteilte Berechtigung kann Lotsi es auch nicht (Demo-Start, Transparenz-Protokoll) |
 | **Nachher: Prüfung der Antwort** | €-Beträge ohne Dienst-Herkunft werden verworfen; Zitate aus Dokumenten werden gegen die Seite geprüft; „eingereicht“-Behauptungen werden abgefangen; Pflichtangaben (z. B. Rezeptgebühr 7,55 € mit Quelle) werden deterministisch ergänzt | 35/35 Live-Evals, Prüfung: „jeder €-Betrag auf einen Dienst rückführbar“ |
 
 ## Warum Infrastruktur und Kontext der schwierige Teil sind (aus diesem Projekt)
@@ -40,7 +40,7 @@ Merksatz für die Folie: **„Erst die Prozesse, dann die KI.“**
 | Leistungsprüfung mit Status und Quelle | „Ob ein Anspruch wahrscheinlich ist, entscheidet ein Regeldienst, nicht das Modell.“ |
 | Pflegegeld-Betrag / Rezeptgebühr | „Diese Zahl kommt aus der amtlichen Wertetabelle 2026 – die Quelle steht direkt daneben.“ |
 | Transparenz-Protokoll | „Jeder Schritt der KI ist ein normaler Dienst-Aufruf – sichtbar, mit Rechten, prüfbar.“ |
-| Vollmacht entziehen | „Die KI hat keine Sonderrechte. Was Maria nicht darf, darf Lotsi auch nicht.“ |
+| Maria darf zu Beginn nicht, Anna erteilt per Chat | „Die KI hat keine Sonderrechte. Was Maria nicht darf, darf Lotsi auch nicht.“ |
 | Röntgenbefund „Was bedeutet das?“ | „Die Grenze ist kein Prompt-Wunsch, sondern ein eigener Prüfschritt vor dem Modell.“ |
 
 ## Erwartbare Fragen

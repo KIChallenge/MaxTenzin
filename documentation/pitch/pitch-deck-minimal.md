@@ -37,7 +37,7 @@ Die Botschaft wird im Cockpit gesagt, nicht gezeigt. Je ein Satz pro Moment:
 ## Folie 3 – Die Infrastruktur (6:50–7:20)
 **Cockpit und Lotsi, eine Infrastruktur.**
 Flussdiagramm im Mermaid-Stil (blassgrüne Kästen, Pfeile mit Beschriftung, Dienste im Rahmen):
-Person oder Vertretung → **Cockpit** (direkt, mit den Rechten der Person) und **Lotsi · KI-Agent** (Chat, 30 Werkzeuge, derselbe Token) → **ein Eingang für alle Aufrufe** (70 Endpunkte: Login → Berechtigung der Person → Protokoll) → **14 Dienste**, deterministisch, in drei Gruppen (Person & Rechte · Anliegen & Anträge · Regeln & Werte) → **Wissen** (versioniert, quellenbelegt · 1.976 § · 686 Werte 2026 · 6.985 EKO-Packungen · Formulare).
+Person oder Vertretung → **Cockpit** (direkt, mit den Rechten der Person) und **Lotsi · KI-Agent** (Chat, 31 Werkzeuge, derselbe Token) → **ein Eingang für alle Aufrufe** (70 Endpunkte: Login → Berechtigung der Person → Protokoll) → **14 Dienste**, deterministisch, in drei Gruppen (Person & Rechte · Anliegen & Anträge · Regeln & Werte) → **Wissen** (versioniert, quellenbelegt · 1.976 § · 686 Werte 2026 · 6.985 EKO-Packungen · Formulare).
 Schlusszeile: **Lotsi entscheidet nichts. Er formuliert, was die Dienste entschieden haben. Und die Formulierung wird geprüft.**
 
 > Sprechtext (30 s): „Was Sie gerade gesehen haben, läuft auf einer Infrastruktur. Oben zwei Zugänge: das Cockpit der Person und Lotsi. Beide landen am selben Eingang, mit Login, Rechten und Protokoll. Lotsi hat keinen eigenen Weg daran vorbei. Dahinter 14 Dienste, die entscheiden, jede Aussage mit Quelle, und ganz unten die Daten der Challenge. Das Modell ist austauschbar, die Schichten darunter nicht. Halluzinationen verhindert kein besserer Prompt, sondern dieser Aufbau. Der schwierige Teil war nicht die KI, es waren die Daten und Prozesse.“
@@ -51,7 +51,7 @@ Die Zahl 157,30 € gegen 206,20 € ist nur noch Nice-to-have: optional in der 
 **Bausteine tauschen, nicht neu bauen**
 
 - ID Austria statt Demo-Login · ELGA statt Upload · meinSV statt Entwurf. Abgeschickt wird immer von der Person.
-- Dieselben 30 Werkzeuge morgen als MCP-Server: andere Assistenten nutzen die Dienste mit genau den erteilten Rechten.
+- Dieselben 31 Werkzeuge morgen als MCP-Server: andere Assistenten nutzen die Dienste mit genau den erteilten Rechten.
 - 1.976 Paragraphen · 686 Werte 2026 · 6.985 EKO-Packungen · offizielle PDF-Formulare · 35/35 Live-Evals. Jede Antwort mit Quelle.
 
 > Sprechtext (20 s): „Weil die Prozesse Dienste sind, ist der Weg in den Betrieb ein Austausch von Bausteinen, kein Neubau. Jeder neue Dienst macht Lotsi klüger, ohne die KI neu zu bauen. Kein Chatbot. Ein Lotse auf definierten Prozessen. Danke.“
