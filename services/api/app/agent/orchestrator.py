@@ -99,12 +99,43 @@ async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, p
     memo = conv["memo"]
     messages = [{"role": "system", "content": system_prompt(ctx, memo, plain, lang)}, *state.history_messages(conv),
                 {"role": "user", "content": message}]
-    reply = ""
-    for _ in range(MAX_TOOL_ROUNDS):
+    reply = await _tool_loop(client, memo, messages, outcomes, MAX_TOOL_ROUNDS)
+
+    allowed = guard.numbers_in([o.data for o in outcomes]) | guard.numbers_in([o.arguments for o in outcomes]) | \
+        guard.numbers_in(message)
+    wrote = any(o.tool == "set_form_fields" and o.ok for o in outcomes)
+    problems = (guard.output_violations(reply, allowed) + guard.write_claim_violations(reply, wrote)
+                + guard.question_violations(reply)) if reply else ["leere Antwort"]
+    if problems and any(p.startswith("Behauptung, etwas in den Antrag") for p in problems):
+        # Claimed a form entry without writing it: give the model tools again to actually do it (max 3 rounds).
+        log.warning("output guard (write claim): %s", problems)
+        messages += [{"role": "assistant", "content": reply},
+                     {"role": "user", "content": "SYSTEMPRÜFUNG (nicht von der Person): " + "; ".join(problems)}]
+        reply = await _tool_loop(client, memo, messages, outcomes, 3)
+        wrote = any(o.tool == "set_form_fields" and o.ok for o in outcomes)
+        problems = (guard.output_violations(reply, allowed) + guard.write_claim_violations(reply, wrote)) \
+            if reply else ["leere Antwort"]
+    if problems:
+        log.warning("output guard: %s", problems)
+        messages += [{"role": "assistant", "content": reply},
+                     {"role": "user", "content": "SYSTEMPRÜFUNG (nicht von der Person): Deine Antwort verletzt Regeln: "
+                      + "; ".join(problems) + ". Formuliere die Antwort neu – nur Beträge, die wörtlich in den "
+                      "Tool-Ergebnissen stehen, keine Einreichung behaupten, Vorsorge-Wording beachten, höchstens 2 Rückfragen."}]
+        reply = (await _llm(messages, None)).content or ""
+        problems = (guard.output_violations(reply, allowed) + guard.write_claim_violations(reply, wrote)) \
+            if reply else ["leere Antwort"]
+        if problems:
+            log.warning("output guard fallback: %s", problems)
+            reply = fallback_reply(outcomes)
+    return reply
+
+
+async def _tool_loop(client: ToolClient, memo: dict, messages: list[dict], outcomes: list[ToolOutcome],
+                     rounds: int) -> str:
+    for _ in range(rounds):
         msg = await _llm(messages, TOOL_SPECS)
         if not msg.tool_calls:
-            reply = msg.content or ""
-            break
+            return msg.content or ""
         messages.append(_assistant_msg(msg))
         calls = []
         for tc in msg.tool_calls:
@@ -118,26 +149,8 @@ async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, p
             outcomes.append(o)
             state.update_memo(memo, o)
             messages.append({"role": "tool", "tool_call_id": tc_id, "content": llm_payload(o)})
-    else:
-        messages.append({"role": "user", "content": "SYSTEM: Keine weiteren Tools. Antworte jetzt mit dem bisherigen "
-                                                    "Stand."})
-        reply = (await _llm(messages, None)).content or ""
-
-    allowed = guard.numbers_in([o.data for o in outcomes]) | guard.numbers_in([o.arguments for o in outcomes]) | \
-        guard.numbers_in(message)
-    problems = (guard.output_violations(reply, allowed) + guard.question_violations(reply)) if reply else ["leere Antwort"]
-    if problems:
-        log.warning("output guard: %s", problems)
-        messages += [{"role": "assistant", "content": reply},
-                     {"role": "user", "content": "SYSTEMPRÜFUNG (nicht von der Person): Deine Antwort verletzt Regeln: "
-                      + "; ".join(problems) + ". Formuliere die Antwort neu – nur Beträge, die wörtlich in den "
-                      "Tool-Ergebnissen stehen, keine Einreichung behaupten, Vorsorge-Wording beachten, höchstens 2 Rückfragen."}]
-        reply = (await _llm(messages, None)).content or ""
-        problems = guard.output_violations(reply, allowed) if reply else ["leere Antwort"]
-        if problems:
-            log.warning("output guard fallback: %s", problems)
-            reply = fallback_reply(outcomes)
-    return reply
+    messages.append({"role": "user", "content": "SYSTEM: Keine weiteren Tools. Antworte jetzt mit dem bisherigen Stand."})
+    return (await _llm(messages, None)).content or ""
 
 
 def fallback_reply(outcomes: list[ToolOutcome]) -> str:
@@ -189,6 +202,8 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
     subject_name = _full_name(ctx.subject)
     outcomes: list[ToolOutcome] = []
     mode = "live" if get_llm().live else "scripted"
+    if req.document_ids:
+        memo["last_document_id"] = req.document_ids[0]
 
     hit = guard.check_boundary(req.message)
     category = hit.category if hit else await _llm_boundary_check(req.message)
@@ -199,6 +214,13 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
                             suggestions_de=suggestions)
     else:
         client = ToolClient(headers, ctx.subject.id, subject_name, memo)
+        if req.form_session_id and req.form_session_id != memo.get("form_session_id"):
+            # The wizard has this session open: the chat must edit exactly this one (never start a parallel draft).
+            r = await client.fetch(f"/api/forms/sessions/{req.form_session_id}", "context:open_form")
+            if r.status_code == 200:
+                memo["form_session_id"], memo["form_id"] = req.form_session_id, r.json()["form_id"]
+                memo["form_rendered"] = False
+                memo.pop("open_questions", None)
 
         async def run(name: str, args: dict) -> ToolOutcome:
             o = await client.run(name, args)
@@ -231,6 +253,11 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
             sp = Scripted(run, memo, ctx.subject.id, subject_name, ctx.actor.id == ctx.subject.id)
             reply = await sp.reply(req.message)
             outcomes += sp.outcomes
+        rejected = [o for o in outcomes if o.tool == "set_form_fields" and o.status == 422]
+        if rejected:
+            # Relay the form's own validation message verbatim instead of letting the model guess why.
+            reply = ("**Nicht übernommen:** " + (rejected[-1].error_de or "Die Angabe passt nicht zum Formular.")
+                     + "\n\n" + reply)
         denied = [o for o in outcomes if o.status == 403]
         if denied and "berechtigung" not in reply.lower() and "permission" not in reply.lower():
             reply = forbidden_text(denied[0], subject_name) + "\n\n" + reply
@@ -264,7 +291,7 @@ def _actions(outcomes) -> list[ChatAction]:
         elif o.tool in ("start_form", "set_form_fields", "get_next_questions") and sid:
             acts["form"] = ChatAction(kind="open_form", label_de="Antrag im Assistenten öffnen", url=f"/forms/{sid}")
         elif o.tool in ("create_case", "update_case_step"):
-            acts["case"] = ChatAction(kind="open_case", label_de="Mein Fall öffnen", url="/case")
+            acts["case"] = ChatAction(kind="open_case", label_de="Mein Fall öffnen", url="/fall")
     return list(acts.values())
 
 

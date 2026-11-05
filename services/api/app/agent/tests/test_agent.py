@@ -238,3 +238,53 @@ def test_question_limit_is_soft_rule():
     assert guard.question_violations("Wie alt ist sie? Wo wohnt sie?") == []
     assert guard.question_violations("A? B? C? D?")
     assert guard.output_violations("A? B? C? D?", set()) == []  # never triggers the hard fallback
+
+
+# ------------------------------------------------------------------ cockpit integration (WS-W bug reports)
+def test_chat_uses_session_open_in_wizard(client):
+    sid = client.post("/api/forms/definitions/pva_pflegegeld_pal080/sessions", headers=MARIA_ANNA).json()["id"]
+    before = max(e["id"] for e in client.get("/api/audit", headers=auth("anna")).json())
+    r = chat(client, MARIA_ANNA, "Trag beim Pflegegeld-Antrag ein, dass wir die kostenlose Pflegeberatung möchten.",
+             form_session_id=sid)
+    assert "start_form" not in tools(r)
+    events = [e for e in client.get("/api/audit", headers=auth("anna")).json() if e["id"] > before]
+    assert not [e for e in events if e["via"] == "agent" and e["path"].endswith("/sessions") and e["method"] == "POST"]
+    assert any(e["path"] == f"/api/forms/sessions/{sid}" for e in events)  # worked in the open session
+
+
+def test_choice_values_normalised_to_official_options():
+    from app.agent.tools import normalize_form_values
+
+    defs = {"Pflegeberatung": {"type": "choice", "options": ["Nein", "Ja"]},
+            "Hausbesuch": {"type": "checkbox", "options": []}, "Leiden": {"type": "textarea", "options": []}}
+    out = normalize_form_values({"Pflegeberatung": "ja, meine Mutter hat zugestimmt", "Hausbesuch": "ja",
+                                 "Leiden": "siehe Entlassungsbrief"}, defs)
+    assert out == {"Pflegeberatung": "Ja", "Hausbesuch": True, "Leiden": "siehe Entlassungsbrief"}
+    assert normalize_form_values({"Pflegeberatung": "vielleicht"}, defs) == {"Pflegeberatung": "vielleicht"}  # API decides
+
+
+def test_422_detail_is_readable():
+    from app.agent.tools import _detail
+
+    class R:
+        text = ""
+
+        def json(self):
+            return {"detail": {"message_de": "Einige Angaben sind ungültig.", "fields": {"X": "Pflegeberatung: Bitte Ja oder Nein"}}}
+
+    assert _detail(R()) == "Einige Angaben sind ungültig. Pflegeberatung: Bitte Ja oder Nein"
+
+
+def test_delegation_revoke_survives_reload(client):
+    from app.seed import loader
+
+    client.put("/api/identity/delegations/del-anna-maria/scopes", headers=auth("anna"), json=["read_documents"])
+    loader._DELEGATIONS = None  # simulate API restart (uvicorn --reload)
+    assert client.post("/api/forms/definitions/pva_pflegegeld_pal080/sessions", headers=MARIA_ANNA).status_code == 403
+
+
+def test_write_claim_guard():
+    assert guard.write_claim_violations("Gerne — ich halte fest, dass Sie die Pflegeberatung möchten.", wrote=False)
+    assert guard.write_claim_violations("Ich habe die Pflegeberatung im Antrag eingetragen.", wrote=False)
+    assert not guard.write_claim_violations("Ich habe die Pflegeberatung im Antrag eingetragen.", wrote=True)
+    assert not guard.write_claim_violations("Wenn Sie mir die Daten schicken, dann trage ich sie ein.", wrote=False)

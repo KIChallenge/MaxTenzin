@@ -4538,6 +4538,17 @@
             "type": "array",
             "title": "Document Ids",
             "default": []
+          },
+          "form_session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Form Session Id"
           }
         },
         "type": "object",

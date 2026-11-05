@@ -42,6 +42,8 @@ See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished it
 
 - (integrator, done) Polish: `DocumentAnalysis.facts` (deterministic admin facts with quote+page, e.g. Entlassungsdatum) → PAL080 "KH bis" prefilled (open questions 4→3); `FormSession.document_id`; deterministic clinical-instruction filter in documents (labs, blood pressure, medication, side effects, fluid balance → removed + notice). Declined: making PAL080 §3–§9 required (agent offers recommended yes/no questions instead).
 
+- (integrator, done — WS-W bug reports) `ChatRequest.form_session_id`: chat edits the session open in the wizard (no parallel start_form; scripted planner too); choice/checkbox values normalised to official options before PATCH; 422 relayed verbatim ("Nicht übernommen: …"); new hard output guard: no "eingetragen/halte fest" claim without successful set_form_fields (retry with tools); `get_next_questions(include_optional)` to find recommended fields; open_case → `/fall`; delegation scope overrides persisted in store (survive restarts); `make api-demo` (no --reload). Live: Pflegeberatung=Ja lands in the open wizard session 2/2; evals 28/28.
+
 ## Decisions log
 - D1 Modular monolith (FastAPI routers per service) instead of microservices — same boundaries, 1/10 ops cost.
 - D2 Raw data in `docs/` gitignored; deterministic extraction into committed `knowledge/extracted/` (`make extract`).

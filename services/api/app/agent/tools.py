@@ -275,9 +275,14 @@ TOOLS: list[Tool] = [
          summary=lambda a, d: f"Antragsentwurf {d.get('form_id')} gestartet, "
                               f"{sum(1 for v in d.get('values', {}).values() if v.get('value') not in (None, ''))} "
                               "Felder vorausgefüllt"),
-    Tool("get_next_questions", "Nur die noch fehlenden Pflichtangaben eines Antragsentwurfs.",
-         {"session_id": _s("Formular-Sitzung")}, ["session_id"], "GET",
+    Tool("get_next_questions", "Noch offene Angaben eines Antragsentwurfs: standardmäßig nur Pflichtangaben; mit "
+         "include_optional=true auch empfohlene Felder (z. B. Pflegeberatung, Ja/Nein-Abschnitte). Nutze das, um die "
+         "Feld-ID zu finden, wenn die Person ein bestimmtes Feld ausfüllen möchte.",
+         {"session_id": _s("Formular-Sitzung"),
+          "include_optional": {"type": "boolean", "description": "auch empfohlene (nicht verpflichtende) Felder"}},
+         ["session_id"], "GET",
          lambda a, c: f"/api/forms/sessions/{a['session_id']}/next-questions", compact=_compact_questions,
+         query=lambda a, c: {"include_optional": "true"} if a.get("include_optional") else {},
          summary=lambda a, d: f"{len(d.get('questions', []))} offene Pflichtangabe(n), Fortschritt "
                               f"{round(100 * (d.get('progress') or 0))} %"),
     Tool("set_form_fields", "Trägt von der Person bestätigte Antworten in den Antragsentwurf ein.",
@@ -356,7 +361,31 @@ class ToolClient:
             return None
         return self.memo["form_session_id"] if self.memo.get("form_id") == args.get("form_id") else None
 
+    async def fetch(self, path: str, purpose: str) -> httpx.Response:
+        """Read-only context call (audited as agent) — e.g. the form session open in the UI."""
+        from app.main import app  # lazy: avoid import cycle
+
+        headers = {**self.headers, "X-Via": "agent", "X-Agent-Tool": purpose}
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://internal",
+                                     timeout=60) as c:
+            return await c.get(path, headers=headers)
+
+    async def _field_defs(self, session_id: str) -> dict[str, dict]:
+        cache = self.memo.setdefault("_field_defs", {})
+        if session_id in cache:
+            return cache[session_id]
+        r = await self.fetch(f"/api/forms/sessions/{session_id}", "context:form_session")
+        if r.status_code != 200:
+            return {}
+        d = await self.fetch(f"/api/forms/definitions/{r.json()['form_id']}", "context:form_definition")
+        defs = {f["id"]: {"type": f["type"], "options": f.get("options") or []} for f in d.json().get("fields", [])} \
+            if d.status_code == 200 else {}
+        cache[session_id] = defs
+        return defs
+
     async def run(self, name: str, args: dict) -> ToolOutcome:
+        if name == "set_form_fields" and args.get("session_id") and isinstance(args.get("values"), dict):
+            args = {**args, "values": normalize_form_values(args["values"], await self._field_defs(args["session_id"]))}
         tool = TOOL_BY_NAME.get(name)
         if tool is None:
             return ToolOutcome(name, args, 400, error_de=f"Unbekanntes Werkzeug {name}", summary_de="unbekanntes Werkzeug")
@@ -411,9 +440,47 @@ class ToolClient:
 def _detail(resp: httpx.Response) -> str:
     try:
         d = resp.json().get("detail")
-        return d if isinstance(d, str) else json.dumps(d, ensure_ascii=False)[:300]
     except Exception:  # noqa: BLE001
         return resp.text[:300]
+    if isinstance(d, str):
+        return d
+    if isinstance(d, dict) and "fields" in d:
+        fields = d["fields"]
+        items = fields.items() if isinstance(fields, dict) else ((f.get("field"), f.get("message_de")) for f in fields)
+        return (d.get("message_de") or "Ungültige Angaben") + " " + "; ".join(str(v) for _, v in items)
+    return json.dumps(d, ensure_ascii=False)[:300]
+
+
+_TRUE = {"ja", "yes", "true", "1", "x", "zustimmung", "zugestimmt", "einverstanden", "evet"}
+_FALSE = {"nein", "no", "false", "0", "hayır", "hayir"}
+
+
+def normalize_form_values(values: dict, fields: dict[str, dict]) -> dict:
+    """Map free-form agent values onto what the official form accepts (choice options / checkbox booleans).
+    Unknown values are passed through unchanged so the API's own validation answers (never guessed)."""
+    out = {}
+    for fid, v in (values or {}).items():
+        f = fields.get(fid)
+        if f is None or v is None:
+            out[fid] = v
+            continue
+        t, opts = f.get("type"), f.get("options") or []
+        sv = str(v).strip()
+        low = sv.lower()
+        if t == "checkbox":
+            out[fid] = True if (v is True or low in _TRUE) else False if (v is False or low in _FALSE) else v
+        elif t == "choice" and opts:
+            exact = next((o for o in opts if o.lower() == low), None)
+            if exact is None and (v is True or low in _TRUE or low.startswith("ja")):
+                exact = next((o for o in opts if o.lower() == "ja"), None)
+            if exact is None and (v is False or low in _FALSE or low.startswith("nein")):
+                exact = next((o for o in opts if o.lower() == "nein"), None)
+            if exact is None:
+                exact = next((o for o in opts if low and (low in o.lower() or o.lower() in low)), None)
+            out[fid] = exact if exact is not None else v
+        else:
+            out[fid] = v
+    return out
 
 
 def _filename(resp: httpx.Response) -> str | None:

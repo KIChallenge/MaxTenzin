@@ -28,6 +28,7 @@ class ChatRequest(BaseModel):
     language: str = "de"
     plain_language: bool = False
     document_ids: list[str] = []      # documents currently selected in the UI (context hint, access still via API)
+    form_session_id: str | None = None  # form session open in the UI wizard: chat edits THIS session
 
 
 class ChatResponse(BaseModel):

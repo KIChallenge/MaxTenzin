@@ -874,6 +874,8 @@ export interface components {
              * @default []
              */
             document_ids: string[];
+            /** Form Session Id */
+            form_session_id?: string | null;
         };
         /** ChatResponse */
         ChatResponse: {
