@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { createCase } from "@/app/actions";
 import { ApiError } from "@/components/ApiError";
 import { Badge } from "@/components/Badge";
 import { PageTitle } from "@/components/PageTitle";
@@ -9,7 +10,8 @@ import { getMe } from "@/lib/me";
 import type { Case } from "@/lib/types";
 import { StepStatusSelect } from "./StepStatusSelect";
 
-export default async function CasePage() {
+export default async function CasePage({ searchParams }: { searchParams: Promise<{ error?: string; status?: string }> }) {
+  const sp = await searchParams;
   const [me, cases] = await Promise.all([getMe(), api<Case[]>("/api/cases")]);
   const name = me.ok ? fullName(me.data.subject) : "";
   return (
@@ -17,12 +19,23 @@ export default async function CasePage() {
       <PageTitle eyebrow="Mein Fall" title={`Schritte für ${name}`}>
         Alles, was nach dem Spitalsaufenthalt zu tun ist – und wer dafür zuständig ist.
       </PageTitle>
+      {sp.error && (
+        <div className="mb-6">
+          <ApiError status={Number(sp.status ?? 0)} detail={sp.error} subjectName={name} />
+        </div>
+      )}
       {!cases.ok ? (
         <ApiError status={cases.status} detail={cases.detail} subjectName={name} />
       ) : cases.data.length === 0 ? (
-        <p className="card text-muted">
-          Noch kein Fall angelegt. <Link href="/dokumente" className="link">Dokument hochladen</Link>, um Schritte zu erhalten.
-        </p>
+        <div className="card flex flex-wrap items-center gap-4">
+          <p className="flex-1 text-lg">
+            Noch kein Fall angelegt. Wir übernehmen die offenen Aufgaben aus dem zuletzt hochgeladenen Dokument.
+          </p>
+          <form action={createCase}>
+            <button className="btn-primary">Fall aus Dokument anlegen</button>
+          </form>
+          <Link href="/dokumente" className="link">Dokument hochladen</Link>
+        </div>
       ) : (
         cases.data.map((c) => {
           const done = c.steps.filter((s) => s.status === "done").length;

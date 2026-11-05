@@ -67,8 +67,13 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
                     <ul className="mt-2 space-y-3">
                       {r.criteria.map((c) => (
                         <li key={c.id} className="flex gap-3">
-                          <span aria-hidden className="mt-0.5 text-lg">
-                            {c.met === true ? "✅" : c.met === false ? "❌" : "❔"}
+                          <span
+                            aria-hidden
+                            className={`mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full font-bold ${
+                              c.met === true ? "bg-ok text-white" : c.met === false ? "bg-danger text-white" : "bg-info-soft text-info border border-info/40"
+                            }`}
+                          >
+                            {c.met === true ? "✓" : c.met === false ? "✕" : "?"}
                           </span>
                           <div>
                             <p className="font-bold">
@@ -134,6 +139,7 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
                   {b.form_ids?.map((fid) => (
                     <form key={fid} action={startForm}>
                       <input type="hidden" name="form_id" value={fid} />
+                      <input type="hidden" name="benefit_id" value={b.id} />
                       <button className="btn-primary" disabled={!canPrepare} title={canPrepare ? undefined : "Berechtigung „Anträge vorbereiten“ fehlt"}>
                         📝 Antrag vorbereiten{b.form_ids.length > 1 ? `: ${formTitle.get(fid) ?? fid}` : ""}
                       </button>

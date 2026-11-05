@@ -50,6 +50,9 @@ export function ChatPanel({ subjectId, subjectName, plain }: { subjectId: string
     try {
       sessionStorage.setItem("lotse-chat-open", open ? "1" : "0");
     } catch {}
+    // On wide screens the page makes room for the panel instead of being covered by it.
+    document.body.classList.toggle("chat-open", open);
+    return () => document.body.classList.remove("chat-open");
   }, [open]);
 
   async function send(text: string) {

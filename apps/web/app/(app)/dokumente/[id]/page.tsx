@@ -3,7 +3,7 @@ import { ApiError } from "@/components/ApiError";
 import { PageTitle } from "@/components/PageTitle";
 import { SourceChip } from "@/components/SourceChip";
 import { api } from "@/lib/api";
-import { DOC_TYPE, fullName, REC_CATEGORY } from "@/lib/labels";
+import { DOC_TYPE, fmtDate, fullName, REC_CATEGORY } from "@/lib/labels";
 import { getMe } from "@/lib/me";
 import type { DocumentAnalysis } from "@/lib/types";
 
@@ -76,7 +76,7 @@ export default async function AnalysisPage({ params }: { params: Promise<{ id: s
               {(
                 [
                   ["Name", [a.person.first_name, a.person.last_name].filter(Boolean).join(" ")],
-                  ["Geburtsdatum", a.person.birth_date],
+                  ["Geburtsdatum", a.person.birth_date ? fmtDate(a.person.birth_date) : null],
                   ["Adresse", a.person.address],
                   ["Versicherung", a.person.insurer],
                   ["Wohnsituation", a.person.living_situation],

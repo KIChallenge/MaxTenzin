@@ -19,11 +19,13 @@ Single source of truth for all sessions. Update your row at start and at Definit
 | WS-B | benefits catalog + eligibility, directory, legal FTS5, medications | bg agent | ws/B-benefits | doing | — | — |
 | WS-D | documents extraction (+golden), prevention (Impfpass) | bg agent | ws/D-documents | doing | — | LLM key (golden fallback ok) |
 | WS-F | forms: schemas, sessions, prefill, real PDF fill | bg agent | ws/F-forms | doing | — | — |
-| WS-W | web cockpit | human session | ws/W-web | todo | — | — |
+| WS-W | web cockpit | human session | ws/W-web | review (G1 on stubs) | H8 | Mein Fall create needs WS-D merged (cases service requires stored analysis); chat needs WS-A/LLM key |
 | WS-A | agent orchestrator + guardrails + evals | Wave 2 | ws/A-agent | todo | — | needs B/D/F merged |
 | WS-C | cases + notifications | integrator | main | merged | H3 | — |
 
 ## Task checklists
+- WS-W: login, header/subject switch + scopes, cockpit + inbox, Dokumente, Leistungen, Antrag-Wizard (2 s poll, PDF), Chat panel, Mein Fall, Vorsorge, Transparenz, Vertretung, 403 handling, Stellen/Medikamente/Recht — build + lint green, screenshots in `documentation/screenshots/`.
+
 See `documentation/briefs/WS-*.md` (each brief has a checklist; copy finished items here as one line).
 
 ## Contract requests (agents → integrator)

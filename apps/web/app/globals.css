@@ -70,3 +70,9 @@ body {
   to { background-color: transparent; }
 }
 .flash { animation: flash 2.5s ease-out; }
+
+@media (min-width: 1024px) {
+  body.chat-open {
+    padding-right: 28rem;
+  }
+}

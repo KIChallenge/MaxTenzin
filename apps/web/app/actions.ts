@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { api } from "@/lib/api";
 import { COOKIE_PLAIN, COOKIE_SUBJECT, COOKIE_TOKEN } from "@/lib/session";
-import type { FormSession, Session } from "@/lib/types";
+import type { Case, DocumentAnalysis, DocumentSummary, FormSession, Session } from "@/lib/types";
 
 const cookieOpts = { httpOnly: true, sameSite: "lax" as const, path: "/" };
 
@@ -41,5 +41,42 @@ export async function startForm(formData: FormData) {
   const formId = String(formData.get("form_id") ?? "");
   const r = await api<FormSession>(`/api/forms/definitions/${encodeURIComponent(formId)}/sessions`, { method: "POST" });
   if (!r.ok) redirect(`/leistungen?error=${encodeURIComponent(r.detail)}&status=${r.status}`);
+  // Link the new session to the matching "Mein Fall" step (best effort; case may not exist yet).
+  const benefitId = String(formData.get("benefit_id") ?? "");
+  if (benefitId) {
+    const cases = await api<Case[]>("/api/cases");
+    if (cases.ok) {
+      for (const c of cases.data) {
+        const step = c.steps.find((s) => s.benefit_id === benefitId && !s.form_session_id);
+        if (step) {
+          await api<Case>(`/api/cases/${c.id}/steps/${step.id}`, { method: "PATCH", body: { form_session_id: r.data.id } });
+          break;
+        }
+      }
+    }
+  }
   redirect(`/forms/${r.data.id}`);
+}
+
+/** "Mein Fall" from the latest analysed document: its open tasks + the benefits it mentions. */
+export async function createCase() {
+  const docs = await api<DocumentSummary[]>("/api/documents");
+  if (!docs.ok) redirect(`/fall?error=${encodeURIComponent(docs.detail)}&status=${docs.status}`);
+  const latest = [...docs.data].sort((a, b) => b.uploaded_at.localeCompare(a.uploaded_at))[0];
+  if (!latest) redirect(`/fall?error=${encodeURIComponent("Bitte zuerst ein Dokument hochladen.")}`);
+  const an = await api<DocumentAnalysis>(`/api/documents/${latest.document_id}/analysis`);
+  const benefitIds = an.ok ? [...new Set(an.data.recommendations.flatMap((x) => x.related_benefit_ids ?? []))] : [];
+  const me = await api<Session>("/api/identity/me");
+  const r = await api<Case>("/api/cases", {
+    method: "POST",
+    body: {
+      subject_id: me.ok ? me.data.subject.id : "",
+      title_de: "Versorgung nach dem Spitalsaufenthalt",
+      document_id: latest.document_id,
+      benefit_ids: benefitIds,
+    },
+  });
+  if (!r.ok) redirect(`/fall?error=${encodeURIComponent(r.detail)}&status=${r.status}`);
+  revalidatePath("/fall");
+  redirect("/fall");
 }

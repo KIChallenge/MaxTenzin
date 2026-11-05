@@ -18,11 +18,12 @@ function collapse(events: AuditEvent[]): Row[] {
   return out;
 }
 
-export default async function AuditPage({ searchParams }: { searchParams: Promise<{ all?: string; only?: string }> }) {
+export default async function AuditPage({ searchParams }: { searchParams: Promise<{ all?: string; only?: string; limit?: string }> }) {
   const sp = await searchParams;
+  const limit = Math.min(Number(sp.limit) || 60, 500);
   const [me, events, personas] = await Promise.all([
     getMe(),
-    api<AuditEvent[]>("/api/audit?limit=300"),
+    api<AuditEvent[]>(`/api/audit?limit=${limit}`),
     api<Person[]>("/api/identity/personas"),
   ]);
   const name = me.ok ? fullName(me.data.subject) : "";
@@ -64,7 +65,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
             <caption className="sr-only">Zugriffsprotokoll</caption>
             <thead className="bg-paper text-sm">
               <tr>
-                {["Zeit", "Wer", "Für wen", "Über", "Werkzeug", "Aktion", "Berechtigung", "Ergebnis", "Quellen / Regeln"].map((h) => (
+                {["Zeit", "Wer · für wen", "Über", "Aktion", "Berechtigung", "Ergebnis", "Quellen / Regeln"].map((h) => (
                   <th key={h} scope="col" className="px-3 py-2 font-bold">
                     {h}
                   </th>
@@ -77,12 +78,14 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
                 return (
                   <tr key={e.id} className={isDenied ? "bg-danger-soft" : e.via === "agent" ? "bg-accent-soft/50" : ""}>
                     <td className="px-3 py-2 text-sm whitespace-nowrap">{fmtDateTime(e.ts)}</td>
-                    <td className="px-3 py-2">{who(e.actor_id)}</td>
-                    <td className="px-3 py-2">{who(e.subject_id)}</td>
-                    <td className="px-3 py-2">
-                      {e.via === "agent" ? <span className="font-bold text-accent-strong">🤖 KI-Lotse</span> : "👤 Oberfläche"}
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      <strong>{who(e.actor_id)}</strong>
+                      {e.subject_id && e.subject_id !== e.actor_id && <span className="block text-sm text-muted">für {who(e.subject_id)}</span>}
                     </td>
-                    <td className="px-3 py-2 text-sm">{e.tool ?? "–"}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      {e.via === "agent" ? <span className="font-bold text-accent-strong">🤖 KI-Lotse</span> : "👤 Oberfläche"}
+                      {e.tool && <span className="block text-sm text-muted">{e.tool}</span>}
+                    </td>
                     <td className="px-3 py-2 text-sm">
                       <code>
                         {e.method} {e.path}
@@ -100,6 +103,13 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
             </tbody>
           </table>
           {rows.length === 0 && <p className="p-4 text-muted">Keine Einträge.</p>}
+          {events.data.length >= limit && (
+            <p className="border-t border-line p-3">
+              <a className="link" href={`/transparenz?limit=${limit + 100}${sp.only ? `&only=${sp.only}` : ""}${sp.all ? "&all=1" : ""}`}>
+                Ältere Einträge laden
+              </a>
+            </p>
+          )}
         </div>
       )}
     </>
