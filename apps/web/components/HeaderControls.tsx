@@ -8,7 +8,7 @@ export function SubjectSwitcher({ current, options }: { current: string; options
   const router = useRouter();
   return (
     <label className="inline-flex items-center gap-2">
-      <span className="text-muted">handelt für:</span>
+      <span className="text-muted">für</span>
       <select
         className="rounded-lg border border-accent bg-surface px-2 py-1 font-bold text-accent-strong"
         value={current}

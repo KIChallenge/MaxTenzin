@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { createCase } from "@/app/actions";
 import { ApiError } from "@/components/ApiError";
-import { Badge } from "@/components/Badge";
 import { PageTitle } from "@/components/PageTitle";
 import { SourceChip } from "@/components/SourceChip";
 import { api } from "@/lib/api";
-import { fmtDate, fullName, STEP_STATUS } from "@/lib/labels";
+import { fmtDate, fullName } from "@/lib/labels";
 import { getMe } from "@/lib/me";
 import type { Case } from "@/lib/types";
 import { StepStatusSelect } from "./StepStatusSelect";
@@ -49,7 +48,6 @@ export default async function CasePage({ searchParams }: { searchParams: Promise
               </div>
               <ol className="space-y-3">
                 {c.steps.map((s, i) => {
-                  const st = STEP_STATUS[s.status ?? "open"];
                   return (
                     <li key={s.id} className={`card flex flex-wrap items-center gap-4 ${s.status === "done" ? "opacity-75" : ""}`}>
                       <span aria-hidden className={`grid h-9 w-9 shrink-0 place-items-center rounded-full font-bold ${s.status === "done" ? "bg-ok text-white" : "bg-accent-soft text-accent-strong"}`}>
@@ -67,7 +65,6 @@ export default async function CasePage({ searchParams }: { searchParams: Promise
                           {s.form_session_id && <Link href={`/forms/${s.form_session_id}`} className="link">Antrag öffnen</Link>}
                         </div>
                       </div>
-                      <Badge tone={st.tone}>{st.label}</Badge>
                       <StepStatusSelect caseId={c.id} stepId={s.id} status={s.status ?? "open"} label={s.title_de} />
                     </li>
                   );

@@ -179,8 +179,8 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
         )}
         {!isReview ? (
           <>
-            <h2 className="mb-4 text-2xl font-bold">{current}</h2>
-            <div className="space-y-4">
+            <h2 className="mb-3 text-2xl font-bold">{current}</h2>
+            <div className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
               {(fieldsBySection.get(current) ?? []).filter(visible).map((f) => (
                 <FieldRow
                   key={f.id}
@@ -199,11 +199,11 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
             <div className="mt-6 flex gap-3">
               {step > 0 && (
                 <button type="button" className="btn-secondary" onClick={() => setStep(step - 1)}>
-                  ← Zurück
+                  Zurück
                 </button>
               )}
               <button type="button" className="btn-primary" onClick={() => setStep(step + 1)}>
-                Weiter →
+                Weiter
               </button>
             </div>
           </>
@@ -241,49 +241,57 @@ function FieldRow(props: {
   const dirty = draft !== undefined && draft !== (fv?.value ?? null);
   const id = `f-${f.id}`;
 
+  const rowBase = "grid gap-x-6 gap-y-2 px-5 py-4 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]";
+  const hint = f.ask_hint_de && <p className="mt-0.5 text-sm text-muted">{f.ask_hint_de}</p>;
+
   if (f.readonly_reason_de) {
     return (
-      <div className="card bg-neutral-soft">
+      <div className={`${rowBase} bg-neutral-soft/60`}>
         <p className="font-bold">{f.label_de}</p>
-        <p className="text-muted">🔒 {f.readonly_reason_de}</p>
+        <p className="text-sm text-muted">🔒 {f.readonly_reason_de}</p>
       </div>
     );
   }
 
   return (
-    <div key={flashAt} className={`card ${missingReq ? "border-2 border-warn" : ""} ${flashAt ? "flash" : ""}`}>
-      <div className="flex flex-wrap items-center gap-2">
-        <label htmlFor={id} className="text-lg font-bold">
+    <div
+      key={flashAt}
+      className={`${rowBase} border-l-4 ${missingReq ? "border-l-warn bg-warn-soft/30" : "border-l-transparent"} ${flashAt ? "flash" : ""}`}
+    >
+      <div>
+        <label htmlFor={id} className="font-bold">
           {f.label_de}
-          {f.required && <span className="text-warn"> *</span>}
+          {f.required && (
+            <span className="text-warn" aria-label="Pflichtangabe">
+              {" "}
+              *
+            </span>
+          )}
         </label>
-        {missingReq && <span className="rounded-full bg-warn-soft px-2 text-sm font-bold text-warn">fehlt noch</span>}
-        {flashAt && <span className="rounded-full bg-info-soft px-2 text-sm font-bold text-info">gerade aktualisiert</span>}
+        {hint}
       </div>
-      {f.ask_hint_de && <p className="text-muted">{f.ask_hint_de}</p>}
-      <div className="mt-2">
+      <div className="min-w-0">
         <Input field={f} id={id} value={value} onChange={props.onDraft} onFocus={props.onFocus} onBlur={props.onBlur} onCommit={props.onSave} />
-      </div>
-      <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-        {fv?.source && filled && (
-          <>
-            <span className="text-muted">vorausgefüllt aus</span>
-            <SourceChip source={fv.source} />
-          </>
+        {(missingReq || flashAt || filled || dirty) && (
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+          {missingReq && <span className="font-bold text-warn">Fehlt noch</span>}
+          {flashAt && <span className="font-bold text-info">Gerade über den Chat aktualisiert</span>}
+          {fv?.source && filled && <SourceChip source={fv.source} />}
+          {filled && fv?.confirmed && !dirty && <span className="font-bold text-ok">✓ Bestätigt</span>}
+          <span className="ml-auto flex gap-2">
+            {dirty && (
+              <button type="button" className="btn-primary px-3 py-1 text-sm" onClick={() => props.onSave(draft ?? null)}>
+                Speichern
+              </button>
+            )}
+            {!dirty && filled && !fv?.confirmed && (
+              <button type="button" className="btn-secondary px-3 py-1 text-sm" onClick={() => props.onSave(fv?.value ?? null)}>
+                Stimmt so
+              </button>
+            )}
+          </span>
+        </div>
         )}
-        {filled && fv?.confirmed && !dirty && <span className="font-bold text-ok">✓ bestätigt</span>}
-        <span className="ml-auto flex gap-2">
-          {dirty && (
-            <button type="button" className="btn-primary py-1" onClick={() => props.onSave(draft ?? null)}>
-              Speichern
-            </button>
-          )}
-          {!dirty && filled && !fv?.confirmed && (
-            <button type="button" className="btn-secondary py-1" onClick={() => props.onSave(fv?.value ?? null)}>
-              ✓ Stimmt so
-            </button>
-          )}
-        </span>
       </div>
     </div>
   );
@@ -325,10 +333,13 @@ function Input({
   }
   if (f.type === "choice") {
     return (
-      <fieldset className="flex flex-wrap gap-3" id={id}>
+      <fieldset className="flex flex-wrap gap-2" id={id}>
         <legend className="sr-only">{f.label_de}</legend>
         {f.options.map((o) => (
-          <label key={o} className="inline-flex items-center gap-2 rounded-lg border border-line px-3 py-1">
+          <label
+            key={o}
+            className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-line px-3 py-1.5 has-[:checked]:border-accent has-[:checked]:bg-accent-soft has-[:checked]:font-bold"
+          >
             <input type="radio" name={id} className="accent-accent" checked={value === o} onChange={() => {
                 onChange(o);
                 onCommit(o);
@@ -347,8 +358,8 @@ function Input({
     onFocus,
     onBlur,
   };
-  if (f.type === "textarea") return <textarea rows={4} {...common} />;
-  return <input type="text" inputMode={f.type === "date" ? "numeric" : undefined} placeholder={f.type === "date" ? "TT.MM.JJJJ" : undefined} {...common} />;
+  if (f.type === "textarea") return <textarea rows={3} {...common} />;
+  return <input type="text" inputMode={f.type === "date" ? "numeric" : undefined} placeholder={f.type === "date" ? "TT.MM.JJJJ" : undefined} {...common} className={`input ${f.type === "date" ? "max-w-48" : ""}`} />;
 }
 
 function Review({

@@ -17,7 +17,7 @@ export function Header({ me, represented, plain }: { me: Session; represented: P
         </Link>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <span>
-            <span className="text-muted">Angemeldet als </span>
+            <span className="sr-only">Angemeldet als </span>
             <strong>{fullName(me.actor)}</strong>
           </span>
           <span aria-hidden className="text-line">
@@ -36,17 +36,17 @@ export function Header({ me, represented, plain }: { me: Session; represented: P
         </div>
       </div>
       <div className={`border-t border-line ${actingForOther ? "bg-accent-soft" : "bg-paper"}`}>
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-5 py-2 text-sm">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-2 gap-y-1 px-5 py-1.5 text-sm">
           <span className="font-bold text-ink">
-            {actingForOther ? `Berechtigungen von ${fullName(me.subject)} für Sie:` : "Ihre Berechtigungen:"}
+            {actingForOther ? `${me.subject.first_name} erlaubt Ihnen:` : "Ihre Berechtigungen:"}
           </span>
           {me.scopes.map((s) => (
-            <span key={s} className="rounded-full border border-accent/30 bg-surface px-2 py-0.5 font-bold text-accent-strong">
+            <span key={s} className="rounded-full border border-accent/30 bg-surface px-2 py-px font-bold text-accent-strong">
               ✓ {SCOPE_LABELS[s]}
             </span>
           ))}
           <Link href="/vertretung" className="link ml-auto">
-            Vertretung verwalten
+            Vertretung
           </Link>
         </div>
       </div>

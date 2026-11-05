@@ -40,9 +40,11 @@ export default async function LegalPage({ searchParams }: { searchParams: Promis
           {hits.data.map((h) => (
             <li key={h.paragraph.doc_id} className="card">
               <a className="link text-lg" href={`/recht?law=${encodeURIComponent(h.paragraph.law_key)}&nr=${encodeURIComponent(h.paragraph.nr)}`}>
-                {h.paragraph.citation_de || `§ ${h.paragraph.nr} ${h.paragraph.law}`} – {h.paragraph.heading}
+                {shortTitle(h.paragraph)}
               </a>
-              <p className="text-sm text-muted">{h.paragraph.law_title} · Fassung in Kraft seit {fmtDate(h.paragraph.in_force)}</p>
+              <p className="text-sm text-muted">
+                {[h.paragraph.law_title, ...trail(h.paragraph.heading)].join(" › ")} · Fassung in Kraft seit {fmtDate(h.paragraph.in_force)}
+              </p>
               <p className="mt-1">{h.snippet}</p>
             </li>
           ))}
@@ -56,13 +58,23 @@ function Paragraph({ p }: { p: LegalParagraph }) {
   return (
     <article className="card mb-6">
       <p className="eyebrow">{p.law_title}</p>
-      <h2 className="text-2xl font-bold">
-        {p.citation_de || `§ ${p.nr} ${p.law}`} – {p.heading}
-      </h2>
+      <h2 className="text-2xl font-bold">{shortTitle(p)}</h2>
+      {trail(p.heading).length > 0 && <p className="text-sm text-muted">{trail(p.heading).join(" › ")}</p>}
       <p className="mt-1 rounded-lg bg-info-soft px-3 py-1 font-bold text-info">
         Fassung in Kraft seit {fmtDate(p.in_force)} · unverbindliche Information, keine Rechtsberatung
       </p>
       <div className="mt-4 max-w-3xl whitespace-pre-wrap">{p.text}</div>
     </article>
   );
+}
+
+/** "§ 1 BPGG – Zweck des Pflegegeldes" instead of the full TEIL/ABSCHNITT chain. */
+function shortTitle(p: LegalParagraph) {
+  const parts = p.heading.split(" – ").map((x) => x.trim()).filter(Boolean);
+  return `§ ${p.nr} ${p.law} – ${parts[parts.length - 1] ?? p.heading}`;
+}
+/** The structural part of the heading (Teil, Abschnitt), shown small as a breadcrumb. */
+function trail(heading: string) {
+  const parts = heading.split(" – ").map((x) => x.trim()).filter(Boolean);
+  return parts.slice(0, -1).map((x) => x.replace(/\s*\(Bundespflegegeldgesetz[^)]*\)/, ""));
 }
