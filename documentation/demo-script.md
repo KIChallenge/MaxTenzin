@@ -75,7 +75,7 @@ Die vier Szenarien des Use Case („auch für die Bewertung“): Pflege (Akt 1),
 
 ## Akt 5 – Infrastruktur & Roadmap (6:50–7:10) · Tab `localhost:8000/docs` + Folie
 
-> „Darunter liegen 14 Services mit klaren Schnittstellen – Vertretung, Lebenslage, Dokumente, Leistungen, Anträge, Termine, Fall, Vorsorge, Rechtsgrundlagen, Werte, Protokoll. 1.976 Paragraphen aus 19 Gesetzen, die Wertetabellen 2026, der Erstattungskodex, die offiziellen Formulare – alles mit Quelle. 262 automatische Tests, 35/35 Live-Evals. Lotsi ist nur der oberste Layer: Jeder neue Service macht ihn klüger, ohne dass wir die KI neu bauen.“
+> „Darunter liegen 14 Services mit klaren Schnittstellen – Vertretung, Lebenslage, Dokumente, Leistungen, Anträge, Termine, Fall, Vorsorge, Rechtsgrundlagen, Werte, Protokoll. 1.976 Paragraphen aus 19 Gesetzen, die Wertetabellen 2026, der Erstattungskodex, die offiziellen Formulare – alles mit Quelle. 266 automatische Tests, 35/35 Live-Evals. Lotsi ist nur der oberste Layer: Jeder neue Service macht ihn klüger, ohne dass wir die KI neu bauen.“
 
 ---
 
@@ -91,7 +91,7 @@ Akt 0 (20 s) → Akt 1 nur: Login · **Foto-Upload** · Lebenslage übernehmen �
 | Lebenslage-Vorschläge erscheinen nicht | Dokument-Seite → Abschnitt Lebenslage, oder **+ Situation hinzufügen** (Krankenhaus bis 29.10.2026) | – |
 | Meldepflicht nicht im Posteingang | erscheint erst, wenn ein Pflegegeld-Antrag existiert **und** der Spitalsaufenthalt übernommen ist – Reihenfolge prüfen | – |
 | Assistent springt nicht um | Seite neu laden (Sitzung ist gespeichert) | – |
-| Berechtigung von der Probe noch entzogen | als Anna → Einstellungen → wieder einschalten, oder `make reset && make seed` | – |
+| Berechtigung von der Probe noch entzogen | als Anna → Einstellungen → wieder einschalten, oder `make demo-fresh` | – |
 | Englische Antwort enthält „comes into question“ o. Ä. | API läuft mit altem Code → `Ctrl+C`, `make api-demo` | – |
 | Erstattungskodex-Suche „kein Treffer“ | Nur den Wirkstoff-/Produktnamen ohne Stärke eingeben („Pantoprazol“) | – |
 | Gar nichts geht | Backup-Video | „Hier die Aufzeichnung von heute.“ |
