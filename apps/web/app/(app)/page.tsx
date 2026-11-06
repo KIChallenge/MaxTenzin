@@ -4,12 +4,13 @@ import { BundleCard } from "@/components/BundleCard";
 import { CareTeamCard } from "@/components/CareTeamCard";
 import type { components } from "@/lib/api-types";
 import type { DocumentSummary } from "@/lib/types";
-import { Lebenslage } from "@/components/Lebenslage";
+import { UploadForm } from "./dokumente/UploadForm";
 import type { CareTeam } from "@/lib/care";
 import { OpenChatButton } from "@/components/OpenChatButton";
 import type { SituationOverview } from "@/lib/situation";
 import { api } from "@/lib/api";
 import { cockpitRoute, fmtDate, fullName } from "@/lib/labels";
+import type { ApiResult } from "@/lib/types";
 import { getMe } from "@/lib/me";
 import type { Notification } from "@/lib/types";
 
@@ -60,24 +61,24 @@ export default async function Cockpit() {
           Guten Tag, {actor?.first_name}
           {forOther && <span className="text-muted">. Sie handeln für {fullName(subject)}.</span>}
         </h1>
-        <div className="mt-5">
-          <Lebenslage
-            {...(situation.ok ? { ok: true as const, data: situation.data } : { ok: false as const, status: situation.status, detail: situation.detail })}
-            subjectName={subject ? fullName(subject) : ""}
-            firstName={subject?.first_name ?? ""}
-          />
-        </div>
+        <LebenslageSummary situation={situation} firstName={subject?.first_name ?? ""} subjectName={subject ? fullName(subject) : ""} />
         {bundle?.ok && bundle.data && (
           <div className="mt-5">
             <BundleCard bundle={bundle.data} formOwner={formOwner} documentId={latestLetter} canPrepare={!!me.ok && me.data.scopes.includes("prepare_applications")} />
           </div>
         )}
-        <div className="card mt-5 flex flex-wrap items-center gap-4 border-accent/30 bg-accent-soft">
-          <div className="flex-1">
-            <p className="font-semibold">Was möchten Sie heute erledigen?</p>
-            <p className="text-muted">Lotsi fragt die Dienste für Sie ab – mit denselben Berechtigungen wie Sie.</p>
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <div className="card flex flex-col justify-between gap-3 border-accent/30 bg-accent-soft">
+            <div>
+              <p className="font-semibold">Was möchten Sie heute erledigen?</p>
+              <p className="text-muted">Lotsi fragt die Dienste für Sie ab – mit denselben Berechtigungen wie Sie.</p>
+            </div>
+            <div>
+              <OpenChatButton>Frag Lotsi</OpenChatButton>
+            </div>
           </div>
-          <OpenChatButton>Frag Lotsi</OpenChatButton>
+          {/* quick drop: straight to the document review after upload */}
+          <UploadForm subjectName={subject ? fullName(subject) : ""} compact />
         </div>
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {TILES.map((t) => (
@@ -114,6 +115,47 @@ export default async function Cockpit() {
             ))}
         </div>
       </aside>
+    </div>
+  );
+}
+
+
+/** Home: one compact Lebenslage card (summary, next deadlines, pending suggestions); the full view is /lebenslage. */
+function LebenslageSummary({ situation, firstName, subjectName }: { situation: ApiResult<SituationOverview>; firstName: string; subjectName: string }) {
+  if (!situation.ok) {
+    return (
+      <p className="card mt-5 text-muted">
+        {situation.status === 403 ? `Für die Lebenslage hat ${subjectName} keine Berechtigung erteilt.` : "Lebenslage derzeit nicht verfügbar."}
+      </p>
+    );
+  }
+  const d = situation.data;
+  const deadlines = d.effects.filter((e) => e.due_date).slice(0, 2);
+  const pending = d.suggestions.length;
+  return (
+    <div className="card mt-5 flex flex-col gap-2">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <h2 className="text-lg font-semibold">Lebenslage von {firstName}</h2>
+        <span className="text-muted">{d.summary_de || "Keine aktuelle Lebenslage eingetragen"}</span>
+        <Link href="/lebenslage" className="link ml-auto text-sm">
+          Ansehen und ändern
+        </Link>
+      </div>
+      {pending > 0 && (
+        <p className="text-sm font-semibold text-warn">
+          {pending} {pending === 1 ? "Vorschlag wartet" : "Vorschläge warten"} auf Ihre Zustimmung
+        </p>
+      )}
+      {deadlines.length > 0 && (
+        <ul className="space-y-1 text-sm">
+          {deadlines.map((e) => (
+            <li key={`${e.kind}-${e.title_de}`}>
+              <span className="font-semibold">{e.title_de}</span>
+              {e.due_date && <span className="ml-2 rounded bg-warn-soft px-1.5 py-0.5 text-warn">bis {fmtDate(e.due_date)}</span>}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

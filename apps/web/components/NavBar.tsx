@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 
 const MAIN = [
   ["/", "Übersicht"],
+  ["/lebenslage", "Lebenslage"],
   ["/dokumente", "Dokumente"],
   ["/leistungen", "Leistungen"],
   ["/fall", "Mein Fall"],

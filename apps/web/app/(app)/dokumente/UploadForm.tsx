@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { Camera, FileUp, LoaderCircle } from "lucide-react";
 import { ACCEPT, uploadAndAnalyze } from "@/lib/upload";
 
-export function UploadForm({ subjectName }: { subjectName: string }) {
+/** compact: the home-page quick drop (smaller, no camera row). */
+export function UploadForm({ subjectName, compact = false }: { subjectName: string; compact?: boolean }) {
   const [stage, setStage] = useState<"idle" | "upload" | "analyze">("idle");
   const [over, setOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +49,7 @@ export function UploadForm({ subjectName }: { subjectName: string }) {
           setOver(false);
           handle(e.dataTransfer.files);
         }}
-        className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-6 py-10 text-center transition-colors ${
+        className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-6 ${compact ? "h-full py-5" : "py-10"} text-center transition-colors ${
           over ? "border-accent bg-accent-soft" : "border-line bg-surface hover:border-accent/60 hover:bg-accent-soft/40"
         } ${busy ? "cursor-wait" : ""}`}
       >
@@ -68,7 +69,7 @@ export function UploadForm({ subjectName }: { subjectName: string }) {
               oder <span className="font-semibold text-accent underline underline-offset-2">Datei auswählen</span> · ein PDF oder Fotos
               (JPG, PNG) – mehrere Fotos werden ein Dokument
             </p>
-            <p className="text-sm text-muted">z. B. Entlassungsbrief, Befund oder e-Impfpass von {subjectName}</p>
+            {!compact && <p className="text-sm text-muted">z. B. Entlassungsbrief, Befund oder e-Impfpass von {subjectName}</p>}
           </>
         )}
         <input
@@ -84,7 +85,7 @@ export function UploadForm({ subjectName }: { subjectName: string }) {
           }}
         />
       </div>
-      <div className="mt-2 flex items-center gap-2">
+      <div className={compact ? "hidden" : "mt-2 flex items-center gap-2"}>
         <button type="button" className="btn-secondary py-1 text-sm" disabled={busy} onClick={() => camera.current?.click()}>
           <Camera className="h-4 w-4" aria-hidden /> Foto aufnehmen
         </button>
