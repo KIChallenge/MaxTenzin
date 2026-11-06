@@ -1,5 +1,6 @@
 import { Check, ChevronRight, FilePen, Paperclip, X } from "lucide-react";
 import Link from "next/link";
+import { OpenFromHash } from "@/components/OpenFromHash";
 import { startForm } from "@/app/actions";
 import { FactQuestion } from "@/components/FactQuestion";
 import { findEvidence } from "@/lib/facts";
@@ -69,6 +70,7 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
 
   return (
     <>
+      <OpenFromHash />
       <PageTitle eyebrow="Leistungen" title={`Was für ${name} in Frage kommt`}>
         Geprüft nach festen Regeln aus Gesetz und Werte-Tabellen
         {used.length ? ` – auf Basis von: ${used.map((d) => d.filename).join(", ")}` : ""}. Die Entscheidung trifft immer
@@ -95,7 +97,7 @@ export default async function BenefitsPage({ searchParams }: { searchParams: Pro
             const cards = (list: EligibilityResult[]) => (
               <ul className="space-y-2">
                 {list.map((r) => (
-                  <li key={r.benefit.id} id={r.benefit.id}>
+                  <li key={r.benefit.id} id={r.benefit.id} className="scroll-mt-32">
                     <BenefitCard
                       r={r}
                       plain={plain}
@@ -227,7 +229,7 @@ function BenefitCard({
             <ol className="mt-3 space-y-2">
               {steps.map((s, i) => (
                 <li key={s} className="flex flex-wrap items-start gap-x-3 gap-y-1.5">
-                  <span aria-hidden className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent text-xs font-semibold text-white">
+                  <span aria-hidden className="grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 border-accent bg-surface text-xs font-semibold text-accent-strong">
                     {i + 1}
                   </span>
                   <span className="min-w-0 flex-1 pt-0.5">{s}</span>
