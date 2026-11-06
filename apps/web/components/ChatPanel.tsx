@@ -1,5 +1,5 @@
 "use client";
-import { FileText, History, LoaderCircle, Lock, Mic, MicOff, Paperclip, SquarePen, TriangleAlert, X } from "lucide-react";
+import { FileText, History, LoaderCircle, Lock, Maximize2, Mic, MicOff, Minimize2, Paperclip, SquarePen, TriangleAlert, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { bff } from "@/lib/client";
@@ -49,6 +49,8 @@ function createRecognition(): Recognition | null {
 export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { subjectId: string; subjectName: string; plain: boolean; voice?: boolean }) {
   const storeKey = `lotse-chat-${subjectId}`;
   const [open, setOpen] = useState(false);
+  // Pop-up window by default; "expanded" docks it at the right edge in full height (the page makes room).
+  const [expanded, setExpanded] = useState(false);
   const [view, setView] = useState<"chat" | "history">("chat");
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [conv, setConv] = useState<string | null>(null);
@@ -101,6 +103,7 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
       setMsgs(saved?.msgs ?? []);
       setConv(saved?.conv ?? null);
       setOpen(sessionStorage.getItem("lotse-chat-open") === "1");
+      setExpanded(sessionStorage.getItem("lotse-chat-expanded") === "1");
       // The browser keeps the chat, the server may not (make demo-fresh / reset): drop a conversation the API no
       // longer knows, so a fresh demo never shows an old chat.
       if (saved?.conv) {
@@ -150,11 +153,12 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
   useEffect(() => {
     try {
       sessionStorage.setItem("lotse-chat-open", open ? "1" : "0");
+      sessionStorage.setItem("lotse-chat-expanded", expanded ? "1" : "0");
     } catch {}
-    // On wide screens the page makes room for the panel instead of being covered by it.
-    document.body.classList.toggle("chat-open", open);
+    // Only the docked (expanded) panel makes the page give way; the pop-up floats over it.
+    document.body.classList.toggle("chat-open", open && expanded);
     return () => document.body.classList.remove("chat-open");
-  }, [open]);
+  }, [open, expanded]);
 
   /** Attach: only queue the files. They are uploaded and read when the message is sent (Enter / Senden), so the
    *  person can still write a question – and several photos of one letter become ONE document. */
@@ -328,7 +332,11 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
         setDragOver(false);
         attach(e.dataTransfer.files);
       }}
-      className="fixed inset-y-0 right-0 z-40 flex w-full max-w-md flex-col border-l border-line bg-surface shadow-2xl"
+      className={
+        expanded
+          ? "fixed inset-y-0 right-0 z-40 flex w-full max-w-md flex-col border-l border-line bg-surface shadow-2xl"
+          : "fixed right-5 bottom-5 z-40 flex h-[min(680px,calc(100vh-6rem))] w-[min(420px,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl"
+      }
     >
       <div className="flex items-center gap-3 border-b border-line px-4 py-3">
         <LotsiAvatar size={40} />
@@ -348,6 +356,16 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
           aria-pressed={view === "history"}
         >
           <History className="h-5 w-5" aria-hidden />
+        </button>
+        <button
+          type="button"
+          onClick={() => setExpanded((e) => !e)}
+          className="btn-ghost p-2"
+          title={expanded ? "Verkleinern" : "Erweitern"}
+          aria-label={expanded ? "Chat verkleinern" : "Chat erweitern"}
+          aria-pressed={expanded}
+        >
+          {expanded ? <Minimize2 className="h-5 w-5" aria-hidden /> : <Maximize2 className="h-5 w-5" aria-hidden />}
         </button>
         <button type="button" onClick={() => setOpen(false)} className="btn-ghost p-2" aria-label="Chat schließen">
           <X className="h-5 w-5" aria-hidden />
