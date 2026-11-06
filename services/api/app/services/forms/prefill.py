@@ -101,9 +101,9 @@ def amount_de(value) -> str:
 
 
 def _fact(subject_id: str, key: str) -> tuple[str | None, SourceRef | None]:
-    from app.core.db import store
+    from app.services.benefits.router import known_facts  # one owner of the facts store (benefits)
 
-    data = store.get("known_facts", subject_id) or {}
+    data = known_facts(subject_id)
     if key not in (data.get("facts") or {}):
         return None, None
     v = data["facts"][key]

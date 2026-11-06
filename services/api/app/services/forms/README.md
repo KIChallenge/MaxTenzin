@@ -26,12 +26,16 @@ Sessions are scoped to the subject (other subjects get 404). Status: `draft` →
   is generated from them (`uv run python -m app.services.forms.spec`) and a test keeps it in sync.
 - Per field: `pdf_field` (defaults to `id`), `pdf_on_value` (checkbox), `pdf_options` (choice → radio export state),
   `pdf_overflow` + `max_chars` (long text continues on the form's next line), `when` (relevance: other field value or
-  `proxy`), `required` / `recommended`, `ask_hint_de`, `prefill`, `blank_from_prefill`, `doctor_only` +
+  `proxy`; chained: a follow-up of a question that no longer applies does not apply either), `required` /
+  `recommended`, `ask_hint_de`, `prefill`, `blank_from_prefill`, `pattern` + `pattern_hint_de` (regex for the
+  normalized text, e.g. a package count – an unknown answer is a 422, never „nicht bekannt“), `doctor_only` +
   `readonly_reason_de`. `blank_from_prefill: true`: a prefill that resolves to `""` *with* a source means "known:
   leave empty" – the empty value is stored with its source and `next-questions` does not ask for it again.
 - Prefill (`prefill.py`): `profile.*` (subject), `actor.*` + `delegation.*` (only when acting for someone else),
   `document.*` (admin facts from the analysis, quote + page), `situation.*` (confirmed Lebenslage episodes, only if
-  the actor has `manage_situation`; see `situation/README.md`), `system.today`, `const:` (a suggestion). Rules may
+  the actor has `manage_situation`; see `situation/README.md`), `facts.*` (answers already given for the benefit
+  checks via cockpit or Lotsi, `GET /api/benefits/facts`; source = „Angabe von <Name>, <Datum> (Lotsi|Cockpit) – bitte
+  prüfen“; numbers as German amounts „1.150,00“), `system.today` / `system.city_today`, `const:` (a suggestion). Rules may
   chain alternatives (`situation.stay1.end|document.discharge_date`). Every prefill carries a `SourceRef` and starts
   `confirmed: false`. Profile sources are labelled honestly: "ID Austria" only for name/birth date, "ID Austria –
   Hauptwohnsitz laut ZMR" for the address, "e-card / Sozialversicherung" for SVNR/insurer, everything else
@@ -56,11 +60,17 @@ Sessions are scoped to the subject (other subjects get 404). Status: `draft` →
 | `fsw_foerderung` | 119 fields → all 122 AcroForm fields except 3 signature fields | Pflege und Betreuung path prefilled; Behinderung/Obdach mapped too |
 | `sv_kur_reha` | page 1: all 44 fields; page 2: 47 fields doctor-only | 4 doctor fields shown read-only |
 | `oegk_fahrtkosten_wien` | all 13 fields | SVNR/IBAN normalised for comb fields |
+| `oegk_rezeptgebuehr_befreiung` | 67 schema fields → all 68 AcroForm fields | ÖGK-KSLS/0088-01/V01, downloaded from oegk.at (see Sources). Prefilled: name, SVNR (comb, 10 digits), Straße + Nr., PLZ, Ort, Telefon, E-Mail (profile), Familienstand (profile, e.g. Anna = verwitwet), „Pension oder Rente“ amount (`facts.net_income_monthly`), Vermerke = who files it (delegation, proxy only), Ort/Datum. Never prefilled: income-type ticks, household members, package count. No consent boxes on this form (declarations = signature) |
 
 Not mapped yet: `fsw_einrichtungswunsch`, `fsw_senioren_wg`, `sv_reha_nach_unfall` (hospital-filled, info only).
 
 ## Sources
-Official AcroForm templates in `knowledge/forms/templates/` (field names + states verified against the PDFs);
+Official AcroForm templates in `knowledge/forms/templates/` (field names + states verified against the PDFs). All
+come from the challenge data (`docs/`) except `oegk_rezeptgebuehr_befreiung.pdf`: downloaded on 2026-11-06 from
+https://www.oegk.at/cdscontent/load?contentid=10008.785277&version=1779440677 (info page
+https://www.oegk.at/cdscontent/?contentid=10007.870471&portal=oegkportal), committed as-is; its fields.json is
+re-dumped by `tools/extract/forms.py --downloaded-only` and MANIFEST entry `form_templates_downloaded` records URL,
+date and sha256;
 start, preview and render cite the form version in the audit log (`ctx.cite`). Prefill sources: demo profile
 (labelled ID Austria / ZMR / e-card / Profilangaben), delegation, document quote + page, Lebenslage episode.
 
@@ -72,6 +82,9 @@ start, preview and render cite the form version in the audit log (`ctx.cite`). P
 - No IBAN checksum / SVNR check digit validation. Text is not wrapped inside a single line; very long values shrink
   (auto font size) in viewers.
 - Document prefill reads `store('document_analyses')`; the document must have been analysed first.
+- Rezeptgebühr form: `facts.net_income_monthly` goes into the „Pension oder Rente“ row only (the facts store has no
+  income type). The person ticks the income type; if the income is a salary, the amount must be moved in the review.
+  „Vermerke“ is read as the applicant's own remark line (section 4, above the signature), not as office use.
 
 ## Tests
 `app/services/forms/tests/test_forms.py` — schema sync, every `pdf_field` exists, full AcroForm coverage, radio export
@@ -79,4 +92,7 @@ states exist in the PDF, doctor-only enforcement, Maria→Anna prefill, document
 render read-back with pypdf, preview. `test_prefill_facts.py` — document facts (discharge date, verbatim diagnosis)
 with quote + page. `test_prefill_situation.py` — Lebenslage prefill vs. document fallback, no mixing, scope check.
 `test_lebenslage_prefill_home.py` — home care prefills "Betreuung" and the known-empty temporary stay.
+`test_rezeptgebuehr_form.py` — definition + benefit link, Maria→Anna prefill with sources, no checkbox ticked by
+prefill, stated income → pension amount with source, household rows follow „lebt allein“ (chained), render read-back
+with draft stamp, number validation.
 Run `make test-api`.
