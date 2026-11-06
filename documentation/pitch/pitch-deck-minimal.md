@@ -14,10 +14,12 @@ Aufbau der alten Titelfolie: Segelboot, Eyebrow „SV-Lotsi · DVSV KI-Challenge
 > Sprechtext (15 s): „Ein guter KI-Lotse braucht eine gute Infrastruktur. Gesucht ist kein Chatbot, sondern ein Lotse. Deshalb haben wir zuerst die Prozesse als Dienste gebaut, jeder mit Quelle, und Lotsi als oberste Schicht daraufgesetzt. Erst die Prozesse, dann die KI.“
 
 ## Folie 2 – Das ist Lotsi (0:15–0:35)
-**Der persönliche Lotse durch die Sozialversicherung. Kein Chatbot.**
+**Der persönliche Lotse durch die Sozialversicherung.**
 Unterzeile: Für alle Versicherten – und für alle, die für jemanden handeln. Von der ersten Frage bis zum unterschriftsreifen Antrag, mit genau den Rechten der Person.
-Dazu die Lotsi-Figur (kleiner Leuchtturm, aus dem Cockpit).
-Drei Karten: **Versteht** (freie Anliegen in Deutsch, Englisch, Türkisch, Einfache Sprache, fragt nur nach, was fehlt) · **Erledigt** (Dokumente wörtlich wiedergeben mit Zitat und Seite, Leistungen mit Quelle, offizielle Formulare als Entwurf, Termine) · **Tut nie** (entscheiden, einreichen, Befunde deuten, Diagnosen stellen, Therapie- oder Medikamentenratschläge geben, mehr dürfen als die Person erlaubt hat).
+Dazu die Lotsi-Figur (kleiner Leuchtturm, aus dem Cockpit). Drei Karten, jeweils kurze Zeilen:
+- **Versteht** (✓): Freie Anliegen in Deutsch, Englisch, Türkisch · Auf Wunsch in Einfacher Sprache · Fragt nur, was fehlt
+- **Erledigt** (✓): Dokumente wörtlich, mit Zitat und Seite · Leistungen prüfen, mit Quelle · Offizielle Formulare als Entwurf · Termine buchen
+- **Tut nie** (✕): Entscheiden oder einreichen · Befunde deuten, Diagnosen stellen · Therapie oder Medikamente raten · Mehr dürfen, als die Person erlaubt
 
 > Sprechtext (20 s): „Das ist Lotsi: ein persönlicher Lotse durch die Sozialversicherung, für alle Versicherten und für alle, die für jemanden handeln, von der ersten Frage bis zum unterschriftsreifen Antrag. Er versteht, er erledigt, und er tut nie etwas, was die Person nicht erlaubt hat. Das zeige ich an Maria: Ihre Mutter kommt aus dem Spital, acht Aufgaben, sechs Stellen, null Überblick.“
 
