@@ -75,6 +75,12 @@ start, preview and render cite the form version in the audit log (`ctx.cite`). P
 (labelled ID Austria / ZMR / e-card / Profilangaben), delegation, document quote + page, Lebenslage episode.
 
 ## Limitations
+- **„Pflichtangaben“ are our classification, not the form's.** The official PAL 080 marks no individual required
+  fields; its declaration says „Ich habe alle Fragen richtig und vollständig beantwortet“. We require 13 core fields
+  (identity, address, Antragsart, Krankheiten) plus follow-ups once a yes/no question is „ja“; the yes/no questions of
+  §4–§9 are `recommended`. So 100 % progress ≠ every question of the paper form answered. The wizard says so under
+  the progress bar. Deliberate simplification for the demo (user decision, 06.11.2026); production: make the yes/no
+  questions required and prefill them from Lebenslage/documents where known.
 - PAL080 "Antragsart" defaults to "Zuerkennung / Erhöhung" (unconfirmed suggestion) to keep the demo session short;
   Yes/No sections (§4–§9) are `recommended`, not required, for the same reason (Lotsi offers them via
   `next-questions?include_optional=true`). KH von / Spital are asked (KH von only for the admission date; KH bis comes from the letter): the letter has no

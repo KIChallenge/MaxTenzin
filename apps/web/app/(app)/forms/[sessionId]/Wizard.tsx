@@ -193,6 +193,10 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
         <div className="h-2.5 rounded-full bg-neutral-soft" role="progressbar" aria-label="Pflichtangaben" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100}>
           <div className="h-2.5 rounded-full bg-accent transition-all" style={{ width: `${progress * 100}%` }} />
         </div>
+        <p className="text-xs text-muted">
+          „Pflichtangaben“ = Mindestangaben für einen prüfbaren Antrag (Einstufung von SV-Lotsi). Das Formular selbst verlangt,
+          alle zutreffenden Fragen vollständig zu beantworten – bitte vor dem Unterschreiben alles prüfen.
+        </p>
       </header>
       <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
       <aside>

@@ -1,6 +1,13 @@
 # PVA – Antrag auf Pflegegeld (PAL 080, 01. 2025). AcroForm names + export states verified against
 # knowledge/forms/templates/pva_pflegegeld_pal080.pdf (radio kids /01, /02, ... in reading order).
 # Field ids = AcroForm names (pdf_field defaults to id). Medical content is never prefilled.
+#
+# REQUIRED FIELDS – DELIBERATE SIMPLIFICATION (decided 06.11.2026):
+# The official PAL 080 marks NO individual required fields; it only states "Zutreffendes bitte ankreuzen" and,
+# in the declaration before the signature, "Ich habe alle Fragen richtig und vollständig beantwortet."
+# `required: true` here is OUR minimum for a reviewable application: identity, address, Antragsart, Krankheiten
+# (13 fields) plus follow-up fields once a yes/no question is answered "ja". The yes/no questions of sections
+# 4–9 themselves are only `recommended`, so 100 % progress does NOT mean every question of the paper form is answered.
 form_id: pva_pflegegeld_pal080
 title_de: Antrag auf Pflegegeld (PAL 080)
 provider: PVA

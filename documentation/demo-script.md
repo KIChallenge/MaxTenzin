@@ -107,6 +107,7 @@ Akt 0 (20 s) → Akt 1 nur: Login · Upload + Antrag scheitern → Anna erlaubt 
 
 ## Q&A – vorbereitete Antworten
 
+- **„Was heißt ‚Pflichtangaben 100 %‘?“** – Ehrlich: Das offizielle PAL 080 kennzeichnet keine einzelnen Pflichtfelder, es verlangt in der Erklärung, *alle* Fragen vollständig zu beantworten. Unsere „Pflichtangaben“ sind die Mindestangaben für einen prüfbaren Antrag (Person, Adresse, Antragsart, Krankheiten, und die Details, sobald eine Frage mit „ja“ beantwortet ist). Die Ja/Nein-Fragen zu Unfall, ähnlichen Leistungen usw. bietet Lotsi als freiwillige Fragen an – im Betrieb würden wir sie verpflichtend machen und, wo bekannt, aus Lebenslage und Dokumenten vorausfüllen. Bewusste Vereinfachung für die Demo; steht so auch im Assistenten.
 - **„Halluziniert das nicht?“** – Fakten kommen nie aus dem Modell: Beträge aus Wertetabellen, Ansprüche aus Regeln, Zitate deterministisch gegen die Seite geprüft (Unbelegtes verworfen), Output-Guard prüft jeden €-Betrag und jede „eingetragen“-Behauptung. 35/35 Live-Evals. Beispiel: § 5 BPGG nennt für Pflegegeld Stufe 1 noch 157,30 € (Stand 2020); ein Modell aus dem Gedächtnis würde das zitieren. Lotsi zeigt 206,20 € aus der Wertetabelle 2026 – mit Quelle.
 - **„Und bei Fotos?“** – Ehrlich: Dort wird gegen die Transkription des Modells geprüft, nicht gegen das Papier – deshalb der Hinweis „bitte prüfen“ und die Ansicht „Was Lotsi gelesen hat“.
 - **„Warum keine Microservices?“** – Gleiche Grenzen und Verträge wie Microservices, ein Prozess. Aufteilen ist eine Deployment-Entscheidung (ADR 0001).
