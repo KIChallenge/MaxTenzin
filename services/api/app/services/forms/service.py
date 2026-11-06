@@ -90,6 +90,9 @@ def relevant(spec: FormSpec, f: FieldSpec, sess: FormSession) -> bool:
         return True
     if c.proxy is not None:
         return (sess.actor_id != sess.subject_id) == c.proxy
+    dep = spec.field(c.field)
+    if dep is not None and dep.when is not None and not relevant(spec, dep, sess):
+        return False  # chained: a follow-up of a question that no longer applies does not apply either
     cur = sess.values.get(c.field)
     val = cur.value if cur else None
     if c.one_of:

@@ -52,7 +52,7 @@ class FieldSpec(BaseModel):
     compact: bool = Field(False, description="strip whitespace + uppercase on input (comb fields: IBAN, SVNR)")
     when: Condition | None = None
     prefill: str | None = Field(None, description="profile.<key> | actor.<key> | delegation.<key> | document.<key> | "
-                                                   "system.<key> | const:<value>")
+                                                   "situation.<key> | facts.<key> | system.<key> | const:<value>")
     doctor_only: bool = False
     readonly_reason_de: str | None = None
 

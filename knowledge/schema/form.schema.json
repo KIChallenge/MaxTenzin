@@ -187,7 +187,7 @@
             }
           ],
           "default": null,
-          "description": "profile.<key> | actor.<key> | delegation.<key> | document.<key> | system.<key> | const:<value>",
+          "description": "profile.<key> | actor.<key> | delegation.<key> | document.<key> | situation.<key> | facts.<key> | system.<key> | const:<value>",
           "title": "Prefill"
         },
         "doctor_only": {

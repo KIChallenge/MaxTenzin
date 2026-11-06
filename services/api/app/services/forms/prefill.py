@@ -7,6 +7,9 @@ Rules
   Medical content (e.g. PAL080 "Leiden") is never derived, paraphrased or interpreted: it is asked from the person.
 - Doctor-only fields are never prefilled (enforced in spec validation).
 - `situation.<key>` reads CONFIRMED Lebenslage episodes only (never suggestions); source = the episode's own source.
+- `facts.<key>` reads answers the person (or Lotsi on their behalf) already gave for the benefit checks
+  (store 'known_facts', e.g. net_income_monthly); source = who said it, when, via cockpit/Lotsi. Numbers are written
+  as German amounts ("1.150,00").
 """
 
 from __future__ import annotations
@@ -50,6 +53,7 @@ def person_keys(p: Person) -> dict[str, str]:
         "city": a.city,
         "country": a.country,
         "address_line": f"{a.street} {a.house}, {a.zip} {a.city}".replace(" ,", ","),
+        "street_line": f"{a.street} {a.house}".strip(),
         "phone": p.phone,
         "email": p.email,
         "marital_status": p.marital_status,
@@ -59,11 +63,14 @@ def person_keys(p: Person) -> dict[str, str]:
     }
 
 
-def delegation_keys(d: Delegation) -> dict[str, str]:
+def delegation_keys(d: Delegation, actor: Person | None = None) -> dict[str, str]:
     legal = any(w in d.relation.lower() for w in ("obsorge", "erwachsenenvertretung", "kurator"))
+    representation = "gesetzliche Vertretung" if legal else "bevollmächtigt"
     return {
+        "note": (f"Antrag gestellt von {actor.first_name} {actor.last_name} ({d.relation}, {representation})."
+                 if actor else ""),
         "relation": d.relation,
-        "representation": "gesetzliche Vertretung" if legal else "bevollmächtigt",
+        "representation": representation,
         "proof": "liegt bei",
         "is_representative": "ja",
         "consent_note": d.consent_note,
@@ -86,6 +93,28 @@ def document_keys(a: DocumentAnalysis) -> dict[str, str]:
     if a.person.birth_date:
         keys["person.birth_date"] = date_de(a.person.birth_date)
     return keys
+
+
+def amount_de(value) -> str:
+    """1150 -> '1.150,00' (German amount, no currency sign)."""
+    return f"{float(value):,.2f}".replace(",", "_").replace(".", ",").replace("_", ".")
+
+
+def _fact(subject_id: str, key: str) -> tuple[str | None, SourceRef | None]:
+    from app.core.db import store
+
+    data = store.get("known_facts", subject_id) or {}
+    if key not in (data.get("facts") or {}):
+        return None, None
+    v = data["facts"][key]
+    if isinstance(v, bool):
+        value = "ja" if v else "nein"
+    elif isinstance(v, int | float):
+        value = amount_de(v)
+    else:
+        value = str(v)
+    label = (data.get("sources") or {}).get(key, {}).get("label") or "Angabe der Person"
+    return value, SourceRef(kind=SourceKind.external, label=f"{label} – bitte prüfen", ref=f"facts:{subject_id}#{key}")
 
 
 ID_AUSTRIA_KEYS = {"first_name", "last_name", "full_name", "full_name_last_first", "birth_date", "birth_year"}
@@ -126,7 +155,7 @@ def prefill(spec: FormSpec, subject: Person, actor: Person, delegation: Delegati
     """
     proxy = actor.id != subject.id
     subj, act = person_keys(subject), person_keys(actor)
-    deleg = delegation_keys(delegation) if delegation else {}
+    deleg = delegation_keys(delegation, actor) if delegation else {}
     doc = document_keys(analysis) if analysis else {}
     today = today or date.today()
     situation: dict[str, tuple[str, SourceRef]] | None = None
@@ -153,6 +182,8 @@ def prefill(spec: FormSpec, subject: Person, actor: Person, delegation: Delegati
                    if fact else SourceRef(kind=SourceKind.document, label=analysis.filename,
                                           ref=f"document:{analysis.document_id}"))
             return doc.get(key), src
+        if kind == "facts":
+            return _fact(subject.id, key)
         if kind == "situation":
             if situation is None:
                 situation = _situation_keys(subject, actor, today)
