@@ -213,7 +213,7 @@ benefits:
       Befreiung von der Rezeptgebühr ohne Antrag (z. B. bei Ausgleichszulage) oder auf Antrag, wenn das monatliche
       Nettoeinkommen den Richtsatz nicht übersteigt (bei nachgewiesenen krankheitsbedingten Mehrausgaben bis 115 %).
     plain_de: Sie zahlen keine Rezeptgebühr, wenn Ihr Einkommen niedrig ist.
-    form_ids: []
+    form_ids: [oegk_rezeptgebuehr_befreiung]
     required_documents_de:
       - Antrag auf Rezeptgebührenbefreiung (ÖGK)
       - Einkommensnachweise aller im Haushalt lebenden Personen (z. B. Pensionsbescheid)

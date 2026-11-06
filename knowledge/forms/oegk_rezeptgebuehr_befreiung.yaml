@@ -1,0 +1,566 @@
+# ÖGK – Antrag auf Befreiung von der Rezeptgebühr (ÖGK-KSLS/0088-01/V01, Stand 2026).
+# Template downloaded from oegk.at on 2026-11-06 (not part of docs/; provenance in knowledge/extracted/MANIFEST.json,
+# entry form_templates_downloaded). Info page: https://www.oegk.at/cdscontent/?contentid=10007.870471&portal=oegkportal
+# Income types, household members, number of packages and the signature are the person's own declaration: never
+# prefilled (except the amount the person already stated for the benefit check, unconfirmed and with its source).
+# No consent/declaration boxes exist on this form; the declarations are confirmed by the signature only.
+form_id: oegk_rezeptgebuehr_befreiung
+title_de: Antrag auf Befreiung von der Rezeptgebühr (ÖGK)
+provider: ÖGK
+form_version: ÖGK-KSLS/0088-01/V01
+submit_info_de: >-
+  Zutreffende Einkommensarten ankreuzen, aktuelle Einkommensnachweise aller im Haushalt lebenden Personen in Kopie
+  beilegen (z. B. Pensionsbescheid), selbst unterschreiben und bei der ÖGK einreichen (z. B. per Post oder in einem
+  ÖGK-Kundenservice). Der Antrag wird nicht automatisch eingereicht.
+sections:
+  - 1 Persönliche Daten
+  - 2 Einkommen
+  - 2 Land- und Forstwirtschaft
+  - 3 Personen im gemeinsamen Haushalt
+  - 4 Krankheitskosten
+  - Erklärungen und Unterschrift
+unmapped_pdf_fields: {}
+fields:
+  - id: name
+    label_de: Vor- und Familienname
+    type: text
+    section: 1 Persönliche Daten
+    required: true
+    pdf_field: "Vor- und Familienname_S1"
+    prefill: profile.full_name
+    ask_hint_de: Vor- und Familienname der Antragstellerin bzw. des Antragstellers?
+  - id: svnr
+    label_de: Sozialversicherungsnummer (10 Ziffern, enthält das Geburtsdatum)
+    type: text
+    section: 1 Persönliche Daten
+    required: true
+    compact: true
+    pdf_field: SVNR01_S01
+    prefill: profile.svnr_digits
+    ask_hint_de: Sozialversicherungsnummer (10 Ziffern, steht auf der e-card)?
+  - id: strasse
+    label_de: Straße und Hausnummer
+    type: text
+    section: 1 Persönliche Daten
+    required: true
+    pdf_field: Straße_S1
+    prefill: profile.street_line
+    ask_hint_de: Straße und Hausnummer (Wohnadresse)?
+  - id: plz
+    label_de: Postleitzahl
+    type: text
+    section: 1 Persönliche Daten
+    required: true
+    pdf_field: PLZ_S1
+    prefill: profile.zip
+    ask_hint_de: Postleitzahl?
+  - id: ort
+    label_de: Ort
+    type: text
+    section: 1 Persönliche Daten
+    required: true
+    pdf_field: Ort_S1
+    prefill: profile.city
+    ask_hint_de: Ort?
+  - id: telefon
+    label_de: Telefon
+    type: text
+    section: 1 Persönliche Daten
+    recommended: true
+    pdf_field: Telefon_S1
+    prefill: profile.phone
+    ask_hint_de: Unter welcher Telefonnummer ist die Person für Rückfragen erreichbar?
+  - id: email
+    label_de: E-Mail
+    type: text
+    section: 1 Persönliche Daten
+    recommended: true
+    pdf_field: E-Mail_S1
+    prefill: profile.email
+    ask_hint_de: E-Mail-Adresse für Rückfragen (freiwillig)?
+  - id: familienstand
+    label_de: Familienstand
+    type: choice
+    section: 1 Persönliche Daten
+    required: true
+    pdf_field: Familienstand
+    options: ["ledig", "verheiratet", "geschieden", "verwitwet", "Lebensgemeinschaft", "eingetragene Partnerschaft", "verheiratet, jedoch getrennt lebend"]
+    # export values exactly as in the official PDF (incl. its typo "Lebensgemeinsachaft")
+    pdf_options: {"ledig": "/ledig", "verheiratet": "/verheiratet", "geschieden": "/geschieden", "verwitwet": "/verwitwet", "Lebensgemeinschaft": "/Lebensgemeinsachaft", "eingetragene Partnerschaft": "/Eingetragene Partnerschaft", "verheiratet, jedoch getrennt lebend": "/verheiratet, jedoch getrennt lebend"}
+    prefill: profile.marital_status
+    ask_hint_de: Wie ist der Familienstand (ledig, verheiratet, verwitwet, Lebensgemeinschaft …)?
+  - id: einkommen_lohn
+    label_de: "Einkommen: Lohn oder Gehalt"
+    type: checkbox
+    section: 2 Einkommen
+    recommended: true
+    pdf_field: Checkbox08_S1
+    pdf_on_value: /Ja
+    ask_hint_de: "Bezieht die Person Lohn oder Gehalt? (ja/nein – bitte selbst angeben, aktuellen Nachweis in Kopie beilegen)"
+  - id: einkommen_lohn_euro
+    label_de: "Lohn oder Gehalt – Betrag in Euro (netto pro Monat)"
+    type: text
+    section: 2 Einkommen
+    required: true
+    pdf_field: EUR01_S01
+    when: {"field": "einkommen_lohn", "equals": true}
+    ask_hint_de: "Wie viel Euro netto pro Monat (Lohn oder Gehalt)?"
+  - id: einkommen_ams
+    label_de: "Einkommen: Geldleistungen aus der Arbeitslosenversicherung (AMS)"
+    type: checkbox
+    section: 2 Einkommen
+    recommended: true
+    pdf_field: Checkbox09_S1
+    pdf_on_value: /Ja
+    ask_hint_de: "Bezieht die Person Geldleistungen aus der Arbeitslosenversicherung? (ja/nein – bitte selbst angeben, aktuellen Nachweis in Kopie beilegen)"
+  - id: einkommen_ams_euro
+    label_de: "Geldleistungen aus der Arbeitslosenversicherung (AMS) – Betrag in Euro (netto pro Monat)"
+    type: text
+    section: 2 Einkommen
+    required: true
+    pdf_field: EUR02_S01
+    when: {"field": "einkommen_ams", "equals": true}
+    ask_hint_de: "Wie viel Euro netto pro Monat (Geldleistungen aus der Arbeitslosenversicherung)?"
+  - id: einkommen_pension
+    label_de: "Einkommen: Pension oder Rente"
+    type: checkbox
+    section: 2 Einkommen
+    recommended: true
+    pdf_field: Checkbox10_S1
+    pdf_on_value: /Ja
+    ask_hint_de: "Bezieht die Person Pension oder Rente? (ja/nein – bitte selbst angeben, aktuellen Nachweis in Kopie beilegen)"
+  - id: einkommen_pension_euro
+    label_de: "Pension oder Rente – Betrag in Euro (netto pro Monat)"
+    type: text
+    section: 2 Einkommen
+    pdf_field: EUR03_S01
+    prefill: facts.net_income_monthly
+    ask_hint_de: "Wie hoch ist die Pension bzw. Rente netto pro Monat (in Euro)? Bitte das Kästchen „Pension oder Rente“ selbst ankreuzen."
+  - id: einkommen_sozialhilfe
+    label_de: "Einkommen: Sozialhilfe (Bescheid beilegen)"
+    type: checkbox
+    section: 2 Einkommen
+    recommended: true
+    pdf_field: Checkbox11_S1
+    pdf_on_value: /Ja
+    ask_hint_de: "Bezieht die Person Sozialhilfe? (ja/nein – bitte selbst angeben, aktuellen Nachweis in Kopie beilegen)"
+  - id: einkommen_sozialhilfe_euro
+    label_de: "Sozialhilfe (Bescheid beilegen) – Betrag in Euro (netto pro Monat)"
+    type: text
+    section: 2 Einkommen
+    required: true
+    pdf_field: EUR04_S01
+    when: {"field": "einkommen_sozialhilfe", "equals": true}
+    ask_hint_de: "Wie viel Euro netto pro Monat (Sozialhilfe)?"
+  - id: einkommen_krankengeld
+    label_de: "Einkommen: Kranken-, Wochen-, Rehabilitations- oder Wiedereingliederungsgeld"
+    type: checkbox
+    section: 2 Einkommen
+    recommended: true
+    pdf_field: Checkbox12_S1
+    pdf_on_value: /Ja
+    ask_hint_de: "Bezieht die Person Kranken-, Wochen-, Rehabilitations- oder Wiedereingliederungsgeld? (ja/nein – bitte selbst angeben, aktuellen Nachweis in Kopie beilegen)"
+  - id: einkommen_krankengeld_euro
+    label_de: "Kranken-, Wochen-, Rehabilitations- oder Wiedereingliederungsgeld – Betrag in Euro (netto pro Monat)"
+    type: text
+    section: 2 Einkommen
+    required: true
+    pdf_field: EUR05_S01
+    when: {"field": "einkommen_krankengeld", "equals": true}
+    ask_hint_de: "Wie viel Euro netto pro Monat (Kranken-, Wochen-, Rehabilitations- oder Wiedereingliederungsgeld)?"
+  - id: einkommen_kinderbetreuungsgeld
+    label_de: "Einkommen: Kinderbetreuungsgeld"
+    type: checkbox
+    section: 2 Einkommen
+    recommended: true
+    pdf_field: Checkbox13_S1
+    pdf_on_value: /Ja
+    ask_hint_de: "Bezieht die Person Kinderbetreuungsgeld? (ja/nein – bitte selbst angeben, aktuellen Nachweis in Kopie beilegen)"
+  - id: einkommen_kinderbetreuungsgeld_euro
+    label_de: "Kinderbetreuungsgeld – Betrag in Euro (netto pro Monat)"
+    type: text
+    section: 2 Einkommen
+    required: true
+    pdf_field: EUR06_S01
+    when: {"field": "einkommen_kinderbetreuungsgeld", "equals": true}
+    ask_hint_de: "Wie viel Euro netto pro Monat (Kinderbetreuungsgeld)?"
+  - id: einkommen_unterhalt
+    label_de: "Einkommen: Unterhalt (Geldleistung aus aufgelöster Ehe oder Partnerschaft)"
+    type: checkbox
+    section: 2 Einkommen
+    recommended: true
+    pdf_field: Checkbox14_S1
+    pdf_on_value: /Ja
+    ask_hint_de: "Bezieht die Person Unterhalt? (ja/nein – bitte selbst angeben, aktuellen Nachweis in Kopie beilegen)"
+  - id: einkommen_unterhalt_euro
+    label_de: "Unterhalt (Geldleistung aus aufgelöster Ehe oder Partnerschaft) – Betrag in Euro (netto pro Monat)"
+    type: text
+    section: 2 Einkommen
+    required: true
+    pdf_field: EUR07_S01
+    when: {"field": "einkommen_unterhalt", "equals": true}
+    ask_hint_de: "Wie viel Euro netto pro Monat (Unterhalt)?"
+  - id: einkommen_ausland
+    label_de: "Einkommen: Einkommen aus dem Ausland"
+    type: checkbox
+    section: 2 Einkommen
+    recommended: true
+    pdf_field: Checkbo15_S1
+    pdf_on_value: /Ja
+    ask_hint_de: "Bezieht die Person Einkommen aus dem Ausland? (ja/nein – bitte selbst angeben, aktuellen Nachweis in Kopie beilegen)"
+  - id: einkommen_ausland_euro
+    label_de: "Einkommen aus dem Ausland – Betrag in Euro (netto pro Monat)"
+    type: text
+    section: 2 Einkommen
+    required: true
+    pdf_field: EUR08_S01
+    when: {"field": "einkommen_ausland", "equals": true}
+    ask_hint_de: "Wie viel Euro netto pro Monat (Einkommen aus dem Ausland)?"
+  - id: einkommen_sachbezuege
+    label_de: "Einkommen: Sachbezüge (z. B. freie Wohnung)"
+    type: checkbox
+    section: 2 Einkommen
+    recommended: true
+    pdf_field: Checkbox16_S1
+    pdf_on_value: /Ja
+    ask_hint_de: "Bezieht die Person Sachbezüge? (ja/nein – bitte selbst angeben, aktuellen Nachweis in Kopie beilegen)"
+  - id: einkommen_sachbezuege_euro
+    label_de: "Sachbezüge (z. B. freie Wohnung) – Betrag in Euro (netto pro Monat)"
+    type: text
+    section: 2 Einkommen
+    required: true
+    pdf_field: EUR10_S01
+    when: {"field": "einkommen_sachbezuege", "equals": true}
+    ask_hint_de: "Wie viel Euro netto pro Monat (Sachbezüge)?"
+  - id: einkommen_hilfe_lebensunterhalt
+    label_de: "Einkommen: Hilfe zum Lebensunterhalt (z. B. Mindestsicherung, Sozialhilfe, Wohnbeihilfe)"
+    type: checkbox
+    section: 2 Einkommen
+    recommended: true
+    pdf_field: Checkbox17_S1
+    pdf_on_value: /Ja
+    ask_hint_de: "Bezieht die Person Hilfe zum Lebensunterhalt? (ja/nein – bitte selbst angeben, aktuellen Nachweis in Kopie beilegen)"
+  - id: einkommen_hilfe_lebensunterhalt_euro
+    label_de: "Hilfe zum Lebensunterhalt (z. B. Mindestsicherung, Sozialhilfe, Wohnbeihilfe) – Betrag in Euro (netto pro Monat)"
+    type: text
+    section: 2 Einkommen
+    required: true
+    pdf_field: EUR11_S01
+    when: {"field": "einkommen_hilfe_lebensunterhalt", "equals": true}
+    ask_hint_de: "Wie viel Euro netto pro Monat (Hilfe zum Lebensunterhalt)?"
+  - id: einkommen_selbstaendig
+    label_de: "Einkommen: Selbständige Erwerbstätigkeit"
+    type: checkbox
+    section: 2 Einkommen
+    recommended: true
+    pdf_field: Checkbox18_S1
+    pdf_on_value: /Ja
+    ask_hint_de: "Bezieht die Person Selbständige Erwerbstätigkeit? (ja/nein – bitte selbst angeben, aktuellen Nachweis in Kopie beilegen)"
+  - id: einkommen_selbstaendig_euro
+    label_de: "Selbständige Erwerbstätigkeit – Betrag in Euro (netto pro Monat)"
+    type: text
+    section: 2 Einkommen
+    required: true
+    pdf_field: EUR12_S01
+    when: {"field": "einkommen_selbstaendig", "equals": true}
+    ask_hint_de: "Wie viel Euro netto pro Monat (Selbständige Erwerbstätigkeit)?"
+  - id: einkommen_sonstiges
+    label_de: "Einkommen: Sonstiges Einkommen (z. B. Vermietung, Verpachtung)"
+    type: checkbox
+    section: 2 Einkommen
+    recommended: true
+    pdf_field: Checkbox19_S1
+    pdf_on_value: /Ja
+    ask_hint_de: "Bezieht die Person Sonstiges Einkommen? (ja/nein – bitte selbst angeben, aktuellen Nachweis in Kopie beilegen)"
+  - id: einkommen_sonstiges_euro
+    label_de: "Sonstiges Einkommen (z. B. Vermietung, Verpachtung) – Betrag in Euro (netto pro Monat)"
+    type: text
+    section: 2 Einkommen
+    required: true
+    pdf_field: EUR13_S01
+    when: {"field": "einkommen_sonstiges", "equals": true}
+    ask_hint_de: "Wie viel Euro netto pro Monat (Sonstiges Einkommen)?"
+  - id: einkommen_lufw_selbst
+    label_de: "Einkommen: Land-/forstwirtschaftliches Einkommen aus Selbstbewirtschaftung (aktuellen Einheitswertbescheid beilegen)"
+    type: checkbox
+    section: 2 Land- und Forstwirtschaft
+    recommended: false
+    pdf_field: Checkbox01_S2
+    pdf_on_value: /Ja
+    ask_hint_de: "Bezieht die Person Land-/forstwirtschaftliches Einkommen aus Selbstbewirtschaftung? (ja/nein – bitte selbst angeben, aktuellen Nachweis in Kopie beilegen)"
+  - id: einkommen_lufw_selbst_euro
+    label_de: "Land-/forstwirtschaftliches Einkommen aus Selbstbewirtschaftung (aktuellen Einheitswertbescheid beilegen) – Betrag in Euro (netto pro Monat)"
+    type: text
+    section: 2 Land- und Forstwirtschaft
+    required: true
+    pdf_field: EUR01_S02
+    when: {"field": "einkommen_lufw_selbst", "equals": true}
+    ask_hint_de: "Wie viel Euro netto pro Monat (Land-/forstwirtschaftliches Einkommen aus Selbstbewirtschaftung)?"
+  - id: einkommen_lufw_pacht
+    label_de: "Einkommen: Land-/forstwirtschaftlichen Grund zugepachtet und/oder verpachtet (Pachtvertrag beilegen)"
+    type: checkbox
+    section: 2 Land- und Forstwirtschaft
+    recommended: false
+    pdf_field: Checkbox02_S2
+    pdf_on_value: /Ja
+    ask_hint_de: "Bezieht die Person Land-/forstwirtschaftlichen Grund zugepachtet und/oder verpachtet? (ja/nein – bitte selbst angeben, aktuellen Nachweis in Kopie beilegen)"
+  - id: einkommen_lufw_pacht_euro
+    label_de: "Land-/forstwirtschaftlichen Grund zugepachtet und/oder verpachtet (Pachtvertrag beilegen) – Betrag in Euro (netto pro Monat)"
+    type: text
+    section: 2 Land- und Forstwirtschaft
+    required: true
+    pdf_field: EUR02_S02
+    when: {"field": "einkommen_lufw_pacht", "equals": true}
+    ask_hint_de: "Wie viel Euro netto pro Monat (Land-/forstwirtschaftlichen Grund zugepachtet und/oder verpachtet)?"
+  - id: einkommen_lufw_uebergabe
+    label_de: "Einkommen: Land-/forstwirtschaftlichen Grund übergeben – Verkauf, Schenkung (Vertrag beilegen)"
+    type: checkbox
+    section: 2 Land- und Forstwirtschaft
+    recommended: false
+    pdf_field: Checkbox03_S2
+    pdf_on_value: /Ja
+    ask_hint_de: "Bezieht die Person Land-/forstwirtschaftlichen Grund übergeben – Verkauf, Schenkung? (ja/nein – bitte selbst angeben, aktuellen Nachweis in Kopie beilegen)"
+  - id: einkommen_lufw_uebergabe_euro
+    label_de: "Land-/forstwirtschaftlichen Grund übergeben – Verkauf, Schenkung (Vertrag beilegen) – Betrag in Euro (netto pro Monat)"
+    type: text
+    section: 2 Land- und Forstwirtschaft
+    required: true
+    pdf_field: EUR03_S02
+    when: {"field": "einkommen_lufw_uebergabe", "equals": true}
+    ask_hint_de: "Wie viel Euro netto pro Monat (Land-/forstwirtschaftlichen Grund übergeben – Verkauf, Schenkung)?"
+  - id: lebt_allein
+    label_de: Lebt die Person allein (keine weiteren Personen im gemeinsamen Haushalt)?
+    type: choice
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: null
+    options: ["ja", "nein"]
+    ask_hint_de: "Leben weitere Personen im gemeinsamen Haushalt (z. B. Ehepartner:in, Lebensgefährt:in, Kinder)? Deren Einkommen zählt für die Befreiung mit."
+  - id: haushalt_1_name
+    label_de: "Haushaltsperson 1: Name"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: Name01_S02
+    when: {"field": "lebt_allein", "equals": "nein"}
+    ask_hint_de: "Name der (ersten) Person im gemeinsamen Haushalt?"
+  - id: haushalt_1_svnr
+    label_de: "Haushaltsperson 1: Sozialversicherungsnummer (enthält das Geburtsdatum)"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    compact: true
+    pdf_field: SVNR01_S02
+    when: {"field": "haushalt_1_name"}
+    ask_hint_de: "Sozialversicherungsnummer dieser Person (10 Ziffern)?"
+  - id: haushalt_1_verhaeltnis
+    label_de: "Haushaltsperson 1: Verwandtschaftsverhältnis"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: Verw.Verhaeltnis01_S02
+    when: {"field": "haushalt_1_name"}
+    ask_hint_de: "In welchem Verhältnis steht diese Person zur antragstellenden Person (z. B. Ehemann, Tochter)?"
+  - id: haushalt_1_einkommensart
+    label_de: "Haushaltsperson 1: Art des Einkommens (z. B. Lohn, Alimente)"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: "Art des Einkommens01_S02"
+    when: {"field": "haushalt_1_name"}
+    ask_hint_de: "Welche Art von Einkommen hat diese Person (z. B. Lohn, Pension, Alimente; „keines“ wenn keines)?"
+  - id: haushalt_1_euro
+    label_de: "Haushaltsperson 1: Nettoeinkommen in Euro pro Monat"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: EUR04_S02
+    when: {"field": "haushalt_1_name"}
+    ask_hint_de: "Wie hoch ist das Nettoeinkommen dieser Person pro Monat (in Euro)? Nachweis in Kopie beilegen."
+  - id: haushalt_2_name
+    label_de: "Haushaltsperson 2: Name"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: false
+    pdf_field: Name02_S02
+    when: {"field": "lebt_allein", "equals": "nein"}
+    ask_hint_de: "Gibt es eine 2. Person im Haushalt? Name?"
+  - id: haushalt_2_svnr
+    label_de: "Haushaltsperson 2: Sozialversicherungsnummer (enthält das Geburtsdatum)"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    compact: true
+    pdf_field: SVNR02_S02
+    when: {"field": "haushalt_2_name"}
+    ask_hint_de: "Sozialversicherungsnummer dieser Person (10 Ziffern)?"
+  - id: haushalt_2_verhaeltnis
+    label_de: "Haushaltsperson 2: Verwandtschaftsverhältnis"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: Verw.Verhaeltnis02_S02
+    when: {"field": "haushalt_2_name"}
+    ask_hint_de: "In welchem Verhältnis steht diese Person zur antragstellenden Person (z. B. Ehemann, Tochter)?"
+  - id: haushalt_2_einkommensart
+    label_de: "Haushaltsperson 2: Art des Einkommens (z. B. Lohn, Alimente)"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: "Art des Einkommens02_S02"
+    when: {"field": "haushalt_2_name"}
+    ask_hint_de: "Welche Art von Einkommen hat diese Person (z. B. Lohn, Pension, Alimente; „keines“ wenn keines)?"
+  - id: haushalt_2_euro
+    label_de: "Haushaltsperson 2: Nettoeinkommen in Euro pro Monat"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: EUR05_S02
+    when: {"field": "haushalt_2_name"}
+    ask_hint_de: "Wie hoch ist das Nettoeinkommen dieser Person pro Monat (in Euro)? Nachweis in Kopie beilegen."
+  - id: haushalt_3_name
+    label_de: "Haushaltsperson 3: Name"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: false
+    pdf_field: Name03_S02
+    when: {"field": "lebt_allein", "equals": "nein"}
+    ask_hint_de: "Gibt es eine 3. Person im Haushalt? Name?"
+  - id: haushalt_3_svnr
+    label_de: "Haushaltsperson 3: Sozialversicherungsnummer (enthält das Geburtsdatum)"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    compact: true
+    pdf_field: SVNR03_S02
+    when: {"field": "haushalt_3_name"}
+    ask_hint_de: "Sozialversicherungsnummer dieser Person (10 Ziffern)?"
+  - id: haushalt_3_verhaeltnis
+    label_de: "Haushaltsperson 3: Verwandtschaftsverhältnis"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: Verw.Verhaeltnis03_S02
+    when: {"field": "haushalt_3_name"}
+    ask_hint_de: "In welchem Verhältnis steht diese Person zur antragstellenden Person (z. B. Ehemann, Tochter)?"
+  - id: haushalt_3_einkommensart
+    label_de: "Haushaltsperson 3: Art des Einkommens (z. B. Lohn, Alimente)"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: "Art des Einkommens03_S02"
+    when: {"field": "haushalt_3_name"}
+    ask_hint_de: "Welche Art von Einkommen hat diese Person (z. B. Lohn, Pension, Alimente; „keines“ wenn keines)?"
+  - id: haushalt_3_euro
+    label_de: "Haushaltsperson 3: Nettoeinkommen in Euro pro Monat"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: EUR06_S02
+    when: {"field": "haushalt_3_name"}
+    ask_hint_de: "Wie hoch ist das Nettoeinkommen dieser Person pro Monat (in Euro)? Nachweis in Kopie beilegen."
+  - id: haushalt_4_name
+    label_de: "Haushaltsperson 4: Name"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: false
+    pdf_field: Name04_S02
+    when: {"field": "lebt_allein", "equals": "nein"}
+    ask_hint_de: "Gibt es eine 4. Person im Haushalt? Name?"
+  - id: haushalt_4_svnr
+    label_de: "Haushaltsperson 4: Sozialversicherungsnummer (enthält das Geburtsdatum)"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    compact: true
+    pdf_field: SVNR04_S02
+    when: {"field": "haushalt_4_name"}
+    ask_hint_de: "Sozialversicherungsnummer dieser Person (10 Ziffern)?"
+  - id: haushalt_4_verhaeltnis
+    label_de: "Haushaltsperson 4: Verwandtschaftsverhältnis"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: Verw.Verhaeltnis04_S02
+    when: {"field": "haushalt_4_name"}
+    ask_hint_de: "In welchem Verhältnis steht diese Person zur antragstellenden Person (z. B. Ehemann, Tochter)?"
+  - id: haushalt_4_einkommensart
+    label_de: "Haushaltsperson 4: Art des Einkommens (z. B. Lohn, Alimente)"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: "Art des Einkommens04_S02"
+    when: {"field": "haushalt_4_name"}
+    ask_hint_de: "Welche Art von Einkommen hat diese Person (z. B. Lohn, Pension, Alimente; „keines“ wenn keines)?"
+  - id: haushalt_4_euro
+    label_de: "Haushaltsperson 4: Nettoeinkommen in Euro pro Monat"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: EUR07_S02
+    when: {"field": "haushalt_4_name"}
+    ask_hint_de: "Wie hoch ist das Nettoeinkommen dieser Person pro Monat (in Euro)? Nachweis in Kopie beilegen."
+  - id: haushalt_5_name
+    label_de: "Haushaltsperson 5: Name"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: false
+    pdf_field: Name05_S02
+    when: {"field": "lebt_allein", "equals": "nein"}
+    ask_hint_de: "Gibt es eine 5. Person im Haushalt? Name?"
+  - id: haushalt_5_svnr
+    label_de: "Haushaltsperson 5: Sozialversicherungsnummer (enthält das Geburtsdatum)"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    compact: true
+    pdf_field: SVNR05_S02
+    when: {"field": "haushalt_5_name"}
+    ask_hint_de: "Sozialversicherungsnummer dieser Person (10 Ziffern)?"
+  - id: haushalt_5_verhaeltnis
+    label_de: "Haushaltsperson 5: Verwandtschaftsverhältnis"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: Verw.Verhaeltnis05_S02
+    when: {"field": "haushalt_5_name"}
+    ask_hint_de: "In welchem Verhältnis steht diese Person zur antragstellenden Person (z. B. Ehemann, Tochter)?"
+  - id: haushalt_5_einkommensart
+    label_de: "Haushaltsperson 5: Art des Einkommens (z. B. Lohn, Alimente)"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: "Art des Einkommens05_S02"
+    when: {"field": "haushalt_5_name"}
+    ask_hint_de: "Welche Art von Einkommen hat diese Person (z. B. Lohn, Pension, Alimente; „keines“ wenn keines)?"
+  - id: haushalt_5_euro
+    label_de: "Haushaltsperson 5: Nettoeinkommen in Euro pro Monat"
+    type: text
+    section: 3 Personen im gemeinsamen Haushalt
+    required: true
+    pdf_field: EUR08_S02
+    when: {"field": "haushalt_5_name"}
+    ask_hint_de: "Wie hoch ist das Nettoeinkommen dieser Person pro Monat (in Euro)? Nachweis in Kopie beilegen."
+  - id: packungen
+    label_de: Wie viele Packungen Medikamente werden pro Monat im Durchschnitt ärztlich verordnet?
+    type: text
+    section: 4 Krankheitskosten
+    required: true
+    pdf_field: Packungen01_S01
+    ask_hint_de: "Wie viele Packungen Medikamente bekommt die Person im Durchschnitt pro Monat ärztlich verordnet? Bitte selbst angeben (z. B. laut Medikationsliste). Hat sich der Bedarf in den letzten 2 Monaten deutlich erhöht, Unterlagen beilegen."
+  - id: vermerke
+    label_de: Vermerke (freiwillige Anmerkungen)
+    type: textarea
+    section: 4 Krankheitskosten
+    recommended: true
+    pdf_field: Vermerke01_S02
+    pdf_overflow: ["Vermerke02_S02", "Vermerke03_S02"]
+    max_chars: 85
+    prefill: delegation.note
+    ask_hint_de: "Möchten Sie etwas anmerken (z. B. wer den Antrag für die Person stellt)?"
+  - id: ort_datum
+    label_de: Ort, Datum (neben der Unterschrift)
+    type: text
+    section: Erklärungen und Unterschrift
+    pdf_field: Ort_Datum_S02
+    prefill: system.city_today

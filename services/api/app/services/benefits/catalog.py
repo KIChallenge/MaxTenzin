@@ -26,6 +26,7 @@ FORM_LABELS = {
     "fsw_foerderung": "FSW Antrag auf Förderung von Leistungen",
     "oegk_fahrtkosten_wien": "ÖGK Antrag auf Zuschuss zu Fahrtkosten",
     "sv_kur_reha": "Antrag auf Rehabilitations-, Kur- bzw. Erholungsaufenthalt",
+    "oegk_rezeptgebuehr_befreiung": "ÖGK Antrag auf Befreiung von der Rezeptgebühr",
 }
 
 

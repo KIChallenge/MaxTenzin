@@ -10,6 +10,7 @@ Every knowledge item the services read, with the source it cites. Generated from
 |---|---|---|---|---|---|
 | `eko_medications` | 6985 | 4 files: Zeichenerklärungen und Abkürzungen.pdf, indtext.txt, medikament.txt, regeltext.txt | `1430b6bdd74c…` | 2026-11-05 | unit_price_raw semantics not documented in legend; kept raw |
 | `form_templates` | 426 | 7 files: Antrag Kur und Reha.pdf, Antrag-auf-Zuschuss-zu-Fahrtkosten_Wien.pdf, Bedarfsmeldung-Senior_innen-Wohngemeinschaft_Basispaket.1736522017.pdf, FSW-Antrag-Beilage-Einrichtungswunsch.1779345450.pdf, PAL080_0125_Mpfl_052026.pdf, Reha_n_Unfall_052026.pdf, fsw-antrag-auf-foerderung-von-leistungen.1779095804.pdf | `5cc40a5d854e…` | 2026-11-05 | blank official templates |
+| `form_templates_downloaded` | 69 | knowledge/forms/templates/oegk_rezeptgebuehr_befreiung.pdf | `dcb305ae4e16…` | 2026-11-06 | official blank templates downloaded from the insurer website (not in docs/); oegk_rezeptgebuehr_befreiung: downloaded 2026-11-06 from https://www.oegk.at/cdscontent/load?contentid=10008.785277&version=1779440677 |
 | `legal_paragraphs` | 1976 | 1976 files under docs/Rechtstexte | `706a365470b6…` | 2026-11-05 | allowlist=['ASVG', 'BPGG', 'FLAG', 'KBGG', 'KrankenO_OEGK_2025', 'MuKiPassV_2002', 'RBA', 'RBS_2005', 'RBZRehab_2005', 'RFG_2020', 'RGFP', 'RJU_2016', 'RPGG_2012', 'RRK_2021', 'RRZ_2008', 'RUF_2020', 'RVU', 'Satzung_OEGK_2025', 'VO-EKO']; laws_found=19 |
 | `serviceratgeber_pages` | 118 | docs/Leistungskataloge/Serviceratgeber-2026_Broschuere_A5_OEAM_99-19_klein_korr.pdf | `f8c4a38bffe4…` | 2026-11-05 | printed page = 2*pdf_page-2 (left) / 2*pdf_page-1 (right) |
 | `veraendw_values` | 686 | 91 files under docs/Rechtstexte | `783603100cd2…` | 2026-11-05 | mapped tables=['20', '25', '46', '53', '54']; raw tables=91 |
@@ -157,7 +158,7 @@ Real facilities cite where name/address/phone come from. Demo practices are fict
 | `demo-impf-1120` | Impfstelle Meidling (Demo) | demo | — |
 | `demo-ernaehrung-1040` | Ernährungsberatung Demo-Praxis (Demo) | demo | — |
 
-## Form templates – `knowledge/forms/` (4 mapped of 7 official templates)
+## Form templates – `knowledge/forms/` (5 mapped of 8 official templates)
 
 | form_id | Title | Version (printed on the form) | Official template | Mapped |
 |---|---|---|---|---|
@@ -165,6 +166,7 @@ Real facilities cite where name/address/phone come from. Demo practices are fict
 | `fsw_foerderung` | Antrag auf Förderung von Leistungen (Fonds Soziales Wien) | FSW Antrag auf Förderung von Leistungen, V8 03/2026 | `knowledge/forms/templates/fsw_foerderung.pdf` | yes |
 | `fsw_senioren_wg` | — | — | `knowledge/forms/templates/fsw_senioren_wg.pdf` | no (info only) |
 | `oegk_fahrtkosten_wien` | Antrag auf Zuschuss zu Fahrtkosten (ÖGK) | ÖGK-VM2/0023-11/V01 | `knowledge/forms/templates/oegk_fahrtkosten_wien.pdf` | yes |
+| `oegk_rezeptgebuehr_befreiung` | Antrag auf Befreiung von der Rezeptgebühr (ÖGK) | ÖGK-KSLS/0088-01/V01 | `knowledge/forms/templates/oegk_rezeptgebuehr_befreiung.pdf` | yes |
 | `pva_pflegegeld_pal080` | Antrag auf Pflegegeld (PAL 080) | PAL 080 (01. 2025) | `knowledge/forms/templates/pva_pflegegeld_pal080.pdf` | yes |
 | `sv_kur_reha` | Antrag auf Rehabilitations-, Kur- bzw. Erholungsaufenthalt | DVSV KUR1 V/8.10 | `knowledge/forms/templates/sv_kur_reha.pdf` | yes |
 | `sv_reha_nach_unfall` | — | — | `knowledge/forms/templates/sv_reha_nach_unfall.pdf` | no (info only) |
