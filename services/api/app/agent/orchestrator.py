@@ -85,7 +85,31 @@ def _trace(o: ToolOutcome) -> ToolTrace:
     return ToolTrace(tool=o.tool, arguments=o.arguments, status=o.status, summary_de=o.summary_de, sources=o.sources)
 
 
-def _suggestions(memo: dict, outcomes: list[ToolOutcome]) -> list[str]:
+_SUGGEST_EN = {
+    "Wohin schicke ich den Antrag?": "Where do I send the application?",
+    "Fall mit allen Schritten anlegen": "Create a case with all steps",
+    "PDF-Entwurf erstellen": "Create the PDF draft",
+    "Angaben noch einmal zeigen": "Show the entries again",
+    "PDF-Entwurf jetzt erstellen": "Create the PDF draft now",
+    "Wer ist zuständig?": "Who is responsible?",
+    "Wo kann ich mich impfen lassen?": "Where can I get vaccinated?",
+    "Was kostet die Vorsorgeuntersuchung?": "What does the preventive check-up cost?",
+    "Entlassungsbrief prüfen": "Check the discharge letter",
+    "Welche Vorsorge ist fällig?": "Which check-ups are due?",
+    "Antrag vorbereiten": "Prepare an application",
+}
+
+
+def _suggestions(memo: dict, outcomes: list[ToolOutcome], lang: str = "de") -> list[str]:
+    """Follow-up chips in the reply's language (English; other languages keep German)."""
+    out = _suggestions_de(memo, outcomes)
+    if lang != "en":
+        return out
+    return [f"Prepare application: {s.removeprefix('Antrag vorbereiten: ')}" if s.startswith("Antrag vorbereiten: ")
+            else _SUGGEST_EN.get(s, s) for s in out]
+
+
+def _suggestions_de(memo: dict, outcomes: list[ToolOutcome]) -> list[str]:
     if memo.get("form_rendered"):
         return ["Wohin schicke ich den Antrag?", "Fall mit allen Schritten anlegen"]
     if memo.get("form_session_id") and memo.get("open_questions") == []:
@@ -173,6 +197,7 @@ async def run_live(client: ToolClient, ctx: Context, conv: dict, message: str, p
                                            + ", ".join(SCOPE_DE.get(x, x) for x in d["scopes"]) for d in dl.json()]}
     if lang == "de" and prefs.get("language") and prefs["language"] != "de":
         lang = prefs["language"]
+    memo["_reply_lang"] = lang   # the language actually used (incl. the person's preference) – for the follow-up chips
     documents = await known_documents(client, ctx)
     messages = [{"role": "system", "content": system_prompt(ctx, memo, plain, lang, prefs, documents)},
                 *state.history_messages(conv)]
@@ -381,7 +406,7 @@ async def handle_turn(req: ChatRequest, ctx: Context, headers: dict[str, str]) -
         if srcs and not any(w in reply.lower() for w in ("quelle", "source", "kaynak")):
             reply += "\n\n**Quellen:** " + "; ".join(list(dict.fromkeys(srcs))[:6])
         resp = ChatResponse(conversation_id=conv["id"], reply=_sanitize(reply, lang), tool_trace=[_trace(o) for o in outcomes],
-                            boundary_triggered=False, suggestions_de=_suggestions(memo, outcomes),
+                            boundary_triggered=False, suggestions_de=_suggestions(memo, outcomes, memo.get("_reply_lang", lang)),
                             actions=_actions(outcomes))
 
     conv["turns"].append({"ts": now_iso(), "user": req.message, "reply": resp.reply,

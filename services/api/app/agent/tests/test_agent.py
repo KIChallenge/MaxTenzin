@@ -625,3 +625,13 @@ def test_permission_texts_match_core_auth_and_cockpit():
     t = forbidden_text(ToolOutcome("start_form", {}, 403, forbidden_scope="prepare_applications"), "Anna Berger")
     assert "„Anträge vorbereiten“" in t and "Einstellungen → Vollmachten" in t and "Vertretung“" not in t
     assert "Bereich „Vertretung“" not in orchestrator._prompt_template()
+
+
+def test_follow_up_suggestions_follow_the_reply_language():
+    from app.agent.orchestrator import _suggestions
+
+    memo = {"prevention_checked": True}
+    assert _suggestions(memo, [], "en") == ["Where can I get vaccinated?", "What does the preventive check-up cost?"]
+    assert _suggestions(memo, [], "de")[0] == "Wo kann ich mich impfen lassen?"
+    memo = {"benefits": [{"name_de": "Pflegegeld", "recommended_in_document": True, "form_ids": ["x"]}]}
+    assert _suggestions(memo, [], "en") == ["Prepare application: Pflegegeld", "Who is responsible?"]

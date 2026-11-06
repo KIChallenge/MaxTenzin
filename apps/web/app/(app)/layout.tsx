@@ -37,7 +37,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         Demo · Unverbindliche Information, keine Rechtsberatung und keine medizinische Beratung. Lotsi sendet nie
         etwas ab – Sie prüfen, unterschreiben und senden selbst.
       </footer>
-      <ChatPanel subjectId={me.data.subject.id} subjectName={fullName(me.data.subject)} plain={plain} voice={prefs.ok && prefs.data.voice} />
+      <ChatPanel subjectId={me.data.subject.id} subjectName={fullName(me.data.subject)} plain={plain} voice={prefs.ok && prefs.data.voice} language={prefs.ok ? prefs.data.language : "de"} />
     </>
   );
 }

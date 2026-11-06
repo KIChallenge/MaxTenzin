@@ -26,7 +26,11 @@ type Msg =
   | { role: "assistant"; text: string; trace: ToolTrace[]; boundary: boolean; suggestions: string[]; actions?: ChatAction[] }
   | { role: "error"; text: string };
 
-const STARTERS = ["Was steht im Entlassungsbrief?", "Welche Leistungen kommen in Frage?", "Hilf mir beim Pflegegeld-Antrag"];
+// Starter chips in the person's language (preferences); English for "en", German otherwise.
+const STARTERS: Record<string, string[]> = {
+  de: ["Was steht im Entlassungsbrief?", "Welche Leistungen kommen in Frage?", "Hilf mir beim Pflegegeld-Antrag"],
+  en: ["What does the discharge letter say?", "Which benefits could apply?", "Which check-ups are due?"],
+};
 
 // Minimal typing for the browser speech API (not in lib.dom for all targets).
 type Recognition = {
@@ -46,7 +50,19 @@ function createRecognition(): Recognition | null {
   return Ctor ? new Ctor() : null;
 }
 
-export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { subjectId: string; subjectName: string; plain: boolean; voice?: boolean }) {
+export function ChatPanel({
+  subjectId,
+  subjectName,
+  plain,
+  voice = false,
+  language = "de",
+}: {
+  subjectId: string;
+  subjectName: string;
+  plain: boolean;
+  voice?: boolean;
+  language?: string;
+}) {
   const storeKey = `lotse-chat-${subjectId}`;
   const [open, setOpen] = useState(false);
   // Pop-up window by default; "expanded" docks it at the right edge in full height (the page makes room).
@@ -411,13 +427,25 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
           )}
           {msgs.length === 0 && (
             <div className="space-y-3">
-              <p className="text-muted">
-                Ich bin Lotsi und zeige Ihnen den Weg durch die Sozialversicherung: Leistungen finden, Anträge vorbereiten.
-                Ich stelle keine Diagnosen, und abschicken tun immer Sie selbst.
-              </p>
-              <p className="text-sm text-muted">Sie können mir auch ein Dokument oder Foto geben – über die Büroklammer, per Ziehen oder Einfügen.</p>
+              {language === "en" ? (
+                <>
+                  <p className="text-muted">
+                    I&apos;m Lotsi and I guide you through Austrian social insurance: finding benefits, preparing applications.
+                    I don&apos;t make diagnoses, and you always submit yourself.
+                  </p>
+                  <p className="text-sm text-muted">You can also give me a document or photo – via the paperclip, drag and drop or paste.</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-muted">
+                    Ich bin Lotsi und zeige Ihnen den Weg durch die Sozialversicherung: Leistungen finden, Anträge vorbereiten.
+                    Ich stelle keine Diagnosen, und abschicken tun immer Sie selbst.
+                  </p>
+                  <p className="text-sm text-muted">Sie können mir auch ein Dokument oder Foto geben – über die Büroklammer, per Ziehen oder Einfügen.</p>
+                </>
+              )}
               <div className="flex flex-wrap gap-2">
-                {STARTERS.map((s) => (
+                {(STARTERS[language] ?? STARTERS.de).map((s) => (
                   <button key={s} type="button" className="btn-secondary py-1 text-sm" onClick={() => send(s)}>
                     {s}
                   </button>
