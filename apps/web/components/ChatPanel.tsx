@@ -9,6 +9,7 @@ import type { components } from "@/lib/api-types";
 import { ACCEPT, uploadAndAnalyze } from "@/lib/upload";
 import { LotsiAvatar } from "./Lotsi";
 import { SimpleMarkdown } from "./SimpleMarkdown";
+import { SourcePills, splitSources, type DocRef, type LawRef } from "./ChatSources";
 import { SlotChoices } from "./SlotChoices";
 
 type Conversation = components["schemas"]["Conversation"];
@@ -114,6 +115,15 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
     setFiles([]);
     setView("chat");
   }, [storeKey]);
+  // For clickable source pills: the subject's documents (refreshed after each turn) and the law keys (once).
+  const [docRefs, setDocRefs] = useState<DocRef[]>([]);
+  const [lawRefs, setLawRefs] = useState<LawRef[]>([]);
+  useEffect(() => {
+    bff<DocRef[]>("/api/documents").then((r) => setDocRefs(r.ok ? r.data : []));
+  }, [storeKey, msgs.length]);
+  useEffect(() => {
+    bff<LawRef[]>("/api/legal/laws").then((r) => r.ok && setLawRefs(r.data));
+  }, []);
   useEffect(() => {
     try {
       sessionStorage.setItem(storeKey, JSON.stringify({ msgs, conv }));
@@ -398,7 +408,7 @@ export function ChatPanel({ subjectId, subjectName, plain, voice = false }: { su
             </div>
           )}
           {msgs.map((m, i) => (
-            <ChatMessage key={i} msg={m} onSuggest={send} pathname={pathname} latest={i === msgs.length - 1} busy={busy} />
+            <ChatMessage key={i} msg={m} onSuggest={send} pathname={pathname} latest={i === msgs.length - 1} busy={busy} docs={docRefs} laws={lawRefs} />
           ))}
           {busy && <p className="text-muted">Lotsi arbeitet …</p>}
           <div ref={endRef} />
@@ -525,12 +535,16 @@ function ChatMessage({
   pathname,
   latest = false,
   busy = false,
+  docs = [],
+  laws = [],
 }: {
   msg: Msg;
   onSuggest: (s: string) => void;
   pathname: string;
   latest?: boolean;
   busy?: boolean;
+  docs?: DocRef[];
+  laws?: LawRef[];
 }) {
   if (msg.role === "user") {
     return (
@@ -594,7 +608,15 @@ function ChatMessage({
             <a href="/einstellungen#vollmachten" className="font-normal underline">Vollmachten ansehen</a>
           </p>
         )}
-        <SimpleMarkdown text={msg.text} />
+        {(() => {
+          const { body, sources, note } = splitSources(msg.text);
+          return (
+            <>
+              <SimpleMarkdown text={body} />
+              <SourcePills sources={sources} note={note} docs={docs} laws={laws} />
+            </>
+          );
+        })()}
       </div>
       {latest && <SlotChoices actions={(msg.actions ?? []).filter((a) => a.kind === "choose_slot")} onChoose={onSuggest} disabled={busy} />}
       {msg.actions && msg.actions.some((a) => a.kind !== "choose_slot") && (
