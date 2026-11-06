@@ -14,6 +14,19 @@ export function Header({ me, represented, inboxCount = 0 }: { me: Session; repre
   const canRepresent = represented.some((p) => p.id !== me.actor.id);
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur-xl backdrop-saturate-150">
+      {/* who acts for whom – first thing on every page */}
+      {actingForOther && (
+        <div className="border-b border-accent/15 bg-accent-soft/70">
+          <p className="mx-auto max-w-7xl px-5 py-1 text-sm">
+            <strong className="font-semibold">{fullName(me.actor)}</strong> handelt für{" "}
+            <strong className="font-semibold">{fullName(me.subject)}</strong>
+            <span className="text-muted"> · erlaubt: {me.scopes.map((s) => SCOPE_LABELS[s]).join(", ")} · </span>
+            <Link href="/einstellungen#vollmachten" className="link">
+              Vollmacht ansehen
+            </Link>
+          </p>
+        </div>
+      )}
       <div className="@container mx-auto max-w-7xl px-5">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2">
           <Link href="/" className="flex items-center gap-2 text-[1.0625rem] font-semibold tracking-[-0.01em] text-ink">
@@ -70,18 +83,6 @@ export function Header({ me, represented, inboxCount = 0 }: { me: Session; repre
           </div>
         </div>
       </div>
-      {actingForOther && (
-        <div className="border-t border-accent/15 bg-accent-soft/70">
-          <p className="mx-auto max-w-7xl px-5 py-1 text-sm">
-            <strong className="font-semibold">{fullName(me.actor)}</strong> handelt für{" "}
-            <strong className="font-semibold">{fullName(me.subject)}</strong>
-            <span className="text-muted"> · erlaubt: {me.scopes.map((s) => SCOPE_LABELS[s]).join(", ")} · </span>
-            <Link href="/einstellungen#vollmachten" className="link">
-              Vollmacht ansehen
-            </Link>
-          </p>
-        </div>
-      )}
     </header>
   );
 }
