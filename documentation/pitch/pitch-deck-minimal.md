@@ -50,14 +50,17 @@ Die Zahl 157,30 € gegen 206,20 € ist nur noch Nice-to-have: optional in der 
 ## Reserve – Die Kommunikationswege (nicht präsentiert)
 **Zwei Wege hinein, ein Eingang zu den Diensten.** Eigene Zeichnung: Person → Cockpit → zwei Wege (direkt oder über Lotsi) → ein Eingang „Login → Berechtigung der Person → Protokoll“ → Dienste in drei Gruppen → Wissen. Liegt im Deck hinter der Trennfolie „Reserve für Q&A“, für technische Rückfragen. Das vollständige Mermaid-Diagramm mit allen 14 Diensten steht in der `README.md`.
 
-## Folie 4 – Schluss (7:20–7:40, bei Zeitdruck nur sprechen)
-**Bausteine tauschen, nicht neu bauen**
+## Folie 4 – Wie es weitergeht (7:20–7:40, bei Zeitdruck nur sprechen)
+**Ein guter KI-Lotse braucht eine gute Infrastruktur.** (wiederholt die Kernbotschaft)
+Unterzeile: Ausbau Use Case für Use Case – jeder ergänzt Dienste auf derselben Infrastruktur. Lotsi wird klüger, ohne neu gebaut zu werden.
 
-- ID Austria statt Demo-Login · ELGA statt Upload · meinSV statt Entwurf. Abgeschickt wird immer von der Person.
-- Dieselben 31 Werkzeuge morgen als MCP-Server: andere Assistenten nutzen die Dienste mit genau den erteilten Rechten.
-- 1.976 Paragraphen · 686 Werte 2026 · 6.985 EKO-Packungen · offizielle PDF-Formulare · 35/35 Live-Evals. Jede Antwort mit Quelle.
+Sechs Use-Case-Karten:
+- **Im Prototyp (grün):** Pflege nach dem Spital · Vorsorge & Impfungen · Kind & Familie
+- **Als Nächstes (gestrichelt):** Reha & Kur · Krankenstand & Wiedereinstieg · Pension
 
-> Sprechtext (20 s): „Weil die Prozesse Dienste sind, ist der Weg in den Betrieb ein Austausch von Bausteinen, kein Neubau. Jeder neue Dienst macht Lotsi klüger, ohne die KI neu zu bauen. Kein Chatbot. Ein Lotse auf definierten Prozessen. Danke.“
+Schluss auf der Folie: **Erst die Prozesse, dann die KI. Danke.** Kein Pilot-Angebot (Entscheidung des Nutzers). Der Weg in den Betrieb (ID Austria, ELGA, meinSV, MCP) steht auf der Reserve-Folie „Roadmap“ und im Q&A.
+
+> Sprechtext (20 s): „Noch einmal die Kernbotschaft: Ein guter KI-Lotse braucht eine gute Infrastruktur. Wie geht es weiter? Use Case für Use Case. Drei laufen schon im Prototyp: Pflege nach dem Spital, Vorsorge und Impfungen, Kind und Familie. Als Nächstes zum Beispiel Reha und Kur, Krankenstand und Wiedereinstieg, Pension. Jeder neue Use Case heißt ein paar neue Dienste und das Wissen dazu, Lotsi muss dafür nicht neu gebaut werden. Erst die Prozesse, dann die KI. Danke.“
 
 ---
 
@@ -71,8 +74,9 @@ Die Zahl 157,30 € gegen 206,20 € ist nur noch Nice-to-have: optional in der 
 | 5 Live-Demo | die Demo selbst |
 | 6 Schlüsselsatz | Nice-to-have: Demo 2:30 (optional) und Q&A |
 | 8 Vier Szenarien | Demo (Akt 1 + Akt 4), Rest Q&A |
-| 9 Daten | Folie 3 (Daten-Zeile) und Folie 4 (Kacheln) |
-| 10 Betrieb, 11 Warum | Folie 4 |
+| 9 Daten | Folie 3 (Zeile „Wissen“ mit Zahlenkacheln) |
+| 10 Betrieb | Reserve „Roadmap“ (Q&A); Ausblick auf Folie 4 |
+| 11 Warum das zählt | Folie 4 (Kernbotschaft und Schluss) |
 
 ## Nicht sagen
 „Lotsi halluziniert nicht.“ Ein Jurymitglied testet das live. Stattdessen die fette Zeile auf Folie 3.
