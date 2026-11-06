@@ -19,9 +19,9 @@ Unterzeile: Für alle Versicherten – und für alle, die für jemanden handeln.
 Dazu die Lotsi-Figur (kleiner Leuchtturm, aus dem Cockpit). Drei Karten, jeweils kurze Zeilen:
 - **Versteht** (✓): Freie Anliegen in Deutsch, Englisch, Türkisch · Auf Wunsch in Einfacher Sprache · Fragt nur, was fehlt
 - **Erledigt** (✓): Dokumente wörtlich, mit Zitat und Seite · Leistungen prüfen, mit Quelle · Offizielle Formulare als Entwurf · Termine buchen
-- **Tut nie** (✕): Entscheiden oder einreichen · Befunde deuten, Diagnosen stellen · Therapie oder Medikamente raten · Mehr dürfen, als die Person erlaubt
+- **Bleibt in seiner Rolle** (dunkle Karte, jeweils Satz plus „→ wer stattdessen zuständig ist“): Entscheidet nicht → das tun die Dienste und der Träger · Reicht nichts ein → die Person prüft und unterschreibt · Deutet keine Befunde → das bleibt bei der Ärztin · Keine Sonderrechte → nur, was die Person erlaubt
 
-> Sprechtext (20 s): „Das ist Lotsi: ein persönlicher Lotse durch die Sozialversicherung, für alle Versicherten und für alle, die für jemanden handeln, von der ersten Frage bis zum unterschriftsreifen Antrag. Er versteht, er erledigt, und er tut nie etwas, was die Person nicht erlaubt hat. Das zeige ich an Maria: Ihre Mutter kommt aus dem Spital, acht Aufgaben, sechs Stellen, null Überblick.“
+> Sprechtext (20 s): „Das ist Lotsi: ein persönlicher Lotse durch die Sozialversicherung, für alle Versicherten und für alle, die für jemanden handeln, von der ersten Frage bis zum unterschriftsreifen Antrag. Er versteht, er erledigt, und er bleibt in seiner Rolle: Entscheiden tun die Dienste und der Träger, einreichen tut die Person, Befunde deutet die Ärztin, und er darf nie mehr, als die Person erlaubt hat. Das zeige ich an Maria: Ihre Mutter kommt aus dem Spital, acht Aufgaben, sechs Stellen, null Überblick.“
 
 ## Demo (0:30–6:50) – keine Folien
 Die Botschaft wird im Cockpit gesagt, nicht gezeigt. Je ein Satz pro Moment:
