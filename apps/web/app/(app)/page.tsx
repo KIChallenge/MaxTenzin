@@ -26,6 +26,8 @@ const TILES = [
   { href: "/transparenz", icon: Eye, title: "Transparenz", text: "Wer hat wann was abgefragt – Mensch oder KI." },
 ];
 
+const INBOX_ORDER = ["situation", "case", "prevention"];
+
 export default async function Cockpit() {
   const [me, inbox, situation, team] = await Promise.all([
     getMe(),
@@ -94,26 +96,34 @@ export default async function Cockpit() {
       </section>
       <aside aria-labelledby="inbox-h">
         <CareTeamCard team={team} firstName={subject?.first_name ?? ""} forOther={!!forOther} />
-        <h2 id="inbox-h" className="text-lg font-semibold">
-          Posteingang
-        </h2>
-        <div className="mt-3 space-y-3">
+        <section aria-labelledby="inbox-h" className="card">
+          <div className="mb-2 flex items-baseline justify-between gap-2">
+            <h2 id="inbox-h" className="text-lg font-semibold">
+              Posteingang{inbox.ok && inbox.data.length ? ` (${inbox.data.length})` : ""}
+            </h2>
+            <Link href="/posteingang" className="link text-sm">
+              Alle Nachrichten
+            </Link>
+          </div>
           {!inbox.ok && <p className="text-muted">Nachrichten derzeit nicht verfügbar.</p>}
-          {inbox.ok && inbox.data.length === 0 && <p className="card text-muted">Keine neuen Nachrichten.</p>}
-          {inbox.ok &&
-            inbox.data.map((n) => (
-              <article key={n.id} className={`card ${n.read ? "" : "border-l-4 border-l-accent"}`}>
-                <p className="text-sm text-muted">{fmtDate(n.created_at)}</p>
-                <h3 className="font-semibold">{n.title_de}</h3>
-                <p className="text-muted">{n.body_de}</p>
-                {n.link && (
-                  <Link href={cockpitRoute(n.link)} className="link mt-1 inline-block">
-                    Öffnen
-                  </Link>
-                )}
-              </article>
-            ))}
-        </div>
+          {inbox.ok && inbox.data.length === 0 && <p className="text-muted">Keine neuen Nachrichten.</p>}
+          {inbox.ok && inbox.data.length > 0 && (
+            <ul className="divide-y divide-line">
+              {/* deadlines first (Lebenslage), then the case, then prevention */}
+              {[...inbox.data]
+                .sort((x, y) => INBOX_ORDER.indexOf(x.kind) - INBOX_ORDER.indexOf(y.kind))
+                .slice(0, 3)
+                .map((n) => (
+                  <li key={n.id} className="py-2">
+                    <Link href={n.link ? cockpitRoute(n.link) : "/posteingang"} className="font-semibold hover:underline">
+                      {n.title_de}
+                    </Link>
+                    <p className="text-sm text-muted">{fmtDate(n.created_at)}</p>
+                  </li>
+                ))}
+            </ul>
+          )}
+        </section>
       </aside>
     </div>
   );

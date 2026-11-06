@@ -8,7 +8,13 @@ import { getMe, getRepresented } from "@/lib/me";
 
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const [me, rep, plain, prefs] = await Promise.all([getMe(), getRepresented(), isPlain(), api<Preferences>("/api/identity/preferences")]);
+  const [me, rep, plain, prefs, inbox] = await Promise.all([
+    getMe(),
+    getRepresented(),
+    isPlain(),
+    api<Preferences>("/api/identity/preferences"),
+    api<{ read: boolean }[]>("/api/notifications"),
+  ]);
   if (!me.ok) {
     if (me.status === 401 || me.status === 403) redirect("/login");
     return (
@@ -23,7 +29,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-surface focus:p-3">
         Zum Inhalt springen
       </a>
-      <Header me={me.data} represented={rep.ok ? rep.data : [me.data.actor]} />
+      <Header me={me.data} represented={rep.ok ? rep.data : [me.data.actor]} inboxCount={inbox.ok ? inbox.data.filter((n) => !n.read).length : 0} />
       <main id="main" className="mx-auto max-w-7xl px-5 py-6 pb-28">
         {children}
       </main>

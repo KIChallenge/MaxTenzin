@@ -1,4 +1,4 @@
-import { LogOut, Sailboat, Settings } from "lucide-react";
+import { Bell, LogOut, Sailboat, Settings } from "lucide-react";
 import Link from "next/link";
 import { logout } from "@/app/actions";
 import { fullName, SCOPE_LABELS } from "@/lib/labels";
@@ -8,7 +8,7 @@ import { NavBar } from "./NavBar";
 
 /** One translucent, sticky bar: brand · navigation · (person switch) · settings · sign-out.
  *  The person switch and the permission line only exist when the user may act for someone else. */
-export function Header({ me, represented }: { me: Session; represented: Person[] }) {
+export function Header({ me, represented, inboxCount = 0 }: { me: Session; represented: Person[]; inboxCount?: number }) {
   const actingForOther = me.actor.id !== me.subject.id;
   const canRepresent = represented.some((p) => p.id !== me.actor.id);
   return (
@@ -21,9 +21,9 @@ export function Header({ me, represented }: { me: Session; represented: Person[]
             </span>
             SV-Lotsi
           </Link>
-          {/* narrow (e.g. chat panel open): nav gets its own, visibly separated row (no overflow: the
-              "Nachschlagen" dropdown must not be clipped) */}
-          <div className="order-last w-full border-t border-line/70 pt-1 @5xl:order-none @5xl:w-auto @5xl:border-0 @5xl:pt-0">
+          {/* Two rows at every width: brand + person/inbox/settings on top, the navigation as its own bar below
+              (no overflow, so the "Nachschlagen" dropdown is never clipped). */}
+          <div className="order-last w-full border-t border-line/70 pt-1">
             <NavBar />
           </div>
           <div className="ml-auto flex items-center gap-1.5 text-[0.9375rem]">
@@ -45,6 +45,19 @@ export function Header({ me, represented }: { me: Session; represented: Person[]
             ) : (
               <span className="text-muted">{fullName(me.actor)}</span>
             )}
+            <Link
+              href="/posteingang"
+              className="relative rounded-md p-1.5 text-muted hover:bg-neutral-soft hover:text-ink"
+              title="Posteingang"
+              aria-label={`Posteingang${inboxCount ? `, ${inboxCount} neue Nachrichten` : ""}`}
+            >
+              <Bell className="h-5 w-5" aria-hidden />
+              {inboxCount > 0 && (
+                <span aria-hidden className="absolute -top-0.5 -right-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-accent px-1 text-[0.6875rem] font-semibold text-white">
+                  {inboxCount}
+                </span>
+              )}
+            </Link>
             <Link href="/einstellungen" className="rounded-md p-1.5 text-muted hover:bg-neutral-soft hover:text-ink" title="Einstellungen">
               <Settings className="h-5 w-5" aria-hidden />
               <span className="sr-only">Einstellungen</span>
