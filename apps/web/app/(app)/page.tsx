@@ -1,4 +1,3 @@
-import { Building2, Compass, Eye, FilePen, FileText, ListChecks, Pill, Scale, Syringe } from "lucide-react";
 import Link from "next/link";
 import { BundleCard } from "@/components/BundleCard";
 import { CareTeamCard } from "@/components/CareTeamCard";
@@ -14,17 +13,6 @@ import type { ApiResult } from "@/lib/types";
 import { getMe } from "@/lib/me";
 import type { Notification } from "@/lib/types";
 
-const TILES = [
-  { href: "/dokumente", icon: FileText, title: "Dokumente", text: "Entlassungsbrief hochladen – wir zeigen, was drinsteht." },
-  { href: "/leistungen", icon: Compass, title: "Leistungen", text: "Welche Leistungen kommen in Frage – mit Quellen." },
-  { href: "/leistungen#antraege", icon: FilePen, title: "Anträge", text: "Formulare vorausgefüllt vorbereiten, als PDF-Entwurf." },
-  { href: "/fall", icon: ListChecks, title: "Mein Fall", text: "Alle Schritte nach dem Spitalsaufenthalt im Blick." },
-  { href: "/vorsorge", icon: Syringe, title: "Vorsorge", text: "Impfungen und Vorsorgeuntersuchungen laut Impfplan." },
-  { href: "/stellen", icon: Building2, title: "Zuständige Stellen", text: "Wo Sie welchen Antrag einreichen." },
-  { href: "/medikamente", icon: Pill, title: "Medikamente", text: "Kosten und Bewilligung laut Erstattungskodex." },
-  { href: "/recht", icon: Scale, title: "Rechtsgrundlagen", text: "Gesetzestexte mit gültiger Fassung." },
-  { href: "/transparenz", icon: Eye, title: "Transparenz", text: "Wer hat wann was abgefragt – Mensch oder KI." },
-];
 
 const INBOX_ORDER = ["situation", "case", "prevention"];
 
@@ -57,7 +45,7 @@ export default async function Cockpit() {
   const actor = me.ok ? me.data.actor : null;
   const forOther = subject && actor && subject.id !== actor.id;
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
+    <div className="grid gap-8 lg:grid-cols-[1fr_22rem] lg:in-[.chat-open]:grid-cols-1">
       <section>
         <h1 className="text-[1.75rem] leading-tight font-semibold tracking-[-0.02em]">
           Guten Tag, {actor?.first_name}
@@ -69,8 +57,9 @@ export default async function Cockpit() {
             <BundleCard bundle={bundle.data} formOwner={formOwner} documentId={latestLetter} canPrepare={!!me.ok && me.data.scopes.includes("prepare_applications")} />
           </div>
         )}
-        <div className="mt-5 grid gap-4 md:grid-cols-2">
-          <div className="card flex flex-col justify-between gap-3 border-accent/30 bg-accent-soft">
+        <div className="mt-5 grid gap-4 md:grid-cols-2 md:in-[.chat-open]:grid-cols-1">
+          {/* the chat is already open: no second invitation to it */}
+          <div className="card flex flex-col justify-between gap-3 border-accent/30 bg-accent-soft in-[.chat-open]:hidden">
             <div>
               <p className="font-semibold">Was möchten Sie heute erledigen?</p>
               <p className="text-muted">Lotsi fragt die Dienste für Sie ab – mit denselben Berechtigungen wie Sie.</p>
@@ -82,19 +71,8 @@ export default async function Cockpit() {
           {/* quick drop: straight to the document review after upload */}
           <UploadForm subjectName={subject ? fullName(subject) : ""} compact />
         </div>
-        <ul className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {TILES.map((t) => (
-            <li key={t.href}>
-              <Link href={t.href} className="card flex h-full flex-col gap-1 transition hover:border-accent hover:shadow-md">
-                <t.icon className="h-6 w-6 text-accent" aria-hidden />
-                <span className="text-lg font-semibold text-accent-strong">{t.title}</span>
-                <span className="text-muted">{t.text}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
       </section>
-      <aside aria-labelledby="inbox-h">
+      <aside aria-labelledby="inbox-h" className="lg:in-[.chat-open]:grid lg:in-[.chat-open]:grid-cols-2 lg:in-[.chat-open]:items-start lg:in-[.chat-open]:gap-6">
         <CareTeamCard team={team} firstName={subject?.first_name ?? ""} forOther={!!forOther} />
         <section aria-labelledby="inbox-h" className="card">
           <div className="mb-2 flex items-baseline justify-between gap-2">
