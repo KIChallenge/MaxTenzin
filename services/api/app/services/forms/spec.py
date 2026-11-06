@@ -50,6 +50,8 @@ class FieldSpec(BaseModel):
     pdf_overflow: list[str] = Field([], description="continuation lines for long text (filled in order)")
     max_chars: int | None = Field(None, description="characters per line before continuing in pdf_overflow")
     compact: bool = Field(False, description="strip whitespace + uppercase on input (comb fields: IBAN, SVNR)")
+    pattern: str | None = Field(None, description="regex the (normalized) text must match fully, e.g. a number of packages")
+    pattern_hint_de: str | None = Field(None, description="German message when `pattern` does not match")
     when: Condition | None = None
     prefill: str | None = Field(None, description="profile.<key> | actor.<key> | delegation.<key> | document.<key> | "
                                                    "situation.<key> | facts.<key> | system.<key> | const:<value>")

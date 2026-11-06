@@ -110,3 +110,14 @@ def test_render_without_answers_ticks_nothing(client):
     filled = read_back(client.post(f"/api/forms/sessions/{s['id']}/render", headers=H).content)
     ticks = [n for n, val in filled.items() if n.startswith(("Checkbox", "Checkbo15")) and val not in (None, "/Off")]
     assert ticks == []
+
+
+def test_numbers_are_validated_not_guessed(client):
+    s = _start(client)
+    bad = client.patch(f"/api/forms/sessions/{s['id']}", headers=H, json={"values": {
+        "packungen": "nicht bekannt", "einkommen_pension_euro": "rund tausend", "svnr": "1234"}})
+    assert bad.status_code == 422
+    assert set(bad.json()["detail"]["fields"]) == {"packungen", "einkommen_pension_euro", "svnr"}
+    ok = client.patch(f"/api/forms/sessions/{s['id']}", headers=H, json={"values": {
+        "packungen": "4", "einkommen_pension_euro": "1.150,00", "svnr": "1234 140348"}})
+    assert ok.status_code == 200 and ok.json()["values"]["svnr"]["value"] == "1234140348"

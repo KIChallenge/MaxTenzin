@@ -32,6 +32,8 @@ fields:
   - id: svnr
     label_de: Sozialversicherungsnummer (10 Ziffern, enthält das Geburtsdatum)
     type: text
+    pattern: "\\d{10}"
+    pattern_hint_de: Bitte die 10-stellige Sozialversicherungsnummer angeben (nur Ziffern).
     section: 1 Persönliche Daten
     required: true
     compact: true
@@ -100,6 +102,8 @@ fields:
   - id: einkommen_lohn_euro
     label_de: "Lohn oder Gehalt – Betrag in Euro (netto pro Monat)"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 2 Einkommen
     required: true
     pdf_field: EUR01_S01
@@ -116,6 +120,8 @@ fields:
   - id: einkommen_ams_euro
     label_de: "Geldleistungen aus der Arbeitslosenversicherung (AMS) – Betrag in Euro (netto pro Monat)"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 2 Einkommen
     required: true
     pdf_field: EUR02_S01
@@ -132,6 +138,8 @@ fields:
   - id: einkommen_pension_euro
     label_de: "Pension oder Rente – Betrag in Euro (netto pro Monat)"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 2 Einkommen
     pdf_field: EUR03_S01
     prefill: facts.net_income_monthly
@@ -147,6 +155,8 @@ fields:
   - id: einkommen_sozialhilfe_euro
     label_de: "Sozialhilfe (Bescheid beilegen) – Betrag in Euro (netto pro Monat)"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 2 Einkommen
     required: true
     pdf_field: EUR04_S01
@@ -163,6 +173,8 @@ fields:
   - id: einkommen_krankengeld_euro
     label_de: "Kranken-, Wochen-, Rehabilitations- oder Wiedereingliederungsgeld – Betrag in Euro (netto pro Monat)"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 2 Einkommen
     required: true
     pdf_field: EUR05_S01
@@ -179,6 +191,8 @@ fields:
   - id: einkommen_kinderbetreuungsgeld_euro
     label_de: "Kinderbetreuungsgeld – Betrag in Euro (netto pro Monat)"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 2 Einkommen
     required: true
     pdf_field: EUR06_S01
@@ -195,6 +209,8 @@ fields:
   - id: einkommen_unterhalt_euro
     label_de: "Unterhalt (Geldleistung aus aufgelöster Ehe oder Partnerschaft) – Betrag in Euro (netto pro Monat)"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 2 Einkommen
     required: true
     pdf_field: EUR07_S01
@@ -211,6 +227,8 @@ fields:
   - id: einkommen_ausland_euro
     label_de: "Einkommen aus dem Ausland – Betrag in Euro (netto pro Monat)"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 2 Einkommen
     required: true
     pdf_field: EUR08_S01
@@ -227,6 +245,8 @@ fields:
   - id: einkommen_sachbezuege_euro
     label_de: "Sachbezüge (z. B. freie Wohnung) – Betrag in Euro (netto pro Monat)"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 2 Einkommen
     required: true
     pdf_field: EUR10_S01
@@ -243,6 +263,8 @@ fields:
   - id: einkommen_hilfe_lebensunterhalt_euro
     label_de: "Hilfe zum Lebensunterhalt (z. B. Mindestsicherung, Sozialhilfe, Wohnbeihilfe) – Betrag in Euro (netto pro Monat)"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 2 Einkommen
     required: true
     pdf_field: EUR11_S01
@@ -259,6 +281,8 @@ fields:
   - id: einkommen_selbstaendig_euro
     label_de: "Selbständige Erwerbstätigkeit – Betrag in Euro (netto pro Monat)"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 2 Einkommen
     required: true
     pdf_field: EUR12_S01
@@ -275,6 +299,8 @@ fields:
   - id: einkommen_sonstiges_euro
     label_de: "Sonstiges Einkommen (z. B. Vermietung, Verpachtung) – Betrag in Euro (netto pro Monat)"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 2 Einkommen
     required: true
     pdf_field: EUR13_S01
@@ -291,6 +317,8 @@ fields:
   - id: einkommen_lufw_selbst_euro
     label_de: "Land-/forstwirtschaftliches Einkommen aus Selbstbewirtschaftung (aktuellen Einheitswertbescheid beilegen) – Betrag in Euro (netto pro Monat)"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 2 Land- und Forstwirtschaft
     required: true
     pdf_field: EUR01_S02
@@ -307,6 +335,8 @@ fields:
   - id: einkommen_lufw_pacht_euro
     label_de: "Land-/forstwirtschaftlichen Grund zugepachtet und/oder verpachtet (Pachtvertrag beilegen) – Betrag in Euro (netto pro Monat)"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 2 Land- und Forstwirtschaft
     required: true
     pdf_field: EUR02_S02
@@ -323,6 +353,8 @@ fields:
   - id: einkommen_lufw_uebergabe_euro
     label_de: "Land-/forstwirtschaftlichen Grund übergeben – Verkauf, Schenkung (Vertrag beilegen) – Betrag in Euro (netto pro Monat)"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 2 Land- und Forstwirtschaft
     required: true
     pdf_field: EUR03_S02
@@ -347,6 +379,8 @@ fields:
   - id: haushalt_1_svnr
     label_de: "Haushaltsperson 1: Sozialversicherungsnummer (enthält das Geburtsdatum)"
     type: text
+    pattern: "\\d{10}"
+    pattern_hint_de: Bitte die 10-stellige Sozialversicherungsnummer angeben (nur Ziffern).
     section: 3 Personen im gemeinsamen Haushalt
     required: true
     compact: true
@@ -372,6 +406,8 @@ fields:
   - id: haushalt_1_euro
     label_de: "Haushaltsperson 1: Nettoeinkommen in Euro pro Monat"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 3 Personen im gemeinsamen Haushalt
     required: true
     pdf_field: EUR04_S02
@@ -388,6 +424,8 @@ fields:
   - id: haushalt_2_svnr
     label_de: "Haushaltsperson 2: Sozialversicherungsnummer (enthält das Geburtsdatum)"
     type: text
+    pattern: "\\d{10}"
+    pattern_hint_de: Bitte die 10-stellige Sozialversicherungsnummer angeben (nur Ziffern).
     section: 3 Personen im gemeinsamen Haushalt
     required: true
     compact: true
@@ -413,6 +451,8 @@ fields:
   - id: haushalt_2_euro
     label_de: "Haushaltsperson 2: Nettoeinkommen in Euro pro Monat"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 3 Personen im gemeinsamen Haushalt
     required: true
     pdf_field: EUR05_S02
@@ -429,6 +469,8 @@ fields:
   - id: haushalt_3_svnr
     label_de: "Haushaltsperson 3: Sozialversicherungsnummer (enthält das Geburtsdatum)"
     type: text
+    pattern: "\\d{10}"
+    pattern_hint_de: Bitte die 10-stellige Sozialversicherungsnummer angeben (nur Ziffern).
     section: 3 Personen im gemeinsamen Haushalt
     required: true
     compact: true
@@ -454,6 +496,8 @@ fields:
   - id: haushalt_3_euro
     label_de: "Haushaltsperson 3: Nettoeinkommen in Euro pro Monat"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 3 Personen im gemeinsamen Haushalt
     required: true
     pdf_field: EUR06_S02
@@ -470,6 +514,8 @@ fields:
   - id: haushalt_4_svnr
     label_de: "Haushaltsperson 4: Sozialversicherungsnummer (enthält das Geburtsdatum)"
     type: text
+    pattern: "\\d{10}"
+    pattern_hint_de: Bitte die 10-stellige Sozialversicherungsnummer angeben (nur Ziffern).
     section: 3 Personen im gemeinsamen Haushalt
     required: true
     compact: true
@@ -495,6 +541,8 @@ fields:
   - id: haushalt_4_euro
     label_de: "Haushaltsperson 4: Nettoeinkommen in Euro pro Monat"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 3 Personen im gemeinsamen Haushalt
     required: true
     pdf_field: EUR07_S02
@@ -511,6 +559,8 @@ fields:
   - id: haushalt_5_svnr
     label_de: "Haushaltsperson 5: Sozialversicherungsnummer (enthält das Geburtsdatum)"
     type: text
+    pattern: "\\d{10}"
+    pattern_hint_de: Bitte die 10-stellige Sozialversicherungsnummer angeben (nur Ziffern).
     section: 3 Personen im gemeinsamen Haushalt
     required: true
     compact: true
@@ -536,6 +586,8 @@ fields:
   - id: haushalt_5_euro
     label_de: "Haushaltsperson 5: Nettoeinkommen in Euro pro Monat"
     type: text
+    pattern: "\\d{1,3}(\\.\\d{3})*(,\\d{1,2})?|\\d+([.,]\\d{1,2})?"
+    pattern_hint_de: Bitte nur den Betrag in Euro als Zahl angeben, z. B. 1.150,00.
     section: 3 Personen im gemeinsamen Haushalt
     required: true
     pdf_field: EUR08_S02
@@ -544,6 +596,8 @@ fields:
   - id: packungen
     label_de: Wie viele Packungen Medikamente werden pro Monat im Durchschnitt ärztlich verordnet?
     type: text
+    pattern: "\\d{1,3}"
+    pattern_hint_de: Bitte die durchschnittliche Anzahl der Packungen pro Monat als ganze Zahl angeben (z. B. 4).
     section: 4 Krankheitskosten
     required: true
     pdf_field: Packungen01_S01

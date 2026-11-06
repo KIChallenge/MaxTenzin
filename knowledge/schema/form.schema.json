@@ -166,6 +166,32 @@
           "title": "Compact",
           "type": "boolean"
         },
+        "pattern": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "regex the (normalized) text must match fully, e.g. a number of packages",
+          "title": "Pattern"
+        },
+        "pattern_hint_de": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "German message when `pattern` does not match",
+          "title": "Pattern Hint De"
+        },
         "when": {
           "anyOf": [
             {

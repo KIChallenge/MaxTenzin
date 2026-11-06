@@ -118,7 +118,7 @@ def _fact(subject_id: str, key: str) -> tuple[str | None, SourceRef | None]:
 
 
 ID_AUSTRIA_KEYS = {"first_name", "last_name", "full_name", "full_name_last_first", "birth_date", "birth_year"}
-ZMR_KEYS = {"street", "house", "zip", "city", "country", "address_line"}
+ZMR_KEYS = {"street", "house", "zip", "city", "country", "address_line", "street_line"}
 ECARD_KEYS = {"svnr", "svnr_digits", "insurer"}
 
 
