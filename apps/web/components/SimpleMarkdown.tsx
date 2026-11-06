@@ -47,7 +47,8 @@ function render(g: Group, key: string) {
 }
 
 function inline(s: string) {
-  return s.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((part, i) => {
+  // A single "*" inside bold is text (German gender star: "Rollstuhlfahrer*in"); only "**" ends the bold run.
+  return s.split(/(\*\*(?:[^*]|\*(?!\*))+\*\*|`[^`]+`)/g).map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) return <strong key={i}>{part.slice(2, -2)}</strong>;
     if (part.startsWith("`") && part.endsWith("`")) return <span key={i} className="font-medium">{part.slice(1, -1)}</span>;
     return part;
