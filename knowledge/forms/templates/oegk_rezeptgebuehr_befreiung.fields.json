@@ -1,0 +1,482 @@
+{
+  "downloaded_at": "2026-11-06",
+  "fields": [
+    {
+      "name": "Art des Einkommens01_S02",
+      "states": null,
+      "tooltip": "Art des Einkommens",
+      "type": "text"
+    },
+    {
+      "name": "Art des Einkommens02_S02",
+      "states": null,
+      "tooltip": "Art des Einkommens",
+      "type": "text"
+    },
+    {
+      "name": "Art des Einkommens03_S02",
+      "states": null,
+      "tooltip": "Art des Einkommens",
+      "type": "text"
+    },
+    {
+      "name": "Art des Einkommens04_S02",
+      "states": null,
+      "tooltip": "Art des Einkommens",
+      "type": "text"
+    },
+    {
+      "name": "Art des Einkommens05_S02",
+      "states": null,
+      "tooltip": "Art des Einkommens",
+      "type": "text"
+    },
+    {
+      "name": "Checkbo15_S1",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Einkommen aus dem Ausland",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Checkbox01_S2",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Einkommen aus Selbstbewirtschaftung",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Checkbox02_S2",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Grund zugepachtet oder verpachtet?",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Checkbox03_S2",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Grund übergeben?",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Checkbox08_S1",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Lohn oder Gehalt",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Checkbox09_S1",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Geldleistungen aus der Arbeitslosenversicherung (AMS)",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Checkbox10_S1",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Pension oder Rente",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Checkbox11_S1",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Sozialhilfe",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Checkbox12_S1",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Kranken-, Wochen-, Rehabilitations- oder Wiedereingliederungsgeld",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Checkbox13_S1",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Kinderbetreuungsgeld",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Checkbox14_S1",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Unterhalt",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Checkbox16_S1",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Sachbezüge",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Checkbox17_S1",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Hilfe zum Lebensunterhalt",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Checkbox18_S1",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Selbständige Erwerbstätigkeit",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Checkbox19_S1",
+      "states": [
+        "/Ja",
+        "/Off"
+      ],
+      "tooltip": "Sonstiges Einkommen",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "E-Mail_S1",
+      "states": null,
+      "tooltip": "E-Mail",
+      "type": "text"
+    },
+    {
+      "name": "EUR01_S01",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR01_S02",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR02_S01",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR02_S02",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR03_S01",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR03_S02",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR04_S01",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR04_S02",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR05_S01",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR05_S02",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR06_S01",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR06_S02",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR07_S01",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR07_S02",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR08_S01",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR08_S02",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR10_S01",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR11_S01",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR12_S01",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "EUR13_S01",
+      "states": null,
+      "tooltip": "Euro",
+      "type": "text"
+    },
+    {
+      "name": "Familienstand",
+      "states": [
+        "/ledig",
+        "/Lebensgemeinsachaft",
+        "/verheiratet, jedoch getrennt lebend",
+        "/verheiratet",
+        "/geschieden",
+        "/Eingetragene Partnerschaft",
+        "/verwitwet"
+      ],
+      "tooltip": "Familienstand",
+      "type": "checkbox_or_radio"
+    },
+    {
+      "name": "Name01_S02",
+      "states": null,
+      "tooltip": "Name der im gemeinsamen Haushalt lebenden Person",
+      "type": "text"
+    },
+    {
+      "name": "Name02_S02",
+      "states": null,
+      "tooltip": "Name der im gemeinsamen Haushalt lebenden Person",
+      "type": "text"
+    },
+    {
+      "name": "Name03_S02",
+      "states": null,
+      "tooltip": "Name der im gemeinsamen Haushalt lebenden Person",
+      "type": "text"
+    },
+    {
+      "name": "Name04_S02",
+      "states": null,
+      "tooltip": "Name der im gemeinsamen Haushalt lebenden Person",
+      "type": "text"
+    },
+    {
+      "name": "Name05_S02",
+      "states": null,
+      "tooltip": "Name der im gemeinsamen Haushalt lebenden Person",
+      "type": "text"
+    },
+    {
+      "name": "Ort_Datum_S02",
+      "states": null,
+      "tooltip": "Ort und Datum",
+      "type": "text"
+    },
+    {
+      "name": "Ort_S1",
+      "states": null,
+      "tooltip": "Ort",
+      "type": "text"
+    },
+    {
+      "name": "PLZ_S1",
+      "states": null,
+      "tooltip": "Postleitzahl",
+      "type": "text"
+    },
+    {
+      "name": "Packungen01_S01",
+      "states": null,
+      "tooltip": "Packungen Medikamente pro Monat",
+      "type": "text"
+    },
+    {
+      "name": "SVNR01_S01",
+      "states": null,
+      "tooltip": "SVNR + Geb. Datum",
+      "type": "text"
+    },
+    {
+      "name": "SVNR01_S02",
+      "states": null,
+      "tooltip": "SVNR + Geb. Datum",
+      "type": "text"
+    },
+    {
+      "name": "SVNR02_S02",
+      "states": null,
+      "tooltip": "SVNR + Geb. Datum",
+      "type": "text"
+    },
+    {
+      "name": "SVNR03_S02",
+      "states": null,
+      "tooltip": "SVNR + Geb. Datum",
+      "type": "text"
+    },
+    {
+      "name": "SVNR04_S02",
+      "states": null,
+      "tooltip": "SVNR + Geb. Datum",
+      "type": "text"
+    },
+    {
+      "name": "SVNR05_S02",
+      "states": null,
+      "tooltip": "SVNR + Geb. Datum",
+      "type": "text"
+    },
+    {
+      "name": "Straße_S1",
+      "states": null,
+      "tooltip": "Straße",
+      "type": "text"
+    },
+    {
+      "name": "Telefon_S1",
+      "states": null,
+      "tooltip": "Telefonnummer",
+      "type": "text"
+    },
+    {
+      "name": "Vermerke01_S02",
+      "states": null,
+      "tooltip": "Vermerke",
+      "type": "text"
+    },
+    {
+      "name": "Vermerke02_S02",
+      "states": null,
+      "tooltip": "Vermerke",
+      "type": "text"
+    },
+    {
+      "name": "Vermerke03_S02",
+      "states": null,
+      "tooltip": "Vermerke",
+      "type": "text"
+    },
+    {
+      "name": "Verw",
+      "states": null,
+      "tooltip": null,
+      "type": "None"
+    },
+    {
+      "name": "Verw.Verhaeltnis01_S02",
+      "states": null,
+      "tooltip": "Verwandschaftsverhältnis",
+      "type": "text"
+    },
+    {
+      "name": "Verw.Verhaeltnis02_S02",
+      "states": null,
+      "tooltip": "Verwandschaftsverhältnis",
+      "type": "text"
+    },
+    {
+      "name": "Verw.Verhaeltnis03_S02",
+      "states": null,
+      "tooltip": "Verwandschaftsverhältnis",
+      "type": "text"
+    },
+    {
+      "name": "Verw.Verhaeltnis04_S02",
+      "states": null,
+      "tooltip": "Verwandschaftsverhältnis",
+      "type": "text"
+    },
+    {
+      "name": "Verw.Verhaeltnis05_S02",
+      "states": null,
+      "tooltip": "Verwandschaftsverhältnis",
+      "type": "text"
+    },
+    {
+      "name": "Vor- und Familienname_S1",
+      "states": null,
+      "tooltip": "Vor- und Familienname",
+      "type": "text"
+    }
+  ],
+  "fillable": true,
+  "form_id": "oegk_rezeptgebuehr_befreiung",
+  "info_page": "https://www.oegk.at/cdscontent/?contentid=10007.870471&portal=oegkportal",
+  "page_text": [
+    "Informationen nach Art. 13 und 14 Datenschutz-Grundverordnung betreffend die Verarbeitung Ihrer personenbezogenen Daten \nfinden Sie auf unserer Website unter www.oegk.at/datenschutz. \nSeite 1/2 \nAntrag auf Befreiung von der Rezeptgebühr \nBit\nte füllen Sie alle Felder vollständig aus! Zutreffendes bitte ankreuzen! \n1. Persönliche Daten der Antragstellerin bzw. des Antragstellers\nVor- und Familienname Sozialversicherungsnr. und Geburtsdatum \nStraße: PLZ: Ort: \nTelefon: E-Mail:\nFamilienstand:  ledig  verheiratet geschieden verwitwet \n Lebensgemeinschaft Eingetragene Partnerschaft \n verheiratet, jedoch getrennt lebend \n2. Aktuelle Einkommenssituation: Beziehen Sie…\n(bitte Zutreffendes ankreuzen und aktuelle Nachweise in Kopie beilegen)\nEinkommen \nLohn oder Gehalt  Euro \nGeldleistungen aus der Arbeitslosenversicherung (AMS)  Euro \nPension oder Rente  Euro \nSozialhilfe (Bescheid beilegen)  Euro \nKranken-, Wochen-, Rehabilitations- oder Wiedereingliederungsgeld  Euro \nKinderbetreuungsgeld  Euro \nUnterhalt (Geldleistung aus aufgelöster Ehe oder Partnerschaft)  Euro \nEinkommen Ausland \nEinkommen aus dem Ausland  Euro \nSonstiges Einkommen \nSachbezüge (z.B. freie Wohnung)  Euro \nHilfe zum Lebensunterhalt \n(z.B. Mindestsicherung, Sozialhilfe, Wohnbeihilfe)  Euro \nSelbständige Erwerbstätigkeit  Euro \nSonstiges Einkommen (z.B. Vermietung, Verpachtung)  Euro \nÖGK-KSLS/0088-01/V01 ",
+    "  Seite 2/2 \n \nLand- und forstwirtschaftlicher Besitz \n Land-/forstwirtschaftliches Einkommen aus Selbstbewirtschaftung Vorlage des aktuellen Einheitswertbescheides erforderlich   Euro \n Haben Sie einen land-/forstwirtschaftlichen Grund zugepachtet und/o-der verpachtet? Vorlage Pachtvertrag erforderlich   Euro \n Haben Sie einen land-/forstwirtschaftlichen Grund übergeben (Verkauf, Schenkung)? Vorlage Vertrag erforderlich   Euro \n3. Persönliche Daten und Einkommensverhältnisse der im gemeinsamen Haushalt lebenden \nPersonen (z.B. Ehefrau/Ehemann, Lebensgefährtin/Lebensgefährte, Kinder, etc. - bitte \nNachweise in Kopie beilegen) \nName Sozialversicherungsnummer und Geburtsdatum Verwandt-schafts-verhältnis Art des Einkommens (zB. Lohn, Alimente) Netto- einkommen \n              \n              \n              \n              \n              \n4. Angaben zu meinen Krankheitskosten \nWie viele Packungen Medikamente werden pro Monat im Durchschnitt ärztlich  \nverordnet?   \nSollte sich der Bedarf an Dauer-Medikamenten in den letzten 2 Monaten vor der Antragstellung deutlich \nerhöht haben, legen Sie bitte entsprechende Unterlagen bei (zum Beispiel die Medikationsliste).  \n \nVermerke: \n  \n  \n  \n \nErklärungen und Unterschrift \n \n1. Ich erkläre, dass die Angaben richtig und vollständig sind. \n2. Stellt sich nachträglich heraus, dass Angaben nicht der Wahrheit entsprechen, nehme ich \nzur Kenntnis, dass ich der Österreichischen Gesundheitskasse einen dadurch entstandenen \nSchaden zu ersetzen habe. \n3. Darüber hinaus bin ich verpflichtet, Änderungen meiner Angaben (z.B. Familienstand, \nEinkommen, …) unverzüglich bekannt zu geben. \n \nIch bestätige mit meiner Unterschrift die Richtigkeit meiner Angaben. Weiters bestätige ich, \ndass ich die oben angeführten Erklärungen und den Hinweis zum Datenschutz zur Kenntnis ge-\nnommen habe. \n \n \n    \nOrt, Datum  Unterschrift des Antragstellers \n  bzw. der Antragstellerin "
+  ],
+  "pages": 2,
+  "source_file": "RZG_Antrag-auf-Befreiung_2026.pdf",
+  "source_url": "https://www.oegk.at/cdscontent/load?contentid=10008.785277&version=1779440677"
+}

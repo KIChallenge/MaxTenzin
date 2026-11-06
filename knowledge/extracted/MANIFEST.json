@@ -48,6 +48,19 @@
     ],
     "sources_sha256": "5cc40a5d854e1c0ea75f95b56315a2b51178691edf5b1da6b6c5bd5d1027016e"
   },
+  "form_templates_downloaded": {
+    "extracted_at": "2026-11-06",
+    "notes": "official blank templates downloaded from the insurer website (not in docs/); oegk_rezeptgebuehr_befreiung: downloaded 2026-11-06 from https://www.oegk.at/cdscontent/load?contentid=10008.785277&version=1779440677",
+    "outputs": [
+      "knowledge/forms/templates/oegk_rezeptgebuehr_befreiung.fields.json"
+    ],
+    "rows": 69,
+    "script_version": "1.0.0",
+    "sources": [
+      "knowledge/forms/templates/oegk_rezeptgebuehr_befreiung.pdf"
+    ],
+    "sources_sha256": "dcb305ae4e16d0a7e54cec19d7b5575ebe9851d0f174de089b5fbd491cb528c1"
+  },
   "legal_paragraphs": {
     "extracted_at": "2026-11-05",
     "notes": "allowlist=['ASVG', 'BPGG', 'FLAG', 'KBGG', 'KrankenO_OEGK_2025', 'MuKiPassV_2002', 'RBA', 'RBS_2005', 'RBZRehab_2005', 'RFG_2020', 'RGFP', 'RJU_2016', 'RPGG_2012', 'RRK_2021', 'RRZ_2008', 'RUF_2020', 'RVU', 'Satzung_OEGK_2025', 'VO-EKO']; laws_found=19",

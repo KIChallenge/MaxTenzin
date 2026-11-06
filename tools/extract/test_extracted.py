@@ -48,6 +48,17 @@ def test_serviceratgeber_transport_page():
 
 
 def test_form_templates_fillable():
-    for form_id in ("fsw_foerderung", "pva_pflegegeld_pal080", "sv_kur_reha", "oegk_fahrtkosten_wien"):
+    for form_id in ("fsw_foerderung", "pva_pflegegeld_pal080", "sv_kur_reha", "oegk_fahrtkosten_wien",
+                    "oegk_rezeptgebuehr_befreiung"):
         meta = json.loads((ROOT / f"knowledge/forms/templates/{form_id}.fields.json").read_text(encoding="utf-8"))
         assert meta["fillable"] and len(meta["fields"]) >= 10
+
+
+def test_downloaded_form_has_provenance():
+    manifest = json.loads((EX / "MANIFEST.json").read_text(encoding="utf-8"))
+    entry = manifest["form_templates_downloaded"]
+    assert "knowledge/forms/templates/oegk_rezeptgebuehr_befreiung.pdf" in entry["sources"]
+    assert "oegk.at" in entry["notes"]
+    meta = json.loads((ROOT / "knowledge/forms/templates/oegk_rezeptgebuehr_befreiung.fields.json").read_text(encoding="utf-8"))
+    assert meta["source_url"].startswith("https://www.oegk.at/") and meta["downloaded_at"]
+    assert "Antrag auf Befreiung von der Rezeptgebühr" in meta["page_text"][0]
