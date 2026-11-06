@@ -103,6 +103,21 @@ Services compose each other over HTTP with the **user's own token**, so scopes a
 
 Interactive architecture map (Floorplan export, open in a browser): [documentation/floorplan/sv-ki-lotse.html](documentation/floorplan/sv-ki-lotse.html)
 
+## Tech stack
+| Layer | Technology | Notes |
+|---|---|---|
+| **Cockpit** | Next.js 15 (App Router) · React 19 · TypeScript 5 · Tailwind CSS 4 · Lucide icons · Atkinson Hyperlegible | Server components by default; API types generated from the OpenAPI spec (`openapi-typescript`, `make openapi`); a same-origin proxy (`/bff/…`) adds the login token from an httpOnly cookie – the browser never calls the API directly |
+| **Services** | Python ≥ 3.12 · FastAPI · Uvicorn · Pydantic v2 | Modular monolith: 14 services, each with its own router (`/api/<service>`), contracts and tests – microservice boundaries, one process. Every endpoint: login → scope check → audit middleware |
+| **Persistence** | SQLite via SQLModel (JSON document store, one collection per service) · SQLite FTS5 (BM25) | FTS5 full-text search over 1,976 law paragraphs; no external database |
+| **Documents & forms** | pypdf · ReportLab | pypdf reads documents and fills the **official AcroForm PDFs**; ReportLab stamps „ENTWURF“ |
+| **Lotsi (AI layer)** | Azure AI Foundry, `gpt-5-4-mini` via the `openai` SDK (one module: `app/core/llm.py`) | Tool calling with 31 tools, each exactly one API endpoint, called over HTTP with the **person's own token**; deterministic input guard (medical boundary), output guards and post-steps; vision for photo uploads |
+| **Identity (demo)** | Mock ID Austria | Token + Vertretung (delegation) + scopes – the same model as ID Austria / e-Vollmacht |
+| **Knowledge** | Versioned YAML in `knowledge/` + reproducible extraction (`make extract`, no AI, with MANIFEST) | SozDok legal texts, value tables 2026, Erstattungskodex, ÖGK Serviceratgeber, official form templates |
+| **Quality** | pytest (API + extraction tests) · live evals (`make eval`) · demo preflight (`make demo-check`, 22 checks) · Ruff | Tests run without raw data and without an API key (`LLM_MODE=fake`) |
+| **Tooling** | uv (Python) · npm (web) · Makefile | `make demo-fresh` · `make test` · `make eval` · `make lint` … |
+
+Runs locally only: API http://localhost:8000 (OpenAPI at `/docs`), cockpit http://localhost:3000.
+
 ## Services
 14 services + agent, 69 operations on 61 paths (OpenAPI at `/docs`).
 
