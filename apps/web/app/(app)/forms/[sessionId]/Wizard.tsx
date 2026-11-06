@@ -164,22 +164,40 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
     .map((id) => definition.fields.find((f) => f.id === id))
     .filter((f): f is FormField => !!f && f.section !== current);
 
+  const sectionCount = steps.length - 1;
+  const currentMissing = isReview ? 0 : (fieldsBySection.get(current) ?? []).filter((f) => missing.includes(f)).length;
   return (
-    <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
-      <aside>
-        <p className="eyebrow">{definition.provider}</p>
-        <h1 className="text-xl font-semibold">{definition.title_de}</h1>
-        <p className="text-muted">für {subjectName}</p>
-        <div className="mt-4" aria-label="Fortschritt">
-          <div className="flex justify-between text-sm font-semibold">
-            <span>Pflichtangaben</span>
-            <span>{Math.round(progress * 100)} %</span>
+    <div className="space-y-6">
+      {/* Form header: what, for whom, draft status, progress, the way to the PDF */}
+      <header className="card flex flex-col gap-4">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className="eyebrow">{definition.provider} · Antragsentwurf</p>
+            <h1 className="text-2xl font-semibold tracking-tight">{definition.title_de}</h1>
+            <p className="text-muted">
+              für {subjectName} · <span className="font-semibold text-warn">Entwurf – wird nicht automatisch eingereicht</span>
+            </p>
           </div>
-          <div className="mt-1 h-3 rounded-full bg-neutral-soft" role="progressbar" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100}>
-            <div className="h-3 rounded-full bg-accent transition-all" style={{ width: `${progress * 100}%` }} />
+          <div className="flex flex-col items-end gap-2">
+            <p className="text-sm font-semibold">
+              {missing.length === 0 ? "Alle Pflichtangaben erledigt" : `${missing.length} Pflichtangabe${missing.length === 1 ? "" : "n"} offen`}
+              <span className="ml-2 text-muted">{Math.round(progress * 100)} %</span>
+            </p>
+            {!isReview && (
+              <button type="button" className="btn-secondary py-1 text-sm" onClick={() => setStep(steps.length - 1)}>
+                <ClipboardCheck className="h-4 w-4" aria-hidden /> Überprüfen &amp; PDF
+              </button>
+            )}
           </div>
         </div>
-        <ol className="mt-6 space-y-1">
+        <div className="h-2.5 rounded-full bg-neutral-soft" role="progressbar" aria-label="Pflichtangaben" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100}>
+          <div className="h-2.5 rounded-full bg-accent transition-all" style={{ width: `${progress * 100}%` }} />
+        </div>
+      </header>
+      <div className="grid gap-8 lg:grid-cols-[16rem_1fr]">
+      <aside>
+        <p className="mb-2 text-sm font-semibold tracking-wide text-muted uppercase">Abschnitte</p>
+        <ol className="space-y-1">
           {steps.map((s, i) => {
             const sMissing = s === REVIEW ? 0 : (fieldsBySection.get(s) ?? []).filter((f) => missing.includes(f)).length;
             return (
@@ -231,7 +249,15 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
         )}
         {!isReview ? (
           <>
-            <h2 className="mb-3 text-xl font-semibold">{current}</h2>
+            <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
+              <div>
+                <p className="text-sm font-semibold text-muted">
+                  Abschnitt {step + 1} von {sectionCount}
+                </p>
+                <h2 className="text-xl font-semibold">{current}</h2>
+              </div>
+              {currentMissing > 0 && <span className="rounded-full bg-warn-soft px-2.5 py-0.5 text-sm font-semibold text-warn">{currentMissing} offen</span>}
+            </div>
             <div className="@container divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
               {(fieldsBySection.get(current) ?? []).filter(visible).map((f) => (
                 <FieldRow
@@ -271,6 +297,7 @@ export function Wizard({ definition, initial, subjectName }: { definition: FormD
           />
         )}
       </section>
+      </div>
     </div>
   );
 }
