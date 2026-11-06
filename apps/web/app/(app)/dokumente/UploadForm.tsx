@@ -2,7 +2,7 @@
 // Drop zone: drag a PDF or photo onto it, or click / press Enter to choose one. Upload starts right away.
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, FileUp, LoaderCircle } from "lucide-react";
+import { Camera, FileUp, LoaderCircle, Sparkles } from "lucide-react";
 import { ACCEPT, uploadAndAnalyze } from "@/lib/upload";
 
 /** compact: the home-page quick drop (smaller, no camera row). */
@@ -64,7 +64,17 @@ export function UploadForm({ subjectName, compact = false }: { subjectName: stri
           </p>
         ) : (
           <>
-            <p className="font-semibold">{over ? "Loslassen zum Hochladen" : "Dokument hierher ziehen"}</p>
+            {compact && (
+              <p className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-semibold tracking-wide text-accent-strong uppercase">
+                <Sparkles className="h-3.5 w-3.5" aria-hidden /> Schnellstart · automatische Erkennung
+              </p>
+            )}
+            <p className="font-semibold">
+              {over ? "Loslassen zum Hochladen" : compact ? "Dokument ablegen – Lotsi erkennt, was es ist" : "Dokument hierher ziehen"}
+            </p>
+            {compact && (
+              <p className="text-sm text-muted">Entlassungsbrief, Befund oder e-Impfpass: wird gelesen, eingeordnet und direkt zur Prüfung geöffnet.</p>
+            )}
             <p className="text-sm text-muted">
               oder <span className="font-semibold text-accent underline underline-offset-2">Datei auswählen</span> · ein PDF oder Fotos
               (JPG, PNG) – mehrere Fotos werden ein Dokument
