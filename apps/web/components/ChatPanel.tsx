@@ -1,5 +1,5 @@
 "use client";
-import { FileText, History, LoaderCircle, Mic, MicOff, Paperclip, SquarePen, TriangleAlert, X } from "lucide-react";
+import { FileText, History, LoaderCircle, Lock, Mic, MicOff, Paperclip, SquarePen, TriangleAlert, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { bff } from "@/lib/client";
@@ -556,11 +556,15 @@ function ChatMessage({
       </div>
     );
   }
+  // Calls refused for a missing Vollmacht scope in this turn: the summary names the permission („Anträge vorbereiten“).
+  const denied = [
+    ...new Set(msg.trace.filter((t) => t.status === 403).map((t) => /„([^“]+)“/.exec(t.summary_de ?? "")?.[1] ?? "diese Aktion")),
+  ];
   return (
     <div className="mr-8 space-y-2">
       {msg.trace.length > 0 && (
-        <details className="rounded-lg border border-line bg-paper px-3 py-2 text-sm">
-          <summary className="cursor-pointer font-semibold text-muted">
+        <details className={`rounded-lg border px-3 py-2 text-sm ${denied.length ? "border-danger/40 bg-danger-soft" : "border-line bg-paper"}`}>
+          <summary className={`cursor-pointer font-semibold ${denied.length ? "text-danger" : "text-muted"}`}>
             Lotsi hat abgefragt: {msg.trace.map((t) => t.summary_de || t.tool).join(" → ")}
           </summary>
           <ul className="mt-2 space-y-1">
@@ -576,10 +580,20 @@ function ChatMessage({
       )}
       <div
         className={`rounded-xl px-3 py-2 ${
-          msg.boundary ? "border-2 border-warn bg-warn-soft" : "border border-line bg-paper"
+          msg.boundary
+            ? "border-2 border-warn bg-warn-soft"
+            : denied.length
+              ? "border-2 border-danger bg-danger-soft"
+              : "border border-line bg-paper"
         }`}
       >
         {msg.boundary && <p className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-warn"><TriangleAlert className="h-4 w-4" aria-hidden /> Medizinische Grenze – bitte mit Ärztin/Arzt klären</p>}
+        {!msg.boundary && denied.length > 0 && (
+          <p role="alert" className="mb-1 flex flex-wrap items-center gap-x-1.5 text-sm font-semibold text-danger">
+            <Lock className="h-4 w-4" aria-hidden /> Fehlende Berechtigung: {denied.map((d) => `„${d}“`).join(", ")}
+            <a href="/einstellungen#vollmachten" className="font-normal underline">Vollmachten ansehen</a>
+          </p>
+        )}
         <SimpleMarkdown text={msg.text} />
       </div>
       {latest && <SlotChoices actions={(msg.actions ?? []).filter((a) => a.kind === "choose_slot")} onChoose={onSuggest} disabled={busy} />}
