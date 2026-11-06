@@ -1,9 +1,10 @@
-import { Bell, LogOut, Sailboat, Settings } from "lucide-react";
+import { Bell, LogOut, Settings } from "lucide-react";
 import Link from "next/link";
 import { logout } from "@/app/actions";
 import { fullName, SCOPE_LABELS } from "@/lib/labels";
 import type { Person, Session } from "@/lib/types";
 import { SubjectSwitcher } from "./HeaderControls";
+import { LotsiAvatar } from "./Lotsi";
 import { NavBar } from "./NavBar";
 
 /** One translucent, sticky bar: brand · navigation · (person switch) · settings · sign-out.
@@ -16,9 +17,7 @@ export function Header({ me, represented, inboxCount = 0 }: { me: Session; repre
       <div className="@container mx-auto max-w-7xl px-5">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2">
           <Link href="/" className="flex items-center gap-2 text-[1.0625rem] font-semibold tracking-[-0.01em] text-ink">
-            <span aria-hidden className="grid h-7 w-7 place-items-center rounded-md bg-accent text-white">
-              <Sailboat className="h-4 w-4" />
-            </span>
+            <LotsiAvatar size={32} />
             SV-Lotsi
           </Link>
           {/* Two rows at every width: brand + person/inbox/settings on top, the navigation as its own bar below

@@ -10,4 +10,4 @@ export function middleware(req: NextRequest) {
   }
 }
 
-export const config = { matcher: ["/((?!login|bff|_next|favicon.ico).*)"] };
+export const config = { matcher: ["/((?!login|bff|_next|favicon.ico|icon.svg).*)"] };
